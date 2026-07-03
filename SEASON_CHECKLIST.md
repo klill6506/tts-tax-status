@@ -110,3 +110,5 @@ scope and dates change only on Ken's explicit direction.*
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
 - ⚠ Season checklist + status-mirror protocol adopted — 2026-07-03
+- ⚠ 4797 K-1 box 9c pass-through test (parallel session's `cca5e34`) — full-file green-run
+  gate verified and cleared — 2026-07-03

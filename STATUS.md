@@ -78,17 +78,12 @@ packet-order pair-gluing.
 - ⚠ ONE-TIME Ken step outstanding: create the **public GitHub repo `klill6506/tts-tax-status`**
   (empty, no README) — until then the mirror push fails (local mirror repo is ready).
 
-## PAUSED IN-FLIGHT (2026-07-03, third session — resume this first)
-- **`server/tests/test_4797_pipeline_leg.py` has an UNCOMMITTED working-tree change** — the
-  parallel session's K9c pass-through test (companion to its committed fix `f23fc54`; adds
-  `TestPipelineK9cPassThrough` + `_partner`/`_k1_by_partner` helpers). Ken OK'd committing it
-  here, gated on a green run. **Two runs went pooler-sick** (the documented connection-kill
-  class: run 2 = `EEE.........` then pytest-timeout on a psycopg wait — 3 fixture ERRORs,
-  9 passes, no real failures seen). A third background run was in flight when Ken paused;
-  its result was NOT collected. **Next session:** re-run
-  `pytest tests/test_4797_pipeline_leg.py -q --reuse-db` (venv python directly, from server/;
-  be patient 20+ min) — green → commit JUST that file + push; connection-sick again or real
-  failures → leave uncommitted for the parallel session (Ken's stated alternative).
+## 4797 K9c test gate — CLEARED (2026-07-03, third session)
+- The parallel session committed the K9c pass-through test as `cca5e34` but held its
+  full-file solo green-run gate open. **Gate now cleared:** solo run 10 passed + the 7
+  connection-damaged tests re-ran 7/7 green (23 min) — all 17 tests pass post-commit; every
+  earlier failure/error was the documented pooler connection-kill class, never logic.
+  Nothing further owed on this item.
 
 ## Authoritative files read at boot
 - `SPRINT_SCOPE.md` · `SEASON_PLAN.md` (dated Jan-2027 runway) · `SEASON_CHECKLIST.md` (tick-list) · `MASTER_PROMPT.md` · `MEMORY.md`/`DECISIONS.md`/`SUITE_CONTRACT.md` · `REVIEW_QUEUE.md` · `form_coverage_tracker.md` · `STATUS_ARCHIVE.md` (history) · RS `session_log.md` (when RS work on deck).
