@@ -48,8 +48,9 @@ Studio. Only Form 3800 (S4) has a spec.
    ready** — sign via `mef_build_ats_scenario2 --efin … --practitioner-pin … --taxpayer-pin …`.
 3. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
 4. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-5. **One-time:** create the public GitHub repo `klill6506/tts-tax-status` (mirror push fails
-   until then; local mirror repo is ready and committing).
+5. ~~**One-time:** create the public GitHub repo `klill6506/tts-tax-status`~~ **DONE 2026-07-04** —
+   public repo created (`repo`-scope PAT), mirror pushed and verified live; `sync_status_mirror.ps1`
+   now also mirrors RS STATUS.md + session_log.md into a `rule-studio/` subfolder.
 6. Preparer Manager visual-review batch (carried in STATUS_ARCHIVE): the Sch A line-11
    dotted-literal position + the "…of which qualified contributions" FormEditor input.
 
