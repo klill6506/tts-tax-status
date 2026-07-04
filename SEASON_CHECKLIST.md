@@ -34,8 +34,8 @@ scope and dates change only on Ken's explicit direction.*
     - [x] Form 8283 unit (all four legs) — 2026-07-03 `1040-form-8283-complete`
     - [x] Return-level identity arms (deceased spouse, NRA election, IP PINs, divorced-spouse SSN, BinaryAttachment) — 2026-07-03 `86d4e38`
     - [x] EIC opt-out 27c (Ken ruled skip-entirely) — 2026-07-03 `c53e942`
-    - [ ] Ken's QBI-patron question resolved
-    - [ ] Scenario pins + mapper + NRA statement PDF
+    - [x] Ken's QBI-patron question resolved — 2026-07-03 (ruled: build 8995-A Schedule D)
+    - [ ] Scenario pins + mapper + NRA statement PDF (enacted 13a diverges from the key — S13-class, documented)
   - [ ] S3 — Form 4835 unit first, then scenario
   - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg)
 - [ ] Brokerage summary-extraction skeleton (8949 Exception 2)
@@ -112,3 +112,7 @@ scope and dates change only on Ken's explicit direction.*
 - ⚠ Season checklist + status-mirror protocol adopted — 2026-07-03
 - ⚠ 4797 K-1 box 9c pass-through test (parallel session's `cca5e34`) — full-file green-run
   gate verified and cleared — 2026-07-03
+- ⚠ **8995-A Schedule D patron reduction + capped DPAD unit** (Ken ruled build-it for the S2
+  MeF leg) — 2026-07-03 `f10e864` + `2c6e8a1` (RS `9b4490c`, mig 0158). All PURE gates green
+  (math 17/17, render 7/7, efile 31/31 w/ live XSD, flow 381); **DB legs pooler-blocked** —
+  the form ticks only after the DB green run + prod seed_rules (see STATUS 🔴).

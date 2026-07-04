@@ -1,5 +1,32 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-03 (third session) -- FORM 8995-A SCHEDULE D (patron reduction §199A(b)(7) + capped
+> DPAD §199A(g)) -- ★★ BUILT, ALL PURE GATES GREEN, 🔴 DB LEGS POOLER-BLOCKED (no tick until
+> green) -- SPEC-FIRST RS round-trip -- flow gate unchanged 381 (FA-08 amended in place).**
+> **Ken RULED (AskUserQuestion): "Is this a MeF test scenario? If so build 8995-A Schedule D"**
+> — retired the stated 8995-A patron/DPAD RED-defer for the S2 (Jones) leg. **SPEC** (RS
+> `9b4490c`, amend-by-lookup): +`a_business_schd_qbi_alloc`/`_wages_alloc`/`a_dpad_199ag`,
+> R-8995A-PATRON reauthored routing→calculation (SD2–SD6 → L14), SCOPE/P2-COMP/P4-LIMIT amended
+> (patron → 8995-A at ANY income per i8995a 2025 verbatim; face line-3 skip at/below threshold;
+> L15 floor; **L38 cap = L33 − L37 face verbatim**), +7 SD lines, **D_8995A_001/002 REPURPOSED
+> error→info (Ken ruled)** + NEW 008/009 guards, T9 amended + T11–T15 HAND-COMPUTED (T13 = the
+> S2 below-threshold zero-wage patron — proves the wage limit does NOT zero it; T14 = full
+> allocation + zero wages → reduction still $0, the lesser arm); new source IRS_8995A_SCHD_FORM;
+> integrity checker extended, 15 scenarios ALL PASS; export drift = exactly the amendment.
+> **MODEL** mig 0158 (APPLIED). **COMPUTE** `f10e864`: engine per-column L14/SD chain + skip +
+> cap; `form_8995a_patron_engaged` = THE single bridge-gate (router/render/extract/diags);
+> `compute_8995a_db` returns the result dict; D_8995_001 retired-dormant. **INPUT** serializers
+> `__all__` (auto), FormEditor conditional patron-alloc fields (Sch C + F). **RENDER** f8995ad
+> Rev 12-2022 registered (manifest+SHA) — 23-widget map BIJECTIVE; render_8995a fills
+> 1{col}_patron + L14/L38 and inserts Sch D copies at page 2 (3 patron columns/copy). **MeF**
+> `2c6e8a1`: F8995ASource re-derived via the render gates; IRS8995A + IRS8995AScheduleD
+> builders (full XSD-order maps; patron-anchored zeros STATED; SSTB/Agg = XSD CHOICE);
+> ReturnData slots after IRS8995 (XSD 2224/2252); efile 31/31 incl. LIVE XSD of the pair.
+> **⚠ S2 ENACTED-PIN DIVERGENCE (S13-class):** the key's blank 13a is scenario fiat — enacted
+> law computes NONZERO 13a + attaches the QBI documents the key lacks. 🔴 CARRIED: the DB legs
+> (3 pooler-sick attempts, zero real failures) + prod `seed_rules` + the RS 8995 sibling
+> loader's D_8995_001 retirement note (DEFERRAL_AUDIT). Detail → STATUS.md + RS session_log.
+
 > **2026-07-03 (second session) -- S2 RETURN-LEVEL ARMS (identity/header + EIC opt-out 27c) --
 > ★★ BOTH UNITS COMPLETE -- commits `86d4e38` + the 27c unit -- flow gate 380→381.** The
 > DEFERRAL_AUDIT item-10 S2 gap list, corrected and closed. **STALE-LIST FINDINGS:** the
