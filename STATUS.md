@@ -1,15 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-03, fourth session (**8995-A DB GATE CLEARED ✅ + S2 (JONES) SCENARIO
-+ MAPPER LEG COMPLETE** — commits `89a4f88`/`2a151b5`/`c10e51c`/`9b5dcad`, mig 0159 applied.
-The third session's two 🔴 items are both closed: the 8995-A Schedule D unit's DB legs went
-green across three pooler-fought runs (4 failures were ALL seeder/test-side — the SD FormLines
-were missing from `seed_8995a`'s SECTIONS list; new f8995a_schd section, 58 lines / 8 sections
-reseeded on the shared DB; `seed_rules` also run) and the S2 scenario shipped end-to-end:
-full key forensics, FOUR new MeF mappers (IRS1040ScheduleA / IRS8283 Section A /
-PaidPreparerInformationGrp / Sch C AdditionalVehicleInfoGrp), scenario2.py + command +
-29/29 test file, every enacted pin matching the engine, 11-document submission validating
-against the live 2025v5.4 XSDs.)*
+*Last updated: 2026-07-04, fifth session (**BROKERAGE 1099-B SUMMARY-EXTRACTION SKELETON
+BUILT** — commit `c25635f`, mig 0160 applied to the shared DB). Session began on the S3
+resume pointer but Form 4835 has NO Rule Studio spec (404; RS server confirmed up), so per
+the mandatory RS rule I STOPPED rather than improvise; Ken ruled "pivot to an unblocked
+unit" → built the season-one brokerage import boundary end-to-end (8949 Exception 2).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -18,37 +13,50 @@ against the live 2025v5.4 XSDs.)*
 
 ## Active gate
 - **1040 flow-assertion gate: 381** — `cd server && pytest tests/test_flow_assertions.py -q`
-  (381 passed this session).
-- **This session's verification:** 8995-A DB legs ALL GREEN (66→50→40 across three runs; the
-  ~21 E/F pooler connection-kills all re-ran clean) · S2 test file **29/29**
-  (`pytest tests/test_mef_scenario2_compute.py -q --reuse-db --timeout=1800` — the 13-seed
-  fixture outlasts the default 300s cap) · scenario command **ALL MATCH** on every 1040 /
-  Sch 1 / Sch A / Sch C / 8995-A-XML pin · efile pure 31/31 · acroform 33/33 · flow 381 ·
-  tsc 0 · vitest 275. `seed_rules` + `seed_8995a` applied to the shared DB; mig 0159 applied.
-- Test DB `test_postgres` is CURRENT (created fresh this session, migs through 0159).
-  `scripts/drop_test_db.py --keep-db` (NEW flag) terminates stale sessions WITHOUT dropping —
-  the killed/timed-out-pytest lock case.
+  (held this session; ran inside a 425-passed combined regression run).
+- **This session's verification:** new `test_brokerage_summary_skeleton.py` **8/8**
+  (`--create-db`, 8m19s) · combined `test_flow_assertions` + `test_topic9_compute_leg` +
+  `test_topic9_diagnostics_leg` = **425 passed** after the trip-wire fix (`--reuse-db`, 41m) ·
+  registration trip-wire re-run green (16→17 Schedule D rules). mig 0160 applied to the shared DB.
+- Test DB `test_postgres` is CURRENT (recreated this session, migs through 0160).
 
-## ▶ RESUME HERE — S3 scenario: Form 4835 unit first
-S2 is done (artifacts in `docs/mef/ats_out/scenario2`, UNSIGNED placeholder EFIN — Ken's
-upload list). Next per SEASON_CHECKLIST: **S3 needs Form 4835 (farm rental) built first** —
-spec-first (Rule Studio lookup `4835`; if 404 STOP and tell Ken), then compute/render/input/
-diagnostics legs, then the S3 scenario + mapper leg (reuse the S2 forensics recipe in
-auto-memory [[s2-scenario-mapper-leg]]: +29 char-shift fills, [l]-path vector checks,
-✔ glyphs). After S3: S4 (3800/8835/8936 — OBBBA-sunset check at each spec leg).
+## ▶ RESUME HERE — idle, Ken directs (S3/S4 blocked on missing RS specs)
+The brokerage 1099-B summary-extraction skeleton is DONE (commit `c25635f`). The next queued
+1040 ATS scenarios are **blocked**: Form 4835 (S3) and Forms 8835 + 8936 (S4) return **404**
+from Rule Studio (`lookup/<form>/export/`) — no spec exists. RS server is up (8283 → 200).
+Per the mandatory RS rule, these units cannot be built until Ken authors the specs in Rule
+Studio. Only Form 3800 (S4) has a spec.
+
+**Unblocked pickups if Ken wants to keep going (no new spec needed):**
+- Proforma/rollover snapshot **PRODUCER** (read/roll side already built, migs 0105/0106) —
+  was parked "until Ken's back in office"; confirm before starting.
+- Any Ken-directed unit.
+
+**What the brokerage skeleton is / isn't (so the next session doesn't rebuild it):**
+- IS: `apps/returns/brokerage_1099b.py::import_brokerage_summary()` — normalized per-box
+  category totals → Exception-2 `CapitalTransaction` summary rows (idempotent per broker,
+  `provenance=IMPORTED`, `import_confirmed` gate `D_8949_006`). Compute auto-applies code M
+  to summary rows (Leg A, RS `R-8949-SUMMARY`). Model + mig 0160 add
+  `provenance`/`import_source`/`import_confirmed`.
+- ISN'T (deferred to Aug "extraction to production", by design): the OCR/AI PDF parsing
+  front-end that produces the `categories` payload; the frontend YELLOW rendering of imported
+  rows; a broker-PDF-as-BinaryAttachment wire into a real e-file scenario.
 
 **Waiting on Ken (carried):**
-1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5); **NEW: S2
+1. **Author RS specs for 4835, 8835, 8936** to unblock S3/S4 (or reorder scope).
+2. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5); **S2
    ready** — sign via `mef_build_ats_scenario2 --efin … --practitioner-pin … --taxpayer-pin …`.
-2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
-3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-4. **One-time:** create the public GitHub repo `klill6506/tts-tax-status` (mirror push fails
+3. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
+4. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
+5. **One-time:** create the public GitHub repo `klill6506/tts-tax-status` (mirror push fails
    until then; local mirror repo is ready and committing).
-5. Preparer Manager visual-review batch (carried in STATUS_ARCHIVE) — **NEW this session:**
-   the Sch A line-11 dotted-literal position (abs_pos x=330/y=578) + the "…of which qualified
-   contributions" FormEditor input.
+6. Preparer Manager visual-review batch (carried in STATUS_ARCHIVE): the Sch A line-11
+   dotted-literal position + the "…of which qualified contributions" FormEditor input.
 
 ## ▶ Carryover follow-up (older, still open)
+- **NEW:** add `D_8949_006` to the 8949 RS spec on the next Schedule D touch (app-level
+  workflow/confirmation gate, added in code this session — not silently written to the cached
+  `8949_spec.json`).
 - RS SCHA spec fact for `scha_qualified_contributions_cash` (input-only; DEFERRAL_AUDIT
   fourth-session item 3) — amend by lookup on the next Schedule A touch.
 - RS 8995 sibling loader's D_8995_001 retirement note (DEFERRAL_AUDIT third-session item 2).

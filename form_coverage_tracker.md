@@ -1,5 +1,28 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (fifth session) -- BROKERAGE 1099-B SUMMARY-EXTRACTION SKELETON (8949
+> Exception 2) -- commit `c25635f`, mig 0160.** Pivot away from the blocked S3 (Form 4835
+> has NO Rule Studio spec — 404, RS server confirmed up via 8283 200; STOPped per the
+> mandatory RS rule rather than improvise. S4's 8835/8936 are also 404; only 3800 has a spec.
+> Ken ruled "pivot to an unblocked unit"). Delivered the season-one brokerage import boundary
+> (SEASON_PLAN item 4). **Leg A** — `compute_schedule_d` now auto-applies code M to every
+> `is_summary` row (RS `R-8949-SUMMARY` "code M auto" was UNIMPLEMENTED; this is the single
+> source consumed by `render_8949_1040` col (f), the D_8949 diagnostics, and the e-file).
+> **Leg B** — new `apps/returns/brokerage_1099b.py::import_brokerage_summary()` maps per-box
+> category totals → Exception-2 `CapitalTransaction` summary rows (description "broker — see
+> attached statement", blank b/c, code M, statement_attached); idempotent per broker;
+> `provenance=IMPORTED` (YELLOW) + `import_confirmed` mandatory-confirm gate (SEASON_PLAN
+> item 5). Model + mig 0160 add `provenance`/`import_source`/`import_confirmed` (mirrors the
+> existing `DataProvenance`; moved that enum above `CapitalTransaction`). New diagnostic
+> **D_8949_006** (warning; trip-wire 16→17). The OCR/AI PDF front-end plugs in ABOVE this seam
+> (August "extraction to production"); frontend YELLOW rendering is likewise deferred — the
+> skeleton stops at the backend normalized-payload boundary by design. **GATES:** new
+> `test_brokerage_summary_skeleton.py` **8/8** (create · idempotent+spares-manual · empty-skip ·
+> bad-box/amount reject · flow to Sch D L16 / 1040 L7 · code-M auto · D_8949_006 gate · render
+> smoke); flow **381 HELD**; topic9 compute + diagnostics leg GREEN. **Follow-up:** add
+> D_8949_006 to the 8949 RS spec on the next Schedule D touch (app-level workflow gate, not
+> silently written to the cached JSON).**
+
 > **2026-07-03 (fourth session) -- 8995-A SCHEDULE D DB GATE CLEARED ✅ (unit TICKS) + S2
 > (JONES) SCENARIO + MAPPER LEG BUILT -- commits `89a4f88`/`2a151b5`/`c10e51c`/`9b5dcad`,
 > mig 0159.** **8995-A DB legs:** three pooler-fought runs (25/20/16 min; 21 connection-kill

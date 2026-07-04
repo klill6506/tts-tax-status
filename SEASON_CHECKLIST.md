@@ -4,8 +4,11 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**S3 scenario — Form 4835 unit first** (spec → compute → render → flow, then the
-scenario + mapper leg; see STATUS.md ▶ RESUME HERE).
+**Idle — Ken directs.** S3/S4 are BLOCKED: Form 4835 (S3), 8835 + 8936 (S4) have NO
+Rule Studio spec (404, RS server confirmed up 2026-07-04) — Ken must author them before
+the mandatory RS rule lets the units be built. Only 3800 (S4) has a spec. Unblocked
+alternatives on the July list: proforma snapshot PRODUCER (was deferred to "Ken back in
+office"), or Ken picks. Last completed: brokerage 1099-B summary-extraction skeleton.
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -40,9 +43,13 @@ scenario + mapper leg; see STATUS.md ▶ RESUME HERE).
           ALL MATCH; 11-doc submission live-XSD-valid; four NEW mappers: Sch A / 8283 Section A /
           preparer header grp / Sch C vehicle grp; test file 29/29; enacted 13a = 2,658.20 +
           ODC 500 diverge from the key's fiats — documented in README + module)
-  - [ ] S3 — Form 4835 unit first, then scenario
-  - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg)
-- [ ] Brokerage summary-extraction skeleton (8949 Exception 2)
+  - [ ] S3 — Form 4835 unit first, then scenario (⛔ BLOCKED — no RS spec for 4835, 404
+        2026-07-04; Ken must author it in Rule Studio first)
+  - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg;
+        ⛔ 8835 + 8936 have no RS spec 2026-07-04; only 3800 does)
+- [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`
+      (mig 0160; import boundary + code-M auto + D_8949_006 confirm gate; 8/8; flow 381 held.
+      OCR/AI front-end + frontend YELLOW deferred to Aug "extraction to production")
 
 ## July 2026 — Ken
 - [ ] Sherpa Tax LLC formed + EIN + its IRS e-file application filed
