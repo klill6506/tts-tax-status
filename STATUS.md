@@ -1,10 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-04, fifth session (**BROKERAGE 1099-B SUMMARY-EXTRACTION SKELETON
-BUILT** — commit `c25635f`, mig 0160 applied to the shared DB). Session began on the S3
-resume pointer but Form 4835 has NO Rule Studio spec (404; RS server confirmed up), so per
-the mandatory RS rule I STOPPED rather than improvise; Ken ruled "pivot to an unblocked
-unit" → built the season-one brokerage import boundary end-to-end (8949 Exception 2).*
+*Last updated: 2026-07-04, sixth session (**FORM 4835 RENDER LEG BUILT + GREEN → FORM 4835
+COMPLETE, all four legs**; commit `cee838f`). Render leg: AcroForm field map
+`f4835_2025.py` (63 widgets, BIJECTIVE label-verified), manifest entry (sha256 verified vs a
+fresh irs.gov download), `render_4835()` (one copy per activity, model-driven via the pure
+`compute_4835_lines` chain), registered in `ACROFORM_FORM_IDS`, packet emit after Schedule F,
+`SKIP_PAGES["Form 4835"]={1,2}` (instruction pages stripped). No migration / no compute change.
+Prior legs (compute/diagnostics/seed) shipped `c7cae44`, mig 0161.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,35 +14,31 @@ unit" → built the season-one brokerage import boundary end-to-end (8949 Except
   open questions → `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 
 ## Active gate
-- **1040 flow-assertion gate: 381** — `cd server && pytest tests/test_flow_assertions.py -q`
-  (held this session; ran inside a 425-passed combined regression run).
-- **This session's verification:** new `test_brokerage_summary_skeleton.py` **8/8**
-  (`--create-db`, 8m19s) · combined `test_flow_assertions` + `test_topic9_compute_leg` +
-  `test_topic9_diagnostics_leg` = **425 passed** after the trip-wire fix (`--reuse-db`, 41m) ·
-  registration trip-wire re-run green (16→17 Schedule D rules). mig 0160 applied to the shared DB.
-- Test DB `test_postgres` is CURRENT (recreated this session, migs through 0160).
+- **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
+  (**HELD**: combined `test_flow_assertions` + all four 4835 legs = **412 passed**, reuse-db 15m).
+- **4835 verification (ALL FOUR LEGS GREEN → FORM TICKS):** pure `test_4835_compute_leg.py`
+  **13/13** (spec vectors T1-T12+S3) · `test_4835_integration_leg.py` **2/2** (S3 → Sch E
+  40=11,061 / 42=17,035 / Sch 1 L5=11,061, none to SE) · `test_4835_diagnostics_leg.py` **5/5** ·
+  **NEW `test_4835_render_leg.py` 11/11** (bijective map over all 63 widgets; income/loss/§263A
+  face sweeps; matpart → no copy; one-copy-per-activity; packet places one page).
+- Test DB `test_postgres` is CURRENT (migs through 0161; render leg added no migration).
 
-## ▶ RESUME HERE — idle, Ken directs (S3/S4 blocked on missing RS specs)
-The brokerage 1099-B summary-extraction skeleton is DONE (commit `c25635f`). The next queued
-1040 ATS scenarios are **blocked**: Form 4835 (S3) and Forms 8835 + 8936 (S4) return **404**
-from Rule Studio (`lookup/<form>/export/`) — no spec exists. RS server is up (8283 → 200).
-Per the mandatory RS rule, these units cannot be built until Ken authors the specs in Rule
-Studio. Only Form 3800 (S4) has a spec.
+## ▶ RESUME HERE — S3 scenario + mapper leg (Form 4835 is now COMPLETE)
+Form 4835 is fully built (all four legs green). Remaining for S3:
+1. **S3 scenario + mapper leg** — Lynette Heather (1040, 1099-R, Sch 1/2/D/E/F/SE, 4835,
+   8995-A patron, Farm Optional Method). All forms now built; reuse the S2 forensics recipe
+   (the +29/−29 key decode + vector-checkbox forensics, scratchpad notes).
 
-**Unblocked pickups if Ken wants to keep going (no new spec needed):**
-- Proforma/rollover snapshot **PRODUCER** (read/roll side already built, migs 0105/0106) —
-  was parked "until Ken's back in office"; confirm before starting.
-- Any Ken-directed unit.
+Then **S4**: build 8835 + 8936 + Schedule A (specs cached in `server/specs/`), then the S4
+scenario — a credit-LIMITATION test (see the 8835/8936 authoring notes + test vectors).
 
-**What the brokerage skeleton is / isn't (so the next session doesn't rebuild it):**
-- IS: `apps/returns/brokerage_1099b.py::import_brokerage_summary()` — normalized per-box
-  category totals → Exception-2 `CapitalTransaction` summary rows (idempotent per broker,
-  `provenance=IMPORTED`, `import_confirmed` gate `D_8949_006`). Compute auto-applies code M
-  to summary rows (Leg A, RS `R-8949-SUMMARY`). Model + mig 0160 add
-  `provenance`/`import_source`/`import_confirmed`.
-- ISN'T (deferred to Aug "extraction to production", by design): the OCR/AI PDF parsing
-  front-end that produces the `categories` payload; the frontend YELLOW rendering of imported
-  rows; a broker-PDF-as-BinaryAttachment wire into a real e-file scenario.
+**4835 — what's built (don't rebuild), all four legs:** compute `compute_4835.py` (full loss
+path §465→§469 $25k allowance + MAGI phaseout), model `Form4835` (mig 0161, multi-instance,
+fields 1:1 with spec facts), `rules_4835.py` (9 diags), `seed_4835`; RENDER `render_4835()` +
+field map `f4835_2025.py` + manifest `f4835` (sha256 verified) + `SKIP_PAGES["Form 4835"]`.
+Feeds Schedule E line 40 (net) / 42 (gross); a Form4835 ENGAGES Schedule E; NEVER to Schedule
+SE (§1402(a)(1)); matpart → no face (belongs on Schedule F). v1 render note: the six 30a-f
+"other expenses" print as a single aggregate on line 30a labeled "Other" (model stores the sum).
 
 **Waiting on Ken (carried):**
 1. **Author RS specs for 4835, 8835, 8936** to unblock S3/S4 (or reorder scope).

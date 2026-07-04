@@ -4,11 +4,11 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**Idle — Ken directs.** S3/S4 are BLOCKED: Form 4835 (S3), 8835 + 8936 (S4) have NO
-Rule Studio spec (404, RS server confirmed up 2026-07-04) — Ken must author them before
-the mandatory RS rule lets the units be built. Only 3800 (S4) has a spec. Unblocked
-alternatives on the July list: proforma snapshot PRODUCER (was deferred to "Ken back in
-office"), or Ken picks. Last completed: brokerage 1099-B summary-extraction skeleton.
+**S3 scenario + mapper leg (Heather).** Form 4835 is now COMPLETE (all four legs green,
+2026-07-04) — the last blocking form for S3. Next: build the S3 scenario/mapper (reuse the
+S2 forensics recipe). S4 still needs its forms first: 8835 + 8936 (RS specs now authored,
+cached in `server/specs/`) + Schedule A; only 3800 was previously specced. Last completed:
+Form 4835 render leg.
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -43,8 +43,11 @@ office"), or Ken picks. Last completed: brokerage 1099-B summary-extraction skel
           ALL MATCH; 11-doc submission live-XSD-valid; four NEW mappers: Sch A / 8283 Section A /
           preparer header grp / Sch C vehicle grp; test file 29/29; enacted 13a = 2,658.20 +
           ODC 500 diverge from the key's fiats — documented in README + module)
-  - [ ] S3 — Form 4835 unit first, then scenario (⛔ BLOCKED — no RS spec for 4835, 404
-        2026-07-04; Ken must author it in Rule Studio first)
+  - [ ] S3 — Form 4835 unit first, then scenario:
+    - [x] Form 4835 unit — ALL FOUR LEGS GREEN (form ticks) — compute/diagnostics/seed
+          2026-07-04 `c7cae44` (mig 0161); RENDER leg 2026-07-04 (field map + manifest +
+          render_4835 + SKIP_PAGES; bijective 63-widget map; 412-passed gate)
+    - [ ] S3 scenario + mapper leg (Heather) — reuse the S2 forensics recipe
   - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg;
         ⛔ 8835 + 8936 have no RS spec 2026-07-04; only 3800 does)
 - [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`

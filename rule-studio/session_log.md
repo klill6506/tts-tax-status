@@ -4,6 +4,75 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — S3/S4 unblock campaign: 8835 + 8936 + Schedule A(8936) authored/seeded/exported; 4835 reconciled — ALL FOUR endpoints 200
+*Ken's campaign prompt (from a tts Claude): author the four missing specs so the tax app can build the
+last two 1040 MeF ATS scenarios (S3 = 4835; S4 = 8936 + Sch A + 8835). Started from the tts authoring
+notes (`server/specs/form_{4835,8936,8835}_authoring_notes.md`) as HYPOTHESIS, verified every rule
+against the FINAL 2025 IRS sources (Authoritative-Source Rule).*
+- **IRS-source verification (2 parallel subagents, read FINAL 2025 PDFs verbatim):**
+  - 8835 (Cat. 14954R, i8835 Cat. 55349M 12/22/25): all §45 resources gate on "construction begins
+    before 2025" (no per-resource variance); OBBBA touched ONLY advanced-nuclear energy communities
+    (TY after 7/4/25) — NOT the begin-construction gate; §45Y/§48E is a DIFFERENT form (D_8835_004).
+    2025 rates $0.006/$0.003 (Fed. Reg. 2025-09366); ×5 (line 9) + 10%/10% (lines 10/11). line 15 ->
+    Form 3800 line 4e (within 4-yr PIS window) or 1f. New 2025: 8c PWA -> Form 7220 (D_8835_003).
+  - 8936 (Cat. 37751E; Sch A Cat. 93602W 8/21/25; i8936 Cat. 67912V 10/14/25): **OBBBA "acquired after
+    September 30, 2025" termination** (25E/30D/45W), restated 4× in the instructions; "acquired" =
+    written binding contract + payment (nominal down payment/trade-in counts). MAGI caps UNCHANGED by
+    OBBBA (new 150/225/300k; used 75/112.5/150k), **best-of-2024-or-2025** test. Used = lesser $4,000/
+    30%, price <= $25k. Commercial = min(15%/30% basis, incremental), $7,500/$40,000. Personal credits
+    NONREFUNDABLE and **LOST if unused** (no carryforward); business/commercial -> Form 3800.
+- **4835 reconciled** (`load_1040_form_4835.py`, re-seeded): added the S3 ATS vector (Lynette Heather:
+  L1=17,035, expenses 5,974 -> L32=11,061 -> Sch E 40/42, nothing to SE) + the [VERIFY-QBI] item resolved
+  (R-4835-QBI/D_4835_QBI: crop-share rent is QBI ONLY if it rises to a §162 trade/business / self-rental /
+  RP 2019-38 safe harbor — default NOT-QBI, preparer-asserted; cited §199A). Now 55 facts / 12 rules / 13 tests.
+- **`load_1040_form_8835.py`** (`8835`, 7 rules all cited / 32 facts / 38 lines / 5 diags / 5 tests / 4 FA):
+  §45 credit calc + OBBBA before-2025 gate + ×5/+10%/+10% + line-15 4e/1f routing + S4 solar vector
+  ($2,640 -> ×5 -> $13,200 -> 3800 line 4e). New sources IRS_2025_8835_FORM/INSTR, IRC_45. Year-keyed rate table.
+- **`load_1040_form_8936.py`** (TWO forms — the Sch F precedent): `8936` (5 rules / 16 facts / 29 lines /
+  3 diags / 4 tests) + **`8936_SCHA`** (5 rules / 24 facts / 43 lines / 4 diags / 5 tests / 5 FA). OBBBA
+  9/30/2025 per-vehicle gate (D_8936_001, highest precedence); MAGI best-of-two-years; used/commercial
+  formulas; routing L8->3800 1y, L13->Sch3 6f, L18->Sch3 6m, L21->3800 1aa, transfer repay new->Sch2 1b/
+  used->1c. New sources IRS_2025_8936_FORM/8936SA_FORM/8936_INSTR, IRC_30D_25E_45W.
+- **Schedule A (Form 8936) canonical lookup key = `8936_SCHA`** (my call; the 1120S_SCHL convention; the
+  key Ken probed). Exposed as a SEPARATE form (own Cat. No. 93602W, Attach. Seq. 69A; per-vehicle) so the
+  tts build computes per-vehicle then aggregates to 8936.
+- **VERIFIED all four export endpoints return 200** (live server, control 9999 -> 404): 4835, 8835, 8936,
+  8936_SCHA. Self-contained exports saved to `exports/form_{4835,8835,8936,8936_scha}/`.
+- **Open [VERIFY] carried for the tts build (flagged, not guessed):** the S4 new-vehicle TENTATIVE credit
+  is BLANK on the scenario form (seller report) — do NOT assume $7,500; the S3/S4 tests pin gates+routing,
+  not the disputed dollar. Also: 8936 line-1a "11a"-vs-11 asymmetry; the 6m credit-ordering (line 11 vs 16);
+  8835 line-15 4e window for the S4 solar PIS 9/22/2023. All in the loader headers as walk items.
+- RS DB: **82 TaxForms / 400 FlowAssertions**. Recorded **D-4** in DECISIONS.md.
+
+## 2026-07-04 — FORM_4835 (Farm Rental Income and Expenses) authored, seeded, exported — parallel-session 404 CLEARED
+*Pivot origin: a parallel tts session's S3 resume pointer needed Form 4835, which had NO RS spec
+(GET /api/forms/lookup/4835/export/ 404'd; only an authority stub existed). Ken ruled "start the 4835 spec."*
+- **Source-verified** the 2025 Form 4835 face + instructions VERBATIM (f4835.pdf, Cat. No. 13117W, Attach.
+  Seq. 37, Created 1/7/26 — read pages 1-3 via the Read tool). New source `IRS_2025_4835_FORM`; 11 existing
+  sources referenced (IRC_1402A1/469/465/77/451_EF/263A, 6198/8582/Sch-E instr, Pub 225).
+- **Ken walked 4 scope decisions (AskUserQuestion):** (1) LOSS PATH — compute the full path, not RED-defer
+  ("this is for MeF testing ... 8582/6198"); (2) SE-exclusion — explicit hard invariant + flow-assertion;
+  (3) elections — capture-$-flag + material-participation routing diagnostic; (4) multi-instance per-activity.
+  Recorded as **D-3** in DECISIONS.md.
+- **`load_1040_form_4835.py`** (READY_TO_SEED guard, flipped on Ken's in-session "approve, flip and seed"):
+  form `4835` — 54 facts / 11 rules (ALL cited) / 52 lines / 8 diagnostics / 12 scenarios / 9 flow assertions.
+  Verified L7 gross = right-column sum (1+2b+3b+4a+4c+5b+5d+6). Loss path computes §465 at-risk (Form 6198)
+  BEFORE §469 passive (Form 8582; $25k active-participation special allowance) → line 34c → Sch E line 40;
+  integrates the EXISTING RS 6198 (1120-S loader) + FORM_8582 (Sch E loader) specs, does not re-author them.
+  Hand-computed 8582/6198 figures in T3/T4/T5/T6.
+- **Flow correction:** the old authority stub said "income → Sch E Part I"; the face is L7 gross → **Sch E
+  line 42** (farming/fishing reconciliation), L32 net / L34c loss → **Sch E line 40**. Corrected the stub
+  excerpt in `sources/federal_data/forms_supporting.py`.
+- **form_number gotcha:** first seeded as `FORM_4835`, but the lookup is `form_number__iexact` with NO
+  `FORM_` normalization and the tts pointer requests bare `4835` (matches the 8829/6251/8283 convention) —
+  renamed to `4835`, deleted the orphaned row (161 objs cascade + 8 links), re-seeded clean.
+- **VERIFIED the 404 is cleared:** `GET /api/forms/lookup/4835/` and `/export/` both return **200** (APIClient,
+  localhost host). Export = 90 KB self-contained package (11 rules / 54 facts / 52 line_map / 8 diagnostics /
+  12 tests / 11 authority sources), saved to `exports/form_4835/form_4835_spec.json`. The parallel tts session
+  can now fetch its spec live and resume S3.
+- RS DB: TaxForms 79. Walk items A (8582 special-allowance figures), B (4835 → 8582 active-rental-RE bucket),
+  C (SE guard covers the farm-optional gross too) noted in the loader header for the tts build leg.
+
 ## 2026-07-04 — Season checklist RS track + D-2 recorded + status-mirror extended to RS (public repo created)
 *Cross-repo housekeeping per Ken's "INSTRUCTION FOR CC" — no spec/compute work. Active RS task
 (K-1 box 9c pass-through verification) is UNCHANGED and still next-up.*

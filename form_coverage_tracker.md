@@ -1,5 +1,49 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (sixth session) -- FORM 4835 (Farm Rental) RENDER LEG -> ✅ FORM 4835 COMPLETE
+> (ALL FOUR LEGS TICK) -- commit `cee838f`.** No migration / no compute change (render-only).
+> **Field map** `apps/tts_forms/field_maps/f4835_2025.py`: 63 AcroForm widgets, all on PDF page
+> 0, LABEL-VERIFIED bijective vs the official PDF (scratchpad `label_verify_4835.py` — same-row
+> printed-text extraction; the map covers every widget exactly once, asserted). Two-column Part
+> II decoded: left col (Part2_LeftCol subform) f1_17-30 = lines 8-20, right col f1_31-58 = lines
+> 21-30g + totals; 30a-f = desc+amount pairs; 30g §263A = desc f1_53 + amount f1_54; Line A
+> Yes/No = c1_1[0]/[1]; 34a/34b = c1_4[0]/[1]; EIN header = Comb[0].f1_03 (comb, 9). **Manifest**
+> `f4835` entry added — **sha256 `8ecc6172…` VERIFIED against a fresh irs.gov download**
+> (genuine 2025 template, Attachment Seq 37, Cat 13117W). **render_4835()** (renderer.py after
+> render_schedule_f_1040): one copy per Form4835 activity, MODEL-DRIVEN through the pure
+> `compute_4835_lines` chain (the bridge-gate). Line 7 gross + line 31 total always print; net
+> line 32 signed (parens on loss); on a loss the 34a/34b at-risk box + line 34c print; §263A on
+> 30g prints parenthesized; **matpart activity -> NO face** (belongs on Schedule F). Registered
+> in `ACROFORM_FORM_IDS`; packet emit after Schedule F; `SKIP_PAGES["Form 4835"]={1,2}` strips
+> the two instruction pages so each activity = one page. **v1 render boundary:** the model stores
+> the six 30a-f "other expenses" as a single aggregate -> printed on line 30a labeled "Other"
+> (does not itemize the six specify rows; DEFERRAL_AUDIT). **Header** = the 1040 filer name(s) +
+> SSN (the render_8283 pattern). **GATES:** `test_4835_render_leg.py` **11/11** (bijective map +
+> map-covers-every-line no-DB trip-wires; income face sweep incl. Line-A box; multi-line L7 sum
+> vector; loss parens + 34c + at-risk box; §263A parenthetical; matpart no-copy; two-activity
+> two-copy; packet one-page). Combined **flow-assertion gate + all four 4835 legs = 412 passed**
+> (reuse-db 15m). NEXT: the S3 (Heather) scenario + mapper leg — all forms now built.**
+
+> **2026-07-04 (fifth session) -- FORM 4835 (Farm Rental) COMPUTE/DIAGNOSTICS/SEED LEGS --
+> commit `c7cae44`, mig 0161.** Parallel RS session authored all four blocking specs
+> (4835/8835/8936/8936_SCHA export 200); this session built the 4835 unit spec-first.
+> **compute_4835.py**: gross L7 = 1+2b+3b+4a+4c+5b+5d+6 (spec includes the L4a CCC-election +
+> L5d, resolving my authoring-note [VERIFY]); L31 expenses with §263A on 30g reducing; net L32;
+> **FULL loss path** — §465 at-risk (Form 6198) BEFORE §469 passive (Form 8582 $25k active-
+> participation allowance with the MAGI>100k phaseout) → line 34c + suspended PAL. Multi-
+> instance (T12): Schedule E line 40 = Σ each activity's net/loss. **Model Form4835** (mig 0161,
+> fields 1:1 with spec fact keys). **Wiring**: compute_4835_db runs before compute_schedule_e_db;
+> a Form4835 now ENGAGES Schedule E (was the S3-flow bug — 4835-only returns disengaged); line
+> 42 (gross) added to _SCHE_P2_OUTPUT_LINES (seeded-but-never-written); line 41 folds in line 40
+> → Sch 1 L5. **NOTHING to Schedule SE** (§1402(a)(1), the defining invariant). **rules_4835.py**
+> 9 diagnostics (MATPART/SE_GUARD/LOSS_LIMITED/CCC_ELECT/CROPINS_DEFER/263A/REPRO/SCHJ/QBI);
+> retired the stale `D_SCHE_4835` "not built" RED. **seed_4835** (FORM_4835, 52 lines). QBI is
+> preparer-asserted (default NOT QBI — no auto 8995/8995-A feed). **GATES**: pure compute
+> **13/13** (spec vectors T1-T12+S3) · integration **2/2** (S3: Sch E 40=11,061 / 42=17,035 /
+> Sch 1 L5=11,061, none to SE) · diagnostics **5/5** · flow gate **HELD (401 passed)**.
+> ⏳ REMAINING for the form to TICK: render leg (f4835 AcroForm field map — template downloaded,
+> 63 fields, not yet committed) + the S3 scenario/mapper. Then S4 (8835/8936/SchA + scenario).**
+
 > **2026-07-04 (fifth session) -- BROKERAGE 1099-B SUMMARY-EXTRACTION SKELETON (8949
 > Exception 2) -- commit `c25635f`, mig 0160.** Pivot away from the blocked S3 (Form 4835
 > has NO Rule Studio spec — 404, RS server confirmed up via 8283 200; STOPped per the
