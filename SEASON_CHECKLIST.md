@@ -4,12 +4,12 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**Form 8835 unit next (spec cached), then Form 3800 (⛔ BLOCKED — the RS 3800 spec is a thin
-1120-S-era draft; needs Ken's 1040-side authoring, see REVIEW_QUEUE), then the S4 scenario.**
-Or Ken reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema
-from SOR). Last completed: **Form 8936 unit (all four legs) — 2026-07-04** (combined gate
-422; OBBBA-sunset check done at the spec leg — i8936 verbatim: no credit for vehicles
-acquired after 9/30/2025, TY2026 value ~zero except the acquired-before/PIS-later tail).
+**Form 8835 unit next (spec cached; implements the `form_8835_credit() -> (amount,
+"1f"|"4e")` wiring point compute_3800 already consumes), then the S4 scenario.** Or Ken
+reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema from
+SOR). Last completed: **Form 3800 unit (all four legs, same-session RS round-trip) +
+Form 8936 unit (all four legs) — both 2026-07-04** (combined gate 451; D_8911_004 retired,
+D_8936_003 softened; the S4 all-carries ordering Ken-blessed + pinned end-to-end).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -63,9 +63,16 @@ acquired after 9/30/2025, TY2026 value ~zero except the acquired-before/PIS-late
           FA-1040-8936-01..05; combined gate 422. OBBBA gate face-verified: acquired ≤
           9/30/2025; a dealer-TRANSFERRED credit never re-lands on the return — FACE-verified
           stop, RS spec amendment flagged. D_8936_003 interim ERROR while 3800 unbuilt.)
-    - [ ] Form 8835 unit (spec cached; credit PARKS behind a RED until 3800 lands)
-    - [ ] Form 3800 unit (⛔ BLOCKED: RS spec is a thin 1120-S-era draft — Ken authors the
-          1040 side; REVIEW_QUEUE 2026-07-04)
+    - [ ] Form 8835 unit (spec cached; lands via the compute_3800 wiring point —
+          `form_8835_credit() -> (amount, "1f"|"4e")`)
+    - [x] Form 3800 unit — ALL FOUR LEGS GREEN (form ticks) — 2026-07-04 (mig 0164; the
+          FULL same-session RS round-trip: 1040-side amend-by-lookup authored `5407bb2` +
+          Ken's J1-J4 scope + W1-W4 review walks → seeded → export verified → tts built.
+          §38(c)(1) Section A verbatim + §38(c)(4)(A) TMT-zeroed Section C → Sch 3 6a,
+          computed LAST; passive tri-state gates (unanswered = excluded + RED; manual
+          8582-CR escape hatches); carryforward statement page; subset field map over the
+          9-page face + PNG pass; D_8911_004 RETIRED + D_8936_003 softened; combined gate
+          451. The W4 S4-shape pin: the whole $13,200 carries, 6a blank.)
     - [ ] S4 scenario + mapper leg (⚠ reconcile the Transfer Election Statement attachment
           vs the draft face's 4a=No — a transferred credit never lands on Sch 3)
 - [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`

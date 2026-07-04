@@ -1,5 +1,36 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (eighth session, part 2) -- FORM 3800 (General Business Credit §38) →
+> ✅ FORM 3800 COMPLETE (ALL FOUR LEGS TICK) -- the FULL spec-first round-trip in one
+> session (mig 0164).** Ken: "should you go ahead and build the 3800?" → the deployed RS
+> spec was a thin 1120-S-era draft → **RS 1040-side AMENDMENT authored** (`load_1040_form_
+> 3800.py`, AMEND-BY-LOOKUP — entity_types + R001-R003 kept, R004 refreshed, the stale
+> 1a/1b/1c sketch deleted; RS commit `5407bb2`), Ken's **scope walk J1-J4** (built-feeder
+> Part III rows 1f/1s/1y/1aa + 1zz/4z catch-alls · passive = per-inflow TRI-STATE assertion
+> · carryforward = two in-buckets + computed out · §6417/§6418 out) + **review walk W1-W4**
+> (incl. the blessed S4 all-carries outcome) → seeded → deployed export verified → canonical
+> `3800_spec.json` cached. **tts unit**: Taxpayer `f3800_*` facts (mig 0164) ·
+> `compute_3800.py` (Part III inflow gathering bridge-gated to `form_8911_business_credit` +
+> the new `form_8936_business_parts`; the 8835 wiring point stubbed for the next unit;
+> §38(c)(1) Section A verbatim — line 10b = 1040 L19 + Sch 3 2-4/5a/5b + 6x excl 6a/6b/6k;
+> **§38(c)(4)(A) Section C with TMT ZEROED for specified credits**; line 38 = 28+37 → **Sch 3
+> line 6a**, computed LAST among the nonrefundable credits) · 6 diagnostics (D_3800_001-006)
+> · seed_3800 (42 lines) · **subset field map** over the 9-page face (semantic grid subforms
+> Pg3Table.Line1f… verify the rows; all 9 pages print per the face mandate) + render_3800 +
+> **carryforward STATEMENT page** + PNG visual pass · Business Credit (3800) UI tab (passive
+> selects + catch-alls + CF-ins + escape hatches) · FA-1040-3800-01..05 (authored in the RS
+> loader AND the tts gate — no drift). **RETIREMENTS**: D_8911_004 → is_active=False stub
+> (8911 line 3 lands on row 1s); D_8936_003 → softened to the spec's info (8936 lines 8/21
+> land on 1y/1aa); FA-8911-04/FA-8936-02 runners repinned to the new reality. **FA-DRIFT
+> FIX**: the five FA-1040-8936-* tts entries replaced with the RS-canonical definitions (the
+> RS loader had authored those ids first). **GATES**: pure compute **9/9** · DB pipeline
+> **6/6** (incl. the end-to-end W4 ordering pin: 8936 personal absorbs the tax → the whole
+> 13,200 specified credit carries, 6a blank) · render leg **5/5** · **combined flow gate +
+> all 3800/8936/8911 legs = 451 passed** (reuse-db 7:04). Shared DB migrated (0164) + seeded
+> (seed_3800, seed_rules — retirement/softening verified live); test DB migrated. NEXT: the
+> **Form 8835 unit** (spec cached; implements `form_8835_credit() -> (amount, "1f"|"4e")`),
+> then the S4 scenario.**
+
 > **2026-07-04 (eighth session) -- FORM 8936 (Clean Vehicle Credits §30D/§25E/§45W) →
 > ✅ FORM 8936 COMPLETE (ALL FOUR LEGS TICK) -- migs 0162 (CleanVehicle + 4 Taxpayer facts)
 > + 0163 (RLS).** Spec-first from the cached RS `8936_spec.json` + `8936_scha_spec.json`

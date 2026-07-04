@@ -4,8 +4,99 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
-## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine authored (2 forms, READY_TO_SEED=False)
-*Ken: "go" → the pre-staged 1065-core campaign. Authored the first of 6 forms; held pre-seed for the Ken walk (D-1).*
+## 2026-07-04 — Form 3800 1040-side AMENDMENT authored + SEEDED (the S4 arc; the tts session)
+*Ken: "should you go ahead and build the 3800?" → spec-first. The deployed 3800 spec was the
+1120-S-era draft (10-line generic sketch, K-1-box-13 routing — unusable for the 1040/S4 build).*
+- **Scope walk (AskUserQuestion, 4 rulings LOCKED, all recommended):** J1 Part III rows = built
+  feeders (1f/4e 8835 · 1s 8911 · 1y/1aa 8936) + 1zz/4z catch-alls; J2 passive = per-inflow
+  nullable assertion (None → EXCLUDED + D_3800_002 RED; True → col (d) + D_3800_003 RED with the
+  line-3/33 escape hatches — 8582-CR manual); J3 carryforward = two direct-entry in-buckets
+  (line 4 regular / line 34 specified) + computed CF-out (D_3800_005 + statement; the Part IV
+  FIFO grid deferred to the proforma track); J4 §6417/§6418 OUT (D_3800_004 RED).
+- **Review walk (W1-W4 approved):** W1 the stale-grid replacement (deleted 1a/1b/1c, overwrote
+  2-7/38 with the 2025 face; entity rules R001-R003 KEPT, R004 refreshed in place); W2
+  unanswered-passive-excludes; W3 the line-10b list (= the Form 8911 line-6b Ken-approved
+  ordering reading, i3800 verbatim); W4 the S4 all-carries outcome (the 8936 personal credit
+  absorbs the ~$2,193 tax first via 10b → line 11 = 0 → the ENTIRE $13,200 specified 8835
+  credit carries forward, Sch 3 6a blank — F3800-S4 pins it).
+- **Authored `load_1040_form_3800.py`** — AMEND-BY-LOOKUP (never creates; preserves
+  entity_types ["1120S","1065","1120","1040"]): +13 facts / +8 rules (R-3800-P3-INFLOW/
+  P3-TOTALS/P1/P2-TAXLIM/P2-SECB/P2-SECC/ALLOWED/CF-OUT) / 42 face lines (Part III P3-prefixed;
+  P3-4e is the S4 row) / +6 diagnostics (D_3800_001-006) / +6 tests (F3800-S4 + T2-T6 incl. the
+  T3-vs-T4 §38(c)(4)(A) TMT-zeroing pair) / +5 FAs (FA-1040-3800-01..05). Authority: NEW
+  IRS_2025_3800_FORM (9-page 2025 face, sha256 cdfb169a…, verbatim Part I/II/III excerpts);
+  NEW excerpts on the EXISTING IRS_2025_3800_INSTR (the 10b list; carryover ordering) + IRC_38
+  (§38(c)(4)(A)-(B) verbatim incl. clause (iv)'s 4-year §45 window — fetched off LII).
+- **Seeded + verified:** loader run (3 stale lines deleted; totals: forms 84 / rules 726 /
+  FAs 409; all 3800 rules cited); deployed export re-fetched 200 — entity_types preserved,
+  rules R001-R004 + R-3800-* both present, stale lines gone, line 38 dest SCH_3.6a. Canonical
+  `3800_spec.json` cached in tts.
+- **Also this session (tts-side):** the FA-1040-8936-01..05 id collision found + fixed — my tts
+  gate entries had reused the ids this repo's `load_1040_form_8936.py` had already authored and
+  seeded; the tts gate file now carries the RS-canonical five verbatim (extras folded into the
+  runners; 5/5 green). NEXT: the tts 3800 unit build (retires D_8911_004, softens D_8936_003),
+  then 8835, then the S4 scenario.
+
+---
+
+## 2026-07-04 — 1065 core form 3: Schedule M-1 + M-2 (1065_M1 / 1065_M2) SEEDED + EXPORTED
+*Ken: "parallel session is working on 3800, you can start on something different" → form 3; walk (M2_3 + seed).*
+- **Authored** `load_1065_m1_m2.py` (two forms) from the FINAL 2025 **f1065 page 6** — downloaded f1065.pdf
+  (334 KB) + extracted pp. 5-6 via pymupdf (verbatim M-1/M-2 line maps; page-6 also has Schedule L for form
+  4). M-1: 5 = Σ(1-4), 8 = Σ(6-7), **9 = 5−8 = Analysis of Net Income line 1** (face literally labels it so —
+  validates the spine's R-SCHK-ANALYSIS). M-2 (tax basis, §705): 5 = Σ(1-4), 8 = Σ(6-7), 9 = 5−8; line 3 =
+  Analysis line 1 = M-1 line 9. Primary IRC §705(a)/§702 reused verbatim; f1065 p.6 + i1065 as filing
+  authority. All rules cited.
+- **Reconcile vs tts `FORMULAS_1065` M-1/M-2 (5 findings):** (1) 🔴 **M2_3 mis-source** — tts labels line 3
+  "Net income (loss) per books" + free data-entry (`compute.py` M2_5 sums it raw); the FINAL face line 3 =
+  "(see instructions)" = Analysis line 1 on the post-2020 **tax-basis** M-2. Ken: **"log + spawn a tts task"**
+  → `spawn_task` `task_4bf72675` (coupled to the unbuilt 1065 Analysis compute + M-1 line 9; the RS spec
+  stays correct per current law). (2) M1_9 ties to Analysis line 1 which tts doesn't compute (spine gap #6).
+  (3) M2_1 = Σ K-1 item-L begin capital but item-L roll-forward is RED-deferred (K-1 leg) → data-entry.
+  (4) tts adds catch-all M1_4c/M1_7b not on the face (benign). (5) Sch B Q4 small-partnership exemption →
+  gating fact (shared with L/K-1 item L).
+- **Seed + export:** hit a varchar(20) cap on a flow-assertion id (`GATE-SMALL-PARTNERSHIP` = 22 chars →
+  atomic rollback, no partial seed) → renamed `GATE-SMALL-PTNR`, re-seeded clean. 1065_M1 (5 rules / 11
+  facts / 10 lines / 2 diag / 3 scenarios) + 1065_M2 (6 rules / 12 facts / 11 lines / 3 diag / 3 scenarios)
+  + 3 flow assertions, all cited → **87 TaxForms / 416 FlowAssertions**. Both `lookup/{1065_M1,1065_M2}/
+  export/` = **HTTP 200** (exports/form_1065_m1/ + form_1065_m2/, ~32 KB each). Committed `0184c0a` (author)
+  + this seed. **Form 3 of 6 DONE. Next: form 4 — Schedule L + Schedule B.**
+
+---
+
+## 2026-07-04 — 1065 core form 2: Schedule K-1 + allocation engine (SCHEDULE_K1_1065) SEEDED + EXPORTED
+*Ken: "start it" → author form 2; walk (coded-box depth + flip); "full ~200-code transcription now" + "flip seed export".*
+- **Reconcile-driven authoring.** Explore agent mapped tts `k1_allocator.py` + `compute_schedule_k1.py`
+  read-only. Encoded: per-partner box = entity Sch K line × `profit_pct` (≥0) / `loss_pct` (<0), overridable
+  per-category by `PartnerAllocation` (Lacerte special allocations); GP (4a/b/c) + distributions (19a) DIRECT
+  per-partner; box 9c = LT_CAPITAL/`profit_pct` (reads K9c → writes box 9c) — **CONFIRMED, closes the box-9c
+  pass-through** (RECON-9C: 80k @ 60/40 → 48k/32k); box 14a = the `1065_SE` spec (cross-ref).
+- **RED-deferred (Decision C; engine absent):** §704(c) built-in gain (items M/N → D_K1_704C), §704(b) SEE
+  (D_K1_SPECIAL_ALLOC), §706(d) varying interest (D_K1_706D), item-L capital roll-forward (D_K1_ITEML — tts
+  stores the fields but doesn't compute; **M-2 line 1 can't auto-derive** → M-2 leg). Gap logged: `capital_pct`
+  defined but UNUSED by the allocator (D_K1_CAPPCT).
+- **Authority:** primary IRC verbatim — §704(a)/(b), §706(d)(1), §752(a)/(b), §705(a) (Cornell LII this
+  session); §702(b)/§707(c) reused. **FULL coded-box transcription (Ken decision):** downloaded the FINAL
+  i1065sk1.pdf (445 KB, 36 pp), extracted pp. 33-36 "List of Codes" via pymupdf → boxes 11/13/14/15/17/18/19/20
+  (every letter A-ZZ) encoded VERBATIM as 8 `IRS_2025_I1065SK1` AuthorityExcerpts (source-grounded, not
+  recalled; they ride into the export). WebFetch mangles dense code tables → direct PDF extraction.
+- **Seed + export:** READY_TO_SEED=True → SCHEDULE_K1_1065 (27 facts / 11 rules / 19 auth links / 17 lines /
+  7 diag / 8 scenarios / 4 flow assertions, all cited) → 85 TaxForms. `lookup/SCHEDULE_K1_1065/export/` =
+  **HTTP 200**, exports/form_schedule_k1_1065/ (80 KB; 8 code-list excerpts present). Committed `8673fdd`
+  (author) + this seed. **Form 2 of 6 DONE. Next: form 3 — Schedule M-1 / M-2.**
+
+---
+
+## 2026-07-04 — 1065 core campaign KICKOFF: Schedule K spine SEEDED + EXPORTED (+ a tts bug fixed)
+*Ken: "go" → author the first of 6 forms; walk (D-1); "dig into net-farm" → "fix now"; "flip seed export".*
+- **SEED + EXPORT (Ken: "flip seed export"):** flipped `READY_TO_SEED=True`, ran `load_1065_schedule_k`
+  → `1065_PAGE1` (27 facts / 7 rules / 32 lines / 3 diag / 4 scenarios) + `SCH_K_1065` (40 / 11 / 38 / 4 /
+  7 + 4 flow assertions), all rules cited → RS **84 TaxForms / 404 FlowAssertions**. Exported via the real
+  `form_lookup_export` view (APIRequestFactory): both `lookup/{1065_PAGE1,SCH_K_1065}/export/` = **HTTP 200**,
+  saved to `exports/form_1065_page1/` + `exports/form_sch_k_1065/` (51 KB / 70 KB; line_map 32 / 38). Spine
+  leg (form 1 of 6) DONE. **Next: form 2 — Schedule K-1 (Form 1065) + the allocation engine** (reconcile
+  `k1_allocator` §704 math + `compute_schedule_k1` box map; transcribe the ~200 coded-box lists; close the
+  box-9c pass-through).
 - **Scope walk (AskUserQuestion, 3 decisions LOCKED):** A. K-2/K-3 international → **RED-defer** (box 16 =
   Schedule K-3-attached checkbox only + `D_SCHK_K3`); B. Schedule M-3 → **RED-defer** (belongs to the L/M
   leg; threshold gating fact there); C. §704(b)/(c) → **encode structure, defer math** (items J/K/L/M/N +
