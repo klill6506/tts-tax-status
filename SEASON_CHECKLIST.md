@@ -4,8 +4,8 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**S2 (Jones) scenario + mapper leg** — first action: Ken's QBI-patron question
-(see STATUS.md ▶ RESUME HERE).
+**S3 scenario — Form 4835 unit first** (spec → compute → render → flow, then the
+scenario + mapper leg; see STATUS.md ▶ RESUME HERE).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -30,12 +30,16 @@ scope and dates change only on Ken's explicit direction.*
   - [x] S8 signed (EFIN on file) — 2026-07-02 — ⚠ rebuild artifacts (pre-§12.5 filer-name fix) before upload
   - [x] S12 Gardenia Sch C family (7217 + 6 doc mappers, 43 pins match) — 2026-07-02
   - [x] S13 §30C (8911) — 2026-07-02
-  - [ ] S2 Jones — scenario + mapper leg
+  - [x] S2 Jones — scenario + mapper leg — 2026-07-03 `9b5dcad` (⚠ artifacts UNSIGNED,
+        placeholder EFIN — Ken signs + uploads)
     - [x] Form 8283 unit (all four legs) — 2026-07-03 `1040-form-8283-complete`
     - [x] Return-level identity arms (deceased spouse, NRA election, IP PINs, divorced-spouse SSN, BinaryAttachment) — 2026-07-03 `86d4e38`
     - [x] EIC opt-out 27c (Ken ruled skip-entirely) — 2026-07-03 `c53e942`
     - [x] Ken's QBI-patron question resolved — 2026-07-03 (ruled: build 8995-A Schedule D)
-    - [ ] Scenario pins + mapper + NRA statement PDF (enacted 13a diverges from the key — S13-class, documented)
+    - [x] Scenario pins + mapper + NRA statement PDF — 2026-07-03 `2a151b5`/`9b5dcad` (all pins
+          ALL MATCH; 11-doc submission live-XSD-valid; four NEW mappers: Sch A / 8283 Section A /
+          preparer header grp / Sch C vehicle grp; test file 29/29; enacted 13a = 2,658.20 +
+          ODC 500 diverge from the key's fiats — documented in README + module)
   - [ ] S3 — Form 4835 unit first, then scenario
   - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg)
 - [ ] Brokerage summary-extraction skeleton (8949 Exception 2)
@@ -48,7 +52,8 @@ scope and dates change only on Ken's explicit direction.*
 - [ ] Answer the four open 1065 questions (`1065_status_assessment.md` Q1/Q2/Q4/Q5)
 - [ ] A2A strong-auth certificate paperwork started (7–14 day lead)
 - [ ] Business-family schema packages + ATS scenarios + business rules pulled (watch IRS inbox — unblocks 1120-S/7004 mappers)
-- [ ] IFA-upload scenarios 8 + 5 → bring back acks (**rebuild both artifact sets first**)
+- [ ] IFA-upload scenarios 8 + 5 → bring back acks (**rebuild both artifact sets first**);
+      **NEW: S2 ready too** — sign (`--efin` + PINs) via `mef_build_ats_scenario2` and upload
 - [ ] TY2025 1040 business rules from SOR (PDF + CSV)
 - [x] TY2025 software IDs — all six products verified (`docs/mef/software_ids.md`) — 2026-07-02
 
@@ -114,5 +119,8 @@ scope and dates change only on Ken's explicit direction.*
   gate verified and cleared — 2026-07-03
 - ⚠ **8995-A Schedule D patron reduction + capped DPAD unit** (Ken ruled build-it for the S2
   MeF leg) — 2026-07-03 `f10e864` + `2c6e8a1` (RS `9b4490c`, mig 0158). All PURE gates green
-  (math 17/17, render 7/7, efile 31/31 w/ live XSD, flow 381); **DB legs pooler-blocked** —
-  the form ticks only after the DB green run + prod seed_rules (see STATUS 🔴).
+  (math 17/17, render 7/7, efile 31/31 w/ live XSD, flow 381).
+  - [x] **DB legs GREEN + prod seeds done — gate CLEARED** — 2026-07-03 `c10e51c` (fourth
+    session: 66→50→40 across three pooler-fought runs, every test green on current code;
+    4 seeder/test-side fixes `89a4f88` — the SD FormLines were never in the seeder's SECTIONS
+    list; `seed_rules` + `seed_8995a` (58 lines / 8 sections) applied to the shared DB).

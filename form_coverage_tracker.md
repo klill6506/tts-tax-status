@@ -1,5 +1,36 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-03 (fourth session) -- 8995-A SCHEDULE D DB GATE CLEARED ✅ (unit TICKS) + S2
+> (JONES) SCENARIO + MAPPER LEG BUILT -- commits `89a4f88`/`2a151b5`/`c10e51c`/`9b5dcad`,
+> mig 0159.** **8995-A DB legs:** three pooler-fought runs (25/20/16 min; 21 connection-kill
+> E/F's total) — every test in the five leg files GREEN on current code; 4 real failures were
+> ALL seeder/test-side (the spec's 7 SD lines were never in `seed_8995a`'s hardcoded SECTIONS
+> list → new f8995a_schd section, 58 lines / 8 sections, reseeded on the SHARED DB with
+> `seed_rules`; the patron-delta test missed the §199A income-limit interaction — engine
+> 48,013/53,863 hand-verified CORRECT; a title line-wrap; two stale 51-counts). Engine math
+> untouched. **S2 scenario leg:** full key forensics (+29 char-shift fills; [l]-path vector
+> checks + ✔ glyphs; the key fills INPUTS ONLY — computed lines blank; **Sch A line-18
+> itemize-anyway CHECKED**, 27c checked, statutory box checked, dependent col (7) blank =
+> fiat #2). **FOUR NEW MAPPERS** 1:1 vs 2025v5.4 XSDs: IRS1040ScheduleA (5a sales ind,
+> line-11 `qualifiedContributionsAmt` attr = the dotted "$200" — new Taxpayer field mig 0159
+> + abs_pos face literal + FormEditor input; line-12 → IRS8283 ref; `ItmzdDedLessThanStdDedInd`;
+> 15/16 guards raise — 4684/misc-statement unbuilt), IRS8283 (Section A complete, one document,
+> all rows; **Section B raises** = wet-ink J7 boundary; col (e) → YYYY-MM|VARIOUS), ReturnHeader
+> `PaidPreparerInformationGrp` (from PreparerInfo, after Filer), Sch C `AdditionalVehicleInfoGrp`
+> (43-47b — boundary retired; 47a/b = the EXISTING has_evidence/evidence_written fields).
+> scenario2.py + mef_build_ats_scenario2 + NRA statement PDF (the first live BinaryAttachment
+> consumer). **ENACTED PINS ALL MATCH the engine** (hand-computed first): 1a 8,513 (statutory
+> wages off 1a) / Sch C 31 = 26,979 no-SE / 12 = 22,201 ELECTED / **13 = 2,658.20** (the
+> 8995-A income-limit arm binds — the 1040 line-13 FFV carries CENTS; 15 = 10,632.80 → table
+> 1,063) / 19 = 500 ODC / 24 = 563 / 26 = 300 divorcedSpouseSSN / refund 901 / 27 CLEARED.
+> The 11-document submission (1040, Sch 1, 8812, Sch A, Sch C, 8283, 8995-A, 8995-A Sch D,
+> W-2 ×2, BinaryAttachment) validates vs the LIVE 2025v5.4 XSDs; artifacts in
+> docs/mef/ats_out/scenario2. 8995-A pins ride the XML (engine-result-driven, no FFV rows —
+> the 7217 pattern). Test file **29/29 GREEN** (--timeout=1800 — the 13-seed fixture outlasts
+> the 300s cap; 2 helper-case expectation fixes: name_line1/business_name_line keep entry
+> case). Gates: flow 381 · efile 31/31 · acroform 33/33 · tsc 0 · vitest 275. Detail →
+> STATUS.md + DEFERRAL_AUDIT (fourth session).**
+
 > **2026-07-03 (third session) -- FORM 8995-A SCHEDULE D (patron reduction §199A(b)(7) + capped
 > DPAD §199A(g)) -- ★★ BUILT, ALL PURE GATES GREEN, 🔴 DB LEGS POOLER-BLOCKED (no tick until
 > green) -- SPEC-FIRST RS round-trip -- flow gate unchanged 381 (FA-08 amended in place).**
