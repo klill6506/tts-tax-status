@@ -1,5 +1,41 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (eighth session) -- FORM 8936 (Clean Vehicle Credits §30D/§25E/§45W) →
+> ✅ FORM 8936 COMPLETE (ALL FOUR LEGS TICK) -- migs 0162 (CleanVehicle + 4 Taxpayer facts)
+> + 0163 (RLS).** Spec-first from the cached RS `8936_spec.json` + `8936_scha_spec.json`
+> (authored 2026-07-04; the S4 arc). **Model**: `CleanVehicle` one-Schedule-A-per-vehicle
+> (type new/used/commercial, OBBBA `acquired_date`, transfer election, per-part inputs) +
+> Taxpayer `clean_vehicle_magi_prior`/`_prior_filing_status`/`_new_k1_credit`/
+> `_commercial_k1_credit`. **Compute** (`compute_8936.py`, TWO-PHASE): phase 1 REPAYMENT —
+> a dealer-transferred credit DENIED (MAGI over the cap BOTH years, per-year status caps;
+> or 30-day resale) repays on **Schedule 2 lines 1b/1c → 1040 line 17** BEFORE every
+> credit-limit worksheet (the 8962 excess-APTC reflow precedent); phase 2 CREDITS after
+> compute_5695 (lines 11/16 read Sch 3 5b) and before EIC/8812/8911 (whose CLWs read
+> 6f/6m) — Part IV computes BEFORE Part III (line 11 INCLUDES the line-18 used credit,
+> the i8936 WALK-ITEM-C asymmetry) → **Sch 3 6f (new personal, line 13) / 6m (used, line
+> 18)**; unused personal portion LOST. **OBBBA gate face-verified** (i8936 What's New
+> verbatim): no credit for a vehicle ACQUIRED after 9/30/2025 (absolute date, not
+> year-keyed — the acquired-before/PIS-later tail claims in its PIS year); blank acquired
+> date proven by PIS ≤ cutoff, else excluded + D_8936_001. **FACE-VERIFIED transfer stop**
+> (f8936sa 8c/8d + 13b/13c verbatim): a TRANSFERRED credit was received at the point of
+> sale — a qualifying transferred vehicle contributes NOTHING to the face (never
+> double-claims); RS spec silent → amendment flagged (STATUS). Business (line 8 → 3800
+> 1y) + commercial (21 → 1aa) PARK behind **D_8936_003 interim ERROR** (spec info; the
+> D_8911_004 pattern — soften when 3800 lands). **Diagnostics** 7 (OBBBA/MAGI/3800/
+> VIN-PIS/tax-limited-LOST/used-price/seller-report). **Render**: f8936 + f8936sa (3-page
+> SchA) manifest-registered (sha256 vs fresh irs.gov downloads), LABEL-VERIFIED bijective
+> maps (31 + 65 widgets; the $4,000 line-16 sliver dead), render_8936 (main + one SchA per
+> vehicle, Yes/No chains follow the face's stop logic; 8b/8e/13f/18b/18c auto-Yes only
+> when the vehicle proceeds — stated boundary), **rendered-PNG visual pass done** (the S3
+> forensics rule). **Input**: CleanVehiclesSection tab (type-driven fields) + prior-year
+> MAGI/status + K-1 cards; D_8936_ → form_8936 routing; tsc clean. **GATES**: pure compute
+> **18/18** · DB pipeline **8/8** (incl. repayment→line-17, the 6m-squeezes-6f ordering
+> pin, disengage, render smoke) · render leg **10/10** · **FA-1040-8936-01..05** in the
+> gate file (⚠ need RS loader homes) · **combined flow gate + all four legs = 422 passed**
+> (reuse-db 2:54). Shared DB migrated + seeded (seed_8936 25 lines, seed_rules); test DB
+> migrated through 0163. NEXT: Form 8835 unit (spec cached) → Form 3800 (⛔ RS spec is a
+> thin 1120-S draft — Ken authors) → the S4 scenario.**
+
 > **2026-07-04 (seventh session) -- ATS SCENARIO 3 (Lynette Heather) SCENARIO + MAPPER LEG
 > COMPLETE ✅ -- 4 NEW MeF mappers + the Schedule D 1a/8a aggregate compute wire.** No
 > migration. **Mappers** (each 1:1 vs its 2025v5.4 XSD, ReturnData positions 934/941/955/1263):

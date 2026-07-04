@@ -4,12 +4,12 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**S4 form units (8835 + 8936, spec-first — RS specs cached in `server/specs/`), then the S4
-scenario** (credit-LIMITATION test; ⚠ OBBBA-sunset check at each spec leg) — or Ken
-reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema from SOR).
-Last completed: **S3 (Heather) scenario + mapper leg — 2026-07-04** (4 new mappers + the
-Sch D 1a/8a aggregate wire; 11-doc submission live-XSD-valid, all pins ALL MATCH; artifacts
-UNSIGNED await Ken).
+**Form 8835 unit next (spec cached), then Form 3800 (⛔ BLOCKED — the RS 3800 spec is a thin
+1120-S-era draft; needs Ken's 1040-side authoring, see REVIEW_QUEUE), then the S4 scenario.**
+Or Ken reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema
+from SOR). Last completed: **Form 8936 unit (all four legs) — 2026-07-04** (combined gate
+422; OBBBA-sunset check done at the spec leg — i8936 verbatim: no credit for vehicles
+acquired after 9/30/2025, TY2026 value ~zero except the acquired-before/PIS-later tail).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -55,8 +55,19 @@ UNSIGNED await Ken).
           live-XSD-valid, every pin ALL MATCH; combined DB gate 440. (⚠ artifacts UNSIGNED,
           placeholder EFIN — Ken signs + uploads. Key-forensics corrections: Sch F 2,970 =
           SEEDS line 26; PEC You ✔; Sch E A/B Yes ✔; line-38 IRS-figures-penalty election.)
-  - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg;
-        ⛔ 8835 + 8936 have no RS spec 2026-07-04; only 3800 does)
+  - [ ] S4 — 3800/8835/8936 units first, then scenario:
+    - [x] Form 8936 unit (+ Schedule A) — ALL FOUR LEGS GREEN (form ticks) — 2026-07-04
+          (migs 0162/0163; CleanVehicle per-vehicle model + two-phase compute — Sch 2 1b/1c
+          repayment before the credit chain, Sch 3 6f/6m after 5695 — + 7 diagnostics +
+          LABEL-VERIFIED f8936/f8936sa field maps + render_8936 + PNG visual pass + UI tab +
+          FA-1040-8936-01..05; combined gate 422. OBBBA gate face-verified: acquired ≤
+          9/30/2025; a dealer-TRANSFERRED credit never re-lands on the return — FACE-verified
+          stop, RS spec amendment flagged. D_8936_003 interim ERROR while 3800 unbuilt.)
+    - [ ] Form 8835 unit (spec cached; credit PARKS behind a RED until 3800 lands)
+    - [ ] Form 3800 unit (⛔ BLOCKED: RS spec is a thin 1120-S-era draft — Ken authors the
+          1040 side; REVIEW_QUEUE 2026-07-04)
+    - [ ] S4 scenario + mapper leg (⚠ reconcile the Transfer Election Statement attachment
+          vs the draft face's 4a=No — a transferred credit never lands on Sch 3)
 - [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`
       (mig 0160; import boundary + code-M auto + D_8949_006 confirm gate; 8/8; flow 381 held.
       OCR/AI front-end + frontend YELLOW deferred to Aug "extraction to production")
