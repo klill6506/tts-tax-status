@@ -120,6 +120,46 @@ office"), or Ken picks. Last completed: brokerage 1099-B summary-extraction skel
 
 ---
 
+## RULE STUDIO AUTHORING TRACK (added 2026-07-04)
+*Ken rulings: (D-1) 1065 core specs are authored FRESH from IRS instructions/primary
+sources, then the existing 35 compute formulas are reconciled against each spec —
+never spec-from-code. Every mismatch found = Ken adjudication, logged. (D-2) 1041
+Schedule I (AMT) is RED-DEFERRED for season one — loud diagnostic when a trust
+shows AMT indicators; build later if needed.*
+
+### July
+- [ ] K-1 box 9c pass-through verification (in flight — active RS task)
+- [ ] RS DB reconstructability check: fresh DB + all loaders + diff vs. production;
+      document result in RS STATUS (if anything lives only in Supabase → fix now)
+- [ ] Mirror sync extended to RS STATUS.md + session_log.md (Ken flips repo private)
+- [ ] Begin draft→approved workflow: flip Ken-approved specs from draft status
+- [ ] 1065 core, fresh-authored in order (spec → Ken walk → seed → reconcile compute):
+  - [ ] Schedule K (aggregation spine)
+  - [ ] Schedule K-1 + allocation engine rules (profit/loss/capital %, special allocations)
+  - [ ] Schedules M-1 / M-2
+  - [ ] Schedules L / B (light)
+  - [ ] Form 8825 (1065)
+
+### August
+- [ ] SC1040 spec (CC drafts, Ken walks — GA-500 pattern)
+- [ ] AL Form 40 spec (⚠ federal income tax deduction quirk — budget Ken's longest walk)
+- [ ] NC D-400 spec
+- [ ] GA-700 + PTET spec
+- [ ] 1120-S delta audit: MEASURE Feb–Mar specs vs. campaign standard (verbatim
+      excerpts / scenario counts / FA coverage), report to Ken; upgrade only what he picks
+
+### September
+- [ ] 1041 spine (entity types, rate schedule, exemptions)
+- [ ] DNI / IDD / Schedule B (the heart — Ken's specialty walk)
+- [ ] Schedule G · K-1 (1041) distribution ordering + character pass-through · GA 501
+- [ ] Schedule I: RED-defer diagnostic wired per D-2 (no compute build)
+
+### Oct–Nov
+- [ ] TY2026 constants wave: every _constants_for_year addition gets a spec-side pin
+- [ ] CASELAW_SE_LP seasonal re-verify (Soroban / Denham appeal status)
+
+---
+
 ## ⚠ Unplanned work log (added per the never-silent rule)
 - ⚠ Season checklist + status-mirror protocol adopted — 2026-07-03
 - ⚠ 4797 K-1 box 9c pass-through test (parallel session's `cca5e34`) — full-file green-run
