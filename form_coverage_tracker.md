@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (seventh session) -- ATS SCENARIO 3 (Lynette Heather) SCENARIO + MAPPER LEG
+> COMPLETE ✅ -- 4 NEW MeF mappers + the Schedule D 1a/8a aggregate compute wire.** No
+> migration. **Mappers** (each 1:1 vs its 2025v5.4 XSD, ReturnData positions 934/941/955/1263):
+> `IRS1040ScheduleD` (QOF ind + the 1a/8a `TotalST/LTCGL1099BssRptNoAdjGrp` groups + combine
+> spine 7/15/16 + face-routing 17-22; **v1 = the aggregate path ONLY** -- 8949 box totals
+> raise, IRS8949 doc mapper unbuilt), `IRS1040ScheduleE` (**Part V farm-rental leg only** --
+> A/B booleans + 40/41/42/43; Parts I-IV raise), `IRS1040ScheduleF` (identity + cash-method
+> income/expense groups; MateriallyParticipatedInd required; accrual/passive raise),
+> `IRS4835` (max 4; income/expense + aggregate-"Other" 30a row + Section 263A negative row +
+> Section263AIndicatorCd; 34c signed on loss; PAL literal attr). **Compute wire:** the
+> SCHEDULE_D 1a/8a rows (seeded since Topic 9, labeled "UNUSED v1") now enter the netting per
+> the spec's own R-SCHD-L7-L15 ("L7 = combine 1a..6; L15 = combine 8a..14") -- direct-entry
+> (d)/(e), computed (h), engagement extended, field map Row1a f1_3/f1_4/f1_6 + Row8a
+> f1_23/f1_24/f1_26 (widget-verified). **Scenario:** `scenario3.py` + `mef_build_ats_scenario3`
+> + `test_mef_scenario3_compute.py`; the SE FARM OPTIONAL METHOD verified already emitted
+> (4b/15). Key-forensics corrections (rendered-PNG visual pass -- the text decoders missed the
+> Sch F fills): 2,970 = Sch F line 26 SEEDS AND PLANTS (not supplies); PEC You checked; Sch E
+> A/B both Yes; line 38 blank -> the i1040 IRS-figures-the-penalty election (FFV override --
+> compute_2210 has no 6654(e)(2) arm, stated in DEFERRAL_AUDIT). **GATES:** command run ALL
+> MATCH (income 72,235 / AGI 71,821 / 13a 567.40 / TI 55,504 / L16 6,328 / SE 827 / owe
+> 3,750, every pin engine-verified) / 11-doc submission + manifest live-XSD-valid / pure
+> efile 50/50 / combined DB gate (flow assertions + acroform maps + the S3 file) **440
+> passed** (16m reuse-db; 1 test-shape fix re-run green). Artifacts UNSIGNED
+> (`docs/mef/ats_out/scenario3`) -- Ken signs + uploads. NEXT: S4 needs 8835 + 8936 built
+> first (RS specs cached), then the S4 scenario.**
+
 > **2026-07-04 (sixth session) -- FORM 4835 (Farm Rental) RENDER LEG -> ✅ FORM 4835 COMPLETE
 > (ALL FOUR LEGS TICK) -- commit `cee838f`.** No migration / no compute change (render-only).
 > **Field map** `apps/tts_forms/field_maps/f4835_2025.py`: 63 AcroForm widgets, all on PDF page

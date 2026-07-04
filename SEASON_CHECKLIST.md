@@ -4,11 +4,12 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**S3 scenario + mapper leg (Heather).** Form 4835 is now COMPLETE (all four legs green,
-2026-07-04) — the last blocking form for S3. Next: build the S3 scenario/mapper (reuse the
-S2 forensics recipe). S4 still needs its forms first: 8835 + 8936 (RS specs now authored,
-cached in `server/specs/`) + Schedule A; only 3800 was previously specced. Last completed:
-Form 4835 render leg.
+**S4 form units (8835 + 8936, spec-first — RS specs cached in `server/specs/`), then the S4
+scenario** (credit-LIMITATION test; ⚠ OBBBA-sunset check at each spec leg) — or Ken
+reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema from SOR).
+Last completed: **S3 (Heather) scenario + mapper leg — 2026-07-04** (4 new mappers + the
+Sch D 1a/8a aggregate wire; 11-doc submission live-XSD-valid, all pins ALL MATCH; artifacts
+UNSIGNED await Ken).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -47,7 +48,13 @@ Form 4835 render leg.
     - [x] Form 4835 unit — ALL FOUR LEGS GREEN (form ticks) — compute/diagnostics/seed
           2026-07-04 `c7cae44` (mig 0161); RENDER leg 2026-07-04 (field map + manifest +
           render_4835 + SKIP_PAGES; bijective 63-widget map; 412-passed gate)
-    - [ ] S3 scenario + mapper leg (Heather) — reuse the S2 forensics recipe
+    - [x] S3 scenario + mapper leg (Heather) — 2026-07-04: 4 NEW mappers (IRS1040ScheduleD
+          1a/8a-aggregate-path / IRS1040ScheduleE Part-V / IRS1040ScheduleF / IRS4835) +
+          the Sch D 1a/8a compute wire (spec R-SCHD-L7-L15; "UNUSED v1" retired) + SE farm
+          optional method verified; scenario3 + command + test file; 11-doc submission
+          live-XSD-valid, every pin ALL MATCH; combined DB gate 440. (⚠ artifacts UNSIGNED,
+          placeholder EFIN — Ken signs + uploads. Key-forensics corrections: Sch F 2,970 =
+          SEEDS line 26; PEC You ✔; Sch E A/B Yes ✔; line-38 IRS-figures-penalty election.)
   - [ ] S4 — 3800/8835/8936 units first, then scenario (⚠ OBBBA-sunset check at each spec leg;
         ⛔ 8835 + 8936 have no RS spec 2026-07-04; only 3800 does)
 - [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`
