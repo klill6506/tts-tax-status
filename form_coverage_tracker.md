@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (sixteenth session, part 2) — AL FORM 40 (Alabama individual) → ✅ FULLY COMPLETE
+> across ALL LEGS (S-8); no migration, FormFieldValue-backed (GA-500/SC1040 pattern), form_code
+> "AL40".** Built spec-first from the RS `AL_FORM_40` spec (status `draft`; TY2025). **Compute** ✅
+> `compute_al40` (dispatched in `compute_return` for AL40) — income-from-scratch, the standard-
+> deduction sliding scale as a formula, personal + tiered dependent exemptions, 2/4/5% tax
+> (§40-18-5), and ★ THE ALABAMA QUIRK: the LIABILITY-based federal-income-tax deduction (L12 =
+> max(0, (1040 L22 + 8960 NIIT) − refundable credits), part-year apportioned by AL AGI ÷ fed AGI).
+> All 5 RS scenario pins verified. **Input** ✅ `seed_al40` (2 sections / 36 lines) + AL→AL40 wiring
+> (`INDIVIDUAL_STATE_FORM_MAP`, create/refresh-from-federal, `_populate_al40_from_federal` pulls the
+> FIT-worksheet federal facts SCOPED to the 1040 form) + frontend picker/section-tabs (`AL40_SECTION_TABS`,
+> isAl40, SUPPORTED_STATES, D_AL40_→State tab). **Render** ✅ FACE (flat 2-page ALDOR template `fal40`,
+> single value column, coordinate overlay, lines 5b–35 + two fidelity mirrors 29/32, visually verified) +
+> page-1 identity header (name/SSN/address/filing-status X). **Diagnostics** ✅ 6 `D_AL40_*` info rules
+> (FIT/STDDED/EXCLUSIONS/ATP/40NR/NOL; registered + seeded). Tests: 15 pure compute + 3 state-return DB +
+> 5 render + 4 diagnostics DB, all green; flow gate 398. Commits `28ceeab`/`3edce72`/`938846c`/`941cd46`/
+> `c81bcf2`. Template `al_form_40.pdf` (25f40blk.pdf) downloaded + sha-pinned in the manifest (`fal40`). RS
+> follow-up: AL_FORM_40 spec is `draft`. **v1 boundaries** (RS D_AL40_*): Form 40NR nonresident, Schedule
+> ATP (L19), Form NOL-85A, Schedule OC credits — direct-entry / not computed.
+
 > **2026-07-05 (sixteenth session) — SC1040 Schedule NR RENDER LEG → ✅ SC1040 FULLY COMPLETE
 > (S-7 all legs green); no migration, render-only.** Rendered the SC Schedule NR (part-year/
 > nonresident) summary lines 31-48 as a coordinate overlay on the flat 2-page SCDOR template,

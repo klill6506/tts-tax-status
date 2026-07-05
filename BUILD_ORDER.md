@@ -17,13 +17,13 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-7 SC1040 COMPLETE across ALL legs** (compute
-`307a810` · input `a8cb291`/`81e0809`/`4cb497a` · render face `af2c6a7` + header `13443d5` ·
-diagnostics `118613d` · **Schedule NR render `d9fa2b0`** — 2026-07-05, sixteenth session). Top
-unblocked SPINE item is now **S-8 AL Form 40** (spec authored 7/4; ⚠ fed-tax-deduction quirk).
-## ▶ NEXT — app: **S-8 AL Form 40** build, then **S-9 NC D-400** ∥ **S-3 brokerage front end** ·
-authoring: **S-11 1041 module** [RS/Ken] (S-4 1065-core, S-5 boundary diagnostics, S-6 PAL/basis all
-DONE — the RS authoring spine is clear to the Sept 1041 rock)
+## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-7 SC1040 + S-8 AL Form 40 BOTH COMPLETE across ALL
+legs** (2026-07-05, sixteenth session). SC1040: Schedule NR render `d9fa2b0` closed the last leg. AL Form
+40 (form_code "AL40"): compute `28ceeab` · input `3edce72` · face render `938846c` · diagnostics `941cd46`
+· identity header `c81bcf2` (⚠ fed-tax-deduction quirk handled — liability-based L12). Top unblocked SPINE
+item is now **S-9 NC D-400** (spec authored 7/4).
+## ▶ NEXT — app: **S-9 NC D-400** build ∥ **S-3 brokerage front end** · then **S-11 1041 module** app build
+(RS authoring DONE 2026-07-05) · S-10 GA-700 (gated behind S-4 1065 core)
 
 ---
 
@@ -85,7 +85,11 @@ turn-on waits on the Shelf (DOR approvals).
       (`d9fa2b0`** — part-year/nonresident summary lines 31-48, PYNR-gated append after the face; v1
       renders the aggregate, income-detail lines 1-30 blank). RS spec hygiene DONE 2026-07-05
       (`6e22b70`): promoted draft→active + fixed the wrong $50k pin ($2,533 → $2,360), re-seeded.
-- [x] S-8 AL Form 40 spec — 2026-07-04   → [ ] app build (⚠ fed-tax-deduction quirk)
+- [x] S-8 AL Form 40 spec — 2026-07-04   → [x] **app build COMPLETE 2026-07-05** (form_code "AL40"):
+      compute (`28ceeab`, all 5 RS pins + the ★ liability-based federal-income-tax deduction L12) · input
+      (`3edce72`, seed + AL→AL40 wiring + FIT-worksheet federal pull scoped to the 1040 + frontend) · face
+      render (`938846c`, flat 2-page ALDOR template `fal40`, single value column) + identity header
+      (`c81bcf2`) · diagnostics (`941cd46`, 6 D_AL40_*). RS spec is `draft` — promote→active (RS follow-up).
 - [x] S-9 NC D-400 spec — 2026-07-04   → [ ] app build
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
       (GA partnership numbers depend on the federal 1065 flow — render OK, trust numbers only after S-4)**

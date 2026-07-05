@@ -1,9 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, sixteenth session (**SC1040 Schedule NR render leg**): rendered the SC
-Schedule NR (part-year/nonresident) summary lines 31-48 as a coordinate overlay appended behind the
-SC1040 face. **This was the last remaining S-7 leg — the SC1040 is now COMPLETE across all legs**
-(compute / input / render-face+header / diagnostics / Schedule-NR render). Render-only; no migration.*
+*Last updated: 2026-07-05, sixteenth session (**two forms shipped**): (1) completed **SC1040** —
+the Schedule NR render was the last leg → SC1040 fully done (S-7). (2) built **AL Form 40** (Alabama
+individual) end-to-end across ALL legs — compute, input, render (face + identity header), diagnostics
+→ **S-8 complete**. Both are self-contained state forms (FormFieldValue-backed, no migration).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -14,57 +14,54 @@ SC1040 face. **This was the last remaining S-7 leg — the SC1040 is now COMPLET
 
 ## Active gates (all green)
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q` → **398 passed**
-  (unchanged — SC1040 is a self-contained state form; this session was render-only). Fast (~1.3s, pure).
-- **SC1040 pure compute** — `pytest tests/test_compute_sc1040.py -q` → **16 passed** (SC1040TT midpoint
-  138/138; spec scenarios + Schedule NR + per-owner sub-boxes).
-- **SC1040 DB tests** — state-return `pytest tests/test_sc1040_state_return.py` (**4**); render
-  `pytest tests/test_sc1040_render_leg.py` (**10** = 8 pure + 2 DB, incl. the new part-year 5-page
-  Schedule-NR attach); diagnostics `pytest tests/test_sc1040_diagnostics_leg.py` (**4**).
-- Combined SC1040 suite + flow gate = **422 passed** (9:02, `--reuse-db`). `manage.py check` clean.
-- **Test DB `test_postgres` exists** — use `--reuse-db` next session (fast). No migration this session
-  (Schedule NR render is FormFieldValue-backed, uses the existing `seed_sc1040` rows).
+  (unchanged — AL40/SC1040 are self-contained state forms, touch no 1040 flow). Fast (~1.1s, pure).
+- **AL Form 40** — pure compute `pytest tests/test_compute_al40.py` (**15**, all 5 RS spec pins) · state-return
+  `pytest tests/test_al40_state_return.py` (**3**) · render `pytest tests/test_al40_render_leg.py` (**5** =
+  4 pure + 1 DB with the identity header) · diagnostics `pytest tests/test_al40_diagnostics_leg.py` (**4**).
+- **SC1040** — compute 16 · state-return 4 · render 10 · diagnostics 4 (all green from part 1).
+- `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db` (fast). No migration this
+  session (both forms are FormFieldValue-backed, seeded via `seed_al40` / `seed_sc1040`).
+- ⚠ The diagnostics-leg DB test (`test_al40_diagnostics_leg`) takes ~9 min (full diagnostics runner over a
+  return set) — run it alone / in the background, not bundled, or it blows the 10-min cap.
 
-## ▶ RESUME HERE — S-7 is DONE. Next SPINE item: **S-8 AL Form 40 app build**
-BUILD_ORDER's NEXT after S-7 is the remaining state app-builds: **S-8 AL Form 40** (⚠ fed-tax-deduction
-quirk — Alabama allows a federal income tax deduction), then **S-9 NC D-400**, ∥ **S-3 brokerage front
-end**. The RS specs for S-8/S-9 are already authored (7/4). Also on deck: the RS authoring spine is clear
-to the **S-11 1041 module** [RS/Ken]. Pick the top unblocked SPINE item (S-8) unless Ken directs otherwise.
-- **Reusable render recipe (proven this + prior session)** for the next flat state form: render blank
-  page → `get_text('words')` on the "00"/"%%" glyph anchors → derive column right-edges (anchor_x1 − ~12.5)
-  → set RL baseline = 792 − fitz_y1 **+ ~3.5pt font-descent nudge** → render synthetic-value PNG → measure
-  value-vs-anchor delta programmatically (target ≈0) → visually verify → append after the face, gated on a
-  flag. See `coordinates/fsc_schedule_nr.py` + `render_sc_schedule_nr`.
+## ▶ RESUME HERE — next SPINE item: **S-9 NC D-400 app build**
+BUILD_ORDER's NEXT after S-8 is **S-9 NC D-400** (North Carolina individual; RS spec authored 7/4),
+∥ **S-3 brokerage front end**. Also on deck: **S-10 GA-700** (gated behind S-4 1065 core) and the
+**S-11 1041 module** app build (RS authoring complete 2026-07-05). Pick the top unblocked SPINE item
+(S-9) unless Ken directs otherwise.
+- **Reusable flat-state-form recipe (proven twice now — SC1040 + AL Form 40):** download the DOR PDF →
+  verify flat (no AcroForm) → find value anchors: pre-printed "00" glyphs (SC) OR grid row-lines /
+  label baselines (AL, which has neither "00" nor boxes) → RL baseline = 792 − anchor_y1 (+~2–3.5pt
+  font-descent nudge) → render synthetic-value PNG → **measure value-vs-anchor delta programmatically** →
+  visually verify → append/overlay + identity-header overlay (name/SSN/address/filing-X). See
+  `coordinates/fal40.py` + `render_al40` / `_al40_header_overlay`.
 
-## This session's commit (pushed to origin/main)
-- `d9fa2b0` — SC1040 Schedule NR render leg (coordinates/fsc_schedule_nr.py + render_sc_schedule_nr +
-  COORDINATE_REGISTRY + render_sc1040 append + 6 tests + RS SC_SCHEDULE_NR spec cached to server/specs).
+## This session's commits (all pushed to origin/main)
+- SC1040 Schedule NR: `d9fa2b0` (render leg) · `4a43e41` (close docs).
+- AL Form 40: `28ceeab` compute · `3edce72` input (seed + wiring + frontend) · `938846c` face render ·
+  `941cd46` diagnostics · `c81bcf2` identity header.
 
-## ▶ SC1040 v1 boundaries (stated, not silent — see DEFERRAL_AUDIT.md)
-- **Schedule NR render:** only the summary lines 31-48 render; the income-detail lines 1-30 (page 1)
-  attach blank — the embedded compute models aggregate federal AGI (L31 Col A) + SC-source AGI (L31 Col B)
-  entered by the preparer, not the line-by-line breakdown. NR-45 proration is displayed ×100 as "NN.NN"
-  (the compute rounds the fraction to 2 decimals → whole-percent precision).
-- Additions b/c/d fold into the line-e lump; subtractions f/g/h/j-n/r/s/u fold into line-v. §179
-  business-income limit not modeled (D_SC1040_179 warns). Refundable-credit detail not itemized (feeds L23).
-  Identity suffix / county code / phone / DOB not rendered. SC4972 / I-335 / catastrophe / SC2210 =
-  direct-entry (each has a D_SC1040_* info diagnostic).
+## ▶ AL Form 40 v1 boundaries (stated, not silent — see DEFERRAL_AUDIT.md)
+- Form 40NR (true nonresidents), Schedule ATP additional taxes (L19) + penalties (L31), Form NOL-85A NOL
+  alternative, Schedule OC nonrefundable/refundable credits — direct-entry / not computed (each has a
+  D_AL40_* info diagnostic). §414(j)/SS/govt-pension/state-refund income is excluded AT SOURCE (no line).
+- The federal FIT-worksheet pull feeds only fed-l22 (1040 L22), fed-agi (L11), and EIC/ACTC/AOC (27/28/29),
+  scoped to the 1040 form; NIIT (8960), refundable adoption (L30), Form 2439 stay preparer-entered.
+- The DOR tax-table midpoint rounding for small taxable incomes is approximated by the continuous
+  2/4/5% bracket formula (no RS pin exercises L17).
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
-- SC1040 spec: still OPEN (genuine verify, not blocking) — `D_SC1040_BRACKET` notes the $3,560/$17,830
-  thresholds are corroborated by SC1040TT but not independently confirmed vs **SC Code §12-6-510**.
-  (The $50k pin + draft→active promotion were RESOLVED 2026-07-05, RS `6e22b70`.)
-- **Carried — GA-500 `R-GA500-MIL` military exclusion**: RS spec is CORRECT/authoritative; the app was
-  the one BEHIND (over-inclusive `min(mret,35000)`) → tts fix handed off (`task_f550dfd2`). SB 31 full
-  military exemption starts TY2026 (re-verify the enrolled bill before the TY2026 build).
-- Carried: `8867_spec.json` stale D_8867_002/AOTC notes; RS Schedule D `D_8949_006`; SCHA
-  `scha_qualified_contributions_cash`; 8995 sibling loader D_8995_001 retirement note.
+- **AL_FORM_40 spec is status `draft`** — promote to `active` (the SC1040 precedent; SC's draft→active +
+  pin fix landed RS `6e22b70`). The spec's 5 test scenarios have `expected_outputs` (all verified in tts).
+- SC1040: `D_SC1040_BRACKET` — the $3,560/$17,830 thresholds corroborated by SC1040TT but not confirmed
+  vs SC Code §12-6-510 (non-blocking).
+- Carried — GA-500 `R-GA500-MIL` (RS spec correct/authoritative; tts fix handed off `task_f550dfd2`);
+  `8867_spec.json` stale notes; RS Schedule D `D_8949_006`; 8995 sibling loader D_8995_001 note.
 
 ## ▶ Waiting on Ken (carried)
 1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). S2/S3/S4 ready (UNSIGNED).
 2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
 3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-4. tts-tax-status may carry Ken's uncommitted WIP — the status-mirror sync uses explicit file adds; leave
-   Ken's WIP untouched.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` (order) · `SEASON_PLAN.md` (gates) · `PRODUCT_MAP.md` (scope).
