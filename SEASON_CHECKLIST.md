@@ -4,10 +4,10 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**Form 8835 unit next (spec cached; implements the `form_8835_credit() -> (amount,
-"1f"|"4e")` wiring point compute_3800 already consumes), then the S4 scenario.** Or Ken
-reprioritizes (July queue: proforma producer; 4868 mapper needs the TY2025 schema from
-SOR). Last completed: **Form 3800 unit (all four legs, same-session RS round-trip) +
+**Form 8835 unit — IN FLIGHT (2026-07-04 ninth session: scope walk done — Ken ruled J1
+multi-facility; J2/J3/J4 no-preference → recommended options adopted-by-default; NO code
+yet — build the four legs per STATUS.md's "Build facts established" list), then the S4
+scenario.** Last completed: **Form 3800 unit (all four legs, same-session RS round-trip) +
 Form 8936 unit (all four legs) — both 2026-07-04** (combined gate 451; D_8911_004 retired,
 D_8936_003 softened; the S4 all-carries ordering Ken-blessed + pinned end-to-end).
 

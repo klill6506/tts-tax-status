@@ -1,18 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-04, eighth session (**FORM 8936 + FORM 3800 UNITS COMPLETE — two
-forms, all four legs each**. 8936: CleanVehicle per-vehicle model (migs 0162/0163) +
-two-phase compute (Sch 2 1b/1c repayment before the credit chain; Sch 3 6f/6m) + the
-FACE-verified transferred-credit stop + PNG-verified render + UI tab, tag
-`1040-form-8936-complete` @ `44c4f15`. 3800: the FULL same-session RS round-trip on Ken's
-"go ahead" — the 1040-side amend-by-lookup spec authored (RS `5407bb2`), J1-J4 scope +
-W1-W4 review walks approved, seeded + export-verified, then the tts unit (mig 0164):
-compute_3800 (§38(c)(1) Section A verbatim; §38(c)(4)(A) Section C with TMT ZEROED;
-line 38 → Sch 3 6a, computed LAST among nonrefundable credits), passive tri-state gates,
-carryforward statement page, subset field map over the 9-page face + PNG pass, Business
-Credit UI tab. **D_8911_004 RETIRED · D_8936_003 softened to info** (both re-seeded live).
-Combined gate **451 passed** (7:04). The W4 S4-shape pin: the 8936 personal credit absorbs
-the tax first → the whole $13,200 specified 8835 credit carries, 6a blank — Ken-blessed.)*
+*Last updated: 2026-07-04, ninth session (**Form 8835 unit KICKOFF — boot + spec analysis +
+scope walk only; NO code written, context filled early**). The 3800/8936 state from the
+eighth session is unchanged (combined gate 451, migs through 0164).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -21,55 +11,85 @@ the tax first → the whole $13,200 specified 8835 credit carries, 6a blank — 
 
 ## Active gate
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
-  (**HELD + extended**: 369 assertions in the JSON / 391 gate tests; combined with all
-  3800 + 8936 + 8911 leg files = **451 passed**, reuse-db 7:04).
-- Test DB `test_postgres` CURRENT (migs through **0164**; the scratchpad
-  `migrate_test_db.py` NAME-override trick).
-- Shared (prod) DB: migs 0162/0163/0164 applied; `seed_8936` (25 lines) + `seed_3800`
-  (42 lines) + `seed_rules` run (D_8911_004 is_active=False + D_8936_003 info + the
-  D_3800_001-006 family verified live). `seed_all` re-runs idempotently on deploy.
-- RS: the 3800 1040-side amendment SEEDED (RS commit `5407bb2`); deployed
-  `lookup/3800/export/` verified (entity rules kept, 42 lines, P3 rows, 38 → SCH_3.6a);
-  canonical `server/specs/3800_spec.json` cached.
+  (**HELD**: 369 assertions / 391 gate tests; combined with the 3800 + 8936 + 8911 leg
+  files = **451 passed**, reuse-db 7:04 — unchanged from the eighth session).
+- Test DB `test_postgres` CURRENT (migs through **0164**); shared (prod) DB seeded through
+  seed_3800/seed_8936/seed_rules. RS: 3800 amendment seeded (`5407bb2`).
 
-## ▶ RESUME HERE — Form 8835 unit (the last S4 form), then the S4 scenario
-1. **Form 8835 unit** (§45 renewable electricity) — spec cached (`8835_spec.json`, 7 rules /
-   38 lines / 5 diags / 5 tests + `form_8835_authoring_notes.md` with the S4 solar vectors:
-   440,000 kWh × $0.006 × 5 [PWA ×5 increased credit] = **$13,200**). Its landing is
-   ALREADY WIRED: `compute_3800.form_3800_inflows` try-imports
-   **`compute_8835.form_8835_credit(tax_return) -> (amount, "1f"|"4e")`** — implement that
-   helper (the 1f-vs-4e §38(c)(4)(B)(iv) 4-year-PIS-window routing = the spec's own
-   R-8835-ROUTE; S4's facility PIS 9/22/2023 → **4e**, specified). Passive assertion
-   `Taxpayer.f3800_ps_8835` already exists. Standard four legs; multi-facility model
-   decision at build (the S4 scenario has ONE facility).
-2. **S4 scenario + mapper leg** — all three forms then exist. ⚠ The scenario carries a
-   "Transfer Election Statement" attachment but the draft 8936 face has 4a=No — reconcile
-   at the key-forensics step (a transferred credit NEVER lands on Sch 3 — the face-verified
-   stop). ⚠ The blessed shape: line 16 tax ~2,193 absorbed by the 8936 personal credit →
-   3800 line 38 = 0, Sch 3 6a blank, the $13,200 carries (the carryforward statement is
-   part of the expected output). New MeF mappers: IRS8835 / IRS8936 (+Schedule A doc?) /
-   IRS3800 — 1:1 vs the 2025v5.4 XSDs.
+## ▶ RESUME HERE — Form 8835 unit (scope walk DONE, build the four legs)
+**Scope walk result (AskUserQuestion, this session):**
+- **J1 RULED (Ken): multi-facility list model** — one `RenewableFacility` row per facility
+  (CleanVehicle/Form4835 pattern), one rendered Form 8835 face per facility, FORM_8835 FFV
+  rows persist the return-level aggregate. Line 16 (patron/beneficiary alloc) UNMODELED —
+  coops/estates/trusts only, never a 1040 (stated boundary).
+- **J2/J3/J4 answered "[No preference]"** → proceed on the recommended options, but they are
+  ADOPTED-BY-DEFAULT, not Ken-ruled — surface them in the review walk before seeding any RS
+  amendment / at the first natural checkpoint:
+  - J2 mixed 1f/4e routing → **RED-defer** (new D_8835_005 error; escape hatch = the 3800
+    direct-entry facts `f3800_other_credits_1zz` / `f3800_other_specified_4z`).
+  - J3 straddle year (4-yr window END falls inside the tax year) → **RED-defer** (same
+    escape hatch). Clean rule: whole year inside [PIS, PIS+4yr) → 4e; window ended before
+    the year → 1f; PIS in-year → 4e (no pre-PIS production possible); window end mid-year
+    → straddle RED.
+  - J4 passthrough-only routing → **nullable `Taxpayer.f8835_passthrough_pis_date`** (the
+    K-1 facility's PIS; one routing rule everywhere = spec T4's own shape); passthrough > 0
+    with the date unanswered → RED, feed withheld (tri-state convention).
 
-**RS follow-ups (next RS session, small):**
-- FA-1040-8911-04's RS-side description still says "Form 3800 unbuilt" — refresh the text
-  (the tts runner already pins the new reality: D_8911_004 retired, line 3 → row 1s).
-- The RS 8936 spec: add the FACE-verified transfer stop (R-8936-TRANSFER — a qualifying
-  dealer-transferred credit never re-lands; only a denial repays) + note D_8936_004's
-  wrong-year-PIS extension. Both flagged in DEFERRAL_AUDIT (eighth session, parts 1-2).
+**Build facts established this session (verified in code/spec — trust these):**
+1. Spec cached + rich: `server/specs/8835_spec.json` (7 rules / 38 lines / 5 diags / 5
+   tests incl. the S4 vector: solar 440,000 kWh × $0.006 ×5 [8a/8b/8c all Yes] = $13,200,
+   PIS 9/22/2023 → route **4e**) + `form_8835_authoring_notes.md`. Spec metadata status
+   "draft" — same posture the 8936 unit built from.
+2. Wiring point PINNED: `compute_3800.form_3800_inflows` try-imports
+   `compute_8835.form_8835_credit(tax_return) -> (amount, "1f"|"4e")` (single tuple; the
+   FA checks only that "compute_8835" appears in the inflow source). Passive assertion
+   `Taxpayer.f3800_ps_8835` already exists (mig 0164).
+3. Sequencing: `compute_8835_db` must run in compute.py BEFORE the `compute_3800_db` block
+   (compute.py ~line 2640); 8835 itself lands NOTHING on Sch 3 (all via 3800).
+4. Rate is DERIVED, not preparer-entered: year-keyed RATE table (2025: $0.006 tier-1
+   wind/CLB/geo/solar/offshore-wind post-2021; $0.003 open-loop/landfill/trash/hydro/
+   marine; $0.006 hydro/marine PIS post-2022; 3.0¢/1.5¢ pre-2022) + D_8835_RATE_YEAR
+   error when tax_year unpinned (the Sch F 2026 precedent). The face PRE-PRINTS the rates.
+5. Model fields = spec fact keys (f8835_registration_no, resource_type, owner name/TIN,
+   address, lat/long, construction_begin_date [OBBBA gate — D_8835_001 if ≥ 2025-01-01],
+   placed_in_service_date, expansion_existing, qf_req_lt_1mw/before_1_29_2023/pwa/none,
+   domestic_content, energy_community, nameplate dc/ac, kwh_produced, phaseout_adjustment,
+   taxexempt_bond_fraction, wind_phasedown_l7g, epe_2024_nonconforming) + Taxpayer
+   `f8835_passthrough_credit` + `f8835_passthrough_pis_date` (J4). Chain: 2=kWh×rate;
+   4=2−3; 5d=min(4×bond, 4×15%); 6=4−5d; 8=6−7g; 9=8×5 if (8a|8b|8c); 10/11=9×10% each;
+   12=9+10+11; 13=12×90% if EPE-2024 else 12; 15=13+14. 8c=Yes → D_8835_003 (Form 7220
+   attach, warning). D_8835_002 warning, D_8835_004 info per spec.
+6. **f8835.pdf template NOT downloaded yet** (no `resources/irs_forms/2025/f8835*.pdf`) —
+   render leg starts with manifest entry + `scripts/update_irs_forms.py` + sha256 vs a
+   fresh irs.gov download, then LABEL-VERIFY bijective map (the 4835 recipe).
+7. FA leg: author FA-1040-8835-* in the tts gate file AND give them RS loader homes same
+   unit (the [[fa-needs-rs-loader-home]] rule; the 8936 FAs drifted last unit — don't repeat).
+8. Task list (harness) #2-#7 carry the leg breakdown: model/mig → compute →
+   diagnostics+seed → render → UI tab → FA+close-out.
+
+**Then:** the S4 scenario + mapper leg (⚠ reconcile the Transfer Election Statement
+attachment vs the draft face's 4a=No — a transferred credit never lands on Sch 3; the
+blessed shape: 8936 personal absorbs ~$2,193 tax → 3800 line 38 = 0, Sch 3 6a blank, the
+whole $13,200 carries + carryforward statement). New MeF mappers: IRS8835 / IRS8936
+(+SchA doc) / IRS3800 — 1:1 vs the 2025v5.4 XSDs.
+
+**RS follow-ups (carried from eighth session, small):**
+- FA-1040-8911-04's RS-side description still says "Form 3800 unbuilt" — refresh the text.
+- RS 8936 spec: add the FACE-verified transfer stop (R-8936-TRANSFER) + D_8936_004
+  wrong-year-PIS note. Both in DEFERRAL_AUDIT (eighth session, parts 1-2).
 
 **Waiting on Ken (carried):**
 1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5); **S2 + S3
    ready** — sign via `mef_build_ats_scenario2/3 --efin … --practitioner-pin … --taxpayer-pin …`.
 2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
 3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-4. Preparer Manager visual-review batch (carried): Sch A line-11 dotted literal + the
-   "…of which qualified contributions" FormEditor input. **NEW: the Clean Vehicles (8936)
-   and Business Credit (3800) tabs + the rendered 8936/SchA/3800 faces + the 3800
-   carryforward statement** (PNG passes done in-session; Ken's visual habit).
+4. Preparer Manager visual-review batch (carried): Sch A line-11 dotted literal + qualified-
+   contributions input; Clean Vehicles (8936) + Business Credit (3800) tabs + rendered
+   8936/SchA/3800 faces + the 3800 carryforward statement.
 
 ## ▶ Carryover follow-up (older, still open)
-- On the next RS Schedule D touch — (a) add `D_8949_006` to the 8949 spec; (b) consider an
-  FA for the 1a/8a aggregate netting.
+- Next RS Schedule D touch — (a) add `D_8949_006` to the 8949 spec; (b) consider an FA for
+  the 1a/8a aggregate netting.
 - RS SCHA spec fact for `scha_qualified_contributions_cash` (input-only) — amend by lookup.
 - RS 8995 sibling loader's D_8995_001 retirement note (DEFERRAL_AUDIT third-session item 2).
 - 1065 beyond the SE unit resumes only on Ken's explicit direction — `1065_status_assessment.md`.
