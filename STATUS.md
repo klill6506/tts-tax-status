@@ -16,7 +16,8 @@ the complete ready-to-apply RS handoff at
 
 ## Active gate
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
-  → **397 passed** (unchanged — the producer runs at finalize, touches no compute/flow). Fast (~1.3s, pure).
+  → **398 passed** (+1 this session: FA-1040-8936-06 transfer-STOP added in the post-handoff
+  FA reconcile; FA-1040-8911-04 metadata refreshed). Fast (~1.2s, pure).
 - **Proforma producer gate** — `cd server && pytest tests/test_proforma_producer.py -q --reuse-db`
   → **8 passed** (~2 min DB). Producer correctness (year-shifted carryforwards + demographics +
   deps + 8606 L14 + Roth next + Sch A facts), a key-CONTRACT drift guard, the full produce→roll
@@ -40,9 +41,11 @@ silent-drop audit** (field-map vs builder `LINE_ORDER`) found + FIXED a live e-f
 (minister excess housing) / 1e (taxable dependent-care benefits) are live producers, so a
 **clergy return e-filed WagesSalariesAndTipsAmt ≠ WagesAmt with no breakdown** (`c5f3c71`;
 1b-1h added in XSD order + 2 regression tests; pure MeF suite 33 passed incl. live XSD).
-Tracked follow-up: Sch 3 **13z** silent-drop (same 6z class — DEFERRAL_AUDIT). The DB-backed
-`test_mef_scenarioN_compute.py` suite is running as async no-regression confirmation (the
-change is provably additive — no existing scenario populates 1b-1h).
+Tracked follow-up: Sch 3 **13z** silent-drop (same 6z class — DEFERRAL_AUDIT). Proven by the
+pure MeF suite (33 passed incl. live 2025v5.4 XSD validation of both plain + enriched returns);
+the DB-backed `test_mef_scenarioN_compute.py` belt-and-suspenders run **timed out on the pooler**
+(the known pooler-slow condition — NOT a regression; the change is provably additive, no existing
+scenario populates 1b-1h). Re-run on a cooperative pooler if desired.
 
 Per `SEASON_PLAN.md`, remaining runnable/near-term CC items:
 - **4868 extension mapper** — **BLOCKED**: only `docs/mef/schemas/2026v1.0/4868_2026v1.0.zip`
@@ -88,19 +91,23 @@ Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/
    Electricity (8835) tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward
    statement.
 
-## ▶ RS follow-ups → NOW BUNDLED into the handoff doc (twelfth session)
-All carried RS follow-ups are enumerated with exact loader edits in
-`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md`. A dedicated RS session applies them
-(amend-by-lookup → reseed RS Supabase → re-export → refresh the `server/specs/*.json` mirrors):
-- FA-1040-8911-04 + D_8911_004 + R-8911-SCHA-BUS "Form 3800 unbuilt" → retire/repoint (3800 BUILT).
-- RS 8936: add D_8936_004 (wrong-year-PIS/missing-VIN) + R-8936-TRANSFER (never-re-lands stop).
-- RS 8949 (schedule_d loader): add D_8949_006 (imported-summary confirm gate).
-- RS Schedule A: add the `scha_qualified_contributions_cash` input-only fact.
-- RS 8995 (schedule_c loader): record D_8995_001's retirement (8995-A now computes above-threshold).
-- RS 3800 J4 (§6417/§6418): **no action** — D_3800_004 is an intentional documented divergence.
-- ⚠️ Non-obvious: tts diagnostics are CODE-registered (`seed_builtin_rules` reads `RULES_*`,
-  honors `is_active`); the cached `server/specs/*.json` are RS-export MIRRORS — do NOT hand-edit
-  them ahead of the RS reseed (would make them lie about the RS DB). Re-export refreshes them.
+## ▶ RS follow-ups → COMPLETE (RS session 2026-07-04 + tts reconcile 2026-07-05)
+The dedicated RS session applied ALL 6 handoff items (RS main; commits 14c7b5d/0deee03/39dbb10/
+30f73ff/5647024) and refreshed the tts spec mirrors (`2ab9dae`: 8911/8936/8936_scha/8949/
+schedule_a/8995). Prod: 92 TaxForms / 436 FlowAssertions. **tts-side reconcile done this session:**
+- **FA gate** — refreshed the stale FA-1040-8911-04 metadata (→ 3800 row 1s / Sch 3 6a / no 6j
+  leak; handler was already correct) + added FA-1040-8936-06 (transfer STOP). Gate **398**.
+  ⚠️ RS note: the transfer STOP is FA-1040-8936-**06** (not −05 as the handoff said; −05 =
+  "unused personal LOST").
+- **Mirror reconcile** — 50 pure spec-driven tests pass (mirrors align with tts code, which was
+  already ahead). Seed-leg line_map counts unchanged (8995=21, 8949=26); the diagnostic/fact-only
+  refresh doesn't move the `seeded_numbers == spec_numbers` comparisons → DB seed-leg tests
+  logically unaffected (confirmed statically; a full DB gate confirms on the next cooperative pooler).
+- ⚠️ Lesson: tts diagnostics are CODE-registered (`seed_builtin_rules` reads `RULES_*`, honors
+  `is_active`); `server/specs/*.json` are RS-export MIRRORS — see auto-memory. RS-canonical FA
+  vocab uses `flow_check`; the tts dispatcher keys on `gating_check`/`flow_assertion` (kept tts's).
+- FYI (RS): duplicate `form_8949_spec.json` (1120-S-era pretty exporter) left as-is —
+  `test_sched_d_spec.py` passes against `8949_spec.json`, so no refresh needed now.
 
 ## ▶ Carryover follow-up (older, still open)
 - Next RS Schedule D touch — (a) add `D_8949_006` to the 8949 spec; (b) consider an FA for

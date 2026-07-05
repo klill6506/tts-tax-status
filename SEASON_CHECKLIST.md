@@ -214,6 +214,10 @@ shows AMT indicators; build later if needed.*
 ---
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
+- ⚠ RS handoff COMPLETE + tts FA reconcile (twelfth session) — 2026-07-05 `a2f083b`. RS session
+  applied all 6 handoff items (RS main) + refreshed tts mirrors (`2ab9dae`); tts-side reconciled
+  the FA gate (FA-1040-8911-04 metadata refresh + FA-1040-8936-06 transfer STOP → gate 398) and
+  verified mirror alignment (50 pure spec-driven pass; seed-leg line_map counts unchanged).
 - ⚠ MeF silent-drop audit + fix (twelfth session) — 2026-07-05 `c5f3c71`. Field-map vs builder
   `LINE_ORDER` audit found + FIXED IRS1040 lines 1b–1h never emitted (live via minister 1h /
   DCB 1e → clergy return e-filed 1z ≠ 1a with no breakdown). Added 1b-1h in XSD order + 2
