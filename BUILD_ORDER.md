@@ -19,8 +19,9 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ▶ NOW WORKING ON — **S-7 SC1040 app build** — compute leg landed `307a810` (2026-07-05);
 input/render/diagnostics legs remain. (Paused mid-input-leg for this planner migration.)
-## ▶ NEXT — authoring: **S-4 Schedule K (1065 core)** [RS/Ken] · app: finish S-7 SC1040, then
-S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
+## ▶ NEXT — authoring: **S-5 boundary diagnostics / S-6 PAL·basis** [RS/Ken] (S-4 1065-core
+authoring is DONE — see below; S-6 before the regression bed locks) · app: finish S-7 SC1040,
+then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
 
 ---
 
@@ -53,11 +54,14 @@ aggregate); `_sr_py_prior_refunded`/`_sr_py_unused_credits` sourcing; TaxWise 10
 `import_brokerage_summary` → 8949 Exception-2, mig 0160). REMAINS: OCR/parse front end +
 YELLOW render + preparer-confirm UI. Not spec-gated. Parallel.
 
-**S-4 · [RS]⬜→[APP] · 1065 core (WO-02) — THE next authoring rock (untouched beyond SE).**
-Fresh-author per D-1; reconcile the 35 existing compute formulas against each spec. Unblocks
+**S-4 · [RS]✅→[APP]⬜ · 1065 core (WO-02) — RS authoring DONE (2026-07-04); APP build remains.**
+All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
+K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
+Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
 1065 ATS, issuer-side 1065 K-1 → 1040 import, AND the GA-700 app build (see S-10 dependency).
-- [ ] Schedule K   - [ ] Schedule K-1   - [ ] M-1/M-2   - [ ] L/B   - [ ] 8825
-- [ ] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S)
+- [x] Schedule K — 2026-07-04   - [x] Schedule K-1 — 2026-07-04   - [x] M-1/M-2 — 2026-07-04   - [x] L/B — 2026-07-04   - [x] 8825 (covers 1065)
+- [ ] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S)  `[APP]`
+- [ ] tts compute build/reconcile of the 35 formulas against the specs  `[APP]`
 
 **S-5 · [RS]⬜→[APP] ∥ · Boundary diagnostics (WO-04)** — M-3 threshold, K-2/K-3 DFE-fail,
 §704(c), §754, entity apportionment. Author alongside S-4.
