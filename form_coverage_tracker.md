@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (seventeenth session) — NC D-400 (North Carolina individual) → ✅ FULLY COMPLETE
+> across ALL 4 LEGS (S-9); no migration, FormFieldValue-backed (GA-500/SC1040/AL40 pattern),
+> form_code "NC_D400".** Built spec-first from the RS `NC_D400` spec (status `draft`; TY2025).
+> **Compute** ✅ `compute_nc_d400` (dispatched in `compute_return` for NC_D400) — federal-AGI start (L6),
+> the ★ 85% bonus (L3) + 85% §179-excess (L4) add-back (NC decoupled, $25k/$200k limits, conformity FROZEN
+> Jan-1-2023 → OBBBA N/A), AGI-banded child deduction (breakpoint→higher band), restricted NC-itemized
+> subset (mort+prop capped $20k / property $10k-$5k MFS / medical less 7.5% AGI), std ded (MFS $0 if spouse
+> itemizes), Schedule S Part B subtractions (Bailey/military/SS/US-obligation), Schedule PN proration, and
+> the ★ FLAT 4.25% tax (§105-153.7, year-guarded to 2025 — steps to 3.99% after). All 8 RS scenario pins
+> verified. **Input** ✅ `seed_nc_d400` (4 sections / 47 lines: face + Schedule S + Schedule A + Schedule
+> PN) + NC→NC_D400 wiring (`INDIVIDUAL_STATE_FORM_MAP`, `NC_D400_FEDERAL_PULL` = federal AGI 1040 L11 → D-400
+> L6, `_populate_nc_d400_from_federal`, create + refresh dispatch — ⚠ also FIXED a latent AL40
+> `refresh_from_federal` bug that fell through to the GA pull) + frontend picker/section-tabs
+> (`NC_D400_SECTION_TABS`, isNcD400, SUPPORTED_STATES, D_NCD400_→State tab). **Render** ✅ FACE (flat NCDOR
+> "handwritten" template `fnc_d400` — the leading "Do Not Include This Page" instructions cover STRIPPED via
+> `delete_page(0)` so the stored 2-page template = the form face; pre-printed "00" anchors → two value
+> columns pg0 right-483 / pg1 right-555 + line-12a left box + 20a/21a payment sub-boxes + line-13 Sch PN %
+> box, render→PNG→measure-delta + visually verified) + page-0 identity header (name/SSN/address + filing
+> circle X at x≈78). **Diagnostics** ✅ 8 `D_NCD400_*` rules (179LIMIT+MFS_STDDED warning; the rest info;
+> AMENDED dormant-but-registered for spec parity). Tests: 14 pure compute + 4 state-return DB + 6 render + 8
+> diagnostics, all green; flow gate 398. Commits `69cf82b`/`b31d5c7`/`c704f21`/`8358e74`. Template
+> `nc_d400.pdf` (NCDOR handwritten, cover-stripped) sha-pinned in the manifest (`fnc_d400`). RS follow-up:
+> NC_D400 spec is `draft` → promote to `active`. **v1 boundaries** (RS D_NCD400_*): amended return (L22/L24,
+> Sch AM), Form D-422 est-tax interest, NC NOL (Sch S L39), Schedule PN-1 — direct-entry / not computed.
+
 > **2026-07-05 (sixteenth session, part 2) — AL FORM 40 (Alabama individual) → ✅ FULLY COMPLETE
 > across ALL LEGS (S-8); no migration, FormFieldValue-backed (GA-500/SC1040 pattern), form_code
 > "AL40".** Built spec-first from the RS `AL_FORM_40` spec (status `draft`; TY2025). **Compute** ✅

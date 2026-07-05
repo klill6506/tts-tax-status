@@ -12,10 +12,12 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **99 TaxForms / 471 FlowAssertions / 859 FormRules**
-(**+S-11 1041 MODULE COMPLETE 2026-07-05** — 3 new forms: `1041` spine (page-1 + Schedule B DNI/IDD
-engine + Schedule G tax), `SCHEDULE_K1_1041` (beneficiary K-1, full verbatim box codes), `GA501` (GA
-fiduciary, resident-only); all 3 seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200);
+Active spec-authoring tool. RS Supabase holds **100 TaxForms / 475 FlowAssertions / 867 FormRules**
+(**+WO-10 Form 5227 2026-07-05** — split-interest trust info return (`5227`): §664(b) four-tier character
+engine (tier-level) + accumulation + §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure;
+`lookup/5227/export/` = 200; **+S-11 1041 MODULE COMPLETE 2026-07-05** — 3 new forms: `1041` spine (page-1 +
+Schedule B DNI/IDD engine + Schedule G tax), `SCHEDULE_K1_1041` (beneficiary K-1, full verbatim box codes),
+`GA501` (GA fiduciary, resident-only); all 3 seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200);
 **+S-5 boundary diagnostics 2026-07-05** — new consolidated `ENTITY_BOUNDARY` form; **+S-6 PAL/basis
 deepening 2026-07-05** — new Form `461` (§461(l) EBL) + FORM_8582/SCHEDULE_E amendments;
 was 94 TaxForms / 449 FA after the SC entity track; was
@@ -75,9 +77,12 @@ B1–B7 pinned as pending-skips.
 **WORK_ORDERS front door** is live: WORK_ORDERS.md is the RS MECHANISM (gap-check + transitions + Gate-1)
 and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent backlog here. At boot, pull
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
-checkboxes). Per the reconciled SPINE, the next open **RS authoring** rocks are **S-5 boundary diagnostics
-(WO-04)** and **S-6 PAL/basis deepening (WO-03 — before the regression bed locks)**; **S-11 1041 (WO-09)**
-is the greenfield Sept rock. (S-4 1065-core RS authoring is DONE — see the front-door win below.)
+checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
+S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227). **The next RS authoring order is
+`[WO-11] S-13 · 1120 C-corp module`** — ADDED 2026-07-05 (DECISIONS D-12), status INTAKE. Ken will prompt
+"build 1120"; run the WORK_ORDERS front door from step 1 (gap-check → research-verify → source brief →
+Gate-1 scope walk → author). Required set: 1120 spine (§11 21%), Sch C (DRD), Sch J, Sch K/L, M-1/M-2,
+1125-A/1125-E, GA Form 600.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -247,6 +252,21 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-05: **Form 5227 split-interest module AUTHORED + SEEDED + EXPORTED (WO-10) — the 1041 family is complete.**
+  Spun off from the 1041 module (D-10) as its own front-door run: gap-check (all keys GAP) → 3 research passes
+  (verbatim vs FINAL 2025 Form 5227 Created 5/7/25 + i5227 Dec 3 2025 + IRC §664/§642(c)/§4947 + Reg §1.664-1(d);
+  caught the stale Part IV-A/IV-B layout → flat Part I–IX + Schedule A) → `f5227_source_brief.md` → **Gate-1 scope
+  walk (DECISIONS D-11):** CRAT + CRUT COMPUTE the §664(b) four-tier character engine (**tier-level** — ordinary →
+  capgain → other → corpus, current + undistributed prior; capital gain one class, no within-Tier-2 rate split) +
+  Part II accumulation carryforward with category-isolation netting; §664(c)(2) **100% UBTI excise** (year-keyed
+  post-2006 — trust keeps its §664(c)(1) exemption) → Form 4720; Part VIII §4941/4943/4944/4945 screening; PIF/CLT/
+  §4947-other = structure + diagnostics; CRT quals (5–50% payout / 10% remainder / 5% exhaustion) = diagnostics
+  (funding-time, no §7520/mortality compute). `load_5227.py`: 23 facts / 8 rules / 12 lines / 11 diag / 6 tests / 4 FA;
+  all rules cited to 5 sources. Validated on throwaway SQLite (`scratchpad/validate_5227.py`, **20 pass / 0 fail** —
+  four-tier ordering, accumulation, UBTI excise, category netting all green). Ken Gate-1: "Approve — flip, seed,
+  export." Seeded → **100 TaxForms / 475 FlowAssertions / 867 FormRules**; `lookup/5227/export/` = 200. **Caveats:**
+  tier-level (within-Tier-2 rate split deferred); quals diagnostic-only; carried [UNVERIFIED] clauses (§1.664-1(d)(1)(iv)
+  netting text, §642(c)(2)/(3), §4947(b)(3) 60%) to re-pull before any deeper compute; SNIIC = proposed reg, not built.
 - 2026-07-05: **1041 MODULE COMPLETE (S-11/WO-09) — all 3 legs authored + SEEDED + EXPORTED in one session.**
   The greenfield federal fiduciary module. Ran the full front door: gap-check (all 5 surfaces 404 GAP) →
   4 research passes (verbatim vs FINAL 2025 IRS/GA sources; Rev. Proc. 2025-32 confirmed = TY2026, 2024-40

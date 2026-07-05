@@ -17,13 +17,15 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-7 SC1040 + S-8 AL Form 40 BOTH COMPLETE across ALL
-legs** (2026-07-05, sixteenth session). SC1040: Schedule NR render `d9fa2b0` closed the last leg. AL Form
-40 (form_code "AL40"): compute `28ceeab` · input `3edce72` · face render `938846c` · diagnostics `941cd46`
-· identity header `c81bcf2` (⚠ fed-tax-deduction quirk handled — liability-based L12). Top unblocked SPINE
-item is now **S-9 NC D-400** (spec authored 7/4).
-## ▶ NEXT — app: **S-9 NC D-400** build ∥ **S-3 brokerage front end** · then **S-11 1041 module** app build
-(RS authoring DONE 2026-07-05) · S-10 GA-700 (gated behind S-4 1065 core) · **authoring: S-13 1120 C-corp
+## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-9 NC D-400 COMPLETE across ALL 4 legs**
+(2026-07-05, seventeenth session; form_code "NC_D400"): compute `69cf82b` · input `b31d5c7` · render
+`c704f21` · diagnostics `8358e74`. Flat 4.25% (§105-153.7, year-guarded); NC decouples bonus/§179 → 85%
+add-back (conformity frozen Jan-1-2023, OBBBA N/A); child-deduction bands; NC-itemized subset; Schedule PN
+proration. All 8 RS spec pins verified; 32 tests; flow gate 398. (Also fixed a latent AL40
+`refresh_from_federal` bug.) The three individual state forms (SC1040 S-7, AL40 S-8, NC D-400 S-9) are done.
+## ▶ NEXT — app: **S-3 brokerage front end** (∥, not spec-gated) · **S-11 1041 module** app build (RS
+authoring DONE 2026-07-05) · **S-4 1065 core** compute build · **S-5/S-6** boundary + PAL/basis app builds ·
+S-10 GA-700 (gated behind S-4 1065 core) · **authoring: S-13 1120 C-corp
 module [RS/Ken]** — NEW, added 2026-07-05, the next RS authoring rock (all prior RS spine authoring is DONE)
 
 ---
@@ -91,7 +93,13 @@ turn-on waits on the Shelf (DOR approvals).
       (`3edce72`, seed + AL→AL40 wiring + FIT-worksheet federal pull scoped to the 1040 + frontend) · face
       render (`938846c`, flat 2-page ALDOR template `fal40`, single value column) + identity header
       (`c81bcf2`) · diagnostics (`941cd46`, 6 D_AL40_*). RS spec is `draft` — promote→active (RS follow-up).
-- [x] S-9 NC D-400 spec — 2026-07-04   → [ ] app build
+- [x] S-9 NC D-400 spec — 2026-07-04   → [x] **app build COMPLETE 2026-07-05** (form_code "NC_D400"):
+      compute (`69cf82b`, all 8 RS pins — flat 4.25% §105-153.7 year-guarded, 85% bonus/§179 add-back w/
+      conformity frozen Jan-1-2023, AGI-banded child deduction, restricted NC-itemized subset, Schedule PN
+      proration) · input (`b31d5c7`, seed 4 sections + NC→NC_D400 wiring + federal-AGI pull + frontend;
+      also fixed the latent AL40 `refresh_from_federal` GA-pull fall-through) · render (`c704f21`, flat
+      NCDOR handwritten template `fnc_d400` w/ instructions-cover stripped, two "00" value columns +
+      identity header) · diagnostics (`8358e74`, 8 D_NCD400_*). RS spec is `draft` — promote→active (RS follow-up).
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
       (GA partnership numbers depend on the federal 1065 flow — render OK, trust numbers only after S-4)**
 
