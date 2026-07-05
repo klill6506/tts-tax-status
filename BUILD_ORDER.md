@@ -90,13 +90,15 @@ turn-on waits on the Shelf (DOR approvals).
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
       (GA partnership numbers depend on the federal 1065 flow — render OK, trust numbers only after S-4)**
 
-**S-11 · [RS]🟡→[APP] · 1041 module (WO-09), greenfield RS-first. RS authoring STARTED 2026-07-05
-(front door + Gate-1 scope walk = RS DECISIONS D-10; f1041_source_brief.md).**
-- [x] spine (entity types/rates/exemptions)   - [x] DNI/IDD/Sch B   - [x] Sch G   *(all three = the one consolidated
-  `1041` form — `load_1041_spine.py`, seeded/exported `lookup/1041/export/` = 200; core 4 + ESBT computed;
-  grantor/PIF/bankruptcy = structure/route/defer)*
-- [ ] K-1 (1041) `SCHEDULE_K1_1041`   - [ ] GA 501 `GA501`   - [x] Sch I RED-defer diag (D-2)
-- ➕ **WO-10 spun off — Form 5227** split-interest trusts (PIF + CRT/CRAT/CRUT + CLT, §664 4-tier) = its own leg + research pass.
+**S-11 · [RS]✅→[APP]⬜ · 1041 module (WO-09), greenfield RS-first. RS authoring COMPLETE 2026-07-05
+(front door + Gate-1 scope walk = RS DECISIONS D-10; f1041_source_brief.md). APP build remains.**
+- [x] spine (entity types/rates/exemptions)   - [x] DNI/IDD/Sch B   - [x] Sch G — 2026-07-05 *(all three = the one
+  consolidated `1041` form — `load_1041_spine.py`; core 4 + ESBT computed; grantor/PIF/bankruptcy = structure/route/defer)*
+- [x] K-1 (1041) `SCHEDULE_K1_1041` — 2026-07-05 *(issuer-side; full verbatim box codes)*   - [x] GA 501 `GA501` —
+  2026-07-05 *(resident-only)*   - [x] Sch I RED-defer diag (D-2)
+- All 3 forms seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200); RS prod 99 TaxForms / 471 FA / 859 rules.
+- [ ] tts app build: fiduciary compute (DNI/IDD engine, §662 tiers, Sch G tax, K-1 issuance, GA 501) + its 4 ATS scenarios  `[APP]`
+- ➕ **WO-10 — Form 5227** split-interest trusts (PIF + CRT/CRAT/CRUT + CLT, §664 4-tier) = next 1041-family authoring order (own research pass).
 
 **S-12 · [APP]⏳ ∥ · Season infrastructure** (not spec-gated; roll whenever CC has a lane).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
