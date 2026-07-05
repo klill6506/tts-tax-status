@@ -17,11 +17,13 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-7 SC1040 app build** — compute leg landed `307a810` (2026-07-05);
-input/render/diagnostics legs remain. (Paused mid-input-leg for this planner migration.)
+## ▶ NOW WORKING ON — **S-7 SC1040 app build** — RESIDENT SC1040 COMPLETE across 4 legs (compute
+`307a810` · input `a8cb291`/`81e0809`/`4cb497a` · render face `af2c6a7` + header `13443d5` ·
+diagnostics `118613d`). ONE item left to tick S-7: the **Schedule NR render** (part-year/nonresident;
+template + manifest already in place; compute already runs). Next session picks this up.
 ## ▶ NEXT — authoring: **S-11 1041 module** [RS/Ken] (S-4 1065-core, S-5 boundary diagnostics, S-6
 PAL/basis authoring all DONE — the RS authoring spine is clear to the Sept 1041 rock) · app: finish
-S-7 SC1040, then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
+S-7 SC1040 (Schedule NR render), then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
 
 ---
 
@@ -77,9 +79,12 @@ FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. 
 **S-7…S-10 · [RS]✅→[APP] · States — SPECS ALREADY AUTHORED (7/4–7/5), app build remains.**
 Authoring done a month early; these dropped OFF Ken's authoring path. Forms build now; e-file
 turn-on waits on the Shelf (DOR approvals).
-- [x] S-7 SC1040 + SC_SCHEDULE_NR spec — 2026-07-04   → [~] **app build IN PROGRESS** — compute
-      leg done 2026-07-05 `307a810` (SC1040TT midpoint tax verified 138/138 vs SCDOR;
-      16 pure tests; flow gate 398). Input/render/diagnostics legs remain.
+- [x] S-7 SC1040 + SC_SCHEDULE_NR spec — 2026-07-04   → [~] **app build — RESIDENT COMPLETE
+      2026-07-05** across compute (`307a810`, SC1040TT 138/138) · input (`a8cb291`/`81e0809`/
+      `4cb497a`) · render face (`af2c6a7`) + identity header (`13443d5`) · diagnostics (`118613d`).
+      **ONE item left:** the Schedule NR render (part-year/nonresident; template+manifest+compute
+      already in place). RS follow-up: SC1040 spec is `draft` + has a WRONG $50k test pin ($2,533 →
+      the table gives $2,360) — correct + promote.
 - [x] S-8 AL Form 40 spec — 2026-07-04   → [ ] app build (⚠ fed-tax-deduction quirk)
 - [x] S-9 NC D-400 spec — 2026-07-04   → [ ] app build
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core

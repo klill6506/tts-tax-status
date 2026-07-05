@@ -1,98 +1,81 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, fourteenth session (**GA-500 Schedule 1 render leg**): rendered the
-3-page GA Form 500 Schedule 1 (Adjustments grid + RIE worksheet + Military RIE worksheet) — new
-flat template `fga500_schedule1` extracted from the GA-DOR packet + coordinate overlay, appended
-after the Form-500 face. Ken's requested "GA-500 OT/tips exclusion" was ALREADY BUILT (2026-07-02,
-`ga500-hb463-tips-ot-complete`) — a stale-tracker resurrection, now corrected; Ken redirected to
-the render leg. Then, on Ken's go-ahead, FIXED a military-exclusion over-exclusion compute bug that
-surfaced while rendering (IT-511-verified; `min(mret, 35000)`) — RS-side spec reconciliation pending.*
+*Last updated: 2026-07-05, fifteenth session (**SC1040 build — S-7**): built the South Carolina
+SC1040 individual return through FOUR legs — compute, input, render (face + page-1 identity
+header), and diagnostics. The **resident SC1040 is COMPLETE and filable end-to-end**; the ONLY
+remaining S-7 item is the **Schedule NR render** (part-year/nonresident). Also migrated the three
+planners (BUILD_ORDER/SEASON_PLAN/PRODUCT_MAP) canonical to `tts-tax-status`, retired
+SEASON_CHECKLIST, and fixed a real latent serializer bug.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
 - Durable history → `STATUS_ARCHIVE.md` *(not read at boot)*; deferrals → `DEFERRAL_AUDIT.md`;
   open questions → `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
+- **Boot planners now live in `tts-tax-status`**: pull it, read `BUILD_ORDER.md` (order) / `SEASON_PLAN.md`
+  (gates) / `PRODUCT_MAP.md` (scope). BUILD_ORDER is the single source of sequence.
 
 ## Active gates (all green)
-- **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
-  → **398 passed** (unchanged — render leg touches no compute/flow). Fast (~1.3s, pure).
-- **GA-500 render leg** — `pytest tests/test_ga500_render_leg.py -q` → **9 pure + 4 DB passed**
-  (DB ~2:47). Adds the Schedule 1 structure/manifest tests + 3 DB tests (absent / grid-only /
-  all-3-pages incl. the tips-fold), plus the existing 5-page-face test still green.
-- **Pure MeF 1040 suite** — `pytest tests/test_efile_mef_1040.py -q` → **40 passed** (thirteenth
-  session; unchanged).
-- `manage.py check` clean. Test DB `test_postgres` still needs **mig 0167** on its next fresh build
-  (help_text-only; applies on the next migrate). No new migration this session (render-only).
+- **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q` → **398 passed**
+  (unchanged — SC1040 is a self-contained state form, touches no 1040 flow). Fast (~1.3s, pure).
+- **SC1040 pure compute** — `pytest tests/test_compute_sc1040.py -q` → **16 passed** (SC1040TT midpoint
+  138/138 vs the published SCDOR table; spec scenarios + Schedule NR + the per-owner sub-boxes).
+- **SC1040 DB tests** — state-return `pytest tests/test_sc1040_state_return.py` (**4**, create→map→pull→
+  compute + duplicate 409 + SC-business 400); render `pytest tests/test_sc1040_render_leg.py` (**5** = 4
+  pure + 1 DB, tax + identity visible); diagnostics `pytest tests/test_sc1040_diagnostics_leg.py` (**4**).
+- `manage.py check` clean. **Test DB `test_postgres` is FRESHLY BUILT** (a mid-session kill-cascade forced a
+  clean rebuild — ~11 min on the slow pooler); use `--reuse-db` next session (fast). One idle teardown
+  session may linger (harmless; `scripts/drop_test_db.py` clears it if a `--create-db` run ever fails).
+- No new migration this session (SC1040 is FormFieldValue-backed, seeded via `seed_sc1040`, GA-500 pattern).
 
-## ▶ RESUME HERE — idle; Ken directs the next unit (military-bug decision pending)
-This session (fourteenth) built the **GA-500 Schedule 1 render leg** (Ken's pick after the OT/tips
-unit turned out already-built). The S1-* adjustment lines previously reached the printed return only
-via the Form-500 line-9 net; now the full 3-page Schedule 1 renders.
+## ▶ RESUME HERE — S-7 SC1040: build the **Schedule NR render** (the last leg)
+The resident SC1040 is fully done (compute/input/render-face/render-header/diagnostics, all green +
+committed). The ONE remaining item to tick S-7 complete: render the **SC Schedule NR** (2-page
+part-year/nonresident schedule).
+- **Groundwork already in place:** template `resources/state_forms/SC/2025/sc_schedule_nr.pdf` +
+  manifest entry `fsc_schedule_nr` (`SC-SCHEDULE-NR`, 2 pages, sha `6301e35e…`). The embedded Schedule
+  NR **compute already runs** inside `compute_sc1040` (part-year/nonresident branch) and persists
+  `NR-43/NR-44/NR-45/NR-47/NR-48` → SC1040 line 5.
+- **To build:** `coordinates/fsc_schedule_nr.py` (Col A federal / Col B SC two-money-column layout;
+  auto-extract value boxes from the flat PDF like the face — the "00" cents-anchor recipe), a
+  `render_sc_schedule_nr()` helper appended after the SC1040 face inside `render_sc1040` (attach only
+  when `PYNR` is true, GA-500 Schedule-1 append precedent), register `fsc_schedule_nr` in
+  `COORDINATE_REGISTRY`, visually verify (render→PNG→Read), add render tests.
+- **Recipe (proven this session):** render blank page to PNG + `get_text`/`get_drawings` to find the
+  "00" anchors → derive right-edge coords → render synthetic-value PNG → visually verify every cell.
 
-**What was built (render-only, no compute change):** the Schedule 1 template wasn't in the repo
-(`ga500.pdf` = the 5-page main return only). Downloaded the GA-DOR blank-form-printing packet (27
-pages), extracted Schedule 1 = source pages 5-7 → NEW flat template
-`resources/state_forms/GA/2025/ga500_schedule1.pdf` (manifest `fga500_schedule1` / `GA-500-SCH1`,
-sha `fbbf7128…`). NEW `coordinates/fga500_schedule1.py` (namespaced keys P1-*/P2-{TP,SP}-*/
-P3-{TP,SP}-* + SSN comb, registered in `COORDINATE_REGISTRY`) + `render_ga500_schedule1()` in
-`renderer.py`, appended after the face inside `render_ga500`. Ken ruled (AskUserQuestion): **all 3
-pages** (grid + RIE worksheet + military worksheet) + **tips/OT fold into printed line 12** (the
-2025 form has no 12a/12b cell → render L12 = S1-12+S1-12a+S1-12b; exact on the TY2025 bed). Attach
-only when adjustments exist; p2 only if RIE applies, p3 only if military. All 3 pages visually
-calibrated (baseline = box-bottom + 2pt via get_drawings "re"). Gates: 9 pure + 4 DB render tests,
-flow 398 held, `manage.py check` clean.
+## This session's commits (all pushed to origin/main)
+- `307a810` compute engine · `a8cb291` seed + short-key refactor · `81e0809` state-return wiring +
+  frontend picker · `4cb497a` **serializer bug fix** (renewable_facilities) + SC1040 section tabs ·
+  `af2c6a7` face render · `13443d5` identity header render · `118613d` diagnostics leg.
+- Planner migration: tax-app `65eb92d` (retire SEASON_CHECKLIST, boot pulls tts-tax-status);
+  tts-tax-status `b54c111` (BUILD_ORDER/PRODUCT_MAP canonical + SEASON_PLAN re-cut).
 
-**✅ FIXED same session (Ken: "fix the military bug"):** `compute_ga500.mil()` over-excluded
-military retirement of $17,501–$34,999 (GA earned ≥ $17.5k) — returned `l3 + l8`; now `min(mret,
-35000)` (proceed) / `min(mret, 17500)` (STOP), IT-511-verified. Compute + renderer 7b/7e + T5
-re-pin + NEW `T5b-military-midrange` ($20k mret → $20k, tax 1,453 vs pre-fix 675). 19 pure
-scenarios + flow 398 + check green. **RS-side spec `R-GA500-MIL` + `check_ga500_integrity.py`
-reconciliation is a PENDING RS-session task** — handoff `docs/rs_handoff/2026-07-05_ga500_military_
-exclusion_fix.md` (tts compute is now canonical; cached `500_spec.json` text fixed in-repo).
+## ▶ RS follow-ups (rides a dedicated RS session)
+- **🔴 NEW — SC1040 RS spec is status `draft` + carries a WRONG test pin.** The spec's "SC resident,
+  single, $50,000" scenario notes L6 "≈$2,533" — that is a rough placeholder and is WRONG. The published
+  **SC1040TT_2025 (and the engine, verified 138/138) give $2,360**. Correct the RS spec test pin, and
+  promote the spec out of `draft`. Also: `D_SC1040_BRACKET` notes the $3,560/$17,830 thresholds are
+  corroborated by SC1040TT but not independently confirmed vs **SC Code §12-6-510** (open verify).
+- **Carried — GA-500 `R-GA500-MIL` military exclusion is WRONG in RS** (encodes `L3+L8`; tts fixed +
+  canonical `min(mret,35000)`). Handoff `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
+- Carried: `8867_spec.json` stale D_8867_002/AOTC notes; RS Schedule D `D_8949_006`; SCHA
+  `scha_qualified_contributions_cash`; 8995 sibling loader D_8995_001 retirement note.
 
-Per `SEASON_PLAN.md`, remaining runnable/near-term CC items (unchanged): **4868 mapper** BLOCKED (no
-TY2025 4868 schema on disk — SOR pull); **1120-S/7004 mappers** BLOCKED (business-family schema pull —
-Ken's IRS inbox); **TaxWise season-one 1040 importer** = October. **No unblocked build candidate
-remains** — the previously-listed **GA-500 OT/tips exclusion** was ALREADY BUILT 2026-07-02 (tag
-`ga500-hb463-tips-ot-complete`, `140bf87`; §48-7-27(a)(16)/(17), S1-12a/12b, per-taxpayer $1,750,
-TY2026-2028 window; ★★ UNIT COMPLETE in `form_coverage_tracker.md` line 544). The prior "not-yet-started"
-note was a stale-tracker resurrection (fourteenth-session verify: flow gate 398 green on current code).
-Its only open follow-up (re-verify the per-taxpayer cap at the 2026 IT-511; DEFERRAL_AUDIT item 4) is
-NOT actionable until DOR publishes the 2026 IT-511 / Form 500 face (~late 2026).
-
-Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
+## ▶ SC1040 v1 boundaries (stated, not silent — see DEFERRAL_AUDIT.md)
+- Additions b/c/d fold into the line-e "Other additions" lump (`add-oth`); subtractions f/g/h/j-n/r/s/u
+  fold into the line-v "Other subtractions" lump (`sub-oth`) with later-year SC depreciation. §179
+  business-income limit not modeled (D_SC1040_179 warns). Refundable-credit detail (L19/L20/22a-e) not
+  itemized — the aggregate feeds L23. Identity suffix / county code / phone / DOB not rendered. SC4972 /
+  I-335 / catastrophe / SC2210 = direct-entry (each has a D_SC1040_* info diagnostic).
 
 ## ▶ Waiting on Ken (carried)
-1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). **S2 + S3 + S4
-   ready** (UNSIGNED, placeholder EFIN) — sign via
-   `mef_build_ats_scenario2/3/4 --efin … --practitioner-pin … --taxpayer-pin …`.
-2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · **TY2025 4868 schema** (unblocks the
-   4868 mapper — currently only TY2026 4868 is on disk).
+1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). S2/S3/S4 ready (UNSIGNED).
+2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
 3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-4. Preparer Manager visual-review batch (carried): Sch A line-11 dotted literal + qualified-
-   contributions input; Clean Vehicles (8936) + Business Credit (3800) + Renewable Electricity (8835)
-   tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward statement.
-
-## ▶ RS follow-ups (rides a dedicated RS session — parallel RS work may be uncommitted)
-- **🔴 NEW this session (tax-law) — GA-500 `R-GA500-MIL` military exclusion is WRONG in RS.** The RS
-  Supabase spec + `check_ga500_integrity.py` still encode `L3 + L8` (over-exclusion); tts compute is
-  now fixed + canonical. Amend the RS loader + integrity (proceed → `min(mret, 2*base)`; STOP → `l3`),
-  re-seed + re-export `500_spec.json`, update the GA500-T5 scenario + add a mid-range one. Full recipe:
-  `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
-- **NEW this session:** `8867_spec.json` — R-8867-RENDER + `f8867_claims_aotc` notes + `D_8867_002` say
-  "Form 8863 not built → AOTC RED"; STALE (8863 built, D_8867_002 retired). Refresh text to "AOTC derived
-  from Form 8863 (line 7 > 0)" + mark D_8867_002 retired. Notes-only, no tax-law change.
-- Carried: RS Schedule D — add `D_8949_006` to the 8949 spec; consider an FA for the 1a/8a aggregate
-  netting. RS SCHA spec fact for `scha_qualified_contributions_cash` (input-only; amend by lookup).
-  RS 8995 sibling loader's D_8995_001 retirement note. (The six prior handoff items were applied by the
-  RS session 2026-07-04 — see the archive.)
-
-## ▶ Carryover follow-up (older, still open)
-- 1065 beyond the SE unit resumes only on Ken's explicit direction — `1065_status_assessment.md`.
-- Minor parked sweep: 1065-section selects non-key uncontrolled; legacy `boxCheckbox` (pre-existing).
-- EIN/ZIP re-import stays PARKED.
-- **Proforma v1 follow-ups** (flagged, non-blocking): per-activity PAL roll (v1 is aggregate);
-  `_sr_py_prior_refunded`/`_sr_py_unused_credits` sourcing; the TaxWise season-one 1040 importer (Oct).
+4. tts-tax-status has Ken's uncommitted WIP (`PRODUCT_MAP.md` edit + `CHANGE_REGISTER.md`) — left
+   untouched this session; the status-mirror was synced with explicit file adds (not `git add -A`).
 
 ## Authoritative files read at boot
-- `SPRINT_SCOPE.md` · `SEASON_PLAN.md` (dated Jan-2027 runway) · `SEASON_CHECKLIST.md` (tick-list) · `MASTER_PROMPT.md` · `MEMORY.md`/`DECISIONS.md`/`SUITE_CONTRACT.md` · `REVIEW_QUEUE.md` · `form_coverage_tracker.md` · `STATUS_ARCHIVE.md` (history) · RS `session_log.md` (when RS work on deck).
+- **`tts-tax-status`:** `BUILD_ORDER.md` (order) · `SEASON_PLAN.md` (gates) · `PRODUCT_MAP.md` (scope).
+- **tax-app root:** `SPRINT_SCOPE.md` · `MASTER_PROMPT.md` · `MEMORY.md`/`DECISIONS.md`/`SUITE_CONTRACT.md` ·
+  `REVIEW_QUEUE.md` · `form_coverage_tracker.md` · `STATUS_ARCHIVE.md` (history) · RS `session_log.md`.

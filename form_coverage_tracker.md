@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (fifteenth session) — SC1040 (South Carolina individual) — RESIDENT RETURN COMPLETE
+> across FOUR legs; Schedule NR render is the only remaining sub-leg → S-7 NOT yet fully ticked.**
+> New state form on the GA-500 pattern (FormFieldValue-backed, `seed_sc1040`, no migration).
+> **Compute** ✅ `compute_sc1040` (dispatched in `compute_return` for form_code SC1040) — SC1040TT tax
+> verified 138/138 vs the published SCDOR table (midpoint convention; the RS spec's "$2,533" pin was
+> wrong — real = $2,360); §168(k)+§179 add-backs (SC pre-OBBBA $1.25M), retirement/military/age-65
+> stack, 44% cap gain, embedded Schedule NR compute. **Input** ✅ `seed_sc1040` (5 sections / 81 lines)
+> + `create-state-return`/`refresh-from-federal` SC wiring + frontend picker/section-tabs + the
+> RED/YELLOW/GREEN color system (generic editor). **Render** ✅ FACE (3 pages, coordinate overlay,
+> visually verified) + page-1 identity header; ⬜ **Schedule NR render remains**. **Diagnostics** ✅ 6
+> `D_SC1040_*` info rules (registered + seeded). Tests: 16 pure compute + 4 state-return DB + 5 render
+> + 4 diagnostics DB, all green; flow gate 398. Commits `307a810`/`a8cb291`/`81e0809`/`4cb497a`/
+> `af2c6a7`/`13443d5`/`118613d`. Also fixed a latent `renewable_facilities` serializer bug (broke ALL
+> full-return serialization since the 7-04 Form 8835 unit). RS follow-up: SC1040 spec is `draft` + carries
+> the wrong $50k pin.
+
 > **2026-07-05 (thirteenth session) — e-file/diagnostics HARDENING, no coverage change.** Two latent
 > bugs on already-complete forms, no leg status moved: (1) **Schedule 3 e-file leg** — `build_schedule3`
 > now emits the lines 6z + 13z repeating groups (`OtherNonrefundableCreditsGrp` / `OtherRefundableCreditsGrp`
