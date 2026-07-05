@@ -4,14 +4,14 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**idle — Ken directs.** Last completed: **Proforma/rollover snapshot PRODUCER —
-2026-07-04 (eleventh session) `3a55f31`** — the app-to-app snapshotter that closes the
-roll-forward loop (the roll side was already built, migs 0105/0106, but nothing wrote a
-1040 snapshot). Fires on the 1040 DRAFT→FILED transition; the producer owns the year-shift
-(Sch D carryover-out, 4562 line 13, 8606 line 14 via `owner_lines`, next-year Roth basis,
-aggregate PAL) so the roll stays a dumb copy; `_sr_py_*` carries this year's Sch A facts.
-8/8 tests (producer correctness, key-contract drift guard, produce→roll round-trip, guards);
-flow 397 held. **The TaxWise season-one 1040 importer stays a separate October item.**
+**idle — Ken directs.** Last completed: **RS/carryover cleanups — tts-side + handoff —
+2026-07-05 (twelfth session)** — verified tts already correct for every carried RS follow-up
+(diagnostics are CODE-registered, `is_active` honored; `D_8911_004` already retired), cleaned
+tts's own stale "Form 3800 unbuilt" comments/labels (mig 0167, help_text-only), and wrote the
+complete ready-to-apply RS handoff `docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` (six
+follow-ups, exact loader edits) for a dedicated RS session. flow 397 held.
+Prior: **Proforma/rollover snapshot PRODUCER — 2026-07-04 `3a55f31`** (app-to-app snapshotter;
+producer owns the year-shift; fires on 1040 DRAFT→FILED; 8/8 incl. produce→roll).
 Remaining July CC: 4868 extension mapper stays **blocked** (no TY2025 4868 schema on disk —
 only 2026v1.0; needs the SOR pull); 1120-S/7004 mappers blocked on the business-family
 schema pull. The whole 1040 ATS scenario set is BUILT (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
@@ -214,6 +214,10 @@ shows AMT indicators; build later if needed.*
 ---
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
+- ⚠ RS/carryover cleanups — tts-side + handoff (twelfth session) — 2026-07-05. Not a checklist
+  line item (it drains the carried "RS follow-ups"). tts stale-comment cleanup + mig 0167
+  (help_text only) + `docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md`. RS DB reseed/
+  re-export deferred to a dedicated RS session (parallel RS work uncommitted).
 - ⚠ Season checklist + status-mirror protocol adopted — 2026-07-03
 - ⚠ 4797 K-1 box 9c pass-through test (parallel session's `cca5e34`) — full-file green-run
   gate verified and cleared — 2026-07-03

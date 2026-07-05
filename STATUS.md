@@ -1,10 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-04, eleventh session (**Proforma/rollover snapshot PRODUCER COMPLETE**
-— `3a55f31`. The app-to-app snapshotter that closes the prior-year roll-forward loop: the roll
-side was already built (migs 0105/0106) but nothing WROTE a 1040 snapshot, so it was a prod
-no-op. Now a finalized 1040 freezes into a `PriorYearReturn(year=CY)` on DRAFT→FILED, and next
-year rolls its carryforwards forward.)*
+*Last updated: 2026-07-05, twelfth session (**RS/carryover cleanups — tts-side + handoff**.
+Ken chose "tts-side now, RS handoff." Verified tts is already correct for every carried RS
+follow-up (diagnostics are CODE-registered via `seed_builtin_rules` reading `RULES_*` and
+honoring `is_active`; `D_8911_004` already retired `is_active=False`). Cleaned tts's own stale
+"Form 3800 unbuilt" comments/labels now that 3800 is built (compute_8911 docstring,
+seed_form_8911 docstring/section/label/description, models.py help_text → mig 0167), and wrote
+the complete ready-to-apply RS handoff at
+`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` for a dedicated RS session.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -18,13 +21,18 @@ year rolls its carryforwards forward.)*
   → **8 passed** (~2 min DB). Producer correctness (year-shifted carryforwards + demographics +
   deps + 8606 L14 + Roth next + Sch A facts), a key-CONTRACT drift guard, the full produce→roll
   round-trip, and guards.
-- Test DB `test_postgres` CURRENT (migs through **0166**; NO new migration this session — the
-  producer is pure read/write over existing models + a new `apps/returns/proforma.py`).
+- Test DB `test_postgres` needs **mig 0167** applied (`0167_refueling_k1_help_text` — a
+  help_text-only `AlterField` on `Taxpayer.refueling_k1_credit`; no schema/data change; applies
+  on the next test/deploy run). `manage.py check` clean.
 
 ## ▶ RESUME HERE — idle; Ken directs the next unit
-This session built the **proforma snapshot PRODUCER** (`server/apps/returns/proforma.py`,
-`capture_prior_year_1040_snapshot`), wired at the 1040 DRAFT→FILED transition in `views.py`
-`update_info` beside `capture_as_filed_baseline`. It closes the loop the read/roll side left open.
+This session (twelfth) did the **RS/carryover cleanups, tts-side + handoff**. No compute change;
+tts was already correct. Deliverables: (1) the ready-to-apply **RS handoff doc**
+`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` — six carried RS follow-ups with exact
+loader/anchor edits (8911 stale-3800 retirement · 8936 D_8936_004+R-8936-TRANSFER · 8949
+D_8949_006 · SCHA qualified-contributions fact · 8995 D_8995_001 retirement · 3800 J4 = no
+action); (2) tts stale-comment cleanup (mig 0167). The RS DB reseed/re-export rides a dedicated
+RS session (parallel RS work is uncommitted — don't collide).
 
 Per `SEASON_PLAN.md`, remaining runnable/near-term CC items:
 - **4868 extension mapper** — **BLOCKED**: only `docs/mef/schemas/2026v1.0/4868_2026v1.0.zip`
@@ -70,12 +78,19 @@ Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/
    Electricity (8835) tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward
    statement.
 
-## ▶ RS follow-ups (carried, small)
-- FA-1040-8911-04's RS-side description still says "Form 3800 unbuilt" — refresh the text.
-- RS 8936 spec: add the FACE-verified transfer stop (R-8936-TRANSFER) + D_8936_004
-  wrong-year-PIS note (DEFERRAL_AUDIT eighth session, parts 1-2).
-- RS 3800 J4: §6417/§6418 transfer treatment stays RED-deferred (D_3800_004) — S4 documents
-  the divergence (key routes to 1f/transfer column f; engine treats own-production → 4e).
+## ▶ RS follow-ups → NOW BUNDLED into the handoff doc (twelfth session)
+All carried RS follow-ups are enumerated with exact loader edits in
+`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md`. A dedicated RS session applies them
+(amend-by-lookup → reseed RS Supabase → re-export → refresh the `server/specs/*.json` mirrors):
+- FA-1040-8911-04 + D_8911_004 + R-8911-SCHA-BUS "Form 3800 unbuilt" → retire/repoint (3800 BUILT).
+- RS 8936: add D_8936_004 (wrong-year-PIS/missing-VIN) + R-8936-TRANSFER (never-re-lands stop).
+- RS 8949 (schedule_d loader): add D_8949_006 (imported-summary confirm gate).
+- RS Schedule A: add the `scha_qualified_contributions_cash` input-only fact.
+- RS 8995 (schedule_c loader): record D_8995_001's retirement (8995-A now computes above-threshold).
+- RS 3800 J4 (§6417/§6418): **no action** — D_3800_004 is an intentional documented divergence.
+- ⚠️ Non-obvious: tts diagnostics are CODE-registered (`seed_builtin_rules` reads `RULES_*`,
+  honors `is_active`); the cached `server/specs/*.json` are RS-export MIRRORS — do NOT hand-edit
+  them ahead of the RS reseed (would make them lie about the RS DB). Re-export refreshes them.
 
 ## ▶ Carryover follow-up (older, still open)
 - Next RS Schedule D touch — (a) add `D_8949_006` to the 8949 spec; (b) consider an FA for
