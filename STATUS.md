@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-04, ninth session (**Form 8835 unit KICKOFF — boot + spec analysis +
-scope walk only; NO code written, context filled early**). The 3800/8936 state from the
-eighth session is unchanged (combined gate 451, migs through 0164).*
+*Last updated: 2026-07-04, ninth session (**Form 8835 unit IN FLIGHT — scope walk ALL FOUR
+RULED + model leg DONE (migs 0165/0166 APPLIED TO THE SHARED DB) + compute leg WRITTEN BUT
+UNTESTED — session paused at Ken's limit right before the first pure-test run**). The
+3800/8936 state from the eighth session is unchanged (combined gate 451).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -16,24 +17,60 @@ eighth session is unchanged (combined gate 451, migs through 0164).*
 - Test DB `test_postgres` CURRENT (migs through **0164**); shared (prod) DB seeded through
   seed_3800/seed_8936/seed_rules. RS: 3800 amendment seeded (`5407bb2`).
 
-## ▶ RESUME HERE — Form 8835 unit (scope walk DONE, build the four legs)
-**Scope walk result (AskUserQuestion, this session):**
-- **J1 RULED (Ken): multi-facility list model** — one `RenewableFacility` row per facility
-  (CleanVehicle/Form4835 pattern), one rendered Form 8835 face per facility, FORM_8835 FFV
-  rows persist the return-level aggregate. Line 16 (patron/beneficiary alloc) UNMODELED —
-  coops/estates/trusts only, never a 1040 (stated boundary).
-- **J2/J3/J4 answered "[No preference]"** → proceed on the recommended options, but they are
-  ADOPTED-BY-DEFAULT, not Ken-ruled — surface them in the review walk before seeding any RS
-  amendment / at the first natural checkpoint:
-  - J2 mixed 1f/4e routing → **RED-defer** (new D_8835_005 error; escape hatch = the 3800
-    direct-entry facts `f3800_other_credits_1zz` / `f3800_other_specified_4z`).
-  - J3 straddle year (4-yr window END falls inside the tax year) → **RED-defer** (same
-    escape hatch). Clean rule: whole year inside [PIS, PIS+4yr) → 4e; window ended before
-    the year → 1f; PIS in-year → 4e (no pre-PIS production possible); window end mid-year
-    → straddle RED.
-  - J4 passthrough-only routing → **nullable `Taxpayer.f8835_passthrough_pis_date`** (the
-    K-1 facility's PIS; one routing rule everywhere = spec T4's own shape); passthrough > 0
-    with the date unanswered → RED, feed withheld (tri-state convention).
+## ▶ RESUME HERE — Form 8835 unit, MID-BUILD (next action: run the pure compute tests)
+**EXACT NEXT COMMAND** (paused right before it; venv python direct — poetry run hangs):
+```
+cd server
+C:\Users\Ken\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Local\pypoetry\Cache\virtualenvs\tts-tax-server-oXVY_DSk-py3.13\Scripts\python.exe -m pytest tests/test_form8835_compute_leg.py -q
+```
+
+**DONE this session (committed `d2bf28e`):**
+- **Scope walk — ALL FOUR RULED by Ken** (re-asked after the no-preference round):
+  J1 multi-facility list model · J2 mixed 1f/4e → RED-defer (D_8835_005; escape hatch =
+  the 3800 1zz/4z direct-entry facts) · J3 straddle (window END mid-year) → RED-defer
+  (D_8835_006; rule: whole-year-inside → 4e, ended-before → 1f, PIS-in-year → 4e) ·
+  J4 passthrough routing → nullable `Taxpayer.f8835_passthrough_pis_date` (unanswered +
+  amount → RED D_8835_007, feed withheld). Also mine: missing PIS on a producing facility
+  → D_8835_008 withheld; line 16 patron alloc UNMODELED (1040 never). REVIEW_QUEUE's
+  open J2/J3/J4 item is now RESOLVED — move it on the next touch.
+- **Model leg DONE**: `RenewableFacility` (models.py, after CleanVehicle; fields 1:1 spec
+  fact keys) + Taxpayer `f8835_passthrough_credit`/`f8835_passthrough_pis_date`; migs
+  **0165 + RLS 0166 — APPLIED TO THE SHARED (PROD) DB** ✅; serializers
+  (RenewableFacilitySerializer + Taxpayer exposure + nested `renewable_facilities` on the
+  return payload); views CRUD `renewable-facilities(/<id>)` with `_recompute_1040` (the
+  chokepoint rule). `manage.py check` clean. ⚠ **test DB NOT yet migrated through
+  0165/0166** (use the scratchpad migrate_test_db.py NAME-override trick).
+- **Compute leg WRITTEN, ⚠ NOT YET RUN**: `apps/returns/compute_8835.py` — year-keyed
+  RATE table (2025: .006/.003 tiers, .006 hydro/marine post-2022, 3.0¢/1.5¢ pre-2022;
+  D_8835_RATE_YEAR when unpinned) · OBBBA gate `facility_obbba_ok` (blank construction
+  date proven by PIS < cutoff — the 8936 convention) · `route_for_window` (4e/1f/straddle/
+  unknown) · `facility_lines` Part II chain (2→13 per spec formulas, ×5, +10%/+10%, EPE
+  90%, bond 15% cap) · `form_8835_state` (THE shared gatherer: components, mixed/straddle/
+  unrouteable flags, feed_amount/feed_route) · `form_8835_credit` (the PINNED 3800 wiring
+  tuple) · `form_8835_face_value` · `compute_8835_db` (FFV aggregate rows "2".."15",
+  disengage rule) — wired in compute.py immediately BEFORE the compute_3800_db block.
+- **Pure tests WRITTEN, ⚠ NOT YET RUN**: `tests/test_form8835_compute_leg.py` — constants
+  pin, OBBBA gate, all rate tiers, routing edges (S4 4e / T4 1f / straddle / PIS-in-year),
+  spec vectors S4($13,200/4e)/T2/T3/T5, reduction chain (bond cap binds), EPE 90%.
+
+**REMAINING legs (tasks #3-#7 in the harness task list):**
+1. Run the pure tests (above) → fix → then the DB pipeline test file
+   (`test_form8835_pipeline.py` — the form3800_pipeline pattern: engage, FFV rows, the
+   3800 1f/4e feed incl. the S4 all-carries shape, disengage; migrate the test DB first).
+2. Diagnostics + seed: `rules_8835.py` (D_8835_001/002/003/004/RATE_YEAR per spec +
+   NEW 005 mixed / 006 straddle / 007 passthrough-unrouted / 008 missing-PIS — all ≤20
+   chars, bridge-gated on `form_8835_state`) + `seed_8835` (FORM_8835 FormDefinition +
+   the "2".."15" lines) + seed_rules; run on SHARED + test DBs. ⚠ D_8835_005-008 need RS
+   loader homes (amend-by-lookup; flag if not done this unit — the 8936 R-8936-TRANSFER
+   precedent).
+3. Render leg: **f8835.pdf NOT downloaded** — manifest entry + update_irs_forms.py +
+   sha256 vs irs.gov + LABEL-VERIFY bijective map + render_8835 (ONE FACE PER FACILITY,
+   model-driven via facility_lines — the render_4835 pattern; header = filer name/SSN) +
+   PNG visual pass + packet emit + SKIP_PAGES if instruction pages.
+4. UI: RenewableFacilitiesSection tab (CleanVehiclesSection pattern) + the two Taxpayer
+   passthrough inputs + D_8835_ → form_8835 routing; tsc clean.
+5. FA leg: FA-1040-8835-01.. in tts gate file + RS loader homes SAME unit; combined flow
+   gate; tag `1040-form-8835-complete`; then the S4 scenario + mapper leg.
 
 **Build facts established this session (verified in code/spec — trust these):**
 1. Spec cached + rich: `server/specs/8835_spec.json` (7 rules / 38 lines / 5 diags / 5

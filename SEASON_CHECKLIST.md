@@ -4,12 +4,13 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**Form 8835 unit — IN FLIGHT (2026-07-04 ninth session: scope walk done — Ken ruled J1
-multi-facility; J2/J3/J4 no-preference → recommended options adopted-by-default; NO code
-yet — build the four legs per STATUS.md's "Build facts established" list), then the S4
-scenario.** Last completed: **Form 3800 unit (all four legs, same-session RS round-trip) +
-Form 8936 unit (all four legs) — both 2026-07-04** (combined gate 451; D_8911_004 retired,
-D_8936_003 softened; the S4 all-carries ordering Ken-blessed + pinned end-to-end).
+**Form 8835 unit — MID-BUILD (2026-07-04 ninth session: scope walk ALL FOUR Ken-ruled;
+model leg DONE, migs 0165/0166 applied to the SHARED DB; compute leg + pure tests WRITTEN
+BUT NOT RUN — paused at session limit; resume = STATUS.md's EXACT NEXT COMMAND), then
+render/UI/FA legs, then the S4 scenario.** Last completed: **Form 3800 unit (all four
+legs, same-session RS round-trip) + Form 8936 unit (all four legs) — both 2026-07-04**
+(combined gate 451; D_8911_004 retired, D_8936_003 softened; the S4 all-carries ordering
+Ken-blessed + pinned end-to-end).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
