@@ -17,16 +17,22 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-9 NC D-400 COMPLETE across ALL 4 legs**
-(2026-07-05, seventeenth session; form_code "NC_D400"): compute `69cf82b` · input `b31d5c7` · render
-`c704f21` · diagnostics `8358e74`. Flat 4.25% (§105-153.7, year-guarded); NC decouples bonus/§179 → 85%
-add-back (conformity frozen Jan-1-2023, OBBBA N/A); child-deduction bands; NC-itemized subset; Schedule PN
-proration. All 8 RS spec pins verified; 32 tests; flow gate 398. (Also fixed a latent AL40
-`refresh_from_federal` bug.) The three individual state forms (SC1040 S-7, AL40 S-8, NC D-400 S-9) are done.
+## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b DONE; next = leg 2 (Schedule L
+balance check).** ✅ **Leg 1b (2026-07-05, eighteenth session) — Schedule K 2025 renumber + Analysis
+line + diagnostics.** Renumber (`seed_1065`→290 lines): foreign taxes K16a→line 21 (`K21`); line 16→`K16`
+K-3-attached checkbox (intl RED-defer); investment interest K13d→`K13b`; added `K13c`/`K13e`; new computed
+`K_ANALYSIS` = (Σ K 1-11) − (Σ K 12-13e + 21) (R-SCHK-ANALYSIS). New `rules_1065_schk.py`: D_SCHK_HANDOFF /
+D_SCHK_K3 / D_SCHK_9C / D_1065P1_4797 / D_1065P1_COGS. k1_allocator carried the renames. ★ Fixed a latent
+cross-form bug: `aggregate_schedule_d` (1120-S SCHD_1120S, keys K7/K8a) ran ungated and zeroed 1065 royalties
+(K7) every recompute → added a `code=="1065"` guard. 7 pure + 9 DB tests; flow 398. Render still DEFERRED.
+(Prior: ✅ **S-9 NC D-400 COMPLETE all 4 legs** — compute `69cf82b`/input `b31d5c7`/render `c704f21`/diag
+`8358e74`; flat 4.25%, 85% bonus/§179 add-back; the three state forms SC1040/AL40/NC D-400 are done.)
 ## ▶ NEXT — app: **S-3 brokerage front end** (∥, not spec-gated) · **S-11 1041 module** app build (RS
 authoring DONE 2026-07-05) · **S-4 1065 core** compute build · **S-5/S-6** boundary + PAL/basis app builds ·
-S-10 GA-700 (gated behind S-4 1065 core) · **authoring: S-13 1120 C-corp
-module [RS/Ken]** — NEW, added 2026-07-05, the next RS authoring rock (all prior RS spine authoring is DONE)
+S-10 GA-700 (gated behind S-4 1065 core) · **S-13/S-14 1120 + state C-corp** app builds (RS authoring DONE
+2026-07-05 `9a41581`/`87b66a4`). **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the
+current RS rock (S-13 1120 + S-14 state C-corp both DONE; all earlier RS spine authoring DONE). After S-15,
+net-new RS scope depends on the TaxWise forms-usage report or a law change.
 
 ---
 
@@ -62,10 +68,13 @@ YELLOW render + preparer-confirm UI. Not spec-gated. Parallel.
 **S-4 · [RS]✅→[APP]⏳ · 1065 core (WO-02) — RS authoring DONE; APP build IN PROGRESS (2026-07-05).**
 ▸ 6 specs cached (`a4f3370`). ⚠ found the app's 1065 page-1 + Sch K were on PRE-2025 line numbering (verified
 vs f1065.pdf). **✅ leg 1a — page-1 2025 renumber (`10f1fd2`):** ord business income now line 23 (was 22),
-K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. ▶ NEXT leg 1b: Sch K renumber
-(foreign taxes K16a→21, line 16→K-2/K-3 checkbox, +K13b/c/e) + Analysis-of-Net-Income line + D_SCHK_HANDOFF;
-then Sch L balance check, M-1/M-2 tie-outs, K-1 alloc reconcile, issuer-side `PartnerK1Computed`+1065→1040
-import, 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
+K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. **✅ leg 1b — Schedule K 2025
+renumber + Analysis line (2026-07-05, eighteenth session):** K16a→line 21, line 16→K-3 checkbox, K13d→K13b,
++K13c/K13e, computed `K_ANALYSIS`, seed→290 lines; 5 new diagnostics (`rules_1065_schk.py`); k1_allocator
+renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398. ▶ NEXT leg 2:
+Sch L balance check (L14=L22, D_L_BALANCE_*); then leg 3 M-1/M-2 tie-outs (assert K_ANALYSIS=M1_9=M2_3),
+leg 4 K-1 alloc reconcile, leg 5 issuer-side `PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion
+gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
@@ -126,18 +135,32 @@ turn-on waits on the Shelf (DOR approvals).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
 - [ ] multi-preparer concurrency   - [ ] invoice/client letter for 1040 packets
 
-**S-13 · [RS]⬜→[APP] · 1120 C-corp module (WO-11), greenfield RS-first. ADDED 2026-07-05 (Ken — a
-scope add BEYOND the original season-one plan; the C corporation is a NEW entity type nothing else covers).
-NEXT RS authoring rock.** Required set (gap-check target — enumerate + probe `lookup/<form>/export/` at build):
-- [ ] spine (page-1 income L1-11 → deductions L12-29 → taxable income L30 → §11 flat **21%** tax)
-- [ ] Schedule C — dividends + dividends-received deduction (§243/§245A 50%/65%/100%)
-- [ ] Schedule J — tax computation (21%, credits, other taxes; §55 CAMT + 2220 estimates = scope-walk)
-- [ ] Schedule K (other information) + Schedule L (balance sheet)
-- [ ] Schedule M-1 / M-2 (book-tax reconcile + retained earnings; M-3 $10M threshold)
-- [ ] 1125-A (COGS) + 1125-E (officer compensation)
-- [ ] GA Form 600 (GA C-corp: income tax + net worth tax) — state companion
-- [ ] confirm 4562 / 4797 / 3800 already cover 1120 (entity_types carry '1120' — verify at gap-check, like 1065 core)
-- scope-walk items: NOL §172 (80% limit), §163(j), CAMT §55 (likely RED-defer — $1B AFSI), PHC/accumulated-earnings tax.
+**S-13 · [RS]✅→[APP]⬜ · 1120 C-corp module (WO-11), greenfield RS-first. RS authoring COMPLETE 2026-07-05
+`9a41581` (+ `bf58d48` GA600 jurisdiction fix). Gate-1 D-13.** The first C-corporation entity type. 3 forms
+seeded/exported (`lookup/{1120,1120_SCHL,GA600}/export/` = 200); prod 100→103 TaxForms.
+- [x] `1120` spine — page-1 income/deductions → Sch C DRD (§243 50/65/100% + §246(b) limit/loss exception) →
+  §172 NOL 80% → §11 flat **21%** → Schedule J total tax. §163(j)/CAMT/PHC/AET/§59A/§1062 screen+route.
+- [x] `1120_SCHL` — Schedule L balance (L15==L28) + M-1/M-2 ties + Sch K $250k/$10M-M-3 gates.
+- [x] `GA600` — GA C-corp: 5.19% income + §168(k)/§179 delta ($1.25M/$3.13M) + single-factor apportionment + net worth tax table.
+- [x] confirmed 1125-A/1125-E/3800/4562/4797/8949/7004 already cover 1120 (entity_types carry '1120').
+- ⚠ Stale GA §179 in CLAUDE.md ($1.05M/$2.62M = 2021) spun off (`task_1c8d891e`). tts compute build = [APP] lane (on hold).
+- [ ] tts app build: new 1120 entity type + income→DRD→NOL→21%→total-tax compute + Sch L/M-1/M-2 + GA600 dual tax  `[APP]`
+
+**S-14 · [RS]✅→[APP]⬜ · State C-corp batch (WO-12), greenfield RS-first. RS authoring COMPLETE 2026-07-05
+`87b66a4`. Gate-1 D-14.** Reuse-state C-corp returns extending S-13 to GA's income-tax neighbors. 3 forms
+seeded/exported (`lookup/{SC1120,AL_FORM_20C,NC_CD405}/export/` = 200); prod 103→106 TaxForms.
+- [x] `SC1120` — 5% + §168(k) decouple/§179 $1.25M/$3.13M + license fee. ⚠ H.3368/OBBBA live-wire flag (`D_SC1120_H3368`).
+- [x] `AL_FORM_20C` — 6.5% + apportioned FIT deduction (constitutional, Amendment 662) + AL conforms §168(k)/§179 + GILTI/§174 decouples.
+- [x] `NC_CD405` — combined 2.25% income (S.B. 105) + net-worth franchise tax + 85% bonus/§179 $25k/$200k add-back.
+- [ ] tts app build: SC/AL/NC C-corp compute (reuses the 1120 flow)  `[APP]`
+
+**S-15 · [RS]▶ DRAFTING→[APP]⬜ · NC + AL pass-through entity batch (WO-13), greenfield RS-first. ADDED 2026-07-05
+(Ken — completes the adjacent-state pass-through track; SC pass-through done via SC1065/SC1120S/PTET, D-9). THE
+CURRENT RS AUTHORING ROCK.** Reuses NC/AL conformity + the SC pass-through pattern. Required set (all GAP at gap-check):
+- [ ] **NC D-403** (partnership) + **NC CD-401S** (S-corp) + the **NC Taxed PTE** election (each state's PTET differs — verify, don't clone GA)
+- [ ] **AL Form 65** (partnership) + **AL Form 20S** (S-corp) + the **Alabama Electing PTE** tax (Act 2021-1)
+- reuse: NC 85% bonus/§179 $25k/$200k + Jan 1 2023 conformity (as NC D-400/CD-405); AL conforms §168(k)/§179 + GILTI/§174 (as AL 20C).
+- scope-walk items: PTET compute depth per state; owner-side credit vs exclusion; NC franchise on CD-401S (S-corps pay NC franchise); AL BPT separate.
 
 ---
 
