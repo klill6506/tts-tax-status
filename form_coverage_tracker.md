@@ -557,9 +557,13 @@
 > attach only when adjustments exist; p2 only if RIE applies, p3 only if military). Pre-printed
 > constants (p2 L4 $5k, p3 L2 $17.5k/L7 $35k) intentionally unmapped. Baseline recipe =
 > box-bottom rule + 2pt (get_drawings "re"; the ".00" text anchors skew ~8-10pt low). No compute
-> change (flow 398 unchanged). ⚠ **Surfaced an OPEN military over-exclusion COMPUTE bug**
-> (REVIEW_QUEUE / `.claude` [[ga500-military-exclusion-overexclusion-bug]]) — flagged, NOT fixed.
-> Boundaries → DEFERRAL_AUDIT 2026-07-05. Detail → `.claude` [[ga500-schedule1-render-leg]].
+> change in the render leg (flow 398 unchanged). ⚠ **Surfaced + then FIXED (Ken's go-ahead) a
+> military over-exclusion COMPUTE bug:** `compute_ga500.mil()` was `l3+l8`, over-excluding military
+> retirement of $17,501–$34,999; now `min(mret, 35000)` per IT-511 (renderer 7b/7e updated to match;
+> T5 re-pinned + NEW `T5b-military-midrange`; 19 pure scenarios + flow 398 green). RS-side spec
+> `R-GA500-MIL` + `check_ga500_integrity.py` reconciliation PENDING (`docs/rs_handoff/2026-07-05_…`).
+> Boundaries → DEFERRAL_AUDIT 2026-07-05. Detail → `.claude` [[ga500-schedule1-render-leg]] +
+> [[ga500-military-exclusion-overexclusion-bug]].
 
 > **2026-07-02 -- GA-500 HB 463 tips/overtime exclusions (§48-7-27(a)(16)/(17)) -- ★★ UNIT COMPLETE (DB-verified, GA suite 48 passed in 9:20) -- tag `ga500-hb463-tips-ot-complete` -- SPEC-FIRST RS round-trip -- flow gate 363→365.**
 > Found during the same-day HB 463/AP statute verification: the enacted Act (signed 2026-05-11,

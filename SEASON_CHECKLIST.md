@@ -229,11 +229,12 @@ shows AMT indicators; build later if needed.*
   GA-DOR packet) + `coordinates/fga500_schedule1.py` + `render_ga500_schedule1()` appended after the
   face. Ken ruled all-3-pages + tips/OT fold into printed line 12. 9 pure + 4 DB render tests; flow
   398 held; no compute change / no migration. Detail → form_coverage_tracker + `.claude` memory.
-- ⚠ 🔴 GA-500 military RIE over-exclusion compute bug SURFACED (fourteenth session) — 2026-07-05.
-  Found while rendering Schedule 1 p3; IT-511-verified; flagged to Ken (REVIEW_QUEUE Open), NOT
-  fixed (tax-law = Ken's ruling). `compute_ga500.mil()` over-excludes military retirement of
-  $17,501–$34,999. Corrected the stale "GA-500 OT/tips exclusion not started" note (was built
-  2026-07-02) in STATUS + this file.
+- ⚠ ✅ GA-500 military RIE over-exclusion compute bug SURFACED **+ FIXED** (fourteenth session) —
+  2026-07-05. Found while rendering Schedule 1 p3; IT-511-verified; Ken said "fix it". `compute_ga500
+  .mil()` was `l3+l8` (over-excluded military retirement of $17,501–$34,999); now `min(mret, 35000)`.
+  Compute + renderer 7b/7e + T5 re-pin + NEW `T5b-military-midrange`; 19 pure scenarios + flow 398 +
+  check green. RS-side spec `R-GA500-MIL` + `check_ga500_integrity.py` reconciliation PENDING
+  (handoff `docs/rs_handoff/2026-07-05_…`). Also corrected the stale "OT/tips not started" note.
 - ⚠ Form 8867 AOTC gate/cascade lock-step (thirteenth session) — 2026-07-05 `8783487`. Closed the last
   residue of the eic-8867-gate-cascade fix: the DD print gate (`_covered_credits`) and the attestation
   cascade (`_cascade_claims`) defined AOTC differently (gate = circular "line 13 answered"; cascade =

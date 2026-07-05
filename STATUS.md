@@ -5,8 +5,8 @@
 flat template `fga500_schedule1` extracted from the GA-DOR packet + coordinate overlay, appended
 after the Form-500 face. Ken's requested "GA-500 OT/tips exclusion" was ALREADY BUILT (2026-07-02,
 `ga500-hb463-tips-ot-complete`) — a stale-tracker resurrection, now corrected; Ken redirected to
-the render leg. ⚠️ Surfaced (NOT fixed) an OPEN military-exclusion over-exclusion compute bug —
-see "Waiting on Ken".*
+the render leg. Then, on Ken's go-ahead, FIXED a military-exclusion over-exclusion compute bug that
+surfaced while rendering (IT-511-verified; `min(mret, 35000)`) — RS-side spec reconciliation pending.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -42,11 +42,13 @@ only when adjustments exist; p2 only if RIE applies, p3 only if military. All 3 
 calibrated (baseline = box-bottom + 2pt via get_drawings "re"). Gates: 9 pure + 4 DB render tests,
 flow 398 held, `manage.py check` clean.
 
-**🔴 OPEN — needs Ken's ruling (see "Waiting on Ken" #1):** while rendering page 3 I found
-`compute_ga500.mil()` **over-excludes** military retirement of $17,501–$34,999 (GA earned ≥ $17.5k):
-it returns `l3 + l8` = `min(mret,17500)+min(mret,17500)`, which can exceed the income received.
-IT-511-verified correct = `min(mret, 35000)`. Untested (T5-military uses $40k, above the cap). I did
-NOT touch compute (tax law = Ken's). Fix now or defer?
+**✅ FIXED same session (Ken: "fix the military bug"):** `compute_ga500.mil()` over-excluded
+military retirement of $17,501–$34,999 (GA earned ≥ $17.5k) — returned `l3 + l8`; now `min(mret,
+35000)` (proceed) / `min(mret, 17500)` (STOP), IT-511-verified. Compute + renderer 7b/7e + T5
+re-pin + NEW `T5b-military-midrange` ($20k mret → $20k, tax 1,453 vs pre-fix 675). 19 pure
+scenarios + flow 398 + check green. **RS-side spec `R-GA500-MIL` + `check_ga500_integrity.py`
+reconciliation is a PENDING RS-session task** — handoff `docs/rs_handoff/2026-07-05_ga500_military_
+exclusion_fix.md` (tts compute is now canonical; cached `500_spec.json` text fixed in-repo).
 
 Per `SEASON_PLAN.md`, remaining runnable/near-term CC items (unchanged): **4868 mapper** BLOCKED (no
 TY2025 4868 schema on disk — SOR pull); **1120-S/7004 mappers** BLOCKED (business-family schema pull —
@@ -60,14 +62,6 @@ NOT actionable until DOR publishes the 2026 IT-511 / Form 500 face (~late 2026).
 
 Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
 
-## ▶ Waiting on Ken
-0. **🔴 NEW — GA-500 military RIE over-exclusion: fix now or defer?** `compute_ga500.mil()` returns
-   `l3 + l8` (both `min(mret,17500)`) → over-excludes military retirement of **$17,501–$34,999** with
-   GA earned ≥ $17,500 (e.g. $20k military → excludes $35k). **IT-511-verified** (p21-22 + Form 500
-   Sch 1 p3): correct = `min(mret, 35000)` (proceed) / `min(mret, 17500)` (STOP). Fix = the proceed
-   branch → `min(mret, 2*base)` + a mid-range test + re-check the RS GA-500 spec first. NOT touched
-   (tax-law = Ken's). Full context: REVIEW_QUEUE Open + `.claude` memory. Doesn't affect the render.
-
 ## ▶ Waiting on Ken (carried)
 1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). **S2 + S3 + S4
    ready** (UNSIGNED, placeholder EFIN) — sign via
@@ -80,6 +74,11 @@ Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/
    tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward statement.
 
 ## ▶ RS follow-ups (rides a dedicated RS session — parallel RS work may be uncommitted)
+- **🔴 NEW this session (tax-law) — GA-500 `R-GA500-MIL` military exclusion is WRONG in RS.** The RS
+  Supabase spec + `check_ga500_integrity.py` still encode `L3 + L8` (over-exclusion); tts compute is
+  now fixed + canonical. Amend the RS loader + integrity (proceed → `min(mret, 2*base)`; STOP → `l3`),
+  re-seed + re-export `500_spec.json`, update the GA500-T5 scenario + add a mid-range one. Full recipe:
+  `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
 - **NEW this session:** `8867_spec.json` — R-8867-RENDER + `f8867_claims_aotc` notes + `D_8867_002` say
   "Form 8863 not built → AOTC RED"; STALE (8863 built, D_8867_002 retired). Refresh text to "AOTC derived
   from Form 8863 (line 7 > 0)" + mark D_8867_002 retired. Notes-only, no tax-law change.
