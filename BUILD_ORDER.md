@@ -102,7 +102,10 @@ turn-on waits on the Shelf (DOR approvals).
   2026-07-05 *(resident-only)*   - [x] Sch I RED-defer diag (D-2)
 - All 3 forms seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200); RS prod 99 TaxForms / 471 FA / 859 rules.
 - [ ] tts app build: fiduciary compute (DNI/IDD engine, §662 tiers, Sch G tax, K-1 issuance, GA 501) + its 4 ATS scenarios  `[APP]`
-- ➕ **WO-10 — Form 5227** split-interest trusts (PIF + CRT/CRAT/CRUT + CLT, §664 4-tier) = next 1041-family authoring order (own research pass).
+- [x] **WO-10 — Form 5227** split-interest trusts (CRAT/CRUT/PIF/CLT/§4947) — RS authoring DONE 2026-07-05
+  (`load_5227.py`; DECISIONS D-11; `lookup/5227/export/` = 200). §664(b) four-tier char engine (tier-level) +
+  §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure. RS prod **100 TaxForms / 475 FA / 867 rules**.
+  - [ ] tts app build: 5227 four-tier distribution character + UBTI excise (fiduciary lane)  `[APP]`
 
 **S-12 · [APP]⏳ ∥ · Season infrastructure** (not spec-gated; roll whenever CC has a lane).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
