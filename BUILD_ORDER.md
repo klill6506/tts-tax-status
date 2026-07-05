@@ -115,10 +115,14 @@ turn-on waits on the Shelf (DOR approvals).
 ---
 
 ## Open reconciliation debts (RS-first drift — close these)
-- **GA-500 military-exclusion fix** (7/5, `min(mret, 35000)`, IT-511-verified) was made
-  app-side with **RS spec reconciliation pending**. Author/reconcile the spec so compute and
-  spec agree — the app should not stay ahead of the law. Handoff:
-  `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
+- ✅ **RESOLVED 2026-07-05 (RS side) — GA-500 military exclusion.** Reconciled: the **RS spec is CORRECT
+  and authoritative** (under-62 gate; $17,500 base + $17,500 only if GA earned income > $17,500; max
+  $35,000; 62+ falls under the general exclusion) — research-verified vs 2025 IT-511 + Form 500 Sch 1 p3 +
+  O.C.G.A. §48-7-27(a)(5.1). The **app's `min(mret, 35000)` was OVER-inclusive** (ignores the age gate, the
+  earned-income condition, and the $17,500 base ceiling) — the app was BEHIND the law, not ahead. **tts fix
+  handed off (`task_f550dfd2`)** to correct the app compute to the worksheet. No RS spec change needed for
+  TY2025. RS loader annotated with a year-keyed **SB 31** flag (full military exemption starts **TY2026**;
+  the 2026 placeholder in `load_ga500_form_500.py` is stale — re-verify enrolled SB 31 before the TY2026 build).
 
 ## Maintenance
 - **CANONICAL HOME: tts-tax-status repo** (both CC contexts pull at boot). No duplicate copy in
