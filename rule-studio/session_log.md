@@ -4,6 +4,130 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-05 — SC1040 spec hygiene fix (promote to active + correct the $50k test pin)
+During the tts-app SC1040 build (S-7), two hygiene issues surfaced in `load_sc1040.py`:
+- **`FORM_STATUS` `draft` → `active`** — the spec was fully authored + Ken-approved 2026-07-04
+  (`READY_TO_SEED = True`), only the status label lagged.
+- **Test scenario "SC resident, wages only, single, no dependents" pin corrected** — the
+  `expected_outputs` L6 was the rough placeholder string `"SC1040TT lookup (~6% marginal at top;
+  ≈ $2,533)"`, which is WRONG. The published **SC1040TT_2025 row for $50,000-$50,050 = $2,360**
+  (the table applies the 3-bracket structure to each $50-bracket MIDPOINT: 6%×$50,025 − 642 =
+  2359.50 → $2,360 half-up). The tts engine reproduces the published table **138/138 rows, zero
+  mismatches** (verified vs the SCDOR PDF). Pin is now numeric `2360` + an explanatory note.
+- **Re-seeded RS Supabase** (`manage.py load_sc1040`, idempotent update_or_create) — deployed
+  `lookup/SC1040/export/` now returns `status: active` + `L6: 2360` (verified live, HTTP 200).
+- No tax-law change; the rules/line_map/diagnostics were already correct (the tts four-leg app was
+  built from them). `SC_SCHEDULE_NR` re-seeded alongside (unchanged).
+
+## 2026-07-05 — GA-500 military-exclusion reconciliation debt CLOSED (RS side) — spec authoritative, app over-inclusive
+*Picked up the BUILD_ORDER "open reconciliation debt" as a bounded close after S-5/S-6. The debt framed it as
+"the app should not stay ahead of the law" — the gap-check + research showed the REVERSE.*
+- **Gap-check:** `load_ga500_form_500.py` already fully models the military exclusion — `GA_MILITARY_RIE_BASE
+  {2025:17500}` / `GA_MILITARY_RIE_MAX {2025:35000}` + a verbatim IT-511 Sch 1 p3 worksheet excerpt (under-62;
+  base $17,500; +$17,500 once GA earned income ≥ $17,501; max $35,000). The RS spec was NOT behind.
+- **Research-verified (2025 IT-511 p.21, Form 500 Sch 1 p3, O.C.G.A. §48-7-27(a)(5.1)(A)):** the RS rule is
+  correct. The app's 7/5 `min(mret, 35000)` is OVER-inclusive — wrong 3 ways: ignores the under-62 age gate
+  (grants it at any age), ignores the earned-income condition on the second $17,500, and the base tranche
+  alone caps at $17,500 not $35,000. A 62+ taxpayer's military pay is handled by the GENERAL retirement
+  exclusion ($35k 62-64 / $65k 65+), not the military one — the two are age-segregated, never stacked.
+- **SB 31 year-keyed find:** GA SB 31 (2025 session) fully exempts military retirement regardless of age/income
+  for **taxable years beginning on/after Jan 1, 2026** — does NOT reach TY2025. So the RS spec correctly keeps
+  the HB 1064 structure for 2025; the loader's 2026 military placeholder (17,500/35,000) is STALE for TY2026.
+- **Resolution (spec-first):** no RS TY2025 spec change (already correct); annotated the loader with a
+  year-keyed SB 31 warning (comment only — no seeded field changed, so no reseed); **spawned tts task
+  `task_f550dfd2`** to fix the app compute to the worksheet logic. Closed the debt in BUILD_ORDER.
+  Reinforces the front-door value: the spec-vs-app reconciliation caught that the APP had drifted, not the spec.
+
+## 2026-07-05 — S-5 boundary diagnostics AUTHORED + SEEDED + EXPORTED (WO-04) — consolidated ENTITY_BOUNDARY form
+*Ken opened S-5 right after S-6. Second full front-door loop the same day. PRODUCT_MAP §17: Core never goes
+silent at a module boundary — it must DETECT and throw a loud RED diagnostic.*
+- **Gap-check finding:** 4 of 5 boundaries already existed as on-form RED-defers (D_L_M3 on 1065_L; D_SCHK_K3
+  + D_SCHK_704C on SCH_K_1065; Sch B Q10 §754 on 1065_B). But D_SCHK_K3 was a **blanket "international out of
+  scope" flag** — PRODUCT_MAP makes the **DFE determination** ("record WHY K-2/K-3 aren't required") Core season
+  one. Real gaps = the K-2/K-3 DFE gate + a multistate-apportionment indicator.
+- **Authorities verified (research pass, NOT memory):** M-3 (Instr. Sch. M-3 1065 Rev. 11/2023 = $10M assets /
+  $35M receipts / 50% REP; 1120-S Rev. 12/2019 = $10M assets single test); K-2/K-3 DFE 4 criteria (2025 i1065
+  K-2/K-3); §704(c)/Treas. Reg. §1.704-3; §754/§743(d)/§734(d) ($250k substantial built-in loss / basis
+  reduction); P.L. 86-272 (15 U.S.C. §381). OBBBA changed none of these.
+- **Scope (Ken, all recommended):** SHAPE = a **new consolidated `ENTITY_BOUNDARY` form** (single completeness
+  critic, not scattered amendments); K-2/K-3 = **COMPUTE the 4-criteria DFE gate** (RED D_EB_K2K3 on fail +
+  D_EB_DFE_OK info recording the basis); apportionment = **indicator** (+ P.L. 86-272 note, state-specific);
+  M-3/§754/§704(c) = **re-encode with pinned thresholds** (existing on-form flags remain).
+- **Authored** `load_entity_boundary.py` — form `ENTITY_BOUNDARY` (entity_types 1065/1120S), 23 facts / 5 rules
+  / 5 lines / 6 diagnostics / 10 scenarios / 3 FA. **6 self-owned authority sources** (IRS_2025_M3_1065,
+  IRS_2025_M3_1120S, IRS_2025_K2K3_1065, TREAS_REG_704_3, IRC_754_743_734, PL_86_272) so it reconstructs
+  standalone (no cross-loader source dependency). Auto-discovered by seed_all phase 2.
+- **Validated** on throwaway SQLite (`scratchpad/validate_boundary.py`): form seeded, all rules/diags present,
+  ALL rules cited, CharField caps introspected-and-clean, M-3 (both entity branches) + DFE (all-met / K-3-request
+  / foreign-tax>$300) logic spot-checked. ALL PASS.
+- **Ken review walk → "Approve — flip, seed, export."** Flipped READY_TO_SEED, seeded to prod (95→**96 TaxForms
+  / 457 FlowAssertions / 830 FormRules**), verified `lookup/ENTITY_BOUNDARY/export/` = **200**. BUILD_ORDER S-5
+  ticked [RS]✅→[APP]⬜, NEXT authoring advanced to S-11 (1041). Explicit-path commits.
+- **Caveats carried to the tts build:** (1) M-3 instruction sets aren't reissued annually (1065 Rev 11/2023,
+  1120-S Rev 12/2019 control TY2025 — thresholds unchanged; re-confirm each season). (2) B5 apportionment is
+  state-specific — P.L. 86-272 is the only federal anchor; per-state nexus thresholds pulled/verified per state.
+- **RS authoring spine now clear to S-11:** S-4 (1065 core), S-5 (boundary diagnostics), S-6 (PAL/basis) all DONE.
+
+## 2026-07-05 — S-6 PAL/basis deepening AUTHORED + SEEDED + EXPORTED (WO-03) — first full front-door loop
+*Ken opened S-6 through the new front door ("finish the new procedure implementation" → picked S-6 PAL/basis).
+The whole WORK_ORDERS pipeline ran once, end-to-end, as designed. No prod risk until the review-walk approval.*
+- **Front-door loop (all transitions logged in WORK_ORDERS.md):** GAP-CHECKED (R1-R4 = amendments to the
+  existing FORM_8582/SCHEDULE_E; R5 §461(l) = the one real gap) → research-verify (background agent, verbatim
+  vs primary sources) → `pal_basis_source_brief.md` → Gate-1 scope walk (4 AskUserQuestion) → author →
+  SQLite-validate → Ken review walk → flip + seed + export.
+- **Authorities verified (research pass, NOT memory):** R1 self-rental Treas. Reg. §1.469-2(f)(6); R2 PTP IRC
+  §469(k); R3 REP §469(c)(7) + Treas. Reg. §1.469-9; R4 at-risk §465 + Reg. §1.469-2T(d)(6) ordering; R5
+  §461(l) + Rev. Proc. 2024-40 + i461 (2025). 2025 EBL thresholds **$313,000 / $626,000** (Rev. Proc. 2024-40,
+  confirmed verbatim by i461). OBBBA made §461(l) permanent; disallowed EBL → NOL carryover (the "retest"
+  alternative was NON-enacted — flagged year-keyed).
+- **Scope (Ken, all recommended):** R1+R2 COMPUTE (self-rental net-income recharacterization item-by-item, loss
+  stays passive; PTP segregated off-8582, per-PTP, freed on full disposition); R3 REP **upgraded the 2026-06-13
+  RED-defer → checkbox + §1.469-9(g) election flag** (D_8582_RE_PRO error→info; the two tests preparer-asserted
+  + sanity-checked via D_8582_REP_TESTS; D_8582_REP_MATLPART reminds each un-aggregated rental needs material
+  participation); R4 at-risk = diagnostic-only (D_8582_ATRISK, ordering §465→§469→§461(l), route to 6198); R5
+  = new Form `461` diagnostic (computes EBL + flags; pinned thresholds; NOL described-not-built).
+- **Authored:** R1-R4 amend the HOME loader `load_1040_schedule_e.py` (reconstructable — replays in seed_all
+  phase 2); R5 = new `load_1040_form_461.py` (auto-discovered by seed_all). New authorities: TREAS_REG_469,
+  IRC_465, IRC_461, IRS_2025_F461_INSTR, REV_PROC_2024_40; §469(k)/§469(c)(7) excerpts added to IRC_469.
+- **Validated** on throwaway SQLite (`scratchpad/validate_pal.py`): 3 forms seeded, all new rules/diags present,
+  D_8582_RE_PRO upgraded, ALL rules cited, CharField caps introspected-and-clean, EBL math spot-checked. ALL PASS.
+- **Ken review walk (W1-W5) → "Approve — flip, seed, export."** Flipped Form 461 `READY_TO_SEED`, seeded both
+  loaders to prod (94→**95 TaxForms / 454 FlowAssertions / 825 FormRules**), verified `lookup/{FORM_8582,
+  SCHEDULE_E,461}/export/` all **200** (in-process test client, read-only). BUILD_ORDER S-6 ticked [RS]✅→[APP]⬜
+  (tts-tax-status), NEXT authoring advanced to S-5. Explicit-path commits (shared worktree).
+- **Two caveats carried to the tts build (flagged, not guessed):** (1) Form 461 FACE line-numbering was mapped
+  to the §461(l)(3) mechanic (BIZ-INC/BIZ-DED/THRESH/EBL/NOL), NOT the printed 2025 Part I-III positions —
+  i461 `requires_human_review`; confirm before the app build. (2) disallowed-EBL→NOL is year-keyed.
+
+## 2026-07-05 — WORK_ORDERS front-door adopted + BUILD_ORDER-driven; caught a cross-session stale "author Schedule K" loop
+*Ken + chat were setting up "a more automated orderly process" (the WORK_ORDERS front door) and, across three
+prompts, kept instructing "author 1065 core, Schedule K first." A parallel tts/app session was editing the
+shared brain concurrently. No spec authored this session — it was process plumbing + a reconciliation fix.*
+- **Root finding — the instruction was stale, thrice.** 1065-core RS authoring is COMPLETE (2026-07-04): all
+  6 forms seeded+exported (200) — Schedule K spine (`1065_PAGE1`+`SCH_K_1065`), K-1+alloc, M-1/M-2, L/B;
+  8825/4562/3800 cover 1065; 7-form batch in `approved_specs.py`. Verified on-disk (`load_1065_*.py` +
+  `exports/form_sch_k_1065/`) + live STATUS. Running the gap-check on Schedule K returned "exists (200)" —
+  the front door working as designed (it CAUGHT the would-be duplicate). Same over-completion on WO-01 (4835/
+  8835/8936 all done) + the four state specs.
+- **The drift's source.** BUILD_ORDER.md (canonical in `tts-tax-status`) — placed by the parallel session
+  (`b54c111`) — carried a stale `S-4 · 1065 core … untouched beyond SE`, all schedule boxes unticked, and a
+  `▶ NEXT authoring = Schedule K [RS/Ken]` line, *despite* a header claiming the marks were reconciled to live
+  STATUS. Both sessions inherited the stale line and talked past each other through it.
+- **Files placed/edited (RS repo, `9a062cb`):** replaced WORK_ORDERS.md with the provided BUILD_ORDER-driven
+  version (front-door MECHANISM only — gap-check + transitions + Gate-1; NO independent backlog, sequence
+  lives in the SPINE), reconciled to live STATUS (WO-01 4835 + WO-02 1065-core DONE; SC1040/AL40/NC-D400/GA700
+  AUTHORED). CLAUDE.md: boot line (pull tts-tax-status; BUILD_ORDER=order / SEASON_PLAN=gates / PRODUCT_MAP=scope)
+  + standing rule "update WORK_ORDERS at every transition; the queue is the record."
+- **Fixed the canonical source (tts-tax-status `5c57886`).** BUILD_ORDER S-4 → `[RS]✅→[APP]⬜` (schedules
+  ticked DONE 2026-07-04; remaining = issuer-side 1065 K-1 persistence → 1040 import + tts compute build);
+  `▶ NEXT authoring` advanced off Schedule K to **S-5 boundary diagnostics / S-6 PAL·basis** (S-6 before the
+  regression bed locks). Zip's BUILD_ORDER/PRODUCT_MAP were already committed by the parallel session; left
+  SEASON_PLAN.md as re-cut by that session (not replaced).
+- **Coordination risk noted:** the tts session is only paused mid-migration; the S-4 fix is on origin so a
+  pull-before-edit there carries it, but watch for a re-cut reverting it.
+- **Memory:** added `rs-1065-core-done-buildorder-stale` (don't re-author Schedule K; seed SPINE status from
+  live STATUS, not draft checkboxes) + MEMORY.md index line. Explicit-path commits throughout (shared worktree).
+
 ## 2026-07-05 — 1120-S delta audit COMPLETE (prod ↔ rebuild 0-delta)
 *Ken: "lets start the delta audit" (declined a context clear — the audit overlapped fresh GA-700 context).
 Closed the deferred reconstructability drift from the 2026-07-04 check. Clear of the parallel session

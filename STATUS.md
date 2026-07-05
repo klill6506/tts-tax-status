@@ -1,80 +1,70 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, fifteenth session (**SC1040 build — S-7**): built the South Carolina
-SC1040 individual return through FOUR legs — compute, input, render (face + page-1 identity
-header), and diagnostics. The **resident SC1040 is COMPLETE and filable end-to-end**; the ONLY
-remaining S-7 item is the **Schedule NR render** (part-year/nonresident). Also migrated the three
-planners (BUILD_ORDER/SEASON_PLAN/PRODUCT_MAP) canonical to `tts-tax-status`, retired
-SEASON_CHECKLIST, and fixed a real latent serializer bug.*
+*Last updated: 2026-07-05, sixteenth session (**SC1040 Schedule NR render leg**): rendered the SC
+Schedule NR (part-year/nonresident) summary lines 31-48 as a coordinate overlay appended behind the
+SC1040 face. **This was the last remaining S-7 leg — the SC1040 is now COMPLETE across all legs**
+(compute / input / render-face+header / diagnostics / Schedule-NR render). Render-only; no migration.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
 - Durable history → `STATUS_ARCHIVE.md` *(not read at boot)*; deferrals → `DEFERRAL_AUDIT.md`;
   open questions → `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
-- **Boot planners now live in `tts-tax-status`**: pull it, read `BUILD_ORDER.md` (order) / `SEASON_PLAN.md`
+- **Boot planners live in `tts-tax-status`**: pull it, read `BUILD_ORDER.md` (order) / `SEASON_PLAN.md`
   (gates) / `PRODUCT_MAP.md` (scope). BUILD_ORDER is the single source of sequence.
 
 ## Active gates (all green)
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q` → **398 passed**
-  (unchanged — SC1040 is a self-contained state form, touches no 1040 flow). Fast (~1.3s, pure).
+  (unchanged — SC1040 is a self-contained state form; this session was render-only). Fast (~1.3s, pure).
 - **SC1040 pure compute** — `pytest tests/test_compute_sc1040.py -q` → **16 passed** (SC1040TT midpoint
-  138/138 vs the published SCDOR table; spec scenarios + Schedule NR + the per-owner sub-boxes).
-- **SC1040 DB tests** — state-return `pytest tests/test_sc1040_state_return.py` (**4**, create→map→pull→
-  compute + duplicate 409 + SC-business 400); render `pytest tests/test_sc1040_render_leg.py` (**5** = 4
-  pure + 1 DB, tax + identity visible); diagnostics `pytest tests/test_sc1040_diagnostics_leg.py` (**4**).
-- `manage.py check` clean. **Test DB `test_postgres` is FRESHLY BUILT** (a mid-session kill-cascade forced a
-  clean rebuild — ~11 min on the slow pooler); use `--reuse-db` next session (fast). One idle teardown
-  session may linger (harmless; `scripts/drop_test_db.py` clears it if a `--create-db` run ever fails).
-- No new migration this session (SC1040 is FormFieldValue-backed, seeded via `seed_sc1040`, GA-500 pattern).
+  138/138; spec scenarios + Schedule NR + per-owner sub-boxes).
+- **SC1040 DB tests** — state-return `pytest tests/test_sc1040_state_return.py` (**4**); render
+  `pytest tests/test_sc1040_render_leg.py` (**10** = 8 pure + 2 DB, incl. the new part-year 5-page
+  Schedule-NR attach); diagnostics `pytest tests/test_sc1040_diagnostics_leg.py` (**4**).
+- Combined SC1040 suite + flow gate = **422 passed** (9:02, `--reuse-db`). `manage.py check` clean.
+- **Test DB `test_postgres` exists** — use `--reuse-db` next session (fast). No migration this session
+  (Schedule NR render is FormFieldValue-backed, uses the existing `seed_sc1040` rows).
 
-## ▶ RESUME HERE — S-7 SC1040: build the **Schedule NR render** (the last leg)
-The resident SC1040 is fully done (compute/input/render-face/render-header/diagnostics, all green +
-committed). The ONE remaining item to tick S-7 complete: render the **SC Schedule NR** (2-page
-part-year/nonresident schedule).
-- **Groundwork already in place:** template `resources/state_forms/SC/2025/sc_schedule_nr.pdf` +
-  manifest entry `fsc_schedule_nr` (`SC-SCHEDULE-NR`, 2 pages, sha `6301e35e…`). The embedded Schedule
-  NR **compute already runs** inside `compute_sc1040` (part-year/nonresident branch) and persists
-  `NR-43/NR-44/NR-45/NR-47/NR-48` → SC1040 line 5.
-- **To build:** `coordinates/fsc_schedule_nr.py` (Col A federal / Col B SC two-money-column layout;
-  auto-extract value boxes from the flat PDF like the face — the "00" cents-anchor recipe), a
-  `render_sc_schedule_nr()` helper appended after the SC1040 face inside `render_sc1040` (attach only
-  when `PYNR` is true, GA-500 Schedule-1 append precedent), register `fsc_schedule_nr` in
-  `COORDINATE_REGISTRY`, visually verify (render→PNG→Read), add render tests.
-- **Recipe (proven this session):** render blank page to PNG + `get_text`/`get_drawings` to find the
-  "00" anchors → derive right-edge coords → render synthetic-value PNG → visually verify every cell.
+## ▶ RESUME HERE — S-7 is DONE. Next SPINE item: **S-8 AL Form 40 app build**
+BUILD_ORDER's NEXT after S-7 is the remaining state app-builds: **S-8 AL Form 40** (⚠ fed-tax-deduction
+quirk — Alabama allows a federal income tax deduction), then **S-9 NC D-400**, ∥ **S-3 brokerage front
+end**. The RS specs for S-8/S-9 are already authored (7/4). Also on deck: the RS authoring spine is clear
+to the **S-11 1041 module** [RS/Ken]. Pick the top unblocked SPINE item (S-8) unless Ken directs otherwise.
+- **Reusable render recipe (proven this + prior session)** for the next flat state form: render blank
+  page → `get_text('words')` on the "00"/"%%" glyph anchors → derive column right-edges (anchor_x1 − ~12.5)
+  → set RL baseline = 792 − fitz_y1 **+ ~3.5pt font-descent nudge** → render synthetic-value PNG → measure
+  value-vs-anchor delta programmatically (target ≈0) → visually verify → append after the face, gated on a
+  flag. See `coordinates/fsc_schedule_nr.py` + `render_sc_schedule_nr`.
 
-## This session's commits (all pushed to origin/main)
-- `307a810` compute engine · `a8cb291` seed + short-key refactor · `81e0809` state-return wiring +
-  frontend picker · `4cb497a` **serializer bug fix** (renewable_facilities) + SC1040 section tabs ·
-  `af2c6a7` face render · `13443d5` identity header render · `118613d` diagnostics leg.
-- Planner migration: tax-app `65eb92d` (retire SEASON_CHECKLIST, boot pulls tts-tax-status);
-  tts-tax-status `b54c111` (BUILD_ORDER/PRODUCT_MAP canonical + SEASON_PLAN re-cut).
-
-## ▶ RS follow-ups (rides a dedicated RS session)
-- **✅ RESOLVED 2026-07-05 (RS `6e22b70`) — SC1040 spec promoted `draft` → `active` + the wrong $50k
-  test pin corrected** ($2,533 placeholder → the published SC1040TT $2,360, verified 138/138). Loader
-  `load_sc1040.py` fixed + re-seeded RS Supabase; deployed export now `status: active` + `L6: 2360`
-  (verified live). Still OPEN (genuine verify, not blocking): `D_SC1040_BRACKET` notes the
-  $3,560/$17,830 thresholds are corroborated by SC1040TT but not independently confirmed vs **SC Code
-  §12-6-510**.
-- **Carried — GA-500 `R-GA500-MIL` military exclusion is WRONG in RS** (encodes `L3+L8`; tts fixed +
-  canonical `min(mret,35000)`). Handoff `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
-- Carried: `8867_spec.json` stale D_8867_002/AOTC notes; RS Schedule D `D_8949_006`; SCHA
-  `scha_qualified_contributions_cash`; 8995 sibling loader D_8995_001 retirement note.
+## This session's commit (pushed to origin/main)
+- `d9fa2b0` — SC1040 Schedule NR render leg (coordinates/fsc_schedule_nr.py + render_sc_schedule_nr +
+  COORDINATE_REGISTRY + render_sc1040 append + 6 tests + RS SC_SCHEDULE_NR spec cached to server/specs).
 
 ## ▶ SC1040 v1 boundaries (stated, not silent — see DEFERRAL_AUDIT.md)
-- Additions b/c/d fold into the line-e "Other additions" lump (`add-oth`); subtractions f/g/h/j-n/r/s/u
-  fold into the line-v "Other subtractions" lump (`sub-oth`) with later-year SC depreciation. §179
-  business-income limit not modeled (D_SC1040_179 warns). Refundable-credit detail (L19/L20/22a-e) not
-  itemized — the aggregate feeds L23. Identity suffix / county code / phone / DOB not rendered. SC4972 /
-  I-335 / catastrophe / SC2210 = direct-entry (each has a D_SC1040_* info diagnostic).
+- **Schedule NR render:** only the summary lines 31-48 render; the income-detail lines 1-30 (page 1)
+  attach blank — the embedded compute models aggregate federal AGI (L31 Col A) + SC-source AGI (L31 Col B)
+  entered by the preparer, not the line-by-line breakdown. NR-45 proration is displayed ×100 as "NN.NN"
+  (the compute rounds the fraction to 2 decimals → whole-percent precision).
+- Additions b/c/d fold into the line-e lump; subtractions f/g/h/j-n/r/s/u fold into line-v. §179
+  business-income limit not modeled (D_SC1040_179 warns). Refundable-credit detail not itemized (feeds L23).
+  Identity suffix / county code / phone / DOB not rendered. SC4972 / I-335 / catastrophe / SC2210 =
+  direct-entry (each has a D_SC1040_* info diagnostic).
+
+## ▶ RS follow-ups (rides a dedicated RS session)
+- SC1040 spec: still OPEN (genuine verify, not blocking) — `D_SC1040_BRACKET` notes the $3,560/$17,830
+  thresholds are corroborated by SC1040TT but not independently confirmed vs **SC Code §12-6-510**.
+  (The $50k pin + draft→active promotion were RESOLVED 2026-07-05, RS `6e22b70`.)
+- **Carried — GA-500 `R-GA500-MIL` military exclusion**: RS spec is CORRECT/authoritative; the app was
+  the one BEHIND (over-inclusive `min(mret,35000)`) → tts fix handed off (`task_f550dfd2`). SB 31 full
+  military exemption starts TY2026 (re-verify the enrolled bill before the TY2026 build).
+- Carried: `8867_spec.json` stale D_8867_002/AOTC notes; RS Schedule D `D_8949_006`; SCHA
+  `scha_qualified_contributions_cash`; 8995 sibling loader D_8995_001 retirement note.
 
 ## ▶ Waiting on Ken (carried)
 1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). S2/S3/S4 ready (UNSIGNED).
 2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · TY2025 4868 schema.
 3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
-4. tts-tax-status has Ken's uncommitted WIP (`PRODUCT_MAP.md` edit + `CHANGE_REGISTER.md`) — left
-   untouched this session; the status-mirror was synced with explicit file adds (not `git add -A`).
+4. tts-tax-status may carry Ken's uncommitted WIP — the status-mirror sync uses explicit file adds; leave
+   Ken's WIP untouched.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` (order) · `SEASON_PLAN.md` (gates) · `PRODUCT_MAP.md` (scope).

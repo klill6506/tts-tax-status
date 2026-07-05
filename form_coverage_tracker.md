@@ -1,5 +1,22 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (sixteenth session) — SC1040 Schedule NR RENDER LEG → ✅ SC1040 FULLY COMPLETE
+> (S-7 all legs green); no migration, render-only.** Rendered the SC Schedule NR (part-year/
+> nonresident) summary lines 31-48 as a coordinate overlay on the flat 2-page SCDOR template,
+> appended behind the SC1040 face when the return is part-year/nonresident (SC1040 "PYNR" set);
+> resident returns attach no Schedule NR. **New** `coordinates/fsc_schedule_nr.py`: two-money-column
+> map (Col A federal x-anchor 473.4, Col B SC 571.5, value right-edge = anchor − 12.5 = the fsc1040
+> face gap) + the two inline proration-% blanks (lines 45/47, right of the pre-printed "%"). Anchors
+> auto-extracted from the flat PDF "00"/"%%" glyphs; baselines pinned RL_y = 792 − fitz_y1 + **3.5pt
+> font-descent nudge** (measured value-vs-"00" delta −0.04pt after nudge). **renderer.py**:
+> `render_sc_schedule_nr()` (PYNR-gated → None for residents; NR-45 fraction ×100 as "NN.NN") +
+> register `fsc_schedule_nr` in COORDINATE_REGISTRY + append after the face in `render_sc1040`
+> (GA-500 Schedule-1 append precedent). **v1 boundary** (matches `compute_sc1040._schedule_nr`): only
+> summary lines 31-48; income-detail lines 1-30 attach blank (preparer enters the AGI totals on line
+> 31). RS `SC_SCHEDULE_NR` spec (status `active`) cached to `server/specs/`. Tests **+6** (5 pure
+> map/gate + 1 DB part-year 5-page attach: L48=47,800 @ 60.00% proration): render leg **10/10**;
+> SC1040 compute 16 + state-return 4 + diagnostics 4 + **flow 398** = **422 passed**. Commit `d9fa2b0`.
+
 > **2026-07-05 (fifteenth session) — SC1040 (South Carolina individual) — RESIDENT RETURN COMPLETE
 > across FOUR legs; Schedule NR render is the only remaining sub-leg → S-7 NOT yet fully ticked.**
 > New state form on the GA-500 pattern (FormFieldValue-backed, `seed_sc1040`, no migration).

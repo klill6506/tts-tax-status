@@ -95,6 +95,10 @@ e-signature lands here when built (season two).
 **FRONT DESK** — sherpa-check-in (exists)
 Lobby check-in, desk intake, mail.
 
+**SCHEDULER** — sherpa-scheduler (planned, not started)
+Client appointment booking, Calendly-style. Distinct from Front Desk (booking vs. lobby
+check-in). Season-two+; not season-one work.
+
 **RESEARCH / AI TAX EXPERT** (future)
 The RS-database-grounded query app. Depends on wide source loading in Rule Studio —
 explicitly NOT season-one work.

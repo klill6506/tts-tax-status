@@ -17,13 +17,13 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-7 SC1040 app build** — RESIDENT SC1040 COMPLETE across 4 legs (compute
+## ▶ NOW WORKING ON — **idle / Ken directs.** ✅ **S-7 SC1040 COMPLETE across ALL legs** (compute
 `307a810` · input `a8cb291`/`81e0809`/`4cb497a` · render face `af2c6a7` + header `13443d5` ·
-diagnostics `118613d`). ONE item left to tick S-7: the **Schedule NR render** (part-year/nonresident;
-template + manifest already in place; compute already runs). Next session picks this up.
-## ▶ NEXT — authoring: **S-11 1041 module** [RS/Ken] (S-4 1065-core, S-5 boundary diagnostics, S-6
-PAL/basis authoring all DONE — the RS authoring spine is clear to the Sept 1041 rock) · app: finish
-S-7 SC1040 (Schedule NR render), then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
+diagnostics `118613d` · **Schedule NR render `d9fa2b0`** — 2026-07-05, sixteenth session). Top
+unblocked SPINE item is now **S-8 AL Form 40** (spec authored 7/4; ⚠ fed-tax-deduction quirk).
+## ▶ NEXT — app: **S-8 AL Form 40** build, then **S-9 NC D-400** ∥ **S-3 brokerage front end** ·
+authoring: **S-11 1041 module** [RS/Ken] (S-4 1065-core, S-5 boundary diagnostics, S-6 PAL/basis all
+DONE — the RS authoring spine is clear to the Sept 1041 rock)
 
 ---
 
@@ -79,12 +79,12 @@ FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. 
 **S-7…S-10 · [RS]✅→[APP] · States — SPECS ALREADY AUTHORED (7/4–7/5), app build remains.**
 Authoring done a month early; these dropped OFF Ken's authoring path. Forms build now; e-file
 turn-on waits on the Shelf (DOR approvals).
-- [x] S-7 SC1040 + SC_SCHEDULE_NR spec — 2026-07-04   → [~] **app build — RESIDENT COMPLETE
-      2026-07-05** across compute (`307a810`, SC1040TT 138/138) · input (`a8cb291`/`81e0809`/
-      `4cb497a`) · render face (`af2c6a7`) + identity header (`13443d5`) · diagnostics (`118613d`).
-      **ONE item left:** the Schedule NR render (part-year/nonresident; template+manifest+compute
-      already in place). RS spec hygiene DONE 2026-07-05 (`6e22b70`): promoted draft→active + fixed
-      the wrong $50k test pin ($2,533 → $2,360, verified 138/138), re-seeded, deployed export confirms.
+- [x] S-7 SC1040 + SC_SCHEDULE_NR spec — 2026-07-04   → [x] **app build COMPLETE 2026-07-05**
+      across compute (`307a810`, SC1040TT 138/138) · input (`a8cb291`/`81e0809`/`4cb497a`) · render
+      face (`af2c6a7`) + identity header (`13443d5`) · diagnostics (`118613d`) · **Schedule NR render
+      (`d9fa2b0`** — part-year/nonresident summary lines 31-48, PYNR-gated append after the face; v1
+      renders the aggregate, income-detail lines 1-30 blank). RS spec hygiene DONE 2026-07-05
+      (`6e22b70`): promoted draft→active + fixed the wrong $50k pin ($2,533 → $2,360), re-seeded.
 - [x] S-8 AL Form 40 spec — 2026-07-04   → [ ] app build (⚠ fed-tax-deduction quirk)
 - [x] S-9 NC D-400 spec — 2026-07-04   → [ ] app build
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
