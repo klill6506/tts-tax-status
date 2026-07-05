@@ -19,8 +19,8 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ▶ NOW WORKING ON — **S-7 SC1040 app build** — compute leg landed `307a810` (2026-07-05);
 input/render/diagnostics legs remain. (Paused mid-input-leg for this planner migration.)
-## ▶ NEXT — authoring: **S-5 boundary diagnostics / S-6 PAL·basis** [RS/Ken] (S-4 1065-core
-authoring is DONE — see below; S-6 before the regression bed locks) · app: finish S-7 SC1040,
+## ▶ NEXT — authoring: **S-5 boundary diagnostics** [RS/Ken] (S-4 1065-core AND S-6 PAL/basis
+authoring both DONE — see below; S-11 1041 is the Sept greenfield rock) · app: finish S-7 SC1040,
 then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
 
 ---
@@ -66,9 +66,10 @@ Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond S
 **S-5 · [RS]⬜→[APP] ∥ · Boundary diagnostics (WO-04)** — M-3 threshold, K-2/K-3 DFE-fail,
 §704(c), §754, entity apportionment. Author alongside S-4.
 
-**S-6 · [RS]⬜→[APP] · PAL/basis deepening (WO-03).** FORM_8582 exists (12 rules) — these are
-AMENDMENTS. Do BEFORE the regression bed locks (they change 8582 output; else re-tie returns).
-- [ ] R1 self-rental + R2 PTP (one 8582 unit)   - [ ] R3 REP checkbox   - [ ] R4 at-risk diag   - [ ] R5 §461(l) diag
+**S-6 · [RS]✅→[APP]⬜ · PAL/basis deepening (WO-03) — RS authoring DONE 2026-07-05.** Amendments to
+FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. APP build remains.
+- [x] R1 self-rental + R2 PTP (one 8582 unit) — 2026-07-05   - [x] R3 REP checkbox + §1.469-9(g) election — 2026-07-05   - [x] R4 at-risk diag — 2026-07-05   - [x] R5 §461(l) Form 461 diag ($313k/$626k) — 2026-07-05
+- [ ] tts app build: self-rental recharacterization, PTP segregation, REP checkbox, at-risk route, §461(l) EBL diagnostic  `[APP]`
 
 **S-7…S-10 · [RS]✅→[APP] · States — SPECS ALREADY AUTHORED (7/4–7/5), app build remains.**
 Authoring done a month early; these dropped OFF Ken's authoring path. Forms build now; e-file
