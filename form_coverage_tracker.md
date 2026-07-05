@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 1b) — Schedule K 2025 renumber + Analysis-of-Net-Income line
+> + handoff/page-1 diagnostics → ✅ DONE (compute + input + diagnostics; render still deferred).**
+> Built spec-first from RS `SCH_K_1065` + `1065_PAGE1` (cached specs). **Renumber (seed_1065):** the
+> app's Schedule K was on PRE-2025 numbering; reconciled to the 2025 face — foreign taxes `K16a` → **line
+> 21 (`K21`)**; **line 16 → `K16` "Schedule K-3 is attached" checkbox** (international K-2/K-3 RED-defer,
+> Decision A); investment interest `K13d` → **`K13b`**; added **`K13c`** (§59(e)(2)) + **`K13e`** (other
+> deductions); new computed **`K_ANALYSIS`** line. **Compute (FORMULAS_1065):** `K_ANALYSIS` = (Σ K
+> 1-11) − (Σ K 12-13e + 21) per R-SCHK-ANALYSIS (i1065 verbatim; ties M-1 L9 / M-2 L3 — tie-out enforced
+> in the later M-1/M-2 leg). **Allocator (k1_allocator):** carried the K13d→K13b / K16a→K21 renames through
+> `K_LINE_CATEGORY` / `K_LINES_PRO_RATA` / the K→box map so existing allocation keeps working. **Diagnostics
+> (new `rules_1065_schk.py`, registered):** `D_SCHK_HANDOFF` (error — K1 ≠ page-1 L23), `D_SCHK_K3` (error —
+> K-3 attached), `D_SCHK_9C` (info — unrecap §1250), `D_1065P1_4797` (warning — L6 recapture), `D_1065P1_COGS`
+> (warning — COGS w/o 1125-A). **Tests:** 7 pure (spec-driven Analysis pin 215000 + renumber assertions) +
+> 9 DB (pipeline Analysis persist + 8 diagnostics fire/quiet). Flow gate 398, SE pure 36, `check` clean.
+> **DEFERRED (see DEFERRAL_AUDIT):** `D_1065P1_174A` (needs an R&E input line), `D_SCHK_704C` (needs
+> item-M/N flags), the f1065 page-1+SchK **render recalibration** (coords stale for 2025), and K13c/K13e
+> per-partner K-1 box allocation (the K-1 reconcile leg). ⚠ Prod reseed of `seed_1065` DELETES the old
+> `K16a`/`K13d` FFV rows — flag for Ken before reseeding prod (leg-1a precedent).
+
 > **2026-07-05 (seventeenth session) — NC D-400 (North Carolina individual) → ✅ FULLY COMPLETE
 > across ALL 4 LEGS (S-9); no migration, FormFieldValue-backed (GA-500/SC1040/AL40 pattern),
 > form_code "NC_D400".** Built spec-first from the RS `NC_D400` spec (status `draft`; TY2025).

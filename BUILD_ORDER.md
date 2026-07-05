@@ -71,7 +71,7 @@ vs f1065.pdf). **✅ leg 1a — page-1 2025 renumber (`10f1fd2`):** ord business
 K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. **✅ leg 1b — Schedule K 2025
 renumber + Analysis line (2026-07-05, eighteenth session):** K16a→line 21, line 16→K-3 checkbox, K13d→K13b,
 +K13c/K13e, computed `K_ANALYSIS`, seed→290 lines; 5 new diagnostics (`rules_1065_schk.py`); k1_allocator
-renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398. ▶ NEXT leg 2:
+renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398 (`8ad96d8`). ▶ NEXT leg 2:
 Sch L balance check (L14=L22, D_L_BALANCE_*); then leg 3 M-1/M-2 tie-outs (assert K_ANALYSIS=M1_9=M2_3),
 leg 4 K-1 alloc reconcile, leg 5 issuer-side `PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion
 gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
