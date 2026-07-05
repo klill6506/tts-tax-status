@@ -4,6 +4,82 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-04 — Form 8835 loader homes for the J2/J3/J4 RED-defers + 2 FAs (the S4 arc; the tts session)
+- `load_1040_form_8835.py` AMENDED (amend-by-lookup, `update_or_create` — the fa-needs-rs-loader-home
+  rule; the 8936 R-8936-TRANSFER precedent). Added the four scope-walk RED-defer diagnostics that the
+  tts 8835 unit built this session (Ken's 2026-07-04 J2/J3/J4 rulings + the missing-PIS gap): **D_8835_005**
+  mixed 1f/4e routing (whole feed withheld), **D_8835_006** straddle window (facility feed withheld),
+  **D_8835_007** passthrough with no PIS date (feed withheld), **D_8835_008** producing facility missing
+  its PIS date (excluded). All severity=error, ≤20 chars, bridge-gated in tts on `form_8835_state`; escape
+  hatch = the Form 3800 1zz/4z direct entries. Added **FA-1040-8835-05** (the J2/J3/J4 routing gating_check,
+  pins the rulings) + **FA-1040-8835-06** (the constants_check — 2025 rate tiers / OBBBA cutoff / ×5 / 10% /
+  15% bond cap / 90% EPE / 4-yr window; 2026 NOT pinned). Both transcribed verbatim from the tts gate file
+  (the canonical set per Ken's 2026-07-01 "tts file stays canonical" ruling).
+- SEEDED to RS Supabase: 8835 now 9 diagnostics (was 5) + 6 flow assertions (was 4); all rules keep authority
+  links. DB totals: FlowAssertions 422, FormDiagnostics 533.
+- ⏳ Cached tts `server/specs/8835_spec.json` refresh + deployed-export id-level verify FOLLOW the RS Render
+  redeploy (this push). tts gate file (`flow_assertions_1040.json`, FA-1040-8835-01..06) is canonical and
+  already green (flow gate 397). No id drift expected — the loader block is a verbatim transcription.
+
+---
+
+## 2026-07-04 — RS DB reconstructability check + `seed_all` orchestrator
+*Ken picked this July checklist item after the 1065-core close. "fresh DB + all loaders + diff vs
+production; if anything lives only in Supabase → fix now."*
+- **Method:** throwaway SQLite DB (`DATABASE_URL=sqlite://…`, guarded), ran every loader, diffed the
+  rebuilt DB vs production Supabase on form set + per-form rule_ids + all 11 entity-model counts.
+- **Found — deploy pipeline gap:** `build.sh` runs only `seed_sources` (feeds + topics). The 89 forms,
+  299 authority sources, and 420 flow assertions are ALL seeded by loaders deployment never runs → prod
+  was populated by running loaders manually, never verified rebuildable. There was **no orchestrator**.
+- **Fixed (code, zero prod risk):** `specs/management/commands/seed_all.py` — sources → specs `load_*`
+  → amends → flow assertions, dynamic loader discovery + explicit amends list. Fresh-DB run = **61/61
+  loaders, 0 problems**. `--dry-run` prints the plan. Closes the one hard break: `load_1040_form_3800`
+  is an amend loader that raised `CommandError` when run (alphabetically) before its 1120-S base 3800
+  existed; amends-last → 3800 rebuilds to the full 12 rules.
+- **4 residual drifts — logged for Ken (all prod-data changes, NOT touched this session):**
+  (A) orphaned legacy rules no loader reproduces — `4797` R001-R008/R010, `SCH_K_1120S` R010-R018,
+  `SCHD_1120S` R010-R012 (loaders refactored to new rule_ids; prod never cleaned); (B) prod stale vs
+  loaders — `8283`/`8949`/`8995`/`8995A` (re-seed, additive); (C) `1065` empty stub (entity=[], 0 rules,
+  mislabeled "1065_SE") lives only in DB; (D) `FORM_8582` vs the loader's bare `8582`. **Authority
+  sources reproduce EXACTLY (0 delta).** Full writeup + remediation order → `reconstructability_check.md`.
+- **Supersession investigation (Ken chose "investigate orphans first", read-only content diff):**
+  `4797` orphans R001-R010 = SUPERSEDED (pre-refactor naive rules; R007 hardcodes §1250 recap = 0, the
+  exact bug the nuance leg fixed) → safe to delete. But `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012
+  = **NOT superseded** — they encode line-level detail (interest, dividends, meals, distributions, K18
+  reconciliation) the current 1120-S loader DROPPED → a loader regression; **do NOT delete, fold into
+  the August 1120-S delta audit.** Recorded in `reconstructability_check.md` §A + STATUS Known-issues.
+- **Prod remediation executed (Ken: "do all safe items"), snapshot-backed + transactional:** deleted
+  the 9 confirmed-superseded `4797` orphan rules (+13 cascaded authority links) and the `1065` empty stub
+  (+2 cascaded FormLines) → prod **89 → 88 TaxForms**, 420 FA intact; 4797 + 1065 now 0-delta vs the
+  rebuild, **authority sources 0-delta**. **CAUGHT MY OWN MISDIAGNOSIS:** an initial `FORM_8582`→`8582`
+  rename was executed, then the re-diff showed the rebuild produces BOTH `FORM_8582` (the real passive-loss
+  form, 12 rules, referenced by 4835) AND a spurious bare `8582` from `load_1120s_complete` — so I
+  **reverted** the rename immediately (FORM_8582 restored, 12 rules). Investigation also found the four
+  "stale" forms EXACTLY match their 1040 primary loaders — the extra rules come from `load_1120s_complete/
+  specs`, so item B is 1120-S-loader-entangled too. **All residual drift now traces to the 1120-S loader
+  family → deferred to the August 1120-S delta audit** (stale rule sets, SCH_K/SCHD orphans + dropped line
+  detail, spurious bare-8582 duplicate). No fresh authoring; report/STATUS corrected. `seed_all` + report
+  committed; the prod deletes are live in Supabase.
+
+## 2026-07-04 — 1065 core campaign CLOSED: forms 5 & 6 (8825/4562/3800) coverage confirmed
+*Ken: "check the status and continue." STATUS's IMMEDIATE NEXT was: confirm 8825/4562/3800 cover 1065
+(likely no fresh authoring). Verified against the LIVE RS DB — not just the brief table.*
+- **Entity coverage (live DB query):** `3800` = `['1120S','1065','1120','1040']`, `4562` =
+  `['1120S','1065','1120','1040']`, `8825` = `['1120S','1065']` — all three carry `1065`.
+- **Routing wiring confirmed (not just tags):** `4562` R004 "§179 flows to Schedule K (not Page 1)"
+  (the 1065/1120S §179 pass-through) + R014 line-12 §179; `8825` R003 "Total net rental → K Line 2"
+  (the exact 1065 Sch K line 2 handoff); `3800` = 12 rules, entity-agnostic GBC aggregation driven by
+  the entity tag. So forms 5 & 6 are genuinely wired for 1065, not merely tagged.
+- **Verdict: no fresh authoring.** The 1065-core campaign is COMPLETE — 6/6 forms covered (4 fresh-
+  authored this week: spine `1065_PAGE1`+`SCH_K_1065`, K-1 `SCHEDULE_K1_1065`, M-1/M-2 `1065_M1`/`1065_M2`,
+  L/B `1065_L`/`1065_B`; + 3 pre-existing multi-entity 8825/4562/3800). RS side CLOSED. No DB change this
+  session (verification only) → still **89 TaxForms / 420 FlowAssertions**.
+- **Still open (tts-side, NOT RS blockers):** (1) page-1 off-by-one field numbering (tts internal
+  deductions="21"/ordinary="22" vs face 22/23); (2) 1065 Analysis-of-Net-Income build-gap (`R-SCHK-ANALYSIS`
+  new; ties M-1 line 9 / M-2 line 3 — tts `task_4bf72675`); (3) item-L capital roll-forward (M-2 line 1);
+  (4) the 5 Sch L/B build-gaps logged in `1065_core_reconcile_log.md`; (5) optional box-9c DB stamp
+  (`test_4797_pipeline_leg.py`). All drive tts-side from the exports.
+
 ## 2026-07-04 — 1065 core form 4: Schedule L + Schedule B authored + SEEDED + EXPORTED
 *Ken: "continue the 1065-core campaign — form 4 (Schedule L + Schedule B)." Fresh-authored per D-1.*
 - **Sourced verbatim** off the FINAL 2025 f1065.pdf (re-downloaded; page 6 = Schedule L, pages 2-4 =

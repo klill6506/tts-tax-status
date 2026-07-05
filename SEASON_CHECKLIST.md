@@ -4,13 +4,15 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**Form 8835 unit — MID-BUILD (2026-07-04 ninth session: scope walk ALL FOUR Ken-ruled;
-model leg DONE, migs 0165/0166 applied to the SHARED DB; compute leg + pure tests WRITTEN
-BUT NOT RUN — paused at session limit; resume = STATUS.md's EXACT NEXT COMMAND), then
-render/UI/FA legs, then the S4 scenario.** Last completed: **Form 3800 unit (all four
-legs, same-session RS round-trip) + Form 8936 unit (all four legs) — both 2026-07-04**
-(combined gate 451; D_8911_004 retired, D_8936_003 softened; the S4 all-carries ordering
-Ken-blessed + pinned end-to-end).
+**S4 scenario + mapper leg (Form 8835/8936/3800 units ALL COMPLETE).** Next: build the
+S4 MeF scenario + mappers (IRS8835 / IRS8936 (+SchA) / IRS3800, 1:1 vs the 2025v5.4 XSDs)
+— ⚠ reconcile the Transfer Election Statement attachment vs the draft face's 4a=No (a
+transferred credit never lands on Sch 3; the blessed all-carries shape: 8936 personal
+absorbs ~$2,193 tax → 3800 line 38 = 0, Sch 3 6a blank, the whole $13,200 carries +
+carryforward statement). Last completed: **Form 8835 unit — ALL FOUR LEGS GREEN
+2026-07-04 (ninth session)** — tag `1040-form-8835-complete`; migs 0165/0166; flow gate
+397; RS reseeded (9 diags / 6 FAs); cached spec refreshed. (Form 3800 + Form 8936 units
+both completed the eighth session, 2026-07-04.)
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -64,8 +66,16 @@ Ken-blessed + pinned end-to-end).
           FA-1040-8936-01..05; combined gate 422. OBBBA gate face-verified: acquired ≤
           9/30/2025; a dealer-TRANSFERRED credit never re-lands on the return — FACE-verified
           stop, RS spec amendment flagged. D_8936_003 interim ERROR while 3800 unbuilt.)
-    - [ ] Form 8835 unit (spec cached; lands via the compute_3800 wiring point —
-          `form_8835_credit() -> (amount, "1f"|"4e")`)
+    - [x] Form 8835 unit — ALL FOUR LEGS GREEN (form ticks) — 2026-07-04 `1040-form-8835-complete`
+          (migs 0165/0166; RenewableFacility per-facility model, J1 one-face-per-facility;
+          year-keyed 2025 rate table + OBBBA before-2025 gate + Part II chain (×5/+10%/bond
+          15%/EPE 90%); `form_8835_state` shared gatherer → `form_8835_credit() -> (amount,
+          "1f"|"4e")` LIVE into compute_3800 (runs BEFORE 3800, lands NOTHING on Sch 3);
+          9 diagnostics incl. the J2/J3/J4 RED-defers D_8835_005-008 (mixed/straddle/
+          passthrough-unrouted/missing-PIS, bridge-gated on form_8835_state); LABEL-VERIFIED
+          f8835 field map + render_8835 + PNG pass; RenewableFacilities UI tab;
+          FA-1040-8835-01..06; flow gate 397. RS reseeded (9 diags/6 FAs), cached spec
+          refreshed 5→9 diags.)
     - [x] Form 3800 unit — ALL FOUR LEGS GREEN (form ticks) — 2026-07-04 (mig 0164; the
           FULL same-session RS round-trip: 1040-side amend-by-lookup authored `5407bb2` +
           Ken's J1-J4 scope + W1-W4 review walks → seeded → export verified → tts built.

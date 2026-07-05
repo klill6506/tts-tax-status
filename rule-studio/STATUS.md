@@ -12,8 +12,10 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **89 TaxForms / 420 FlowAssertions** (other tracks are
-seeding too — check the index, not this line, for exact counts). Newest: the **1065-core Schedule L +
+Active spec-authoring tool. RS Supabase holds **88 TaxForms / 420 FlowAssertions** (was 89; the empty
+`1065` stub was removed in the 2026-07-04 reconstructability cleanup — see Known issues). **The 1065-core
+campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
+multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
 (14 == 22 balance check + L21↔M-2 tax-basis tie), Sch B 33 questions with Q4 small-partnership gate +
 Q24 §163(j) $31M → Form 8990. Prior same day: the **1065-core Schedule M-1 + M-2** (`1065_M1` /
@@ -56,7 +58,7 @@ B1–B7 pinned as pending-skips.
 
 ## Next up
 
-**► 1065 CORE CAMPAIGN — IN FLIGHT.** `1065_core_source_brief.md` has the gap map (6 forms fresh —
+**► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
 (form 1 of 6) DONE 2026-07-04** — `1065_PAGE1` + `SCH_K_1065` seeded + exported (both endpoints 200).
 **✅ form 2 of 6 DONE — Schedule K-1 (Form 1065) + allocation engine (`SCHEDULE_K1_1065`).** Seeded +
@@ -83,10 +85,15 @@ reconcile_log.md` L/B section): 2 MATCH (L-totals; tts's DepreciationAsset EOY r
 **5 tts build-gaps caught** (no balance check; Q4 gate stored-but-dead; no $31M/M-3 threshold; L21↔M-2
 not reconciled; **tts Sch L numbered L1-L24 offset one from the face + tts Sch B condensed to 18 vs 33**).
 None are RS blockers — the export drives them tts-side.
-**► IMMEDIATE NEXT — forms 5 & 6: 8825 / 4562 / 3800 ALREADY cover 1065** (brief §1 table: `8825`
-entity=['1120S','1065']; 4562/3800 multi-entity). So the 6 fresh-authored core forms (spine, K-1+alloc,
-M-1/M-2, L/B) are DONE — **campaign near-complete**; confirm 8825/4562/3800 1065 coverage is sufficient
-(likely no fresh authoring). Read the brief + `1065_core_reconcile_log.md` first.
+**► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** Forms 5 & 6 (8825/4562/3800) CONFIRMED to cover
+1065 — verified against the LIVE RS DB (not just the brief table): `entity_types` for `3800` =
+`['1120S','1065','1120','1040']`, `4562` = `['1120S','1065','1120','1040']`, `8825` = `['1120S','1065']`;
+AND the 1065 routing is actually wired, not just entity-tagged — `4562` R004 "§179 flows to Schedule K
+(not Page 1)", `8825` R003 "Total net rental → K Line 2" (the exact Sch K line 2 handoff), `3800` GBC
+entity-agnostic aggregation. **No fresh authoring needed.** All 6 core forms done: 4 fresh (spine,
+K-1+alloc, M-1/M-2, L/B — seeded/exported/200) + 3 pre-existing multi-entity (8825/4562/3800). RS side of
+the campaign is CLOSED. What remains are tts-side build items (below) + the optional box-9c DB stamp — none
+are RS blockers.
 **Two tts-side reconcile items still open (Ken calls, NOT RS blockers):** (1) page-1 off-by-one field
 numbering (tts internal deductions=field"21"/ordinary="22" vs the 2025 face 22/23 — map or renumber);
 (2) the 1065 Analysis-of-Net-Income build-gap (tts computes none; `R-SCHK-ANALYSIS` is new). Plus the
@@ -153,6 +160,19 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Known issues
 
+- **⚠ RECONSTRUCTABILITY DRIFT (2026-07-04, `reconstructability_check.md`):** production Supabase
+  did NOT cleanly rebuild from the loaders. **FIXED this session:** (1) `seed_all` orchestrator
+  (61/61 loaders, 0 problems) — resolves the one hard break (3800 amend ran before its base; now
+  amends-last); (2) **prod remediated (Ken "do all safe items"):** deleted the 9 `4797` orphan rules
+  (pre-refactor; R007 hardcoded §1250=0, the bug the nuance leg fixed — confirmed superseded) and the
+  `1065` empty stub (entity=[], mislabeled "1065_SE") → prod now **88 TaxForms / 420 FlowAssertions**;
+  4797 + 1065 now 0-delta, **authority sources 0-delta**. NOTE an initial `FORM_8582`→`8582` rename was
+  a MISDIAGNOSIS and was **reverted** — `FORM_8582` (12 rules) is the real passive-loss form (4835
+  references it); the bare `8582` is a spurious duplicate that `load_1120s_complete` fabricates.
+  **DEFERRED to the August 1120-S delta audit (all trace to `load_1120s_complete/specs`):** stale
+  `8283/8949/8995/8995A` (prod matches the 1040 primaries; the extra rules come from the 1120s loaders),
+  `SCH_K_1120S` R010-R018 + `SCHD_1120S` R010-R012 orphans (dropped line detail = a 1120-S loader
+  regression — do NOT delete), and the spurious bare-`8582` loader duplicate. See the report §A/§B/§D.
 - **⚠ PUBLIC MIRROR (2026-07-04):** this `STATUS.md` and `session_log.md` are auto-copied into the
   **public** `klill6506/tts-tax-status` repo (`rule-studio/` subfolder) on every session-close sync,
   even though the RS repo itself is going private. Keep client PII and sensitive firm specifics OUT of
@@ -172,6 +192,22 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **RS DB reconstructability check DONE + `seed_all` orchestrator built.** July checklist
+  item. Built a throwaway SQLite DB, ran every loader via a new `seed_all` command, diffed vs production
+  Supabase (form set + per-form rule_ids + entity-model counts). **Verdict: prod does NOT cleanly rebuild.**
+  Root cause: no canonical orchestrator + prod mutated incrementally for months, never rebuilt-from-scratch.
+  **Fixed (code, zero prod risk):** `specs/management/commands/seed_all.py` — sources → specs → amends →
+  flow assertions, **61/61 loaders, 0 problems**; closes the one hard break (`load_1040_form_3800` amend
+  ran before its 1120-S base existed → now amends-last → 3800 rebuilds to 12 rules). **4 residual drifts
+  logged for Ken** (all prod-data changes — orphaned legacy rules on 4797/SCH_K_1120S/SCHD_1120S; stale
+  8283/8949/8995/8995A; `1065` empty stub; and a spurious bare-`8582` loader duplicate). Sources reproduce
+  EXACTLY. **Prod remediated (Ken "do all safe items"):** deleted the 9 confirmed-superseded `4797` orphan
+  rules + the `1065` empty stub → prod 89→**88 TaxForms** (420 FA intact); an initial `FORM_8582` rename was
+  a misdiagnosis and was reverted (it's the real passive-loss form). The rest deferred to the August 1120-S
+  delta audit (all `load_1120s_complete/specs`). Full writeup → `reconstructability_check.md`.
+- 2026-07-04: **1065-core campaign CLOSED — forms 5 & 6 (8825/4562/3800) confirmed cover 1065.** Verified
+  vs the live DB: entity_types carry 1065 AND the routing is wired (4562 "§179 → Schedule K", 8825 "net
+  rental → K Line 2"). No fresh authoring. All 6 core forms done.
 - 2026-07-04: **1065 core — Schedule L + Schedule B SEEDED + EXPORTED (`1065_L` / `1065_B`).** Form 4 of 6.
   Fresh-authored from the FINAL 2025 f1065 (page 6 Sch L; pages 2-4 Sch B, 33 Qs; pymupdf verbatim) +
   primary IRC (§705 L21↔M-2 tie; §754/§743(b)/§734(b) Q10; §448(c) the $31M behind Q24; §6221(b) Q33 —

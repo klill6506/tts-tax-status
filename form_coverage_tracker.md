@@ -1,5 +1,39 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-04 (ninth session) -- FORM 8835 (Renewable Electricity Production Credit §45) →
+> ✅ FORM 8835 COMPLETE (ALL FOUR LEGS TICK) -- migs 0165 (RenewableFacility + 2 Taxpayer
+> passthrough facts) + 0166 (RLS), both applied to the SHARED DB.** Built from the cached RS
+> `8835_spec.json` + Ken's 2026-07-04 J1-J4 scope rulings. **Model** (`RenewableFacility`,
+> one row per §45 facility = one Form 8835 face; J1 multi-facility): field names = the spec
+> fact keys; Taxpayer `f8835_passthrough_credit`/`f8835_passthrough_pis_date` (J4).
+> **Compute** (`compute_8835.py`): year-keyed 2025 RATE table (Fed. Reg. 2025-09366 — $0.006
+> tier-1 / $0.003 tier-2 / hydro-marine post-2022 $0.006 / pre-2022 3.0¢-1.5¢; 2026 unpinned
+> → D_8835_RATE_YEAR), the OBBBA before-2025 begin-construction gate (blank date proven by a
+> pre-cutoff PIS — the 8936 convention), the Part II chain (2-13 per facility: kWh×rate, bond
+> 15% cap, ×5 increased, +10%/+10% bonuses, 90% EPE), `form_8835_state` (THE shared gatherer),
+> `form_8835_credit() -> (amount, "1f"|"4e")` (the pinned 3800 wiring, LIVE), `compute_8835_db`
+> (FORM_8835 face rows, disengage). Runs BEFORE `compute_3800_db`; lands NOTHING on Sch 3 (all
+> via the 3800 §38 limitation). **Routing** (R-8835-ROUTE, J3 binary-per-year): whole year in
+> the 4-yr PIS window → 4e; window ended → 1f; PIS-in-year → 4e; window ends mid-year →
+> straddle RED-defer. **Diagnostics** (`rules_8835.py`, 9 rules): spec 001-004 + RATE_YEAR +
+> the J2/J3/J4 RED-defers **005 mixed / 006 straddle / 007 passthrough-unrouted / 008
+> missing-PIS** (all ≤20 chars, error, bridge-gated on `form_8835_state`; escape hatch = the
+> 3800 1zz/4z facts). **Render**: f8835.pdf downloaded (seq 835, Cat 14954R, sha pinned) +
+> `f8835_2025` LABEL-VERIFIED bijective field map (97 widgets; dead: line-7 reserved pair, 10
+> table slivers, line-3 sub-entries) + `render_8835` (ONE FACE PER FACILITY via
+> `facility_lines`; lines 14/15 first-face) + 3-page PNG visual pass + packet emit before 3800.
+> **UI**: `RenewableFacilitiesSection` tab (Credits group, before 3800) + the two Taxpayer
+> passthrough inputs + D_8835_ → form_8835 routing; tsc clean. **GATES**: pure compute
+> **19/19** (first run) · DB pipeline **8/8** (S4 4e / T4 1f / all-carries W4 / mixed / straddle
+> / passthrough / OBBBA / disengage) · diagnostics **10/10** · render **6/6** · **FA-1040-8835-
+> 01..06** in the gate file (transcribed verbatim from the RS canonical set) → **flow gate 397**.
+> RS Supabase reseeded (9 diags / 6 FAs); cached `8835_spec.json` refreshed from the live
+> deployed export (5→9 diags). Shared DB migrated (0165/0166) + seeded (seed_8835 14 lines,
+> seed_rules); test DB migrated through 0166. Tag `1040-form-8835-complete`. **NEXT: the S4
+> scenario + mapper leg** (⚠ reconcile the Transfer Election Statement vs 4a=No — a transferred
+> credit never lands on Sch 3; the blessed all-carries shape: 8936 personal absorbs the tax →
+> 3800 line 38 = 0, Sch 3 6a blank, the whole $13,200 carries).
+
 > **2026-07-04 (eighth session, part 2) -- FORM 3800 (General Business Credit §38) →
 > ✅ FORM 3800 COMPLETE (ALL FOUR LEGS TICK) -- the FULL spec-first round-trip in one
 > session (mig 0164).** Ken: "should you go ahead and build the 3800?" → the deployed RS
