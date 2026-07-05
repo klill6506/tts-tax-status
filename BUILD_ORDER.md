@@ -19,9 +19,9 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ▶ NOW WORKING ON — **S-7 SC1040 app build** — compute leg landed `307a810` (2026-07-05);
 input/render/diagnostics legs remain. (Paused mid-input-leg for this planner migration.)
-## ▶ NEXT — authoring: **S-5 boundary diagnostics** [RS/Ken] (S-4 1065-core AND S-6 PAL/basis
-authoring both DONE — see below; S-11 1041 is the Sept greenfield rock) · app: finish S-7 SC1040,
-then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
+## ▶ NEXT — authoring: **S-11 1041 module** [RS/Ken] (S-4 1065-core, S-5 boundary diagnostics, S-6
+PAL/basis authoring all DONE — the RS authoring spine is clear to the Sept 1041 rock) · app: finish
+S-7 SC1040, then S-8 AL Form 40 / S-9 NC D-400 builds ∥ S-3 brokerage front end
 
 ---
 
@@ -63,8 +63,11 @@ Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond S
 - [ ] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S)  `[APP]`
 - [ ] tts compute build/reconcile of the 35 formulas against the specs  `[APP]`
 
-**S-5 · [RS]⬜→[APP] ∥ · Boundary diagnostics (WO-04)** — M-3 threshold, K-2/K-3 DFE-fail,
-§704(c), §754, entity apportionment. Author alongside S-4.
+**S-5 · [RS]✅→[APP]⬜ ∥ · Boundary diagnostics (WO-04) — RS authoring DONE 2026-07-05.** New consolidated
+`ENTITY_BOUNDARY` form (seeded to prod, 96 TaxForms, export 200): M-3 threshold, K-2/K-3 DFE 4-criteria gate
+(computed, RED on fail), §704(c), §754/§743(d)/§734(d), multistate apportionment (P.L. 86-272). APP build remains.
+- [x] M-3 · [x] K-2/K-3 DFE gate · [x] §704(c) · [x] §754 · [x] apportionment — 2026-07-05
+- [ ] tts app build: wire the ENTITY_BOUNDARY RED diagnostics into the 1065/1120-S compute path  `[APP]`
 
 **S-6 · [RS]✅→[APP]⬜ · PAL/basis deepening (WO-03) — RS authoring DONE 2026-07-05.** Amendments to
 FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. APP build remains.
