@@ -83,8 +83,8 @@ turn-on waits on the Shelf (DOR approvals).
       2026-07-05** across compute (`307a810`, SC1040TT 138/138) · input (`a8cb291`/`81e0809`/
       `4cb497a`) · render face (`af2c6a7`) + identity header (`13443d5`) · diagnostics (`118613d`).
       **ONE item left:** the Schedule NR render (part-year/nonresident; template+manifest+compute
-      already in place). RS follow-up: SC1040 spec is `draft` + has a WRONG $50k test pin ($2,533 →
-      the table gives $2,360) — correct + promote.
+      already in place). RS spec hygiene DONE 2026-07-05 (`6e22b70`): promoted draft→active + fixed
+      the wrong $50k test pin ($2,533 → $2,360, verified 138/138), re-seeded, deployed export confirms.
 - [x] S-8 AL Form 40 spec — 2026-07-04   → [ ] app build (⚠ fed-tax-deduction quirk)
 - [x] S-9 NC D-400 spec — 2026-07-04   → [ ] app build
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core

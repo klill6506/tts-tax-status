@@ -51,11 +51,12 @@ part-year/nonresident schedule).
   tts-tax-status `b54c111` (BUILD_ORDER/PRODUCT_MAP canonical + SEASON_PLAN re-cut).
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
-- **🔴 NEW — SC1040 RS spec is status `draft` + carries a WRONG test pin.** The spec's "SC resident,
-  single, $50,000" scenario notes L6 "≈$2,533" — that is a rough placeholder and is WRONG. The published
-  **SC1040TT_2025 (and the engine, verified 138/138) give $2,360**. Correct the RS spec test pin, and
-  promote the spec out of `draft`. Also: `D_SC1040_BRACKET` notes the $3,560/$17,830 thresholds are
-  corroborated by SC1040TT but not independently confirmed vs **SC Code §12-6-510** (open verify).
+- **✅ RESOLVED 2026-07-05 (RS `6e22b70`) — SC1040 spec promoted `draft` → `active` + the wrong $50k
+  test pin corrected** ($2,533 placeholder → the published SC1040TT $2,360, verified 138/138). Loader
+  `load_sc1040.py` fixed + re-seeded RS Supabase; deployed export now `status: active` + `L6: 2360`
+  (verified live). Still OPEN (genuine verify, not blocking): `D_SC1040_BRACKET` notes the
+  $3,560/$17,830 thresholds are corroborated by SC1040TT but not independently confirmed vs **SC Code
+  §12-6-510**.
 - **Carried — GA-500 `R-GA500-MIL` military exclusion is WRONG in RS** (encodes `L3+L8`; tts fixed +
   canonical `min(mret,35000)`). Handoff `docs/rs_handoff/2026-07-05_ga500_military_exclusion_fix.md`.
 - Carried: `8867_spec.json` stale D_8867_002/AOTC notes; RS Schedule D `D_8949_006`; SCHA
