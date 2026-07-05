@@ -25,8 +25,8 @@ is a module NEXT season. (Pattern: the 1041 Schedule I AMT RED-defer, ruled 2026
 ## TTS TAX CORE (season one — the product)
 Everything the returns in this practice's book require, end to end.
 
-**Compliance:** 1040 / 1120-S / 1065 / 1041 federal, complete with the practice's form set;
-GA, SC, AL, NC as licensed states (see States module for the rest).
+**Compliance:** 1040 / 1120-S / 1065 / 1041 / **1120 (C-corp — added 2026-07-05, BUILD_ORDER S-13/WO-11)**
+federal, complete with the practice's form set; GA, SC, AL, NC as licensed states (see States module for the rest).
 **Loss limitations (all Core, in statutory order — basis → at-risk → passive → §461(l)):**
 - Basis: Form 7203 both sides (entity + 1040), basis provenance gate, K-1 import.
 - PAL: Form 8582 per-activity with carryforwards; $25k active-participation allowance.

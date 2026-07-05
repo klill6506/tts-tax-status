@@ -23,7 +23,8 @@ legs** (2026-07-05, sixteenth session). SC1040: Schedule NR render `d9fa2b0` clo
 · identity header `c81bcf2` (⚠ fed-tax-deduction quirk handled — liability-based L12). Top unblocked SPINE
 item is now **S-9 NC D-400** (spec authored 7/4).
 ## ▶ NEXT — app: **S-9 NC D-400** build ∥ **S-3 brokerage front end** · then **S-11 1041 module** app build
-(RS authoring DONE 2026-07-05) · S-10 GA-700 (gated behind S-4 1065 core)
+(RS authoring DONE 2026-07-05) · S-10 GA-700 (gated behind S-4 1065 core) · **authoring: S-13 1120 C-corp
+module [RS/Ken]** — NEW, added 2026-07-05, the next RS authoring rock (all prior RS spine authoring is DONE)
 
 ---
 
@@ -110,6 +111,19 @@ turn-on waits on the Shelf (DOR approvals).
 **S-12 · [APP]⏳ ∥ · Season infrastructure** (not spec-gated; roll whenever CC has a lane).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
 - [ ] multi-preparer concurrency   - [ ] invoice/client letter for 1040 packets
+
+**S-13 · [RS]⬜→[APP] · 1120 C-corp module (WO-11), greenfield RS-first. ADDED 2026-07-05 (Ken — a
+scope add BEYOND the original season-one plan; the C corporation is a NEW entity type nothing else covers).
+NEXT RS authoring rock.** Required set (gap-check target — enumerate + probe `lookup/<form>/export/` at build):
+- [ ] spine (page-1 income L1-11 → deductions L12-29 → taxable income L30 → §11 flat **21%** tax)
+- [ ] Schedule C — dividends + dividends-received deduction (§243/§245A 50%/65%/100%)
+- [ ] Schedule J — tax computation (21%, credits, other taxes; §55 CAMT + 2220 estimates = scope-walk)
+- [ ] Schedule K (other information) + Schedule L (balance sheet)
+- [ ] Schedule M-1 / M-2 (book-tax reconcile + retained earnings; M-3 $10M threshold)
+- [ ] 1125-A (COGS) + 1125-E (officer compensation)
+- [ ] GA Form 600 (GA C-corp: income tax + net worth tax) — state companion
+- [ ] confirm 4562 / 4797 / 3800 already cover 1120 (entity_types carry '1120' — verify at gap-check, like 1065 core)
+- scope-walk items: NOL §172 (80% limit), §163(j), CAMT §55 (likely RED-defer — $1B AFSI), PHC/accumulated-earnings tax.
 
 ---
 
