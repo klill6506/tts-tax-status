@@ -90,8 +90,13 @@ turn-on waits on the Shelf (DOR approvals).
 - [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
       (GA partnership numbers depend on the federal 1065 flow — render OK, trust numbers only after S-4)**
 
-**S-11 · [RS]⬜→[APP] · 1041 module (WO-09), greenfield RS-first.**
-- [ ] spine (entity types/rates/exemptions)   - [ ] DNI/IDD/Sch B   - [ ] Sch G   - [ ] K-1 (1041)   - [ ] GA 501   - [ ] Sch I RED-defer diag (D-2)
+**S-11 · [RS]🟡→[APP] · 1041 module (WO-09), greenfield RS-first. RS authoring STARTED 2026-07-05
+(front door + Gate-1 scope walk = RS DECISIONS D-10; f1041_source_brief.md).**
+- [x] spine (entity types/rates/exemptions)   - [x] DNI/IDD/Sch B   - [x] Sch G   *(all three = the one consolidated
+  `1041` form — `load_1041_spine.py`, seeded/exported `lookup/1041/export/` = 200; core 4 + ESBT computed;
+  grantor/PIF/bankruptcy = structure/route/defer)*
+- [ ] K-1 (1041) `SCHEDULE_K1_1041`   - [ ] GA 501 `GA501`   - [x] Sch I RED-defer diag (D-2)
+- ➕ **WO-10 spun off — Form 5227** split-interest trusts (PIF + CRT/CRAT/CRUT + CLT, §664 4-tier) = its own leg + research pass.
 
 **S-12 · [APP]⏳ ∥ · Season infrastructure** (not spec-gated; roll whenever CC has a lane).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
