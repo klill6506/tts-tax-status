@@ -541,6 +541,26 @@
 > business rules still Ken-pull). Detail -> STATUS.md + RS `session_log.md` + `.claude`
 > [[mef-efile-kickoff]].
 
+> **2026-07-05 -- GA-500 Schedule 1 (Adjustments to Income) RENDER LEG -- ★★ COMPLETE (9 pure + 4 DB render tests passed in 2:47) -- flow gate 398 held.**
+> Closes the DEFERRAL_AUDIT "Schedule 1 DETAIL page never coordinate-mapped" gap. The S1-*
+> adjustment lines previously reached the printed return only via the Form-500 line-9 net; now
+> the full Schedule 1 renders. Template WASN'T in the repo (`ga500.pdf` = the 5-page main return
+> only); downloaded the GA-DOR blank-form-printing packet (27 pages), extracted Schedule 1 =
+> source pages 5-7 (p1 Adjustments grid Additions 1-6 / Subtractions 7-14, p2 Retirement Income
+> Exclusion worksheet lines 1-17 dual-column, p3 Military Retirement Income Exclusion worksheet)
+> → `resources/state_forms/GA/2025/ga500_schedule1.pdf` (flat, registered manifest
+> `fga500_schedule1` / `GA-500-SCH1`). Ken ruled (AskUserQuestion): **all 3 pages** + **tips/OT
+> fold into printed line 12** (2025 form has no 12a/12b cell → render L12 = S1-12+S1-12a+S1-12b so
+> the column foots to L13; exact on the TY2025 bed where tips/OT = 0). Build: NEW
+> `coordinates/fga500_schedule1.py` (namespaced P1-*/P2-{TP,SP}-*/P3-{TP,SP}-* + SSN comb) +
+> `render_ga500_schedule1()` (maps FFV → keys; 7a←RIE-TP-17, 7b←MIL-TP-3+8, 7d/7e spouse;
+> attach only when adjustments exist; p2 only if RIE applies, p3 only if military). Pre-printed
+> constants (p2 L4 $5k, p3 L2 $17.5k/L7 $35k) intentionally unmapped. Baseline recipe =
+> box-bottom rule + 2pt (get_drawings "re"; the ".00" text anchors skew ~8-10pt low). No compute
+> change (flow 398 unchanged). ⚠ **Surfaced an OPEN military over-exclusion COMPUTE bug**
+> (REVIEW_QUEUE / `.claude` [[ga500-military-exclusion-overexclusion-bug]]) — flagged, NOT fixed.
+> Boundaries → DEFERRAL_AUDIT 2026-07-05. Detail → `.claude` [[ga500-schedule1-render-leg]].
+
 > **2026-07-02 -- GA-500 HB 463 tips/overtime exclusions (§48-7-27(a)(16)/(17)) -- ★★ UNIT COMPLETE (DB-verified, GA suite 48 passed in 9:20) -- tag `ga500-hb463-tips-ot-complete` -- SPEC-FIRST RS round-trip -- flow gate 363→365.**
 > Found during the same-day HB 463/AP statute verification: the enacted Act (signed 2026-05-11,
 > legis.ga.gov doc 249080) created TY2026-2028 exclusions for cash tips + qualified overtime

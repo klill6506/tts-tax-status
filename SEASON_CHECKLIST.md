@@ -4,7 +4,14 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**idle — Ken directs.** Last completed: **MeF/diagnostics follow-up sweep — 2026-07-05 (thirteenth
+**idle — Ken directs (military-bug decision pending).** Last completed: **GA-500 Schedule 1 render
+leg — 2026-07-05 (fourteenth session)** — rendered the 3-page GA Form 500 Schedule 1 (Adjustments
+grid + RIE worksheet + Military RIE worksheet). New flat template `fga500_schedule1` extracted from
+the GA-DOR packet (pages 5-7) + coordinate overlay + append after the face; Ken ruled all-3-pages +
+tips/OT fold into printed line 12. 9 pure + 4 DB render tests, flow 398 held, no compute change.
+⚠ Surfaced (NOT fixed) an OPEN military-exclusion over-exclusion compute bug — REVIEW_QUEUE Open.
+Ken's requested "OT/tips exclusion" was already built (stale-tracker resurrection — corrected).
+Prior: **MeF/diagnostics follow-up sweep — 2026-07-05 (thirteenth
 session)** — two tracked latent bugs Ken picked, both e-file/gate hardening, no compute/tax-law change:
 (1) **Sch 3 6z/13z MeF silent-drop** `5d055e7` — both lines were live silent-drops (app stores the type
 literals; the "6z not stored" premise was false); `build_schedule3` now emits both repeating groups +
@@ -14,7 +21,9 @@ flow 398 held. RS 8867-spec staleness (D_8867_002) flagged for a dedicated RS se
 Prior: **RS/carryover cleanups — tts-side + handoff — 2026-07-05 (twelfth)** (`a2f083b`; mig 0167).
 Remaining July CC: 4868 mapper **blocked** (no TY2025 4868 schema — SOR pull); 1120-S/7004 mappers
 blocked on the business-family schema pull. The whole 1040 ATS scenario set is BUILT
-(S2/S3/S4/S5/S8/S12/S13; S1 dropped). Unblocked build candidate not started: GA-500 OT/tips exclusion.
+(S2/S3/S4/S5/S8/S12/S13; S1 dropped). No unblocked build candidate remains — the GA-500 OT/tips
+exclusion was ALREADY BUILT 2026-07-02 (`ga500-hb463-tips-ot-complete` `140bf87`; a stale-tracker
+resurrection, corrected fourteenth session — see STATUS.md).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -214,6 +223,17 @@ shows AMT indicators; build later if needed.*
 ---
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
+- ⚠ GA-500 Schedule 1 render leg (fourteenth session) — 2026-07-05. Not a planned checklist item
+  (drains the DEFERRAL_AUDIT "Schedule 1 detail page never coordinate-mapped" gap). Rendered the
+  3-page GA Form 500 Schedule 1: new flat template `fga500_schedule1` (extracted from the 27-page
+  GA-DOR packet) + `coordinates/fga500_schedule1.py` + `render_ga500_schedule1()` appended after the
+  face. Ken ruled all-3-pages + tips/OT fold into printed line 12. 9 pure + 4 DB render tests; flow
+  398 held; no compute change / no migration. Detail → form_coverage_tracker + `.claude` memory.
+- ⚠ 🔴 GA-500 military RIE over-exclusion compute bug SURFACED (fourteenth session) — 2026-07-05.
+  Found while rendering Schedule 1 p3; IT-511-verified; flagged to Ken (REVIEW_QUEUE Open), NOT
+  fixed (tax-law = Ken's ruling). `compute_ga500.mil()` over-excludes military retirement of
+  $17,501–$34,999. Corrected the stale "GA-500 OT/tips exclusion not started" note (was built
+  2026-07-02) in STATUS + this file.
 - ⚠ Form 8867 AOTC gate/cascade lock-step (thirteenth session) — 2026-07-05 `8783487`. Closed the last
   residue of the eic-8867-gate-cascade fix: the DD print gate (`_covered_credits`) and the attestation
   cascade (`_cascade_claims`) defined AOTC differently (gate = circular "line 13 answered"; cascade =
