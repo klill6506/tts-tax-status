@@ -13,6 +13,7 @@ MeF scenario + mapper leg.*
 ## Active gate
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
   → **397 passed** (was 391; +6 for FA-1040-8835-01..06). Fast (~2s, mostly pure).
+  Combined with the 8835/3800/8936 leg files = **453 passed** (reuse-db 8:36, no regressions).
 - Test DB `test_postgres` CURRENT (migs through **0166**); shared (prod) DB seeded through
   seed_8835/seed_3800/seed_8936/seed_rules. RS Supabase reseeded (8835: 9 diags / 6 FAs);
   cached `server/specs/8835_spec.json` refreshed from the live deployed export (5→9 diags).
