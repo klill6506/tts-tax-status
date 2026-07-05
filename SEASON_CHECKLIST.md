@@ -4,15 +4,15 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**S4 scenario + mapper leg (Form 8835/8936/3800 units ALL COMPLETE).** Next: build the
-S4 MeF scenario + mappers (IRS8835 / IRS8936 (+SchA) / IRS3800, 1:1 vs the 2025v5.4 XSDs)
-— ⚠ reconcile the Transfer Election Statement attachment vs the draft face's 4a=No (a
-transferred credit never lands on Sch 3; the blessed all-carries shape: 8936 personal
-absorbs ~$2,193 tax → 3800 line 38 = 0, Sch 3 6a blank, the whole $13,200 carries +
-carryforward statement). Last completed: **Form 8835 unit — ALL FOUR LEGS GREEN
-2026-07-04 (ninth session)** — tag `1040-form-8835-complete`; migs 0165/0166; flow gate
-397; RS reseeded (9 diags / 6 FAs); cached spec refreshed. (Form 3800 + Form 8936 units
-both completed the eighth session, 2026-07-04.)
+**idle — Ken directs.** The whole 1040 ATS scenario set is BUILT (S2/S3/S4/S5/S8/S12/S13;
+S1 dropped). Remaining July CC items per SEASON_PLAN: 4868 extension mapper (runnable once
+the TY2025 4868 schema lands from SOR), proforma/rollover snapshot PRODUCER; 1120-S/7004
+mappers stay blocked on the business-family schema pull. Last completed: **S4 (Sarah Smith)
+MeF scenario + mapper leg — 2026-07-04 (tenth session)** — 3 NEW mappers (IRS8835 /
+IRS8936+IRS8936ScheduleA / IRS3800); 8-doc submission live-XSD-valid; every engine line
+ALL MATCH (tax 2,195, refund 4,581); the whole $13,200 §45 credit carries (Sch 3 6a blank);
+3 documented divergences from the stale key (8835→4e not 1f; 8936 personal not biz→1y;
+§6418 out of scope). Artifacts UNSIGNED, placeholder EFIN — Ken signs + uploads.
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -58,7 +58,7 @@ both completed the eighth session, 2026-07-04.)
           live-XSD-valid, every pin ALL MATCH; combined DB gate 440. (⚠ artifacts UNSIGNED,
           placeholder EFIN — Ken signs + uploads. Key-forensics corrections: Sch F 2,970 =
           SEEDS line 26; PEC You ✔; Sch E A/B Yes ✔; line-38 IRS-figures-penalty election.)
-  - [ ] S4 — 3800/8835/8936 units first, then scenario:
+  - [x] S4 — 3800/8835/8936 units + scenario ALL DONE (2026-07-04):
     - [x] Form 8936 unit (+ Schedule A) — ALL FOUR LEGS GREEN (form ticks) — 2026-07-04
           (migs 0162/0163; CleanVehicle per-vehicle model + two-phase compute — Sch 2 1b/1c
           repayment before the credit chain, Sch 3 6f/6m after 5695 — + 7 diagnostics +
@@ -84,8 +84,18 @@ both completed the eighth session, 2026-07-04.)
           8582-CR escape hatches); carryforward statement page; subset field map over the
           9-page face + PNG pass; D_8911_004 RETIRED + D_8936_003 softened; combined gate
           451. The W4 S4-shape pin: the whole $13,200 carries, 6a blank.)
-    - [ ] S4 scenario + mapper leg (⚠ reconcile the Transfer Election Statement attachment
-          vs the draft face's 4a=No — a transferred credit never lands on Sch 3)
+    - [x] S4 scenario + mapper leg (Sarah Smith) — 2026-07-04 (tenth session): 3 NEW mappers
+          (IRS8835 / IRS8936 (+ScheduleA) / IRS3800, 1:1 vs 2025v5.4 XSDs) + `scenario4.py` +
+          `mef_build_ats_scenario4` + `test_mef_scenario4_compute.py`; 8-doc submission
+          live-XSD-valid, every engine pin ALL MATCH (wages 36,014 / AGI 36,014 / taxable
+          20,264 / tax 2,195 / Sch 3 6f 2,195 / total tax 0 / refund 4,581 / 8835 L15 13,200
+          / 3800 P3-4e 13,200 / line 38 0). THREE documented divergences from the stale key:
+          8835 → Form 3800 line **4e** (SPECIFIED, the 4-yr §38(c)(4)(B)(iv) window) NOT the
+          key's 1f/transfer-column-f; the 8936 vehicle modeled PERSONAL (Sch 3 6f) NOT the
+          key's business→1y=130; §6417/§6418 transfer mechanics OUT of scope (Ken 3800 J4 —
+          no header B entry); the whole $13,200 §45 credit carries forward (Sch 3 6a blank).
+          The "Transfer Election Statement" rides as BinaryAttachment1. (⚠ artifacts UNSIGNED,
+          placeholder EFIN — Ken signs + uploads.)
 - [x] Brokerage summary-extraction skeleton (8949 Exception 2) — 2026-07-04 `c25635f`
       (mig 0160; import boundary + code-M auto + D_8949_006 confirm gate; 8/8; flow 381 held.
       OCR/AI front-end + frontend YELLOW deferred to Aug "extraction to production")

@@ -12,8 +12,11 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **88 TaxForms / 420 FlowAssertions** (was 89; the empty
-`1065` stub was removed in the 2026-07-04 reconstructability cleanup — see Known issues). **The 1065-core
+Active spec-authoring tool. RS Supabase holds **90 TaxForms / 427 FlowAssertions** (was 88; +SC1040 +
+SC_SCHEDULE_NR seeded 2026-07-04 — the 1065 stub was earlier removed in the reconstructability cleanup).
+**Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core batch) / 83 draft, recorded in
+`specs/approved_specs.py` + applied by `approve_specs` (reconstructable via `seed_all` phase 5).
+**August state track started:** SC1040 + Schedule NR authored/seeded/exported (form 1 of the state set). **The 1065-core
 campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
 multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
@@ -192,6 +195,24 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **SC1040 + Schedule NR AUTHORED + SEEDED + EXPORTED (August state track, form 1).** 2nd
+  state individual spec (GA-500 pattern). Two research passes verified everything against the FINAL 2025
+  SC DOR PDFs (SC1040 Rev. 4/21/25; SC1040TT Rev. 6/17/25; Sch NR; Act 63/S.507 conformity). MAXIMAL v1
+  (DECISIONS D-6): full resident + Schedule NR; **computed §168(k) bonus add-back** (line e); computed
+  **§179-excess add-back** (W1 — Ken confirmed SC's pre-OBBBA $1,250,000/$3,130,000, Rev. Proc. 2024-40,
+  since SC conforms at 12/31/2024 and did NOT adopt OBBBA); retirement/military/age-65 stack; 44% cap
+  gain; SS exempt; $4,930 dependent exemption; child-care + two-wage-earner credits. Schedule NR
+  proration → L48 → SC1040 L5. RED-defer I-335/SC4972/catastrophe. Caught a Postgres-only topic_name>255
+  overflow (rolled back clean, fixed). Seeded → **90 TaxForms**; both `lookup/{SC1040,SC_SCHEDULE_NR}/
+  export/` = 200. `sc1040_source_brief.md` + D-6. Commits a588cc8 + 2fdbc06. Next: AL Form 40.
+- 2026-07-04: **draft→approved workflow begun — source-controlled approval + first batch (1065-core 7).**
+  July checklist item. `TaxForm.status` already existed; all 88 forms were `draft`. Built a
+  **reconstructable** approval mechanism (DECISIONS D-5): `specs/approved_specs.py` manifest +
+  `approve_specs` command + `seed_all` phase 5 — approval is source-controlled, NOT a DB edit (a DB-only
+  flip would vanish on rebuild, the anti-pattern the recon check just cleaned up). Ken approved the
+  1065-core 7 (1065_PAGE1, SCH_K_1065, SCHEDULE_K1_1065, 1065_M1/M2, 1065_L/B) → prod **7 approved / 81
+  draft**; held 1065_SE (requires_human_review) + in-flight S3/S4. Verified a fresh `seed_all` restores
+  the 7 approvals. Committed `00e6432` + `4a5508b` (explicit-path, clear of the parallel S3/S4 session).
 - 2026-07-04: **RS DB reconstructability check DONE + `seed_all` orchestrator built.** July checklist
   item. Built a throwaway SQLite DB, ran every loader via a new `seed_all` command, diffed vs production
   Supabase (form set + per-form rule_ids + entity-model counts). **Verdict: prod does NOT cleanly rebuild.**
