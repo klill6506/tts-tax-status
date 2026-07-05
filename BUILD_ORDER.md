@@ -59,7 +59,13 @@ aggregate); `_sr_py_prior_refunded`/`_sr_py_unused_credits` sourcing; TaxWise 10
 `import_brokerage_summary` → 8949 Exception-2, mig 0160). REMAINS: OCR/parse front end +
 YELLOW render + preparer-confirm UI. Not spec-gated. Parallel.
 
-**S-4 · [RS]✅→[APP]⬜ · 1065 core (WO-02) — RS authoring DONE (2026-07-04); APP build remains.**
+**S-4 · [RS]✅→[APP]⏳ · 1065 core (WO-02) — RS authoring DONE; APP build IN PROGRESS (2026-07-05).**
+▸ 6 specs cached (`a4f3370`). ⚠ found the app's 1065 page-1 + Sch K were on PRE-2025 line numbering (verified
+vs f1065.pdf). **✅ leg 1a — page-1 2025 renumber (`10f1fd2`):** ord business income now line 23 (was 22),
+K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. ▶ NEXT leg 1b: Sch K renumber
+(foreign taxes K16a→21, line 16→K-2/K-3 checkbox, +K13b/c/e) + Analysis-of-Net-Income line + D_SCHK_HANDOFF;
+then Sch L balance check, M-1/M-2 tie-outs, K-1 alloc reconcile, issuer-side `PartnerK1Computed`+1065→1040
+import, 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks

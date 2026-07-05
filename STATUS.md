@@ -24,13 +24,34 @@ GA-500 / SC1040 / AL Form 40 pattern.*
 - ⚠ The NC D-400 diagnostics-leg test calls the rule FUNCTIONS directly (fast, ~1:47) — it does NOT run the
   full diagnostics runner, so it avoids the ~9-min sweep the AL40 diagnostics test incurs.
 
-## ▶ RESUME HERE — next SPINE item: **S-3 brokerage front end** ∥ or **S-11 1041 module app build**
-BUILD_ORDER after S-9: the remaining unblocked SPINE items are **S-3 brokerage extraction-to-production
-front end** (OCR/parse + YELLOW render + preparer-confirm UI; skeleton already done, not spec-gated, ∥) and
-the **S-11 1041 module** app build (fiduciary DNI/IDD engine + Sch G + K-1 issuance + GA 501; RS authoring
-complete 2026-07-05). **S-10 GA-700** stays gated behind S-4 1065 core. **S-4 1065 core** (compute build of
-the 35 formulas) and **S-5/S-6** (boundary + PAL/basis app builds) are also open app-build work — all RS
-authoring done. Pick the top unblocked item unless Ken directs otherwise.
+## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS — Ken directed 2026-07-05; leg 1a DONE)**
+All 6 RS core specs cached to `server/specs/` (all `approved`, `a4f3370`). Full reconcile map in the
+`.claude` memory `1065-core-s4-kickoff.md`. Tasks #6-11 in the tracker. DB tests are SLOW (~17 min/run — the
+pooler-slow-not-hung reality; run 1065 pipeline tests in the background).
+
+**✅ Leg 1a DONE (`10f1fd2`) — page-1 2025 face renumber** (Ken greenlit the prod-data touch; near-zero-risk,
+no stale FFV deletion occurred). Verified vs the actual 2025 f1065.pdf: NEW line 20 = §179D energy-efficient
+buildings (Form 7205, direct-entry); line 21 = Other deductions (was 20); line 22 = Total deductions Σ9-21
+(was 21); **line 23 = Ordinary business income = 8−22** (was 22); **K1 now pulls line 23** (the page1→K
+handoff, R-SCHK-1). seed_1065 → 286 lines. 15 DB tests + flow 398 + SE pure 36 green.
+
+**▶ NEXT — leg 1b (Schedule K renumber + Analysis line):** Schedule K foreign taxes `K16a` → **line 21**;
+**line 16 → K-2/K-3-attached checkbox** (international RED-defer, Decision A); add **K13b** (invest interest —
+app currently mislabels as K13d), **K13c** (§59(e)(2)), **K13e** (other deductions). Then build the
+**Analysis-of-Net-Income line** = `(ΣK 1-11) − (K12 + K13a + K13b + K13c + K13e + K21)` (spec R-SCHK-ANALYSIS;
+ties M-1 L9 = M-2 L3). Add diagnostic **D_SCHK_HANDOFF** (K1 ≠ page-1 line 23), D_1065P1_COGS/4797/174A.
+
+**⚠ DEFERRED render (flagged):** the f1065 coordinate map still keys page-1 20/21/22 (now stale) with no 23,
+AND those page-1 coords were already MISALIGNED for the 2025 template (coords at RL y≈222 → fitz ~570, but
+2025 lines 20-23 are at fitz ~475-511). The f1065 page-1 + Schedule K render needs a dedicated recalibration
+leg (the flat-state render recipe: "00"/label anchors → 792−fitz_y → PNG-verify).
+
+**Remaining S-4 legs (tasks #7-11):** Sch L balance check (L14=L22, D_L_BALANCE_*) · M-1/M-2 tie-outs · K-1
+alloc reconcile (RECON-K1-K) · issuer-side **`PartnerK1Computed`** + 1065→1040 import (mirror 1120-S) · 1065
+flow-assertion gate. **What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py,
+compute_1065_se.py. **RED-defers:** K-2/K-3, §704(c) math, §706(d), item-L roll-forward, M-3, OBBBA flags.
+
+*(Other unblocked SPINE items if Ken redirects: S-3 brokerage front end ∥, S-11 1041 module, S-5/S-6.)*
 - **Reusable flat-state-form recipe (proven THREE times — GA-500 / SC1040 / AL40 / NC D-400):** download the
   DOR PDF → verify flat (no AcroForm; if the "web-fill" version has widgets, grab the **handwritten**
   version) → **strip any leading instructions cover** (`delete_page(0)`) → find value anchors (pre-printed
