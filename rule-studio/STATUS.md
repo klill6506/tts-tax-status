@@ -12,11 +12,12 @@ last_updated: 2026-07-04
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **90 TaxForms / 427 FlowAssertions** (was 88; +SC1040 +
-SC_SCHEDULE_NR seeded 2026-07-04 — the 1065 stub was earlier removed in the reconstructability cleanup).
-**Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core batch) / 83 draft, recorded in
-`specs/approved_specs.py` + applied by `approve_specs` (reconstructable via `seed_all` phase 5).
-**August state track started:** SC1040 + Schedule NR authored/seeded/exported (form 1 of the state set). **The 1065-core
+Active spec-authoring tool. RS Supabase holds **91 TaxForms / 431 FlowAssertions** (was 88; +SC1040 +
+SC_SCHEDULE_NR + AL_FORM_40 seeded 2026-07-04 — the 1065 stub was earlier removed in the
+reconstructability cleanup). **Spec approval workflow live (2026-07-04):** 7 approved (the 1065-core
+batch) / 84 draft, recorded in `specs/approved_specs.py` + applied by `approve_specs` (reconstructable
+via `seed_all` phase 5). **August state track:** SC1040 + Schedule NR ✅ and AL Form 40 ✅ authored/
+seeded/exported (forms 1-2 of the state set; next: NC D-400). **The 1065-core
 campaign is COMPLETE (2026-07-04)** — all 6 core forms covered (4 fresh + 8825/4562/3800 confirmed
 multi-entity, verified against the live DB incl. actual Sch K routing). Newest: the **1065-core Schedule L +
 Schedule B** (`1065_L` / `1065_B`, 2026-07-04) — seeded + exported (both 200); Sch L balance-sheet
@@ -60,6 +61,22 @@ B1–B7 pinned as pending-skips.
   RS side done for that campaign (`check_s3s4_integrity.py` 390/390 green).
 
 ## Next up
+
+**► IMMEDIATE NEXT — NC D-400 (August state track, form 3).** The active work is the August RS state
+campaign: **SC1040 ✅ · AL Form 40 ✅** done → **NC D-400 next**, then GA-700 + PTET, plus the 1120-S
+delta audit (Known-issues has its scope). North Carolina D-400 is a flat-rate return that starts from
+federal AGI (simpler than AL). **Follow the established state-spec pattern** (see `load_sc1040.py` +
+`load_al_form40.py` + `load_ga500_form_500.py`, and the `sc1040_source_brief.md` / `al_form40_source_
+brief.md` briefs):
+  1. Dispatch a research subagent → verify NC D-400 TY2025 structure/rate/deductions VERBATIM against
+     the NC DOR (ncdor.gov) final 2025 PDFs (Authoritative-Source Rule — never training memory).
+  2. Write `nc_d400_source_brief.md` → walk ~4 scope decisions with Ken (AskUserQuestion).
+  3. Author `load_nc_d400.py` with `READY_TO_SEED=False` (safety guard); validate on a throwaway SQLite
+     DB (monkeypatch the guard). **Watch the Postgres varchar(255) limits** — `AuthorityTopic.topic_name`
+     bit me on SC1040 (SQLite doesn't enforce; Postgres does). Keep topic names < 255.
+  4. Ken's review walk → flip guard → seed to prod → verify `lookup/NC_D400/export/` = 200 → commit.
+  **Use explicit-path git commits, never `git add -A`** — a parallel session shares this working tree
+  (memory `rs-shared-worktree-explicit-commits`). Prod is at **91 TaxForms / 431 FAs / 7 approved**.
 
 **► 1065 CORE CAMPAIGN — COMPLETE ✅ (2026-07-04).** `1065_core_source_brief.md` has the gap map (6 forms fresh —
 Schedule K spine, K-1 + allocation, M-1/M-2, L, B; 8825/4562/3800 already cover 1065). **Spine leg
@@ -195,6 +212,15 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-04: **AL Form 40 AUTHORED + SEEDED + EXPORTED (August state track, form 2).** 3rd state
+  individual spec. Research verified vs the FINAL 2025 AL DOR PDFs (Form 40, booklet incl. the p.31 FIT
+  worksheet + p.8 std-ded chart, §40-18-5/§40-18-15). AL builds gross income from scratch (no federal-AGI
+  start). Scope walk (4 AskUserQuestion, all recommended): Form 40 full+part-year (40NR RED-defer);
+  **computed federal-income-tax deduction** (L12 = (1040 L22 + NIIT) − refundable credits, floored 0,
+  PY-apportioned — the AL quirk / "longest walk"); computed sliding-scale std deduction (formula, sidesteps
+  the OCR-suspect cell) + dependent exemption; 2/4/5% rate; §414(j)/SS/govt-pension exclusions; direct-entry
+  Schedule OC, RED-defer ATP/40NR/NOL. Ken approved the W1-W5 walk ("seed now"). Seeded → **91 TaxForms**;
+  `lookup/AL_FORM_40/export/` = 200. `al_form40_source_brief.md`. Commits 1fe6955 + 807af4f. Next: NC D-400.
 - 2026-07-04: **SC1040 + Schedule NR AUTHORED + SEEDED + EXPORTED (August state track, form 1).** 2nd
   state individual spec (GA-500 pattern). Two research passes verified everything against the FINAL 2025
   SC DOR PDFs (SC1040 Rev. 4/21/25; SC1040TT Rev. 6/17/25; Sch NR; Act 63/S.507 conformity). MAXIMAL v1

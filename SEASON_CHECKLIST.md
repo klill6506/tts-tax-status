@@ -4,15 +4,17 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**idle — Ken directs.** The whole 1040 ATS scenario set is BUILT (S2/S3/S4/S5/S8/S12/S13;
-S1 dropped). Remaining July CC items per SEASON_PLAN: 4868 extension mapper (runnable once
-the TY2025 4868 schema lands from SOR), proforma/rollover snapshot PRODUCER; 1120-S/7004
-mappers stay blocked on the business-family schema pull. Last completed: **S4 (Sarah Smith)
-MeF scenario + mapper leg — 2026-07-04 (tenth session)** — 3 NEW mappers (IRS8835 /
-IRS8936+IRS8936ScheduleA / IRS3800); 8-doc submission live-XSD-valid; every engine line
-ALL MATCH (tax 2,195, refund 4,581); the whole $13,200 §45 credit carries (Sch 3 6a blank);
-3 documented divergences from the stale key (8835→4e not 1f; 8936 personal not biz→1y;
-§6418 out of scope). Artifacts UNSIGNED, placeholder EFIN — Ken signs + uploads.
+**idle — Ken directs.** Last completed: **Proforma/rollover snapshot PRODUCER —
+2026-07-04 (eleventh session) `3a55f31`** — the app-to-app snapshotter that closes the
+roll-forward loop (the roll side was already built, migs 0105/0106, but nothing wrote a
+1040 snapshot). Fires on the 1040 DRAFT→FILED transition; the producer owns the year-shift
+(Sch D carryover-out, 4562 line 13, 8606 line 14 via `owner_lines`, next-year Roth basis,
+aggregate PAL) so the roll stays a dumb copy; `_sr_py_*` carries this year's Sch A facts.
+8/8 tests (producer correctness, key-contract drift guard, produce→roll round-trip, guards);
+flow 397 held. **The TaxWise season-one 1040 importer stays a separate October item.**
+Remaining July CC: 4868 extension mapper stays **blocked** (no TY2025 4868 schema on disk —
+only 2026v1.0; needs the SOR pull); 1120-S/7004 mappers blocked on the business-family
+schema pull. The whole 1040 ATS scenario set is BUILT (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -31,7 +33,9 @@ ALL MATCH (tax 2,195, refund 4,581); the whole $13,200 §45 credit carries (Sch 
 - [ ] 1120-S XML mapper (**blocked**: business-family schema pull — Ken's IRS inbox)
 - [ ] 7004 extension mapper (own SW ID + own 4 scenarios; **blocked** same as above)
 - [ ] 4868 extension mapper (runnable now — TY2025 schema package needed from SOR)
-- [ ] Proforma/rollover — snapshot PRODUCER (read/roll side already built, migs 0105/0106)
+- [x] Proforma/rollover — snapshot PRODUCER — 2026-07-04 `3a55f31` (app-to-app snapshotter;
+      producer owns the year-shift; fires on 1040 DRAFT→FILED; 8/8 incl. produce→roll; flow 397.
+      TaxWise 1040 importer stays a separate Oct item)
 - 1040 ATS scenarios (smallest-first; **S1 DROPPED** 2026-07-02 — 0 Schedule H filed firm-wide):
   - [x] S5 refundable-credit stack — 2026-07-02
   - [x] S8 signed (EFIN on file) — 2026-07-02 — ⚠ rebuild artifacts (pre-§12.5 filer-name fix) before upload
