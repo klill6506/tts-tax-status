@@ -1,119 +1,77 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, twelfth session (**RS/carryover cleanups — tts-side + handoff**.
-Ken chose "tts-side now, RS handoff." Verified tts is already correct for every carried RS
-follow-up (diagnostics are CODE-registered via `seed_builtin_rules` reading `RULES_*` and
-honoring `is_active`; `D_8911_004` already retired `is_active=False`). Cleaned tts's own stale
-"Form 3800 unbuilt" comments/labels now that 3800 is built (compute_8911 docstring,
-seed_form_8911 docstring/section/label/description, models.py help_text → mig 0167), and wrote
-the complete ready-to-apply RS handoff at
-`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` for a dedicated RS session.)*
+*Last updated: 2026-07-05, thirteenth session (**MeF/diagnostics follow-up sweep** — knocked
+down two tracked latent bugs Ken picked, both e-file/gate hardening, no tax-law change):*
+1. *Sch 3 lines **6z + 13z** MeF silent-drop (`5d055e7`).*
+2. *Form 8867 **AOTC gate/cascade lock-step** (`8783487`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
 - Durable history → `STATUS_ARCHIVE.md` *(not read at boot)*; deferrals → `DEFERRAL_AUDIT.md`;
   open questions → `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 
-## Active gate
+## Active gates (all green)
 - **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q`
-  → **398 passed** (+1 this session: FA-1040-8936-06 transfer-STOP added in the post-handoff
-  FA reconcile; FA-1040-8911-04 metadata refreshed). Fast (~1.2s, pure).
-- **Proforma producer gate** — `cd server && pytest tests/test_proforma_producer.py -q --reuse-db`
-  → **8 passed** (~2 min DB). Producer correctness (year-shifted carryforwards + demographics +
-  deps + 8606 L14 + Roth next + Sch A facts), a key-CONTRACT drift guard, the full produce→roll
-  round-trip, and guards.
-- Test DB `test_postgres` needs **mig 0167** applied (`0167_refueling_k1_help_text` — a
-  help_text-only `AlterField` on `Taxpayer.refueling_k1_credit`; no schema/data change; applies
-  on the next test/deploy run). `manage.py check` clean.
+  → **398 passed** (unchanged this session — neither fix touches compute/flow). Fast (~1.3s, pure).
+- **Pure MeF 1040 suite** — `pytest tests/test_efile_mef_1040.py -q` → **40 passed** (+7 this session:
+  the Sch 3 6z/13z group tests incl. live 2025v5.4 XSD validation of both groups).
+- **AOTC 8867 lock-step** — `pytest tests/test_8867_aotc_lockstep.py -q --reuse-db` → **7 passed**
+  (~5 min DB). Regression bed: `test_leg_c_8867_cascade.py` + `test_print_gate.py` +
+  `test_credit_gates.py` → **51 passed** (~11 min DB) — no regression.
+- `manage.py check` clean. Test DB `test_postgres` still needs **mig 0167** on its next fresh build
+  (help_text-only; applies on the next migrate).
 
 ## ▶ RESUME HERE — idle; Ken directs the next unit
-This session (twelfth) did the **RS/carryover cleanups, tts-side + handoff**. No compute change;
-tts was already correct. Deliverables: (1) the ready-to-apply **RS handoff doc**
-`docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` — six carried RS follow-ups with exact
-loader/anchor edits (8911 stale-3800 retirement · 8936 D_8936_004+R-8936-TRANSFER · 8949
-D_8949_006 · SCHA qualified-contributions fact · 8995 D_8995_001 retirement · 3800 J4 = no
-action); (2) tts stale-comment cleanup (mig 0167). The RS DB reseed/re-export rides a dedicated
-RS session (parallel RS work is uncommitted — don't collide).
+This session (thirteenth) did the **MeF/diagnostics follow-up sweep** — two latent bugs, both fixed
+spec-faithfully with no compute/tax-law change:
 
-**Also this session (after the RS handoff, while the RS session applies it):** a **MeF
-silent-drop audit** (field-map vs builder `LINE_ORDER`) found + FIXED a live e-file bug —
-**IRS1040 lines 1b–1h were never emitted** though `compute.py` sums them into 1z and 1h
-(minister excess housing) / 1e (taxable dependent-care benefits) are live producers, so a
-**clergy return e-filed WagesSalariesAndTipsAmt ≠ WagesAmt with no breakdown** (`c5f3c71`;
-1b-1h added in XSD order + 2 regression tests; pure MeF suite 33 passed incl. live XSD).
-Tracked follow-up: Sch 3 **13z** silent-drop (same 6z class — DEFERRAL_AUDIT). Proven by the
-pure MeF suite (33 passed incl. live 2025v5.4 XSD validation of both plain + enriched returns);
-the DB-backed `test_mef_scenarioN_compute.py` belt-and-suspenders run **timed out on the pooler**
-(the known pooler-slow condition — NOT a regression; the change is provably additive, no existing
-scenario populates 1b-1h). Re-run on a cooperative pooler if desired.
+**(1) Sch 3 6z/13z silent-drop (`5d055e7`).** `SCH3_LINE_ORDER` omitted lines 6z + 13z on the FALSE
+premise (in the builder comment + DEFERRAL_AUDIT) that "the app stores no 6z type text." It stores
+BOTH `6z_type` + `13z_type` (seeded; `D_SCH3_001` requires them; `_form_scoped_lines` carries them).
+line 7 (6z→7) / line 14 (13z→14) summed the amounts, so a nonzero 6z/13z dropped from the XML while
+the total stayed right. `build_schedule3` now emits `OtherNonrefundableCreditsGrp` +
+`TotOthNonrefundableCreditsAmt` (6z) and `OtherRefundableCreditsGrp` (13z `<choice>`: enumerated code
+`960(c)`/`FORM 8689`/`1062NL` else free text) + `TotalOtherRefundableCreditsAmt` (13z). Amount with no
+type literal → hard `UnmappableValue`. No ATS scenario populates 6z/13z → existing scenarios unaffected.
 
-Per `SEASON_PLAN.md`, remaining runnable/near-term CC items:
-- **4868 extension mapper** — **BLOCKED**: only `docs/mef/schemas/2026v1.0/4868_2026v1.0.zip`
-  (TY2026) is on disk; there is **no 4868 in the ATS-active `2025v5.4` package**. Every built
-  scenario is 2025v5.4, so 4868 has no matching TY2025 schema to validate against yet — that's
-  the SOR pull to watch for.
-- **TaxWise season-one 1040 importer** — the OTHER proforma producer path (imports prior-year
-  1040s from TaxWise for season-one priors). Deliberately SEPARATE from this session's app-to-app
-  snapshotter; rides the **October** TaxWise→Sherpa migration (needs the export format + sample).
-- **1120-S / 7004 mappers** — blocked on the business-family schema pull (Ken's IRS inbox).
+**(2) Form 8867 AOTC gate/cascade lock-step (`8783487`).** The DD print gate
+(`rules_eic._covered_credits`) and the attestation cascade (`compute_eic._cascade_claims`) defined AOTC
+differently: gate = "8867 line 13 already answered" (CIRCULAR — reads the cascade's own output, so a
+real AOTC claim with a blank line 13 escaped DD); cascade = "1040 line 29 > 0 OR any EducationStudent"
+(misses a kiddie-tax-lockout AOTC → line 29 = 0; over-counts LLC-only). Both now call one shared
+predicate **`compute_8863.aotc_claimed` = Form 8863 line 7 > 0**. Matches RS 8867 spec intent
+(R-8867-RENDER). ⚠️ RS spec text is STALE (`D_8867_002` "RED until 8863 built"; 8863 IS built, D_8867_002
+retired) → notes-only RS refresh flagged in DEFERRAL_AUDIT for the next 8867 touch.
+
+Per `SEASON_PLAN.md`, remaining runnable/near-term CC items (unchanged): **4868 mapper** BLOCKED (no
+TY2025 4868 schema on disk — SOR pull); **1120-S/7004 mappers** BLOCKED (business-family schema pull —
+Ken's IRS inbox); **TaxWise season-one 1040 importer** = October. Unblocked build candidate not yet
+started: the **GA-500 OT/tips exclusion** unit (HB 463 §48-7-27(a)(16)/(17) — a TY2026 hourly-worker GA
+return currently taxes income GA now excludes; REVIEW_QUEUE Open + DEFERRAL_AUDIT).
 
 Ask Ken which to pick up. The whole 1040 ATS scenario set is built (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
 
-**Proforma producer — DONE this session (eleventh):**
-- Source-format fork RESOLVED: built the **app-to-app snapshotter**, not the TaxWise importer
-  (only cleanly-buildable option now; the importer rides Oct). See the `.claude` auto-memory
-  `proforma-producer-deferred.md` (now marked COMPLETE) for the full design + rationale.
-- **Producer owns the year-shift** — each carryforward stored as the amount carried TO NEXT year
-  so the roll is a dumb copy: Sch D carryover-OUT `1040_SCHD_WS` clc_8 (ST)/clc_13 (LT); Form 4562
-  line 13 = `Taxpayer.sec_179_carryover_next`; Form 8606 line 14 per owner via **reusing
-  `compute_8606.owner_lines`** (no drift); next-year Roth opening basis via the `RothIRABasis`
-  recovery formula; aggregate suspended PAL = Σ per-activity `passive_8582_suspended`.
-- `_sr_py_*` block = THIS year's own Sch A facts (filing status, Sch A 5d/5e/17, 1040 L15,
-  std-deduction override, itemized = L12>std, sales-tax election, AMT from SCH_2 line **2**) →
-  next year's §111 state-refund prior-year inputs.
-- Idempotent/safe: overwrites an app-produced snapshot on re-file; never clobbers an imported
-  prior (`source_software` not `sherpa*`) unless `force`. `source_software="sherpa_proforma"`.
-- ⚠️ v1 limits (flagged in the module docstring): PAL rolls at AGGREGATE granularity (matches the
-  aggregate-only read side); `_sr_py_prior_refunded` + `_sr_py_unused_credits` have no clean CY
-  source → absent. `_sr_py_amt` IS carried.
-- Retires the Category-1 deferrals that only failed for lack of prior-year data (state-refund
-  taxability, cap-loss carryover, §179, IRA basis) — once a return is finalized in Sherpa.
-
 ## ▶ Waiting on Ken (carried)
-1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). **S2 + S3
-   + S4 ready** (UNSIGNED, placeholder EFIN) — sign via
+1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). **S2 + S3 + S4
+   ready** (UNSIGNED, placeholder EFIN) — sign via
    `mef_build_ats_scenario2/3/4 --efin … --practitioner-pin … --taxpayer-pin …`.
-2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · **TY2025 4868 schema** (unblocks
-   the 4868 mapper — currently only TY2026 4868 is on disk).
+2. SOR pulls: TY2025 1040 business rules · 2025v5.3 1040 schema · **TY2025 4868 schema** (unblocks the
+   4868 mapper — currently only TY2026 4868 is on disk).
 3. Watch the IRS inbox for the business-family access notice (blocks 1120-S + 7004 mappers).
 4. Preparer Manager visual-review batch (carried): Sch A line-11 dotted literal + qualified-
-   contributions input; Clean Vehicles (8936) + Business Credit (3800) + Renewable
-   Electricity (8835) tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward
-   statement.
+   contributions input; Clean Vehicles (8936) + Business Credit (3800) + Renewable Electricity (8835)
+   tabs + the rendered 8936/SchA/3800/8835 faces + the 3800 carryforward statement.
 
-## ▶ RS follow-ups → COMPLETE (RS session 2026-07-04 + tts reconcile 2026-07-05)
-The dedicated RS session applied ALL 6 handoff items (RS main; commits 14c7b5d/0deee03/39dbb10/
-30f73ff/5647024) and refreshed the tts spec mirrors (`2ab9dae`: 8911/8936/8936_scha/8949/
-schedule_a/8995). Prod: 92 TaxForms / 436 FlowAssertions. **tts-side reconcile done this session:**
-- **FA gate** — refreshed the stale FA-1040-8911-04 metadata (→ 3800 row 1s / Sch 3 6a / no 6j
-  leak; handler was already correct) + added FA-1040-8936-06 (transfer STOP). Gate **398**.
-  ⚠️ RS note: the transfer STOP is FA-1040-8936-**06** (not −05 as the handoff said; −05 =
-  "unused personal LOST").
-- **Mirror reconcile** — 50 pure spec-driven tests pass (mirrors align with tts code, which was
-  already ahead). Seed-leg line_map counts unchanged (8995=21, 8949=26); the diagnostic/fact-only
-  refresh doesn't move the `seeded_numbers == spec_numbers` comparisons → DB seed-leg tests
-  logically unaffected (confirmed statically; a full DB gate confirms on the next cooperative pooler).
-- ⚠️ Lesson: tts diagnostics are CODE-registered (`seed_builtin_rules` reads `RULES_*`, honors
-  `is_active`); `server/specs/*.json` are RS-export MIRRORS — see auto-memory. RS-canonical FA
-  vocab uses `flow_check`; the tts dispatcher keys on `gating_check`/`flow_assertion` (kept tts's).
-- FYI (RS): duplicate `form_8949_spec.json` (1120-S-era pretty exporter) left as-is —
-  `test_sched_d_spec.py` passes against `8949_spec.json`, so no refresh needed now.
+## ▶ RS follow-ups (rides a dedicated RS session — parallel RS work may be uncommitted)
+- **NEW this session:** `8867_spec.json` — R-8867-RENDER + `f8867_claims_aotc` notes + `D_8867_002` say
+  "Form 8863 not built → AOTC RED"; STALE (8863 built, D_8867_002 retired). Refresh text to "AOTC derived
+  from Form 8863 (line 7 > 0)" + mark D_8867_002 retired. Notes-only, no tax-law change.
+- Carried: RS Schedule D — add `D_8949_006` to the 8949 spec; consider an FA for the 1a/8a aggregate
+  netting. RS SCHA spec fact for `scha_qualified_contributions_cash` (input-only; amend by lookup).
+  RS 8995 sibling loader's D_8995_001 retirement note. (The six prior handoff items were applied by the
+  RS session 2026-07-04 — see the archive.)
 
 ## ▶ Carryover follow-up (older, still open)
-- Next RS Schedule D touch — (a) add `D_8949_006` to the 8949 spec; (b) consider an FA for
-  the 1a/8a aggregate netting.
-- RS SCHA spec fact for `scha_qualified_contributions_cash` (input-only) — amend by lookup.
-- RS 8995 sibling loader's D_8995_001 retirement note (DEFERRAL_AUDIT third-session item 2).
 - 1065 beyond the SE unit resumes only on Ken's explicit direction — `1065_status_assessment.md`.
 - Minor parked sweep: 1065-section selects non-key uncontrolled; legacy `boxCheckbox` (pre-existing).
 - EIN/ZIP re-import stays PARKED.

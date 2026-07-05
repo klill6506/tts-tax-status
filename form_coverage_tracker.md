@@ -1,5 +1,12 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (thirteenth session) — e-file/diagnostics HARDENING, no coverage change.** Two latent
+> bugs on already-complete forms, no leg status moved: (1) **Schedule 3 e-file leg** — `build_schedule3`
+> now emits the lines 6z + 13z repeating groups (`OtherNonrefundableCreditsGrp` / `OtherRefundableCreditsGrp`
+> + totals) that were silently dropped (`5d055e7`); (2) **Form 8867 diagnostics leg** — the AOTC covered-
+> credit gate + attestation cascade unified onto one `compute_8863.aotc_claimed` signal (`8783487`). Both
+> forms remain ✅ complete; these harden existing legs. No migration.
+
 > **2026-07-04 (ninth session) -- FORM 8835 (Renewable Electricity Production Credit §45) →
 > ✅ FORM 8835 COMPLETE (ALL FOUR LEGS TICK) -- migs 0165 (RenewableFacility + 2 Taxpayer
 > passthrough facts) + 0166 (RLS), both applied to the SHARED DB.** Built from the cached RS

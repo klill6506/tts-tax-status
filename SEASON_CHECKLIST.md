@@ -4,17 +4,17 @@ authoritative narrative — dates, gates, and rationale). Items here mirror the 
 scope and dates change only on Ken's explicit direction.*
 
 ## ▶ NOW WORKING ON
-**idle — Ken directs.** Last completed: **RS/carryover cleanups — tts-side + handoff —
-2026-07-05 (twelfth session)** — verified tts already correct for every carried RS follow-up
-(diagnostics are CODE-registered, `is_active` honored; `D_8911_004` already retired), cleaned
-tts's own stale "Form 3800 unbuilt" comments/labels (mig 0167, help_text-only), and wrote the
-complete ready-to-apply RS handoff `docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md` (six
-follow-ups, exact loader edits) for a dedicated RS session. flow 397 held.
-Prior: **Proforma/rollover snapshot PRODUCER — 2026-07-04 `3a55f31`** (app-to-app snapshotter;
-producer owns the year-shift; fires on 1040 DRAFT→FILED; 8/8 incl. produce→roll).
-Remaining July CC: 4868 extension mapper stays **blocked** (no TY2025 4868 schema on disk —
-only 2026v1.0; needs the SOR pull); 1120-S/7004 mappers blocked on the business-family
-schema pull. The whole 1040 ATS scenario set is BUILT (S2/S3/S4/S5/S8/S12/S13; S1 dropped).
+**idle — Ken directs.** Last completed: **MeF/diagnostics follow-up sweep — 2026-07-05 (thirteenth
+session)** — two tracked latent bugs Ken picked, both e-file/gate hardening, no compute/tax-law change:
+(1) **Sch 3 6z/13z MeF silent-drop** `5d055e7` — both lines were live silent-drops (app stores the type
+literals; the "6z not stored" premise was false); `build_schedule3` now emits both repeating groups +
+totals. (2) **Form 8867 AOTC gate/cascade lock-step** `8783487` — unified the circular gate + over/under-
+broad cascade onto one shared `compute_8863.aotc_claimed` (Form 8863 line 7 > 0). 7 + 51 DB tests green;
+flow 398 held. RS 8867-spec staleness (D_8867_002) flagged for a dedicated RS session.
+Prior: **RS/carryover cleanups — tts-side + handoff — 2026-07-05 (twelfth)** (`a2f083b`; mig 0167).
+Remaining July CC: 4868 mapper **blocked** (no TY2025 4868 schema — SOR pull); 1120-S/7004 mappers
+blocked on the business-family schema pull. The whole 1040 ATS scenario set is BUILT
+(S2/S3/S4/S5/S8/S12/S13; S1 dropped). Unblocked build candidate not started: GA-500 OT/tips exclusion.
 
 ## How to update (every session close — MANDATORY, no exceptions)
 - Tick every item completed this session: `- [x] item — YYYY-MM-DD `SHA``
@@ -214,6 +214,15 @@ shows AMT indicators; build later if needed.*
 ---
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
+- ⚠ Form 8867 AOTC gate/cascade lock-step (thirteenth session) — 2026-07-05 `8783487`. Closed the last
+  residue of the eic-8867-gate-cascade fix: the DD print gate (`_covered_credits`) and the attestation
+  cascade (`_cascade_claims`) defined AOTC differently (gate = circular "line 13 answered"; cascade =
+  "line 29>0 or any EducationStudent" — missed kiddie-lockout, over-counted LLC-only). Both now call one
+  shared `compute_8863.aotc_claimed` (Form 8863 line 7 > 0). 7 new DB tests + 51 existing green.
+- ⚠ Sch 3 6z/13z MeF silent-drop fix (thirteenth session) — 2026-07-05 `5d055e7`. Both lines were live
+  silent-drops (`build_schedule3` omitted them though the app stores the `6z_type`/`13z_type` literals +
+  sums the amounts into line 7/14). Now emits `OtherNonrefundableCreditsGrp`/`OtherRefundableCreditsGrp`
+  + totals; missing type literal → `UnmappableValue`. 7 new pure tests incl. live 2025v5.4 XSD validation.
 - ⚠ RS handoff COMPLETE + tts FA reconcile (twelfth session) — 2026-07-05 `a2f083b`. RS session
   applied all 6 handoff items (RS main) + refreshed tts mirrors (`2ab9dae`); tts-side reconciled
   the FA gate (FA-1040-8911-04 metadata refresh + FA-1040-8936-06 transfer STOP → gate 398) and
