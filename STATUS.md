@@ -34,6 +34,16 @@ D_8949_006 · SCHA qualified-contributions fact · 8995 D_8995_001 retirement ·
 action); (2) tts stale-comment cleanup (mig 0167). The RS DB reseed/re-export rides a dedicated
 RS session (parallel RS work is uncommitted — don't collide).
 
+**Also this session (after the RS handoff, while the RS session applies it):** a **MeF
+silent-drop audit** (field-map vs builder `LINE_ORDER`) found + FIXED a live e-file bug —
+**IRS1040 lines 1b–1h were never emitted** though `compute.py` sums them into 1z and 1h
+(minister excess housing) / 1e (taxable dependent-care benefits) are live producers, so a
+**clergy return e-filed WagesSalariesAndTipsAmt ≠ WagesAmt with no breakdown** (`c5f3c71`;
+1b-1h added in XSD order + 2 regression tests; pure MeF suite 33 passed incl. live XSD).
+Tracked follow-up: Sch 3 **13z** silent-drop (same 6z class — DEFERRAL_AUDIT). The DB-backed
+`test_mef_scenarioN_compute.py` suite is running as async no-regression confirmation (the
+change is provably additive — no existing scenario populates 1b-1h).
+
 Per `SEASON_PLAN.md`, remaining runnable/near-term CC items:
 - **4868 extension mapper** — **BLOCKED**: only `docs/mef/schemas/2026v1.0/4868_2026v1.0.zip`
   (TY2026) is on disk; there is **no 4868 in the ATS-active `2025v5.4` package**. Every built

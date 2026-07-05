@@ -214,6 +214,10 @@ shows AMT indicators; build later if needed.*
 ---
 
 ## ⚠ Unplanned work log (added per the never-silent rule)
+- ⚠ MeF silent-drop audit + fix (twelfth session) — 2026-07-05 `c5f3c71`. Field-map vs builder
+  `LINE_ORDER` audit found + FIXED IRS1040 lines 1b–1h never emitted (live via minister 1h /
+  DCB 1e → clergy return e-filed 1z ≠ 1a with no breakdown). Added 1b-1h in XSD order + 2
+  regression tests; pure MeF suite 33 passed. Tracked: Sch 3 13z silent-drop (DEFERRAL_AUDIT).
 - ⚠ RS/carryover cleanups — tts-side + handoff (twelfth session) — 2026-07-05. Not a checklist
   line item (it drains the carried "RS follow-ups"). tts stale-comment cleanup + mig 0167
   (help_text only) + `docs/rs_handoff/2026-07-04_rs_spec_cleanup_handoff.md`. RS DB reseed/
