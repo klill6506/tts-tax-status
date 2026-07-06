@@ -205,8 +205,13 @@ TOP unchecked item as the current RS rock.
   FUTA Section A 0.6% / Section B credit-reduction (year-keyed **CA 1.2% / VI 4.5%**, Fed. Reg. 2026-00342) →
   total to Schedule 2 line 9; gating A/B/C + exclusion/Part-IV/EIN diagnostics. entity_types 1040; prod 111→112;
   `lookup/SCHEDULE_H/export/` = 200; validated 31/0. DECISIONS D-17. tts app build = [APP] lane.
-- [ ] **▶ Form 4684** — Casualties & Thefts (federally-declared disasters) — NEXT (top of the queue)
-- [ ] **Form 4952** — Investment Interest Expense Deduction
+- [x] **WO-16 · Form 4684** — Casualties & Thefts — ✅ DONE 2026-07-06 (RS). Section A personal (loss = min(basis,
+  FMV decline) − insurance; **FDD-only §165(h)(5)**; $100/$500 floor + 10% AGI; qualified-disaster path, OBBBA window
+  to **9/2/2025**) → Sch A; Section B business Part I + Part II **§1231/ordinary routing to Form 4797** L3/L14;
+  Section C Ponzi safe harbor **95%/75%** (Rev. Proc. 2009-20); Section D §165(i) + OBBBA financial-scam theft =
+  diagnostics. entity_types 1040/1065/1120S/1120; prod 112→113; `lookup/4684/export/` = 200; validated 29/0.
+  DECISIONS D-18. tts app build = [APP] lane.
+- [ ] **▶ Form 4952** — Investment Interest Expense Deduction — NEXT (top of the queue)
 - [ ] **Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)*
 - [ ] **Form 8814** — Parents' Election to Report Child's Interest & Dividends
 - [ ] **Form 8839** — Qualified Adoption Expenses
