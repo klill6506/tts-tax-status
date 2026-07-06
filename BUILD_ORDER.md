@@ -17,8 +17,11 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 DONE; next = leg 3 (M-1/M-2
-tie-outs).** ✅ **Legs 1b + 2 (2026-07-05, eighteenth session).** **Leg 1b — Schedule K 2025 renumber +
+## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 DONE; next = leg 4 (K-1
+alloc reconcile).** ✅ **Legs 1b + 2 + 3 (2026-07-05, eighteenth session).** **Leg 3 — M-1/M-2 tie-outs:**
+new `rules_1065_m.py` (D_M1_ANALYSIS error / D_M2_3 warning / D_M1_EXEMPT + D_M2_EXEMPT info) wiring the
+RECON-ANALYSIS chain K_ANALYSIS = M1_9 = M2_3 that leg-1b's Analysis line unblocked; the M-1/M-2 sum compute
+already existed → validation-only; 3 pure + 4 DB; D_M2_1 (item-L roll-forward) deferred to the K-1 leg. **Leg 1b — Schedule K 2025 renumber +
 Analysis line + diagnostics:** renumber (`seed_1065`→290 lines) foreign taxes K16a→line 21 (`K21`), line 16→
 `K16` K-3-attached checkbox (intl RED-defer), K13d→`K13b`, +`K13c`/`K13e`, computed `K_ANALYSIS` = (Σ K 1-11)
 − (Σ K 12-13e + 21); new `rules_1065_schk.py` (D_SCHK_HANDOFF/K3/9C + D_1065P1_4797/COGS); ★ fixed a latent
@@ -75,8 +78,11 @@ renumber + Analysis line (2026-07-05, eighteenth session):** K16a→line 21, lin
 renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398 (`8ad96d8`).
 **✅ leg 2 — Schedule L balance check (2026-07-05, eighteenth session):** new `rules_1065_l.py` (D_L_BALANCE_BOY/EOY
 error, D_L_21_M2_TIE + D_L_M3 warning, D_L_EXEMPT info; B6 exemption suppresses balance errors); the L14/L22
-total compute already existed → validation-only; 7 DB tests (`f55a0c8`). Build-gap #2 closed. ▶ NEXT leg 3: M-1/M-2 tie-outs
-(assert K_ANALYSIS=M1_9=M2_3, RECON-ANALYSIS); then leg 4 K-1 alloc reconcile, leg 5 issuer-side
+total compute already existed → validation-only; 7 DB tests (`f55a0c8`). Build-gap #2 closed.
+**✅ leg 3 — M-1/M-2 tie-outs (2026-07-05, eighteenth session):** new `rules_1065_m.py` (D_M1_ANALYSIS error,
+D_M2_3 warning, D_M1_EXEMPT/D_M2_EXEMPT info) wiring K_ANALYSIS=M1_9=M2_3 (RECON-ANALYSIS, unblocked by leg 1b);
+sum compute already existed → validation-only; 3 pure + 4 DB (`01a9a95`); D_M2_1 deferred to the K-1 leg. ▶ NEXT leg 4:
+K-1 alloc reconcile (RECON-K1-K; wire K13c/K13e + 2025 K-1 box codes into k1_allocator); then leg 5 issuer-side
 `PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration
 DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),

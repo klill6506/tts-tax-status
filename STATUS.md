@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, eighteenth session: **S-4 1065 core legs 1b + 2** — leg 1b Schedule K
-2025 renumber + Analysis-of-Net-Income line + Sch-K/page-1 diagnostics (also fixed a latent
-`aggregate_schedule_d` bug zeroing 1065 royalties K7); leg 2 Schedule L balance-check diagnostics.*
+*Last updated: 2026-07-05, eighteenth session: **S-4 1065 core legs 1b + 2 + 3** — leg 1b Schedule K
+2025 renumber + Analysis line (+ a latent `aggregate_schedule_d` royalties-K7 fix); leg 2 Schedule L
+balance-check diagnostics; leg 3 M-1/M-2 reconciliation tie-outs (K_ANALYSIS = M1_9 = M2_3).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -19,13 +19,15 @@
   (**9** — pipeline Analysis persist + 8 diagnostics fire/quiet). `test_seed_1065` count now **290**.
 - **1065 Schedule L leg 2** — DB `pytest tests/test_1065_l_diagnostics_leg.py` (**7** — balanced quiet ·
   OOB BOY/EOY fire · exempt suppression · M-3 threshold · M-2 tie equal/differ).
+- **1065 M-1/M-2 leg 3** — pure `pytest tests/test_1065_m_leg.py` (**3** — spec pins M1_9=298000 / M2_9=728000
+  + tie identity) · DB `pytest tests/test_1065_m_diagnostics_leg.py` (**4** — tie quiet · M1/M2_3 fire · exempt).
 - **1065 SE** pure `pytest tests/test_1065_se_compute_leg.py` (**36**) unchanged.
 - `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db` (fast rebuild avoided).
   No migration this session (1065 lines are FormFieldValue-backed, re-seeded via `seed_1065` + `seed_rules`).
 - ⚠ DB runs on the shared Supabase pooler are SLOW (a 4-file batch took ~38 min). Run 1065 DB tests in
   the background; never `drop_test_db` a slow run (kills the live session).
 
-## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 DONE; next = leg 3 (M-1/M-2 tie-outs).**
+## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 DONE; next = leg 4 (K-1 alloc reconcile).**
 6 RS core specs cached to `server/specs/` (all `approved`, `a4f3370`). Full reconcile map in the `.claude`
 memory `1065-core-s4-kickoff.md`.
 
@@ -56,11 +58,17 @@ contra-netted); this leg is validation-only. New `rules_1065_l.py` (registered):
 (warning, assets EOY ≥ $10M → M-3 RED-defer), `D_L_EXEMPT` (info, Schedule B Q4 box `B6`). ★ B6 exemption
 SUPPRESSES the balance errors + M-2 tie. 7 DB tests. (Build-gap #2 "tts has NO balance check" — closed.)
 
-**▶ NEXT — leg 3 (M-1/M-2 tie-outs):** assert `K_ANALYSIS` = M1_9 = M2_3 (RECON-ANALYSIS) — wire the
-diagnostics tying the Analysis line to M-1 line 9 and M-2 line 3. Then leg 4 K-1 alloc reconcile (RECON-K1-K;
-wire K13c/K13e + the 2025 K-1 box codes) · leg 5 issuer-side **`PartnerK1Computed`** + 1065→1040 import
-(mirror 1120-S) · leg 6 1065 flow-assertion gate. **Key map (leg 3):** M-1 line 9 = `M1_9`, M-2 line 3 =
-`M2_3` (input, net income per books), Analysis = `K_ANALYSIS`.
+**✅ Leg 3 DONE (this session) — M-1/M-2 reconciliation tie-outs.** RECON-ANALYSIS chain (unblocked by
+leg-1b's `K_ANALYSIS`): `K_ANALYSIS` = `M1_9` = `M2_3`. New `rules_1065_m.py` (registered): `D_M1_ANALYSIS`
+(error, M1_9 ≠ K_ANALYSIS), `D_M2_3` (warning, M2_3 ≠ M1_9), `D_M1_EXEMPT`/`D_M2_EXEMPT` (info, B6). B6
+exemption suppresses the tie checks. The M-1/M-2 sum formulas already existed → validation-only. 3 pure + 4 DB.
+DEFERRED: `D_M2_1` (M-2 line 1 = Σ K-1 item-L beginning capital — needs the item-L roll-forward; K-1 leg).
+
+**▶ NEXT — leg 4 (K-1 alloc reconcile, RECON-K1-K):** reconcile `k1_allocator.allocate_all_k1s` per-partner
+box totals back to the entity Schedule K lines (Σ partner box = K line); wire the new **K13c/K13e** into the
+allocator + the **2025 K-1 box codes** (box 13 sub-codes, box 21 foreign). Then leg 5 issuer-side
+**`PartnerK1Computed`** + 1065→1040 import (mirror 1120-S `ShareholderK1Computed`/`k1_import.py`) · leg 6
+1065 flow-assertion gate. Also the deferred `D_M2_1` item-L roll-forward rides the K-1 leg.
 
 **⚠ DEFERRED (flagged in DEFERRAL_AUDIT):** f1065 page-1 + Schedule K **render recalibration** (coords stale
 for 2025 — the whole face is one dedicated render leg); `D_1065P1_174A` (needs an R&E input line);
@@ -80,6 +88,8 @@ for 2025 — the whole face is one dedicated render leg); `D_1065P1_174A` (needs
   (`seed_1065` + `seed_rules`, Ken-greenlit): pruned 2 stale sched_k lines (K16a/K13d, 64 FFV rows).
 - `f55a0c8` — leg 2: `rules_1065_l.py` (5 Schedule L diagnostics: balance BOY/EOY, M-2 tie, M-3, exempt)
   + 7 DB tests. Validation-only (L14/L22 totals already computed). Prod `seed_rules` registered the D_L_* rules.
+- `01a9a95` — leg 3: `rules_1065_m.py` (M-1/M-2 tie-outs: D_M1_ANALYSIS, D_M2_3, D_M1/M2_EXEMPT) + 3 pure
+  + 4 DB tests. Validation-only (M-1/M-2 sums already computed). Prod `seed_rules` registered the D_M* rules.
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;

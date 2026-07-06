@@ -1,5 +1,19 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 3) — Schedule M-1 / M-2 reconciliation tie-outs → ✅ DONE
+> (diagnostics; the M-1/M-2 sum compute already existed).** Built spec-first from RS `1065_M1` + `1065_M2`.
+> This wires the RECON-ANALYSIS chain that leg-1b's `K_ANALYSIS` unblocked (R-M1-9's flagged "tts computes
+> NO Analysis line" gap is now closed): **Analysis line (`K_ANALYSIS`) = M-1 line 9 (`M1_9`) = M-2 line 3
+> (`M2_3`)**. New `rules_1065_m.py` (registered): **`D_M1_ANALYSIS`** (error — M1_9 ≠ K_ANALYSIS; the
+> book→return reconciliation must land on the Schedule K return income), **`D_M2_3`** (warning — M2_3
+> data-entry ≠ M1_9; both-zero quiet), **`D_M1_EXEMPT`** / **`D_M2_EXEMPT`** (info — Schedule B Q4 box `B6`).
+> ★ B6 exemption **suppresses** the two tie checks (the EXEMPT infos own it). The R-M1-5/8/9 + R-M2-5/8/9 sum
+> formulas were already in FORMULAS_1065 (M1_5/M1_8/M1_9, M2_5/M2_8/M2_9) — validation-only, no compute change.
+> Tests: 3 pure (spec pins M1-1 M1_9=298000, M2-1 M2_9=728000, tie identity) + 4 DB (tie holds quiet · M1
+> mismatch fires · M2_3 off fires · exempt suppression). `check` clean. **DEFERRED** (K-1 leg, see
+> DEFERRAL_AUDIT): `D_M2_1` (M-2 line 1 = Σ K-1 item L beginning capital — needs the item-L roll-forward;
+> Partner model has only capital %, not tax-basis capital $).
+
 > **2026-07-05 (S-4 1065 core, leg 2) — Schedule L balance check + M-2 tie / M-3 / exempt diagnostics
 > → ✅ DONE (diagnostics; the L14/L22 total compute already existed).** Built spec-first from RS `1065_L`.
 > Build-gap #2 closed ("tts has NO balance check"). New `rules_1065_l.py` (registered): **`D_L_BALANCE_BOY`**
