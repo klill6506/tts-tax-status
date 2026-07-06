@@ -259,8 +259,14 @@ TOP unchecked item as the current RS rock.
   **★ OBBBA $15M BEA is 2026+ (year-keyed, NOT 2025).** entity_types 709; prod 117→118; `lookup/709/export/` = 200;
   validated 32/0. DECISIONS D-23. ⚠ **[UNVERIFIED] Part 1/Sch A recon/Sch D sub-line #s** (raw PDF face unfetchable in
   research) — re-verify before the tts build; Part 2 lines 1-8 verified. tts app build = [APP] lane.
-- [ ] **▶ Form 8832** — Entity Classification Election (check-the-box) — NEXT (top of the queue)
-- [ ] **Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
+- [x] **WO-22 · Form 8832** — Entity Classification Election (check-the-box) — ✅ DONE 2026-07-06 (RS). Structural
+  election (Reg. §301.7701-3): eligibility/classification decision tree (per-se corp ineligible; 60-month change gate)
+  → elect corp/partnership/disregarded; defaults (domestic 2+ = partnership / 1 = disregarded; foreign by limited
+  liability); effective window (75 days before / 12 months after); Rev. Proc. 2009-41 late relief (3yr 75 days);
+  S-election → Form 2553 (not 8832); updated addresses (Kansas City/Ogden). Rev. 12-2013 (no annual reissue); no OBBBA
+  impact. entity_types 1065/1120/1120S/1040; prod 118→119; `lookup/8832/export/` = 200; validated 31/0. DECISIONS D-24.
+- [ ] **▶ Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
+  — NEXT (the LAST S-16 queue item)
 - After this queue drains: net-new RS scope via the TaxWise forms-usage report or a law change.
 
 ---
