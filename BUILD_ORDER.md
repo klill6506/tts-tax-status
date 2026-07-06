@@ -17,14 +17,15 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b DONE; next = leg 2 (Schedule L
-balance check).** ✅ **Leg 1b (2026-07-05, eighteenth session) — Schedule K 2025 renumber + Analysis
-line + diagnostics.** Renumber (`seed_1065`→290 lines): foreign taxes K16a→line 21 (`K21`); line 16→`K16`
-K-3-attached checkbox (intl RED-defer); investment interest K13d→`K13b`; added `K13c`/`K13e`; new computed
-`K_ANALYSIS` = (Σ K 1-11) − (Σ K 12-13e + 21) (R-SCHK-ANALYSIS). New `rules_1065_schk.py`: D_SCHK_HANDOFF /
-D_SCHK_K3 / D_SCHK_9C / D_1065P1_4797 / D_1065P1_COGS. k1_allocator carried the renames. ★ Fixed a latent
-cross-form bug: `aggregate_schedule_d` (1120-S SCHD_1120S, keys K7/K8a) ran ungated and zeroed 1065 royalties
-(K7) every recompute → added a `code=="1065"` guard. 7 pure + 9 DB tests; flow 398. Render still DEFERRED.
+## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 DONE; next = leg 3 (M-1/M-2
+tie-outs).** ✅ **Legs 1b + 2 (2026-07-05, eighteenth session).** **Leg 1b — Schedule K 2025 renumber +
+Analysis line + diagnostics:** renumber (`seed_1065`→290 lines) foreign taxes K16a→line 21 (`K21`), line 16→
+`K16` K-3-attached checkbox (intl RED-defer), K13d→`K13b`, +`K13c`/`K13e`, computed `K_ANALYSIS` = (Σ K 1-11)
+− (Σ K 12-13e + 21); new `rules_1065_schk.py` (D_SCHK_HANDOFF/K3/9C + D_1065P1_4797/COGS); ★ fixed a latent
+cross-form bug — `aggregate_schedule_d` (1120-S, keys K7/K8a) ran ungated and zeroed 1065 royalties (K7)
+every recompute → added a `code=="1065"` guard. **Leg 2 — Schedule L balance check:** new `rules_1065_l.py`
+(D_L_BALANCE_BOY/EOY error, D_L_21_M2_TIE + D_L_M3 warning, D_L_EXEMPT info; B6 exemption suppresses balance
+errors); the L14/L22 total compute already existed → validation-only. Render still DEFERRED.
 (Prior: ✅ **S-9 NC D-400 COMPLETE all 4 legs** — compute `69cf82b`/input `b31d5c7`/render `c704f21`/diag
 `8358e74`; flat 4.25%, 85% bonus/§179 add-back; the three state forms SC1040/AL40/NC D-400 are done.)
 ## ▶ NEXT — app: **S-3 brokerage front end** (∥, not spec-gated) · **S-11 1041 module** app build (RS
@@ -71,10 +72,13 @@ vs f1065.pdf). **✅ leg 1a — page-1 2025 renumber (`10f1fd2`):** ord business
 K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. **✅ leg 1b — Schedule K 2025
 renumber + Analysis line (2026-07-05, eighteenth session):** K16a→line 21, line 16→K-3 checkbox, K13d→K13b,
 +K13c/K13e, computed `K_ANALYSIS`, seed→290 lines; 5 new diagnostics (`rules_1065_schk.py`); k1_allocator
-renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398 (`8ad96d8`). ▶ NEXT leg 2:
-Sch L balance check (L14=L22, D_L_BALANCE_*); then leg 3 M-1/M-2 tie-outs (assert K_ANALYSIS=M1_9=M2_3),
-leg 4 K-1 alloc reconcile, leg 5 issuer-side `PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion
-gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
+renames; ★ fixed `aggregate_schedule_d` zeroing 1065 royalties (K7); 7 pure + 9 DB, flow 398 (`8ad96d8`).
+**✅ leg 2 — Schedule L balance check (2026-07-05, eighteenth session):** new `rules_1065_l.py` (D_L_BALANCE_BOY/EOY
+error, D_L_21_M2_TIE + D_L_M3 warning, D_L_EXEMPT info; B6 exemption suppresses balance errors); the L14/L22
+total compute already existed → validation-only; 7 DB tests (`f55a0c8`). Build-gap #2 closed. ▶ NEXT leg 3: M-1/M-2 tie-outs
+(assert K_ANALYSIS=M1_9=M2_3, RECON-ANALYSIS); then leg 4 K-1 alloc reconcile, leg 5 issuer-side
+`PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration
+DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks

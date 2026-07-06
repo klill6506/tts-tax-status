@@ -1,5 +1,18 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 2) — Schedule L balance check + M-2 tie / M-3 / exempt diagnostics
+> → ✅ DONE (diagnostics; the L14/L22 total compute already existed).** Built spec-first from RS `1065_L`.
+> Build-gap #2 closed ("tts has NO balance check"). New `rules_1065_l.py` (registered): **`D_L_BALANCE_BOY`**
+> / **`D_L_BALANCE_EOY`** (error — face line 14 total assets [app `L15a`/`L15d`] ≠ face line 22 total
+> liab+capital [app `L24a`/`L24d`], per column), **`D_L_21_M2_TIE`** (warning — partners' capital EOY [`L23d`]
+> ≠ Schedule M-2 line 9 [`M2_9`]; both-zero stays quiet), **`D_L_M3`** (warning — total assets EOY ≥ $10M →
+> Schedule M-3 required, RED-defer Decision F), **`D_L_EXEMPT`** (info — Schedule B Q4 small-partnership box
+> [app `B6`] set → Schedule L not required). ★ The small-partnership exemption (B6) **suppresses** the balance
+> errors + the M-2 tie (D_L_EXEMPT owns it). The R-L-14/R-L-22 total formulas were already in FORMULAS_1065
+> (`L15a/d`, `L24a/d`, contra-netted) — this leg is validation-only, no compute change. Tests: 7 DB
+> (balanced quiet · OOB BOY/EOY fire · exempt suppression · M-3 threshold · M-2 tie equal/differ). `check`
+> clean. RED-defers per spec: R-L-21-TIE math, Schedule M-3 build.
+
 > **2026-07-05 (S-4 1065 core, leg 1b) — Schedule K 2025 renumber + Analysis-of-Net-Income line
 > + handoff/page-1 diagnostics → ✅ DONE (compute + input + diagnostics; render still deferred).**
 > Built spec-first from RS `SCH_K_1065` + `1065_PAGE1` (cached specs). **Renumber (seed_1065):** the
