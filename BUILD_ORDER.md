@@ -158,13 +158,20 @@ seeded/exported (`lookup/{SC1120,AL_FORM_20C,NC_CD405}/export/` = 200); prod 103
 - [x] `NC_CD405` — combined 2.25% income (S.B. 105) + net-worth franchise tax + 85% bonus/§179 $25k/$200k add-back.
 - [ ] tts app build: SC/AL/NC C-corp compute (reuses the 1120 flow)  `[APP]`
 
-**S-15 · [RS]▶ DRAFTING→[APP]⬜ · NC + AL pass-through entity batch (WO-13), greenfield RS-first. ADDED 2026-07-05
-(Ken — completes the adjacent-state pass-through track; SC pass-through done via SC1065/SC1120S/PTET, D-9). THE
-CURRENT RS AUTHORING ROCK.** Reuses NC/AL conformity + the SC pass-through pattern. Required set (all GAP at gap-check):
-- [ ] **NC D-403** (partnership) + **NC CD-401S** (S-corp) + the **NC Taxed PTE** election (each state's PTET differs — verify, don't clone GA)
-- [ ] **AL Form 65** (partnership) + **AL Form 20S** (S-corp) + the **Alabama Electing PTE** tax (Act 2021-1)
-- reuse: NC 85% bonus/§179 $25k/$200k + Jan 1 2023 conformity (as NC D-400/CD-405); AL conforms §168(k)/§179 + GILTI/§174 (as AL 20C).
-- scope-walk items: PTET compute depth per state; owner-side credit vs exclusion; NC franchise on CD-401S (S-corps pay NC franchise); AL BPT separate.
+**S-15 · [RS]✅→[APP]⬜ · NC + AL pass-through entity batch (WO-13), greenfield RS-first. RS authoring COMPLETE
+2026-07-05 `b501fc2`. Gate-1 D-15.** Completes the adjacent-state pass-through track (GA-700 + SC1065/SC1120S +
+NC + AL). 4 forms seeded/exported (`lookup/{NC_D403,NC_CD401S,AL_FORM_65,AL_FORM_20S}/export/` = 200); prod 106→110.
+- [x] **NC D-403** + **NC CD-401S** + **NC Taxed PTE** — 4.25% (individual rate), owner-side **DEDUCTION** (NC-PE);
+  CD-401S computes NC franchise (net worth); NR withholding 4.25%; 85% bonus/§179 $25k/$200k add-back.
+- [x] **AL Form 65** + **AL Form 20S** + **AL Electing PTE** (Act 2021-1) — 5% (Form EPT), owner-side **refundable
+  CREDIT** (Sch EPT-C); composite PTE-C 5%; AL conforms §168(k)/§179; Form 20S L32 LIFO/BIG/excess-passive.
+- ⚠ [UNVERIFIED] exact NC/AL line numbers (2025 instruction PDFs didn't text-extract) — re-pull before the app build.
+- [ ] tts app build: NC/AL pass-through compute + PTET (owner deduction/credit downstream to D-400/AL-40)  `[APP]`
+
+**▶ RS AUTHORING SPINE COMPLETE (2026-07-05).** All planned RS rocks DONE (S-1..S-11 + WO-10 5227 + S-13 1120 +
+S-14 state C-corp + S-15 NC/AL pass-through). Net-new RS scope now enters via the TaxWise **forms-usage report**
+(Shelf: any form on 20+ returns not yet built → new Spine item) or a law change. The remaining board is the
+[APP] lane (tts builds, on hold) + Shelf items blocked on Ken's external actions.
 
 ---
 
