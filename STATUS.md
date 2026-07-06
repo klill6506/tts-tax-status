@@ -36,23 +36,27 @@ Full detail in `.claude` memory `f1065-render-acroform-leg.md` + `1065-core-s4-k
   L15=form line 14 total assets, L8=form line 7b); `render_tax_return` already does the Schedule-L 4-column
   translate + contra-net + parens (shared with 1120-S).
 - Visually verified a fully-populated 6-page render; `test_1065_render_leg.py` (3 DB green).
-- **Display-only gaps (non-blocking, all totals correct):** M-1 line-4 total box + line-7 total box unmapped
-  (itemized 4a/4b/7a print inline; the line totals aren't stored compute keys — a tiny compute add would fill
-  them). Tracked in DEFERRAL_AUDIT.
+- **✅ Follow-up done same session (`c0dbff8`): Schedule M-1 line-4/line-7 total boxes** now render via
+  render-layer synthesis (`M1_4`=4a+4b+4c, `M1_7`=7a+7b) → `f6_132`/`f6_139`. **The f1065 render now has NO
+  known display gaps.** (Compute-vs-spec nuance noted below: M1_5/M1_8 include 4c/7b, the RS spec lists only
+  4a/4b + 6a/7a — a separate compute leg.)
 
 **▶ NEXT — Ken directs** among unblocked SPINE items (all RS specs DONE): **S-11 1041 module** · **S-5/S-6**
 boundary + PAL/basis · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (note: 1120 C-corp
 is NOT season-one scope per SEASON_PLAN — build summer 2027).
 
 ## This session's commits (pushed to origin/main)
-- (pending) — S-4 f1065 render recalibration: `field_maps/f1065_2025.py` AcroForm map + `ACROFORM_FORM_IDS`
-  registration + `test_1065_render_leg.py` (3 DB) + `f1065.fields.json` dump + coordinate map SUPERSEDED note.
+- `2599621` — S-4 f1065 render recalibration → AcroForm backend: `field_maps/f1065_2025.py` (191 maps) +
+  `ACROFORM_FORM_IDS` registration + `test_1065_render_leg.py` (3 DB) + `f1065.fields.json` dump + coordinate
+  map SUPERSEDED note.
+- `c0dbff8` — Schedule M-1 line-4/line-7 total boxes (render-layer synthesis) → f1065 render has no known gaps.
 
 ## ▶ RS / compute follow-ups (all non-blocking)
-- **NEW (from the f1065 render leg) — M-1 line-4 / line-7 total boxes.** Fill the Schedule M-1 line-4 and
-  line-7 amount-column totals by adding stored `M1_4`/`M1_7` total compute keys (currently only 4a/4b/7a
-  itemized sub-amounts print inline; the totals are absorbed into M1_5/M1_8). Small `FORMULAS_1065` add +
-  field-map entry + flow-gate. Cosmetic only — line 5/8/9 totals are correct.
+- **NEW (from the f1065 render leg) — compute-vs-spec M-1 nuance.** `FORMULAS_1065` M1_5 = 1+2+3+4a+4b+4c and
+  M1_8 = 6+7a+7b, but the RS `1065_M1` spec formulas (R-M1-5 / R-M1-8) list only 4a/4b and 6a/7a (no 4c/7b).
+  The form face names only 4a/4b and 7a (4c/7b are "other itemize" catch-alls). Reconcile compute↔spec (or
+  confirm 4c/7b are intended extensions). Render ties to the computed totals either way (M-1 total boxes DONE
+  `c0dbff8`).
 - Carried GA-700: Schedule-8 spec line-numbering vs the form face; display-only subtotals (S1_3/S8_10/
   S5_8/S6_5); GA-700 spec is `draft` (promote→active); check GA-600S 0.0539 PTET rate for TY2025.
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET`;

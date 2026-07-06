@@ -1,5 +1,11 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-4 follow-on, same session) — Schedule M-1 line-4/line-7 total boxes → ✅ DONE (`c0dbff8`).**
+> Render-layer synthesis (`M1_4`=4a+4b+4c, `M1_7`=7a+7b → `f6_132`/`f6_139`) closes the one display gap noted
+> in the render leg below; the printed 1065 M-1 is now arithmetically self-consistent. **f1065 render has NO
+> known display gaps.** No compute/seed/spec change; flow gate 422. ⚠ compute-vs-spec nuance flagged (M1_5/M1_8
+> include 4c/7b; RS 1065_M1 spec lists only 4a/4b + 6a/7a) — a separate compute leg.
+
 > **2026-07-06 (S-4 follow-on) — Form 1065 render recalibration → ✅ DONE. The 1065 form now FULLY TICKS;
 > S-4 COMPLETE end-to-end.** The final deferred leg. Root cause: `f1065` was on the legacy coordinate
 > overlay (`coordinates/f1065.py`) — never calibrated ("approximate starting points") AND on pre-2025 line

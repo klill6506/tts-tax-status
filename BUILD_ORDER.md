@@ -21,7 +21,8 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 fully ticks; S-4 1065 core done end-to-end** (2026-07-06, twenty-second session, `2599621`). Converted `f1065`
 from the never-calibrated legacy coordinate overlay → the AcroForm-fill backend (whole 6-page form, 2025
 numbering): `field_maps/f1065_2025.py` (191 maps) + registered in `ACROFORM_FORM_IDS`; 3 DB tests; flow gate
-422 unchanged; visually verified all pages. Only M-1 line-4/line-7 total boxes deferred (display-only). Prior
+422 unchanged; visually verified all pages. M-1 line-4/line-7 total boxes also DONE same session (`c0dbff8`,
+render-layer synth) → f1065 render has NO known display gaps. Prior
 (twenty-first session): ✅ **S-10 GA-700 (Georgia partnership + PTET) COMPLETE — all 4
 legs**. ✅ **leg 3 render (`0d59255`):** `render_ga700_overlay` fills the DOR
 "web version" GA-700 fillable PDF via the AcroForm text-overlay pipeline (`_acroform_fill`) — the DOR PDF ships
@@ -38,7 +39,7 @@ swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
 ## ▶ NEXT — **Ken directs** among: **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) ·
 **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp
-is NOT season-one scope per SEASON_PLAN) · small follow-ups (1065 M-1 line-4/7 total boxes; GA-700
+is NOT season-one scope per SEASON_PLAN) · small follow-ups (1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
 **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
 (all earlier RS spine authoring DONE). After S-15, net-new RS scope depends on the TaxWise forms-usage report
@@ -102,7 +103,7 @@ ENTITY_BOUNDARY×3 / 8990 / §704(c)/§706(d) / item-L capital); pure runners (`
 built FORMULAS_1065 / k1_allocator / compute_1065_se / diagnostics; new `gating_check` type. Full gate 423
 passed. **S-4 CORE COMPLETE.** ✅ f1065 render recalibration DONE 2026-07-06 (`2599621`) → **the 1065 form
 now fully ticks; S-4 complete end-to-end.** Still deferred (separate future legs): the 6 staged assertions +
-D_M2_1/D_K1_704C/D_K1_706D (Partner-field migration) + M-1 line-4/line-7 total boxes (display-only).
+D_M2_1/D_K1_704C/D_K1_706D (Partner-field migration). (M-1 line-4/line-7 total boxes DONE `c0dbff8`.)
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
@@ -115,7 +116,7 @@ Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond S
   → the deferred follow-on. Root cause was bigger than "page-1 + Sch K coords": `f1065` was on the
   never-calibrated legacy coordinate overlay while the IRS PDF is a 6-page AcroForm, so the fix converted
   the whole form (`field_maps/f1065_2025.py`, 191 maps, registered in `ACROFORM_FORM_IDS`). 3 DB tests;
-  flow gate 422 unchanged. Only M-1 line-4/line-7 total boxes deferred (display-only, DEFERRAL_AUDIT).
+  flow gate 422 unchanged. M-1 line-4/line-7 total boxes DONE same session (`c0dbff8`) → no known display gaps.
 
 **S-5 · [RS]✅→[APP]⬜ ∥ · Boundary diagnostics (WO-04) — RS authoring DONE 2026-07-05.** New consolidated
 `ENTITY_BOUNDARY` form (seeded to prod, 96 TaxForms, export 200): M-3 threshold, K-2/K-3 DFE 4-criteria gate
