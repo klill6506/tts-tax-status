@@ -211,8 +211,12 @@ TOP unchecked item as the current RS rock.
   Section C Ponzi safe harbor **95%/75%** (Rev. Proc. 2009-20); Section D §165(i) + OBBBA financial-scam theft =
   diagnostics. entity_types 1040/1065/1120S/1120; prod 112→113; `lookup/4684/export/` = 200; validated 29/0.
   DECISIONS D-18. tts app build = [APP] lane.
-- [ ] **▶ Form 4952** — Investment Interest Expense Deduction — NEXT (top of the queue)
-- [ ] **Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)*
+- [x] **WO-17 · Form 4952** — Investment Interest Expense Deduction — ✅ DONE 2026-07-06 (RS). §163(d): L8 =
+  min(total investment interest L3, net investment income L6) → Sch A L9 (1040) / Form 1041 L10; excess L7 carries
+  forward **indefinitely**; the **4g election** (include QD + net cap gain, loses the preferential rate) + L5
+  misc-itemized / interest-exclusion diagnostics. §163(d) UNCHANGED by OBBBA. entity_types 1040/1041; prod 113→114;
+  `lookup/4952/export/` = 200; validated 26/0. DECISIONS D-19. tts app build = [APP] lane.
+- [ ] **▶ Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)* — NEXT (top of the queue)
 - [ ] **Form 8814** — Parents' Election to Report Child's Interest & Dividends
 - [ ] **Form 8839** — Qualified Adoption Expenses
 - [ ] **Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)*
