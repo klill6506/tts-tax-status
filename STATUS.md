@@ -1,10 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-06, twenty-first session: **S-10 GA-700 render leg 3 DONE (`0d59255`) → S-10 GA-700
-COMPLETE, all 4 legs.** The DOR "Print Blank Forms" static PDF resolved the deferred render blocker (the form
-was NOT viewer-only); AcroForm text-overlay on the DOR fillable PDF whose semantic field names map ~1:1 to the
-compute keys. Prior this session: legs 1/2/4 (compute `1d7f102` / seed+federal-pull+frontend `6c26d72` /
-diagnostics `f70a9d4`). S-4 1065 core COMPLETE (all legs 1a–6).*
+*Last updated: 2026-07-06, twenty-second session: **S-4 f1065 render recalibration DONE → the Form 1065 now
+FULLY TICKS; S-4 1065 core COMPLETE end-to-end.** Converted `f1065` from the never-calibrated legacy
+coordinate overlay to the AcroForm-fill backend (whole form, 2025 numbering). Prior session (twenty-first):
+S-10 GA-700 COMPLETE (all 4 legs). Build state: **idle — Ken directs the next unit.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -15,90 +14,51 @@ diagnostics `f70a9d4`). S-4 1065 core COMPLETE (all legs 1a–6).*
 
 ## Active gates (all green)
 - **Flow-assertion gate (all entities)** — `cd server && pytest tests/test_flow_assertions.py -q` → **422
-  passed** (incl. the 1065 gate: 22 active RS assertions + 2 guards; runners `_run_1065_assertion`/
-  `_RUNNERS_1065`; unbuilt staged in `specs/flow_assertions_1065_pending.json`). Fast (~2s, pure).
-- **GA-700 (all 4 legs)** — pure `test_ga700_compute_leg.py` (**9**) · DB `test_ga700_state_return_leg.py`
-  (**3** — federal 1065 pull → Sch 8 → PTET 5.19%) · DB `test_ga700_diagnostics_leg.py` (**9**) · **DB
-  `test_ga700_render_leg.py` (3 — valid 8-page PDF + values land in the text layer + PTET-off blanks)**.
-  Seeded to prod: `seed_ga700` (FormDefinition) + `seed_rules` (10 diagnostics). Render template committed:
-  `server/pdf_templates/ga700_2025.pdf` (DOR blank, sha256 8661856…).
-- **1065 core S-4 (COMPLETE, all legs)** — the leg-by-leg suites (`test_1065_*`) are green and archived in
-  STATUS_ARCHIVE; migrations 0168/0169 applied to prod.
-- `manage.py check` clean; frontend `tsc --noEmit` → 0 errors. **Test DB `test_postgres` exists** — use
-  `--reuse-db`. New DB tests must seed the forms they use (not migration-pre-seeded) and filter `FormLine` by
-  `section__form=` NOT `form_definition=`.
-- ⚠ DB runs on the shared Supabase pooler are SLOW (a fresh `--create-db` ~2min). Run DB tests in the
-  background; never `drop_test_db` a slow run (kills the live session).
+  passed** (incl. the 1065 gate: 22 active RS assertions + 2 guards). UNCHANGED by the render leg (no
+  compute change). Fast (~1.5s, pure).
+- **1065 render leg (NEW)** — `pytest tests/test_1065_render_leg.py --reuse-db -q` → **3 passed** (valid
+  6-page PDF + page-1/Sch-K values in the text layer + Sch-L contra-net/parens + M-1/M-2 tie). ~60s (pooler).
+- `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db`. New DB tests must seed the
+  forms they use and filter `FormLine` by `section__form=` NOT `form_definition=`. Must CREATE the `TaxYear`
+  (not `get` it) in the fixture.
+- ⚠ DB runs on the shared Supabase pooler are SLOW/flaky ("terminating connection due to administrator
+  command" = transient, retry; never `drop_test_db` a slow run). Run DB tests in the background.
 
-## ▶ RESUME HERE — **S-10 GA-700 COMPLETE (all 4 legs). Next unit = Ken directs.** Full detail in the `.claude`
-memory `ga700-build-unit.md`.
+## ▶ RESUME HERE — **S-4 1065 core COMPLETE (all legs + render). Build is idle; next unit = Ken directs.**
+Full detail in `.claude` memory `f1065-render-acroform-leg.md` + `1065-core-s4-kickoff.md`.
 
-GA Form 700 (Georgia partnership + PTET, form_code **"GA-700"**, attaches to a federal **1065**) is built
-end-to-end: input → compute → render → diagnostics. Spec `GA700` (RS **draft** — promote→active is an RS
-follow-up); cached `server/specs/ga700_spec.json`.
-- **✅ Leg 1 compute (`1d7f102`)** — `FORMULAS_GA700`: Sch 8 income → Sch 7 single gross-receipts apportionment
-  (ROUND_DOWN, defaults **1.0 / 100% GA**) → Sch 2 apportioned → Sch 1 GA taxable → **PTET 5.19%** (§48-7-21).
-- **✅ Leg 2 input (`6c26d72`)** — `seed_ga700` + `PARTNERSHIP_STATE_FORM_MAP` + `GA700_FEDERAL_PULL` + frontend.
-- **✅ Leg 3 render (`0d59255`)** — `render_ga700_overlay` (AcroForm text overlay on the DOR fillable PDF, whose
-  semantic field names S1L1..S8L12 map ~1:1 to compute keys; template stored unmodified in `pdf_templates/`).
-  Ratio pre-formatted to a 6-decimal factor; ratio→Sch2 L4 and Total Tax→Sch3 L1 transcriptions; PTET→
-  `CBX_ELECT_TO_PAY` checkbox. Visually verified on all 4 schedule pages. 3 DB tests.
-- **✅ Leg 4 diagnostics (`f70a9d4`)** — `rules_ga700.py` (10 D_GA700_*), runner-registered + **prod-seeded**.
+**✅ S-4 f1065 render recalibration (this session)** — the last deferred S-4 leg. `f1065` now renders via the
+**AcroForm-fill backend** (was the legacy, never-calibrated coordinate overlay on pre-2025 numbering):
+- `field_maps/f1065_2025.py` — 191 mappings (header + page 1 2025-numbering + Schedule K + Schedule L +
+  M-1 + M-2), keyed by the seed `line_number`. Registered `f1065` in `renderer.ACROFORM_FORM_IDS`;
+  `coordinates/f1065.py` marked SUPERSEDED.
+- Field→line map extracted from the PDF's own label text. ⚠ seed L-keys OFFSET from form line#s (seed
+  L15=form line 14 total assets, L8=form line 7b); `render_tax_return` already does the Schedule-L 4-column
+  translate + contra-net + parens (shared with 1120-S).
+- Visually verified a fully-populated 6-page render; `test_1065_render_leg.py` (3 DB green).
+- **Display-only gaps (non-blocking, all totals correct):** M-1 line-4 total box + line-7 total box unmapped
+  (itemized 4a/4b/7a print inline; the line totals aren't stored compute keys — a tiny compute add would fill
+  them). Tracked in DEFERRAL_AUDIT.
 
-**▶ NEXT — Ken directs** among unblocked SPINE items: **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary +
-PAL/basis (RS DONE) · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE) · the S-4
-**f1065 render recalibration** follow-on. Small GA-700 follow-ups (non-blocking, see RS/compute follow-ups
-below): the Schedule-8 spec line-numbering and the display-only subtotals.
-
-**✅ RESOLVED 2026-07-06 — GA §179 = $2,500,000 / $4,000,000 (Ken-ruled: HB 1199 retroactive).** Georgia
-CONFORMS to federal/OBBBA §179 for TY2025 via HB 1199 (IRC conformity advanced to Jan 1, 2026, retroactive to
-tax years beginning on/after Jan 1, 2025), superseding both HB 290 (Jan 1, 2025) and the Aug-2025 GA Form 4562
-(which still printed the pre-OBBBA $1.25M). Sources: BDO + Tax Foundation quoting HB 1199. Both stale figures
-($1.05M GA700/CLAUDE.md = 2021; $1.25M GA600 = pre-HB-1199 Form 4562) corrected. Because GA limit AND phaseout
-now equal federal, the GA §179 delta is structurally $0 — the only remaining GA depreciation diff is §168(k)
-bonus. Applied: `depreciation_engine.GA_179_*`, `compute.GA700_SEC179_*`, `rules_ga700`, RS `load_ga700`/
-`load_ga600`, CLAUDE.md, DECISIONS.md (`b975300` tts / `09d55d9` RS). SC ($1.25M/$3.13M) + NC ($25k/$200k) are
-their OWN correct rules — untouched. ⚠ Still flagged separately: GA-600S compute's 0.0539 (TY2024) PTET rate —
-possibly stale for its own TY2025.
-
-**v1 DEFERRED (Partner model has no residency/GA-source field — needs a migration):** partner-level GA-source
-allocation (Sch 4), nonresident 4% withholding (Form G-2-A, page-1 T), composite return (IT-CR), PTET owner-side
-Form 500 subtraction. Surfaced by info diagnostics (D_GA700_NRW/_COMPOSITE), never silently computed.
-
-*(Other unblocked SPINE items if Ken redirects: S-11 1041 module, S-5/S-6, S-3 brokerage ∥, S-13/S-14; plus the
-S-4 f1065 render recalibration follow-on.)*
+**▶ NEXT — Ken directs** among unblocked SPINE items (all RS specs DONE): **S-11 1041 module** · **S-5/S-6**
+boundary + PAL/basis · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (note: 1120 C-corp
+is NOT season-one scope per SEASON_PLAN — build summer 2027).
 
 ## This session's commits (pushed to origin/main)
-- `0d59255` — GA-700 leg 3: `render_ga700_overlay` (AcroForm overlay) + `ga700_2025.py` field map + DOR
-  template + 3 DB tests → **S-10 GA-700 COMPLETE**.
-- `b975300` — **GA §179 conformity fix ($2.5M/$4M, HB 1199 retroactive)**: depreciation_engine + compute +
-  rules_ga700 + seed + tests + DECISIONS.md. RS twin: `09d55d9` (load_ga700 + load_ga600). CLAUDE.md (parent)
-  corrected separately.
-- (Prior this session — `1d7f102` leg 1 compute · `6c26d72` leg 2 input · `f70a9d4` leg 4 diagnostics.)
+- (pending) — S-4 f1065 render recalibration: `field_maps/f1065_2025.py` AcroForm map + `ACROFORM_FORM_IDS`
+  registration + `test_1065_render_leg.py` (3 DB) + `f1065.fields.json` dump + coordinate map SUPERSEDED note.
 
-## ▶ RS / compute follow-ups (rides a dedicated session — all non-blocking)
-- **NEW (from leg 3) — GA-700 Schedule-8 spec line-numbering vs the form face.** The spec/compute treats income
-  as L1 (ordinary) + L5 (guaranteed pmts) + **L6 ("other income")**, but the actual GA 700 form has line 6 =
-  "Net gain (loss) under §1231" and line 7 = "Other Income (loss)". Render correctly maps `S8_6` → the form's
-  **line-7 box (S8L7)**; the L8 total still ties. RS Sch-8 line map should be reconciled to the form face.
-- **NEW (from leg 3) — display-only subtotals not computed** (render leaves them blank; map entries pre-wired to
-  auto-render once produced): `S1_3` (Sch1 Total = L1+L2), `S8_10` (Sch8 Total = L8+L9), `S5_8` (Sch5 total),
-  `S6_5` (Sch6 total). A small `FORMULAS_GA700` follow-up (spec-check + flow gate) closes these for full face
-  fidelity. Also deferred in render: Schedule 4 partner detail (needs Partner residency/GA-source migration),
-  continuation-page name/FEIN (duplicate AcroForm field names across pages).
-- **✅ DONE 2026-07-06 — GA §179 RS reseed + mirror refresh.** All RS loaders swept to $2.5M/$4M
-  (`load_ga700`/`load_ga600` `09d55d9`; `load_remaining_1120s` [seeds GA-600S] + `load_1120s_specs` [Form 4562]
-  + `load_sc1040` comment `4ad1ac5`). **Reseeded RS prod Supabase** (all 4 loaders, SQLite-validated first) and
-  **refreshed the 3 cached tts mirrors** from the RS export (`f9d712d`) — `ga700_spec.json`/`ga600s_spec.json`/
-  `form_4562_spec.json` now all show $2.5M/$4M, zero stale. GA-600S turned out NOT to be an orphan (it's seeded
-  by `load_remaining_1120s`). ⚠ **Gotcha (RS loader hygiene):** renaming a scenario orphans the old row —
-  `update_or_create` keys on `scenario_name` — so the reseed left stale GA700-T4/GA600-C scenarios in prod;
-  deleted manually. A durable fix = add stale-scenario cleanup to the loaders (small RS follow-up).
-- **GA §179 conflict RESOLVED** (see the RESUME section) — GA conforms $2.5M/$4M via HB 1199. **GA-700 spec is
-  `draft`** (promote→active); check GA-600S's 0.0539 PTET rate for TY2025.
-- Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;
-  GA-500 `R-GA500-MIL` (RS spec correct; tts fix handed off `task_f550dfd2`). `8867_spec.json` stale notes;
-  RS Schedule D `D_8949_006`; 8995 sibling loader D_8995_001 note.
+## ▶ RS / compute follow-ups (all non-blocking)
+- **NEW (from the f1065 render leg) — M-1 line-4 / line-7 total boxes.** Fill the Schedule M-1 line-4 and
+  line-7 amount-column totals by adding stored `M1_4`/`M1_7` total compute keys (currently only 4a/4b/7a
+  itemized sub-amounts print inline; the totals are absorbed into M1_5/M1_8). Small `FORMULAS_1065` add +
+  field-map entry + flow-gate. Cosmetic only — line 5/8/9 totals are correct.
+- Carried GA-700: Schedule-8 spec line-numbering vs the form face; display-only subtotals (S1_3/S8_10/
+  S5_8/S6_5); GA-700 spec is `draft` (promote→active); check GA-600S 0.0539 PTET rate for TY2025.
+- Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET`;
+  GA-500 `R-GA500-MIL` (tts fix handed off `task_f550dfd2`). `8867_spec.json` stale notes.
+- Carried S-4: f1065 page-1 + Schedule K **render** is now DONE; the 6 staged 1065 flow assertions +
+  `D_M2_1`/`D_K1_704C`/`D_K1_706D` (Partner field migration) remain deferred.
 
 ## ▶ Waiting on Ken (carried)
 1. IFA-upload scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5). S2/S3/S4 ready (UNSIGNED).

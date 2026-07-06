@@ -1,5 +1,23 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-4 follow-on) — Form 1065 render recalibration → ✅ DONE. The 1065 form now FULLY TICKS;
+> S-4 COMPLETE end-to-end.** The final deferred leg. Root cause: `f1065` was on the legacy coordinate
+> overlay (`coordinates/f1065.py`) — never calibrated ("approximate starting points") AND on pre-2025 line
+> numbering — while the IRS `f1065.pdf` is a proper 6-page fillable AcroForm (440 fields). Per the
+> IRS-rendering rules (AcroForm preferred; the 1120-S / GA-600S precedent), converted the WHOLE form to the
+> AcroForm-fill backend: `field_maps/f1065_2025.py` (191 mappings, was an empty stub) covering header +
+> page 1 (2025 numbering: line 20 §179D, line 22 total deductions, line 23 ordinary business income →
+> Sch K line 1) + Schedule K (K1–K21 + K_ANALYSIS, single-page f5_*) + Schedule L + M-1 + M-2; registered
+> `f1065` in `renderer.ACROFORM_FORM_IDS`; marked the coordinate map SUPERSEDED. Field→line map extracted
+> from the PDF's OWN label text (not memory); ⚠ seed L-keys are OFFSET from form line numbers (seed L15 =
+> form line 14 total assets, seed L8 = form line 7b). Reused `render_tax_return`'s shared Schedule-L
+> 4-column translation + contra-net computation + parenthesized-contra negation (same machinery as 1120-S).
+> Visually verified a fully-populated 6-page render (every value in the correct box; contra nets right;
+> M-1 line 9 = Analysis line 1 = M-2 line 3 ties). 3 DB tests (`test_1065_render_leg.py`). No compute/
+> model/migration/spec change → flow gate **422** unchanged; `manage.py check` clean. Documented display-only
+> gaps (non-blocking, all totals correct): M-1 line-4 / line-7 total boxes unmapped (itemized sub-amounts
+> print inline; totals aren't stored compute keys). Detail: `.claude` memory `f1065-render-acroform-leg.md`.
+
 > **2026-07-06 (S-10, leg 3) — GA Form 700 render → ✅ DONE (`0d59255`). S-10 GA-700 now COMPLETE (all 4 legs);
 > the form TICKS.** The deferred blocker (thought to be a viewer-only form) was resolved by the DOR "Print Blank
 > Forms" static PDF: `render_ga700_overlay` fills the DOR fillable PDF via the AcroForm text-overlay pipeline

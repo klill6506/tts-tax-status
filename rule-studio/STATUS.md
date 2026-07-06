@@ -12,8 +12,26 @@ last_updated: 2026-07-05
 
 ## Current state
 
-Active spec-authoring tool. RS Supabase holds **116 TaxForms / 515 FlowAssertions / 953 FormRules**
-(**+WO-19 Form 8814 2026-07-06** — Parents' Election To Report Child's Interest and Dividends (`8814`, entity_types
+Active spec-authoring tool. RS Supabase holds **118 TaxForms / 521 FlowAssertions / 964 FormRules**
+(**+WO-21 Form 709 2026-07-06** — United States Gift (and GST) Tax Return (`709`, entity_types 709 — its own
+gift-tax return); 8th item in the SPINE S-16 federal-forms queue and **the biggest module**. Unified CUMULATIVE gift
+tax: the §2001(c) rate schedule (top 40% over $1M = $345,800 + 40%) → Part 2 L3 = current + prior taxable gifts, L4 =
+tentative(L3), L5 = tentative(prior), L6 = L4−L5 (taxes current gifts at the top cumulative brackets); applicable
+(unified) credit **$5,541,800** (= tentative tax on the **$13,990,000** BEA, + DSUE from Schedule C) → gift tax due
+(sheltered until cumulative taxable gifts exceed $13.99M). Schedule A: gross − annual exclusion (**$19,000**/donee;
+$38,000 if gift-split §2513) − marital (unlimited citizen / **$190,000** noncitizen §2523(i)) − charitable = taxable
+gifts. Schedule D GST = 40% × inclusion ratio, exemption $13.99M. **★ OBBBA $15M BEA is 2026+ (year-keyed, NOT 2025);
+the 2024 applicable credit was $5,389,800 — research caught the correction.** ⚠ [UNVERIFIED] Part 1/Sch A recon/Sch D
+sub-line numbers (raw f709.pdf face unfetchable in research) — re-verify before the tts build; Part 2 lines 1-8 +
+all dollar figures verified; `lookup/709/export/` = 200; **+WO-20 Form 8839 2026-07-06** — Qualified Adoption Expenses (`8839`, entity_types 1040); 7th item in the SPINE
+S-16 federal-forms queue. §23 adoption CREDIT (Part II) + §137 employer-benefit EXCLUSION (Part III); max **$17,280**
+/child, MAGI phaseout **$259,190→$299,190** over $40,000. **★ OBBBA 2025 headline: up to $5,000/child of the credit
+is now REFUNDABLE** (new L11a/11b/11c → L13 → Form 1040 line 30 — first year the adoption credit is partly
+refundable); the nonrefundable remainder is tax-limited → Schedule 3 line 6c with a 5-yr carryforward (refundable
+portion NOT carried; 2024 carryforward stays nonrefundable). Part III exclusion → excluded (L29) + taxable (L31 →
+1040 1f). Special-needs U.S. child finalized 2025 = full credit regardless of expenses + OBBBA §70403 tribal parity;
+no credit+exclusion double-dip. ⚠ the $5,000-cap indexing ($5,120 for 2026) is statutory (§36C), NOT in i8839 — cited
+to the statute. ALL figures INDEXED; `lookup/8839/export/` = 200; **+WO-19 Form 8814 2026-07-06** — Parents' Election To Report Child's Interest and Dividends (`8814`, entity_types
 1040); 6th item in the SPINE S-16 federal-forms queue. §1(g)(7) election for the parent to report the child's
 interest/dividends/capital-gain-distributions instead of the child filing (sibling of the EXISTING `8615` — closes
 its `D_8615_004` RED-defer loop). 3 tiers: first **$1,350** not taxed / next $1,350 at 10% (max **$135** → Form 1040
@@ -133,11 +151,12 @@ and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
 S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
-C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814). **The active queue
-is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP unchecked item at each boot):
-8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → **▶ Form 8839 (Qualified Adoption Expenses) =
-NEXT** → Form 709 → Form 8832 → Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage
-report or a law change.
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H · WO-16 4684 · WO-17 4952 · WO-18 8379 · WO-19 8814 · WO-20 8839 · WO-21
+709). **The active queue is the SPINE S-16 federal-forms gap-fill** (author each via the full front door, TOP
+unchecked item at each boot): 8990 ✅ → Schedule H ✅ → 4684 ✅ → 4952 ✅ → 8379 ✅ → 8814 ✅ → 8839 ✅ → 709 ✅ →
+**▶ Form 8832 (Entity Classification Election) = NEXT** → Form 3115. After the queue drains: net-new RS scope needs
+the TaxWise forms-usage report or a law change. **⚠ Form 709 carries [UNVERIFIED] structural line #s (PDF face
+unfetchable) — re-verify before its tts build.**
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
@@ -307,6 +326,43 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-06: **FORM 709 (US Gift & GST Tax Return) AUTHORED + SEEDED + EXPORTED (WO-21) — the biggest S-16 module.**
+  Front door: gap-check (GAP) → verbatim research (2025 i709 "What's New" + Table for Computing Gift Tax + §2001(c)/
+  §2010/§2503/§2523/§2631 + OBBBA §70106) → `f709_source_brief.md`. **★ Two research corrections (Authoritative-Source
+  Rule in action):** (1) the 2025 applicable credit is **$5,541,800** (the initial brief's $5,389,800 was the 2024
+  figure — the tentative tax on the $13,990,000 BEA is $345,800 + 40%×$12,990,000 = $5,541,800); (2) **OBBBA does NOT
+  change TY2025** — the permanent $15M BEA takes effect for gifts after 12/31/2025 (2026+), year-keyed so it can't leak
+  into 2025. **⚠ Provenance caveat:** the raw f709.pdf face was unfetchable in the research environment — all dollar
+  figures + compute logic + Part 2 lines 1-8 are VERIFIED (from i709 + statute), but the Part 1 (post-2025 restructure)
+  / Schedule A reconciliation / Schedule D sub-line NUMBERS are [UNVERIFIED] and flagged (loader + `D_709_UNVERIFIED`)
+  for a PDF-face re-verify before the tts build (NC/AL line-# precedent). **Gate-1 scope walk (4 AskUserQuestion, all
+  recommended — DECISIONS D-23):** compute the full cumulative gift-tax engine (§2001(c) schedule + L3-L8 + $5,541,800
+  credit → gift tax due); Schedule A reconciliation + gift-splitting ($38k) + noncitizen ($190k); GST 40%×inclusion-
+  ratio + DSUE → Part 2 L7; author now with carried [UNVERIFIED] line-# flags. **Authored:** `load_709.py` (12 facts /
+  6 rules / 5 lines / 8 diag / 6 tests / 3 FA). Validated on throwaway SQLite (`scratchpad/validate_709.py`, **32 pass
+  / 0 fail** — the rate schedule (incl. the $5,541,800 credit derivation), the cumulative engine ($20M→$2,404,000;
+  cumulative $5M-on-$10M→$404,000; under-BEA→$0), Schedule A, gift-splitting ($38k vs $19k), and GST (40%×0.4→$800k)
+  all green; caught 1 topic_name > 255 cap, trimmed; all 6 rules cited to 3 sources). Ken Gate-1: "Approve — flip,
+  seed, export." Seeded → **118 TaxForms / 521 FlowAssertions / 964 FormRules**; `lookup/709/export/` = 200; seed_all
+  auto-discovers `load_709` (reconstructable). **Next in the queue: Form 8832** (Entity Classification Election). BUILD_ORDER S-16 709 ✅.
+- 2026-07-06: **FORM 8839 (Qualified Adoption Expenses) AUTHORED + SEEDED + EXPORTED (WO-20) — 7th item in the S-16 federal-forms queue.**
+  Front door: gap-check (GAP) → verbatim research (FINAL 2025 Form 8839 Created 9/2/25 + i8839 "What's New" +
+  §23/§36C/§137 + OBBBA §70402/§70403) → `f8839_source_brief.md`. **★ CONFIRMED the season's headline change: up to
+  $5,000 of the adoption credit is now REFUNDABLE per eligible child (OBBBA, effective 2025 — the first year this
+  credit is partly refundable), via new lines 11a/11b/11c → line 13 → Form 1040 line 30.** 2025 indexed figures
+  verified: max $17,280 / phaseout $259,190→$299,190 / divisor $40,000 / refundable cap $5,000. **Provenance catch
+  (Authoritative-Source Rule):** the $5,000-cap indexing is statutory (§36C/OBBBA §70402, $5,120 for 2026) but NOT
+  stated in the 2025 i8839 → cited to the statute, not the form. **Gate-1 scope walk (4 AskUserQuestion, all
+  recommended — DECISIONS D-22):** Part II full compute incl. the refundable/nonrefundable split (+ MAGI phaseout, +
+  tax-limited 5-yr carryforward → Sch 3 6c); Part III §137 exclusion (+ phaseout → excluded/taxable → 1040 1f);
+  special-needs full-credit override + coordination diagnostics (§137/§23 double-dip, MFS, tribal parity); year-keyed
+  $5,000 with the provenance split. **Authored:** `load_8839.py` (9 facts / 5 rules / 6 lines / 8 diag / 6 tests /
+  3 FA). Validated on throwaway SQLite (`scratchpad/validate_8839.py`, **30 pass / 0 fail** — the refundable split,
+  the 0/0.5/1.0 phaseout boundaries, the tax-limit carryforward ($12,280 capped at $5k → carry $7,280), and the Part
+  III exclusion all green; caps clean first run; all 5 rules cited to 3 sources). Ken Gate-1: "Approve — flip, seed,
+  export." Seeded → **117 TaxForms / 518 FlowAssertions / 958 FormRules**; `lookup/8839/export/` = 200; seed_all
+  auto-discovers `load_8839` (reconstructable). **Next in the queue: Form 709** (US Gift & GST Tax Return — a bigger
+  new module). BUILD_ORDER S-16 8839 ✅.
 - 2026-07-06: **FORM 8814 (Parents' Election To Report Child's Interest and Dividends) AUTHORED + SEEDED + EXPORTED (WO-19) — 6th item in the S-16 federal-forms queue.**
   Front door: gap-check (GAP — `8814` = 404; **its sibling `8615` already in prod at 200**) → verbatim research
   (FINAL 2025 Form 8814 Created 3/19/25 + i8814) → `f8814_source_brief.md`. **2025 indexed figures verified: base
