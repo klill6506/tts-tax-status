@@ -216,8 +216,13 @@ TOP unchecked item as the current RS rock.
   forward **indefinitely**; the **4g election** (include QD + net cap gain, loses the preferential rate) + L5
   misc-itemized / interest-exclusion diagnostics. §163(d) UNCHANGED by OBBBA. entity_types 1040/1041; prod 113→114;
   `lookup/4952/export/` = 200; validated 26/0. DECISIONS D-19. tts app build = [APP] lane.
-- [ ] **▶ Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)* — NEXT (top of the queue)
-- [ ] **Form 8814** — Parents' Election to Report Child's Interest & Dividends
+- [x] **WO-18 · Form 8379** — Injured Spouse Allocation — ✅ DONE 2026-07-06 (RS). **Confirmed 8379** (Ken's "8679"
+  was a typo). Allocation form (not a tax computation): Part I decision tree → is_injured_spouse; Part III allocates
+  joint items col (a)=(b)+(c) (W-2 to earner, withholding follows income, std deduction 50/50, EIC IRS-allocated);
+  community-property override (9 states); IRS computes the refund share (NOT estimated); 8379 (injured) ≠ 8857
+  (innocent). No OBBBA impact. entity_types 1040; prod 114→115; `lookup/8379/export/` = 200; validated 29/0.
+  DECISIONS D-20. tts app build = [APP] lane.
+- [ ] **▶ Form 8814** — Parents' Election to Report Child's Interest & Dividends — NEXT (top of the queue)
 - [ ] **Form 8839** — Qualified Adoption Expenses
 - [ ] **Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)*
 - [ ] **Form 8832** — Entity Classification Election (check-the-box)
