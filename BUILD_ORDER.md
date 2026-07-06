@@ -233,8 +233,13 @@ TOP unchecked item as the current RS rock.
   **$2,700** carried to parent split by character (L9 QD → 1040 3a/3b, L10 cap-gain → Sch D 13, L12 ordinary → Sch1
   8z); don't-file if ≥ **$13,500**. 8 eligibility conditions. 8615 link cited to §1(g)/Pub 929 (not i8814). entity_types
   1040; prod 115→116; `lookup/8814/export/` = 200; validated 26/0. DECISIONS D-21. tts app build = [APP] lane.
-- [ ] **▶ Form 8839** — Qualified Adoption Expenses — NEXT (top of the queue)
-- [ ] **Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)*
+- [x] **WO-20 · Form 8839** — Qualified Adoption Expenses — ✅ DONE 2026-07-06 (RS). §23 credit (Part II) + §137
+  employer-benefit exclusion (Part III); max **$17,280**/child, MAGI phaseout **$259,190–$299,190**. **★ OBBBA 2025:
+  up to $5,000/child is now REFUNDABLE** (L11b → L13 → 1040 L30 — first year partly refundable); nonrefundable
+  remainder → Sch 3 6c with 5-yr carryforward; special-needs full credit + §70403 tribal parity. $5,000-cap indexing
+  cited to statute (§36C, $5,120 for 2026), not i8839. entity_types 1040; prod 116→117; `lookup/8839/export/` = 200;
+  validated 30/0. DECISIONS D-22. tts app build = [APP] lane.
+- [ ] **▶ Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)* — NEXT (top of the queue)
 - [ ] **Form 8832** — Entity Classification Election (check-the-box)
 - [ ] **Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
 - After this queue drains: net-new RS scope via the TaxWise forms-usage report or a law change.
