@@ -17,20 +17,22 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-10 GA-700 (Georgia partnership + PTET) — legs 1/2/4 DONE; render leg 3 DEFERRED =
-the NEXT unit.** ✅ **legs 1/2/4 (2026-07-06, twentieth session):** compute `FORMULAS_GA700` (`1d7f102` —
-Sch 8 income → single gross-receipts apportionment (ROUND_DOWN, defaults 100% GA single-state) → Sch 1 PTET
-**5.19%** when elected, else pass-through; GA §179 $1.05M/$2.62M separately-stated K-1 delta) · input
-`seed_ga700` + `PARTNERSHIP_STATE_FORM_MAP` (1065→GA-700) + federal pull (line 23→S8_1, K4c→S8_5) + frontend
-tabs (`6c26d72`, prod-seeded) · diagnostics `rules_ga700.py` (10 D_GA700_*, `f70a9d4`, prod-seeded). 21 tests
-green; flow gate 422. ⚠ **render leg 3 DEFERRED** — the GA 700 is a fillable-forms VIEWER, not a static PDF
-(acquisition path differs from the flat-state recipe) → the GA-700 form does not fully tick yet. ⚠⚠ **GA §179
-CROSS-SPEC CONFLICT flagged for Ken:** GA700 spec $1.05M/$2.62M vs GA600 $1.25M/$3.13M (built to GA700 spec;
-§179 is separately-stated K-1, didn't block the entity flow). (Prior: ✅ **S-4 1065 core COMPLETE all legs
-1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **S-10 GA-700 render leg 3** (finish GA-700) · then Ken directs among: **S-11 1041 module** (RS
-DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 +
-state C-corp** (RS DONE `9a41581`/`87b66a4`) · S-4 follow-on: f1065 render recalibration leg. **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
+## ▶ NOW WORKING ON — **idle — Ken directs.** ✅ **S-10 GA-700 (Georgia partnership + PTET) COMPLETE — all 4
+legs** (2026-07-06, twenty-first session). ✅ **leg 3 render (`0d59255`):** `render_ga700_overlay` fills the DOR
+"web version" GA-700 fillable PDF via the AcroForm text-overlay pipeline (`_acroform_fill`) — the DOR PDF ships
+SEMANTIC field names (S1L1..S8L12, FEI_NUMBER, ...) that map ~1:1 to the compute keys, so the template is stored
+UNMODIFIED and `field_maps/ga700_2025.py` points straight at them (no AcroForm-Creator injection, unlike GA-600S).
+The "viewer-only" blocker was a false alarm — the DOR "Print Blank Forms" static PDF is a normal AcroForm. Ratio→
+6-dec text (+ copy to Sch2 L4); Total Tax→Sch3 L1; PTET→CBX_ELECT_TO_PAY; S8_6→form line 7. 3 DB tests; visually
+verified all 4 schedule pages; flow gate 422. ✅ **legs 1/2/4 (twentieth session):** compute `FORMULAS_GA700`
+(`1d7f102`) · input `seed_ga700` + federal pull (`6c26d72`) · diagnostics `rules_ga700.py` (`f70a9d4`). ⚠⚠ **GA
+§179 CROSS-SPEC CONFLICT still open for Ken:** GA700 $1.05M/$2.62M vs GA600 $1.25M/$3.13M (§179 separately-stated
+K-1, not on the entity face — didn't block render). (Prior: ✅ **S-4 1065 core COMPLETE all legs 1a–6**; ✅ **S-9
+NC D-400**; SC1040/AL40/NC D-400 done.)
+## ▶ NEXT — **Ken directs** among: **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) ·
+**S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`) · S-4 follow-on:
+f1065 render recalibration leg · GA-700 small follow-ups (display-subtotal compute leg; Sch-8 spec line-numbering).
+**▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
 (all earlier RS spine authoring DONE). After S-15, net-new RS scope depends on the TaxWise forms-usage report
 or a law change.
 
@@ -134,12 +136,13 @@ turn-on waits on the Shelf (DOR approvals).
       also fixed the latent AL40 `refresh_from_federal` GA-pull fall-through) · render (`c704f21`, flat
       NCDOR handwritten template `fnc_d400` w/ instructions-cover stripped, two "00" value columns +
       identity header) · diagnostics (`8358e74`, 8 D_NCD400_*). RS spec is `draft` — promote→active (RS follow-up).
-- [x] S-10 GA-700 + PTET spec — 2026-07-05   → app build **IN PROGRESS (2026-07-06): legs 1/2/4 DONE**
-      (compute `1d7f102` `FORMULAS_GA700` PTET 5.19% + single gross-receipts apportionment · input `6c26d72`
-      `seed_ga700` + 1065→GA-700 federal pull + frontend · diagnostics `f70a9d4` 10 D_GA700_*; 21 tests green,
-      prod-seeded). ⚠ **render leg 3 DEFERRED** — GA 700 is a fillable-forms viewer, not a static PDF → form
-      does not fully tick. ⚠⚠ GA §179 conflict flagged for Ken (GA700 $1.05M/$2.62M vs GA600 $1.25M/$3.13M).
-      v1 = entity-level; partner NRW/allocation deferred (Partner model has no residency field).
+- [x] S-10 GA-700 + PTET spec — 2026-07-05   → **app build COMPLETE 2026-07-06 (all 4 legs)**: compute
+      (`1d7f102` `FORMULAS_GA700` PTET 5.19% + single gross-receipts apportionment) · input (`6c26d72` `seed_ga700`
+      + 1065→GA-700 federal pull + frontend) · **render (`0d59255` `render_ga700_overlay` — AcroForm text-overlay
+      on the DOR fillable PDF whose semantic field names map ~1:1 to compute keys; template stored unmodified)** ·
+      diagnostics (`f70a9d4` 10 D_GA700_*). 24 tests green, prod-seeded; flow gate 422. ⚠⚠ GA §179 conflict still
+      open for Ken (GA700 $1.05M/$2.62M vs GA600 $1.25M/$3.13M). v1 = entity-level; partner NRW/allocation +
+      display-subtotal compute leg + Sch-8 spec line-numbering deferred (non-blocking follow-ups).
 
 **S-11 · [RS]✅→[APP]⬜ · 1041 module (WO-09), greenfield RS-first. RS authoring COMPLETE 2026-07-05
 (front door + Gate-1 scope walk = RS DECISIONS D-10; f1041_source_brief.md). APP build remains.**

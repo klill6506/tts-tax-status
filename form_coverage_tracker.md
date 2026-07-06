@@ -1,7 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-10, leg 3) — GA Form 700 render → ✅ DONE (`0d59255`). S-10 GA-700 now COMPLETE (all 4 legs);
+> the form TICKS.** The deferred blocker (thought to be a viewer-only form) was resolved by the DOR "Print Blank
+> Forms" static PDF: `render_ga700_overlay` fills the DOR fillable PDF via the AcroForm text-overlay pipeline
+> (`_acroform_fill`), whose semantic field names (S1L1..S8L12, FEI_NUMBER, ...) map ~1:1 to the compute keys —
+> so the stored template (`server/pdf_templates/ga700_2025.pdf`) is the DOR PDF unmodified and
+> `field_maps/ga700_2025.py` points straight at those names (no AcroForm-Creator injection, unlike GA-600S).
+> Ratio S7_2 pre-formatted to a 6-decimal factor (its DB PERCENTAGE type would render "1.0%") + transcribed to
+> Sch 2 L4; Total Tax (S1_7) → Sch 3 L1; GA_PTET → CBX_ELECT_TO_PAY checkbox; S8_6 ("other income") → form line
+> 7 (S8L7). Visually verified on all 4 schedule pages; 3 DB tests (`test_ga700_render_leg.py`). v1 blanks
+> (documented, non-blocking): additive subtotals S1L3/S8L10/S5L8/S6L5 (compute follow-up), Schedule 4 partner
+> detail, continuation name/FEIN. Flow gate 422; `manage.py check` clean. **⚠⚠ GA §179 cross-spec conflict
+> (GA700 $1.05M/$2.62M vs GA600 $1.25M/$3.13M) still open for Ken** (§179 is separately-stated K-1, not on the
+> entity face — did not block render).
+
 > **2026-07-06 (S-10) — GA Form 700 (Georgia partnership + PTET, "GA-700") → legs 1/2/4 DONE; render DEFERRED
-> (form does NOT fully tick yet).** The GA-600S analog for a partnership; attaches to a federal **1065**. Built
+> (form did NOT fully tick — SUPERSEDED by the leg-3 note above).** The GA-600S analog for a partnership; attaches to a federal **1065**. Built
 > spec-first from RS `GA700` (status `draft` — cached `server/specs/ga700_spec.json`). **Leg 1 compute**
 > (`1d7f102`): `FORMULAS_GA700` (`FORMULA_REGISTRY["GA-700"]`) — Sch 8 income (fed ordinary + guaranteed
 > payments + other, + §168(k) bonus add-back − GA-4562 depreciation) → Sch 7 **single gross-receipts
