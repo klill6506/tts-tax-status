@@ -17,24 +17,20 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 + 4 DONE; next = leg 5
-(issuer-side K-1 → 1040 import).** ✅ **Leg 4 — K-1 alloc reconcile (RECON-K1-K):** promoted the allocator's
-`k_to_box` → module-level `K_TO_BOX` (reconcile's single source of truth) + wired K13c/K13e into it; new
-`rules_1065_k1.py` (D_K1_RECON error, D_K1_9C info, D_K1_SPECIAL_ALLOC warning, D_K1_ITEML warning, D_K1_CAPPCT
-info); 3 pure + 7 DB; D_K1_704C/D_K1_706D deferred (need Partner item-M/mid-year fields + migration). ✅ **Legs
-1b + 2 + 3 (2026-07-05, eighteenth session).** **Leg 3 — M-1/M-2 tie-outs:**
-new `rules_1065_m.py` (D_M1_ANALYSIS error / D_M2_3 warning / D_M1_EXEMPT + D_M2_EXEMPT info) wiring the
-RECON-ANALYSIS chain K_ANALYSIS = M1_9 = M2_3 that leg-1b's Analysis line unblocked; the M-1/M-2 sum compute
-already existed → validation-only; 3 pure + 4 DB; D_M2_1 (item-L roll-forward) deferred to the K-1 leg. **Leg 1b — Schedule K 2025 renumber +
-Analysis line + diagnostics:** renumber (`seed_1065`→290 lines) foreign taxes K16a→line 21 (`K21`), line 16→
-`K16` K-3-attached checkbox (intl RED-defer), K13d→`K13b`, +`K13c`/`K13e`, computed `K_ANALYSIS` = (Σ K 1-11)
-− (Σ K 12-13e + 21); new `rules_1065_schk.py` (D_SCHK_HANDOFF/K3/9C + D_1065P1_4797/COGS); ★ fixed a latent
-cross-form bug — `aggregate_schedule_d` (1120-S, keys K7/K8a) ran ungated and zeroed 1065 royalties (K7)
-every recompute → added a `code=="1065"` guard. **Leg 2 — Schedule L balance check:** new `rules_1065_l.py`
-(D_L_BALANCE_BOY/EOY error, D_L_21_M2_TIE + D_L_M3 warning, D_L_EXEMPT info; B6 exemption suppresses balance
-errors); the L14/L22 total compute already existed → validation-only. Render still DEFERRED.
+## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a–5 DONE; next = leg 6 (1065 flow-assertion
+gate), then close S-4.** ✅ **Leg 5 — issuer-side K-1 persistence + 1065→1040 import (2026-07-05, nineteenth
+session, `6b51c3e`):** the 1120-S `ShareholderK1Computed`/`k1_import.py` mirror. NEW model `PartnerK1Computed`
+(migs **0168** create + **0169** RLS default-deny — **applied to prod**); `box_shares` keyed by K-1 box number
+(the `allocate_k1` output keys). Issuer COMPUTE already existed (`allocate_all_k1s`) → leg 5 added PERSIST
+(`persist_all_partner_k1s_db`, hooked in compute.py after `compute_1065_se_db`). Import side: box 14a→se_earnings
+(§199A=box 1); `available_k1_offers` merges both owner types w/ `owner_kind`/`owner_id`/`source_type`;
+`import/dismiss_k1_offer_by_owner` dispatch Shareholder-or-Partner. 2 pure + 6 DB green; shareholder pipeline +
+allocator re-verified. ⚠ D_M2_1/D_K1_704C/D_K1_706D STILL deferred (leg 5 added a model, not Partner
+item-M/N/L-$ fields — those need their own migration). ✅ **Legs 1a–4 (eighteenth session) — see STATUS_ARCHIVE**
+(1a page-1 renumber `10f1fd2`; 1b Sch K renumber + K_ANALYSIS + `aggregate_schedule_d` K7-royalties fix `8ad96d8`;
+2 Sch L balance `f55a0c8`; 3 M-1/M-2 tie-outs `01a9a95`; 4 K-1 alloc reconcile `b911498`).
 (Prior: ✅ **S-9 NC D-400 COMPLETE all 4 legs** — compute `69cf82b`/input `b31d5c7`/render `c704f21`/diag
-`8358e74`; flat 4.25%, 85% bonus/§179 add-back; the three state forms SC1040/AL40/NC D-400 are done.)
+`8358e74`; the three state forms SC1040/AL40/NC D-400 are done.)
 ## ▶ NEXT — app: **S-3 brokerage front end** (∥, not spec-gated) · **S-11 1041 module** app build (RS
 authoring DONE 2026-07-05) · **S-4 1065 core** compute build · **S-5/S-6** boundary + PAL/basis app builds ·
 S-10 GA-700 (gated behind S-4 1065 core) · **S-13/S-14 1120 + state C-corp** app builds (RS authoring DONE
@@ -88,15 +84,22 @@ D_M2_3 warning, D_M1_EXEMPT/D_M2_EXEMPT info) wiring K_ANALYSIS=M1_9=M2_3 (RECON
 sum compute already existed → validation-only; 3 pure + 4 DB (`01a9a95`); D_M2_1 deferred to the K-1 leg.
 **✅ leg 4 — K-1 alloc reconcile (2026-07-05, eighteenth session):** promoted `k_to_box`→`K_TO_BOX` + wired
 K13c/K13e; new `rules_1065_k1.py` (D_K1_RECON error, D_K1_9C/D_K1_CAPPCT info, D_K1_SPECIAL_ALLOC/D_K1_ITEML
-warning); 3 pure + 7 DB (`b911498`); D_K1_704C/D_K1_706D deferred (Partner item-M/mid-year fields + migration). ▶ NEXT
-leg 5: issuer-side `PartnerK1Computed` + 1065→1040 K-1 import (mirror 1120-S ShareholderK1Computed/k1_import.py);
-then leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
+warning); 3 pure + 7 DB (`b911498`); D_K1_704C/D_K1_706D deferred (Partner item-M/mid-year fields + migration).
+**✅ leg 5 — issuer-side K-1 persistence + 1065→1040 import (2026-07-05, nineteenth session, `6b51c3e`):** NEW
+`PartnerK1Computed` model (migs 0168 create + 0169 RLS, **applied to prod**); issuer PERSIST
+(`persist_all_partner_k1s_db` hooked post-SE in compute.py; compute pre-existed via `allocate_all_k1s`); import
+side in `k1_import.py` (box 14a→se_earnings; merged `available_k1_offers` w/ `owner_kind`/`owner_id` dispatch;
+`ScheduleK1.imported_from_partner`; `K1ImportDismissal` shareholder-nullable + partner FK); 2 pure + 6 DB green.
+▶ NEXT leg 6: the **1065 flow-assertion gate** (none exists — add flow_assertions_1065.json + gate test), then
+close S-4. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025); D_M2_1/D_K1_704C/D_K1_706D
+still deferred (leg 5 was a new model, not the Partner item-M/N/L-$ field migration).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
 1065 ATS, issuer-side 1065 K-1 → 1040 import, AND the GA-700 app build (see S-10 dependency).
 - [x] Schedule K — 2026-07-04   - [x] Schedule K-1 — 2026-07-04   - [x] M-1/M-2 — 2026-07-04   - [x] L/B — 2026-07-04   - [x] 8825 (covers 1065)
-- [ ] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S)  `[APP]`
+- [x] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S) — 2026-07-05 `6b51c3e`  `[APP]`
+- [ ] 1065 flow-assertion gate (leg 6 — none exists yet) → then close S-4  `[APP]`
 - [ ] tts compute build/reconcile of the 35 formulas against the specs  `[APP]`
 
 **S-5 · [RS]✅→[APP]⬜ ∥ · Boundary diagnostics (WO-04) — RS authoring DONE 2026-07-05.** New consolidated
@@ -193,8 +196,12 @@ TOP unchecked item as the current RS rock.
   1120 module's deferred leg: Part I ATI on the OBBBA EBITDA basis (L11 dep/amort/depletion add-back) → 30% limit →
   allowable + indefinite carryforward; Part II/III EBIE/ETI; $31M §448(c) exemption. entity_types 1120/1065/1120S/1040;
   prod 110→111; `lookup/8990/export/` = 200; validated 19/0. tts app build = [APP] lane.
-- [ ] **▶ Schedule H** — Household Employment Taxes (1040) — NEXT (top of the queue; fresh session starts here)
-- [ ] **Form 4684** — Casualties & Thefts (federally-declared disasters)
+- [x] **WO-15 · Schedule H** — Household Employment Taxes (1040) — ✅ DONE 2026-07-05 (RS). FICA (SS 12.4% /
+  Medicare 2.9% / Add'l Medicare 0.9% over $200k) on cash wages ≥ **$2,800** (research caught the stale $2,700) →
+  FUTA Section A 0.6% / Section B credit-reduction (year-keyed **CA 1.2% / VI 4.5%**, Fed. Reg. 2026-00342) →
+  total to Schedule 2 line 9; gating A/B/C + exclusion/Part-IV/EIN diagnostics. entity_types 1040; prod 111→112;
+  `lookup/SCHEDULE_H/export/` = 200; validated 31/0. DECISIONS D-17. tts app build = [APP] lane.
+- [ ] **▶ Form 4684** — Casualties & Thefts (federally-declared disasters) — NEXT (top of the queue)
 - [ ] **Form 4952** — Investment Interest Expense Deduction
 - [ ] **Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)*
 - [ ] **Form 8814** — Parents' Election to Report Child's Interest & Dividends

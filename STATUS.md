@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, eighteenth session: **S-4 1065 core legs 1b + 2 + 3 + 4** — leg 1b Schedule K
-2025 renumber + Analysis line (+ a latent `aggregate_schedule_d` royalties-K7 fix); leg 2 Schedule L
-balance-check diagnostics; leg 3 M-1/M-2 tie-outs (K_ANALYSIS = M1_9 = M2_3); leg 4 K-1 alloc reconcile (RECON-K1-K).*
+*Last updated: 2026-07-05, nineteenth session: **S-4 1065 core leg 5** — issuer-side `PartnerK1Computed`
+model + 1065→1040 K-1 import (the 1120-S `ShareholderK1Computed`/`k1_import.py` mirror). NEW model +
+migrations 0168/0169 (applied to prod). Next = leg 6, the 1065 flow-assertion gate, then close S-4.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,85 +24,55 @@ balance-check diagnostics; leg 3 M-1/M-2 tie-outs (K_ANALYSIS = M1_9 = M2_3); le
 - **1065 K-1 leg 4** — pure `pytest tests/test_1065_k1_leg.py` (**3** — K_TO_BOX 13c/13e · alloc · 60/40 sums)
   · DB `pytest tests/test_1065_k1_diagnostics_leg.py` (**7** — recon holds/breaks · 9c · special alloc ·
   item-L ties/breaks · cappct). Existing `test_k1_allocator.py` green after the K_TO_BOX refactor.
+- **1065 K-1 IMPORT leg 5** — pure `pytest tests/test_1065_k1_import_leg.py -k box_shares` (**2** — box→field
+  map incl. box 14a→se_earnings, §199A=box 1) · DB same file (**6** — persist 60/40 split + box 14a · non-1065
+  no-op · offer→import · source-update offer · dismiss/resurface · unknown-owner false). Shareholder pipeline
+  `test_k1_import_stage3.py` (**6**, needs 1120-S seeded upstream) + `test_k1_allocator.py` re-verified green.
 - **1065 SE** pure `pytest tests/test_1065_se_compute_leg.py` (**36**) unchanged.
-- `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db` (fast rebuild avoided).
-  No migration this session (1065 lines are FormFieldValue-backed, re-seeded via `seed_1065` + `seed_rules`).
-- ⚠ DB runs on the shared Supabase pooler are SLOW (a 4-file batch took ~38 min). Run 1065 DB tests in
-  the background; never `drop_test_db` a slow run (kills the live session).
+- `manage.py check` clean; frontend `tsc --noEmit` → 0 errors. **Test DB `test_postgres` exists** — use
+  `--reuse-db`. **★ Leg 5 ADDED migrations 0168 (PartnerK1Computed) + 0169 (RLS) — APPLIED TO PROD this
+  session** (`migrate returns` OK). New DB tests must `seed_1065`+`seed_1040` (not migration-pre-seeded) and
+  filter `FormLine` by `section__form=` NOT `form_definition=`.
+- ⚠ DB runs on the shared Supabase pooler are SLOW (a fresh `--create-db` ~2min; a 4-file batch took ~38 min).
+  Run 1065 DB tests in the background; never `drop_test_db` a slow run (kills the live session).
 
-## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 + 4 DONE; next = leg 5 (issuer-side K-1 → 1040 import).**
-6 RS core specs cached to `server/specs/` (all `approved`, `a4f3370`). Full reconcile map in the `.claude`
-memory `1065-core-s4-kickoff.md`.
+## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS). Legs 1a–5 DONE; next = leg 6 (1065 flow-assertion gate), then close S-4.**
+6 RS core specs cached to `server/specs/` (all `approved`, `a4f3370`). Full reconcile map + all-leg detail in
+the `.claude` memory `1065-core-s4-kickoff.md`; per-leg build history in `STATUS_ARCHIVE.md`.
 
-**✅ Leg 1a DONE (`10f1fd2`) — page-1 2025 renumber** (ord business income now line 23; K1←line 23; NEW
-line 20 §179D; seed→286 lines).
+**✅ Leg 5 DONE (`6b51c3e`) — issuer-side K-1 persistence + 1065→1040 import** (the 1120-S
+`ShareholderK1Computed`/`k1_import.py` mirror):
+- **NEW model `PartnerK1Computed`** (migs **0168** create + **0169** RLS default-deny — **APPLIED TO PROD**
+  this session via `migrate returns`). `box_shares` keyed by K-1 BOX NUMBER ("1"/"4c"/"14a"), the
+  `allocate_k1` output keys — NOT the entity Sch-K "K1" keys the S-corp model uses.
+- **Issuer persist** (`k1_allocator.py`): `persist_k1_for_partner_db` / `persist_all_partner_k1s_db`, hooked
+  in `compute.py` right after `compute_1065_se_db` (so each partner's box 14a is final). Compute already
+  existed (`allocate_all_k1s`) — this leg only added persist.
+- **Import side** (`k1_import.py`): `_PARTNER_BOX_TO_K1_FIELD` (★ box **14a→se_earnings**, §199A=box 1) +
+  `available/import/dismiss_partner_k1_offer`. `available_k1_offers` now MERGES both owner types; every offer
+  carries `owner_kind`/`owner_id`/`source_type`; new `import/dismiss_k1_offer_by_owner` dispatch by resolving
+  the id as Shareholder-or-Partner. `ScheduleK1.imported_from_partner` FK; `K1ImportDismissal.shareholder`
+  nullable + `partner` FK + 2nd unique constraint (NULLs distinct → no cross-owner collision). Views re-key
+  URL param `shareholder_id`→`owner_id`; frontend `K1ImportOffer` type + banner use `owner_id`.
 
-**✅ Leg 1b DONE (this session) — Schedule K 2025 renumber + Analysis line + diagnostics.** Verified vs
-the 2025 f1065 Schedule K + the RS `SCH_K_1065` / `1065_PAGE1` specs:
-- **Renumber (`seed_1065`, →290 lines):** foreign taxes `K16a` → **line 21 (`K21`)**; **line 16 → `K16`
-  "Schedule K-3 is attached" checkbox** (international K-2/K-3 RED-defer, Decision A); investment interest
-  `K13d` → **`K13b`**; added **`K13c`** (§59(e)(2)) + **`K13e`** (other deductions); new computed **`K_ANALYSIS`**.
-- **Analysis line (`FORMULAS_1065`):** `K_ANALYSIS` = `(Σ K 1-11) − (Σ K 12-13e + 21)` (R-SCHK-ANALYSIS,
-  i1065 verbatim). Ties M-1 L9 / M-2 L3 — **the M-1/M-2 tie-out itself is leg 3, not yet asserted**.
-- **Allocator (`k1_allocator`):** carried the K13d→K13b / K16a→K21 renames through the category / pro-rata /
-  K→box maps so existing allocation keeps working.
-- **Diagnostics (new `rules_1065_schk.py`, registered in the runner):** `D_SCHK_HANDOFF` (error, K1 ≠ page-1
-  L23), `D_SCHK_K3` (error, K-3 attached), `D_SCHK_9C` (info, unrecap §1250), `D_1065P1_4797` (warning,
-  L6 recapture split), `D_1065P1_COGS` (warning, COGS w/o 1125-A).
-- **★ Latent bug FIXED:** `aggregate_schedule_d` (the 1120-S SCHD_1120S aggregate, keys K7/K8a) ran UNGATED
-  for all business returns and cleared `K7` to 0 every recompute — but on a **1065 K7 = royalties**, so 1065
-  royalties silently vanished (and dropped out of the Analysis line). Added a `code == "1065"` early-return
-  guard. 1120-S Schedule D path untouched.
+**▶ NEXT — leg 6 (1065 flow-assertion gate) then close S-4:** no 1065 flow-assertion gate exists (1065_se is
+diagnostic-gated only). Add `server/specs/flow_assertions_1065.json` + a `test_flow_assertions_1065.py` gate
+(mirror the 1040/1120-S gates), then tick S-4 complete in BUILD_ORDER + form_coverage_tracker.
 
-**✅ Leg 2 DONE (this session) — Schedule L balance check + diagnostics.** The R-L-14/R-L-22 total
-formulas already existed (FORMULAS_1065: `L15a/d` assets [face L14], `L24a/d` liab+cap [face L22],
-contra-netted); this leg is validation-only. New `rules_1065_l.py` (registered): `D_L_BALANCE_BOY/EOY`
-(error, L15≠L24 per column), `D_L_21_M2_TIE` (warning, partners' cap EOY `L23d` ≠ M-2 line 9 `M2_9`), `D_L_M3`
-(warning, assets EOY ≥ $10M → M-3 RED-defer), `D_L_EXEMPT` (info, Schedule B Q4 box `B6`). ★ B6 exemption
-SUPPRESSES the balance errors + M-2 tie. 7 DB tests. (Build-gap #2 "tts has NO balance check" — closed.)
+**⚠ DEFERRED — STILL OPEN after leg 5** (leg 5 added a NEW model, not Partner item-M/N/L-$ fields, so these
+are unchanged; each needs a separate Partner-field migration): `D_M2_1` (item-L roll-forward), `D_K1_704C`
+(item M §704(c)), `D_K1_706D` (§706(d) mid-year). Plus (DEFERRAL_AUDIT): f1065 page-1 + Schedule K **render
+recalibration** (coords stale for 2025 — one dedicated render leg); `D_1065P1_174A` (needs R&E input line).
 
-**✅ Leg 3 DONE (this session) — M-1/M-2 reconciliation tie-outs.** RECON-ANALYSIS chain (unblocked by
-leg-1b's `K_ANALYSIS`): `K_ANALYSIS` = `M1_9` = `M2_3`. New `rules_1065_m.py` (registered): `D_M1_ANALYSIS`
-(error, M1_9 ≠ K_ANALYSIS), `D_M2_3` (warning, M2_3 ≠ M1_9), `D_M1_EXEMPT`/`D_M2_EXEMPT` (info, B6). B6
-exemption suppresses the tie checks. The M-1/M-2 sum formulas already existed → validation-only. 3 pure + 4 DB.
-DEFERRED: `D_M2_1` (M-2 line 1 = Σ K-1 item-L beginning capital — needs the item-L roll-forward; K-1 leg).
-
-**✅ Leg 4 DONE (this session) — K-1 alloc reconcile (RECON-K1-K).** Promoted the allocator's `k_to_box` to
-module-level **`K_TO_BOX`** (reconcile's single source of truth) + wired **K13c/K13e** into it. New
-`rules_1065_k1.py`: `D_K1_RECON` (error, Σ box ≠ entity K line), `D_K1_9C` (info, box-9c pass-through —
-closes the open verification), `D_K1_SPECIAL_ALLOC` (warning), `D_K1_ITEML` (warning, item-L roll-forward),
-`D_K1_CAPPCT` (info). 3 pure + 7 DB. DEFERRED: `D_K1_704C`/`D_K1_706D` (need new Partner item-M / mid-year
-boolean fields + migration; RED-defer structure).
-
-**▶ NEXT — leg 5 (issuer-side K-1 → 1040 import):** mirror the 1120-S path — 1120-S has
-`ShareholderK1Computed` + `k1_import.py` + `available_k1_offers`; 1065 needs a **`PartnerK1Computed`** model
-(persist each partner's allocated K-1 boxes on 1065 DRAFT→FILED) + the 1065 K-1 → recipient-1040 import
-(so a partner's 1040 can pull their K-1). Then leg 6 the **1065 flow-assertion gate** (none exists — 1065_se
-is diagnostic-gated only; add a flow_assertions_1065.json + the gate test). The deferred `D_M2_1` /
-`D_K1_704C` / `D_K1_706D` all ride the Partner-model work.
-
-**⚠ DEFERRED (flagged in DEFERRAL_AUDIT):** f1065 page-1 + Schedule K **render recalibration** (coords stale
-for 2025 — the whole face is one dedicated render leg); `D_1065P1_174A` (needs an R&E input line);
-`D_SCHK_704C` (needs item-M/N boolean flags); K13c/K13e per-partner K-1 box allocation (leg 4).
-
-**What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py, compute_1065_se.py.
+**What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py, compute_1065_se.py, k1_import.py.
 **RED-defers (per specs):** K-2/K-3, §704(c) math, §706(d), item-L roll-forward, M-3, OBBBA flags.
 
 *(Other unblocked SPINE items if Ken redirects: S-3 brokerage front end ∥, S-11 1041 module, S-5/S-6.)*
-- **Reusable flat-state-form render recipe (GA-500 / SC1040 / AL40 / NC D-400):** download DOR PDF → verify
-  flat → strip instructions cover (`delete_page(0)`) → anchors ("00" glyphs / grid baselines) → RL baseline
-  = 792 − anchor_y1 (+~2–3.5pt descent) → render synthetic-value PNG → measure delta → verify → overlay.
 
-## This session's commits (pushed to origin/main)
-- `8ad96d8` — leg 1b: seed renumber (→290 lines) + Analysis compute + `rules_1065_schk` diagnostics +
-  `k1_allocator` renames + the `aggregate_schedule_d` 1065-royalties guard + tests. Prod reseeded
-  (`seed_1065` + `seed_rules`, Ken-greenlit): pruned 2 stale sched_k lines (K16a/K13d, 64 FFV rows).
-- `f55a0c8` — leg 2: `rules_1065_l.py` (5 Schedule L diagnostics: balance BOY/EOY, M-2 tie, M-3, exempt)
-  + 7 DB tests. Validation-only (L14/L22 totals already computed). Prod `seed_rules` registered the D_L_* rules.
-- `01a9a95` — leg 3: `rules_1065_m.py` (M-1/M-2 tie-outs: D_M1_ANALYSIS, D_M2_3, D_M1/M2_EXEMPT) + 3 pure
-  + 4 DB tests. Validation-only (M-1/M-2 sums already computed). Prod `seed_rules` registered the D_M* rules.
-- `b911498` — leg 4: `k1_allocator` K_TO_BOX refactor + K13c/K13e wiring; `rules_1065_k1.py` (D_K1_RECON,
-  D_K1_9C, D_K1_SPECIAL_ALLOC, D_K1_ITEML, D_K1_CAPPCT) + 3 pure + 7 DB. Prod `seed_rules` registered D_K1_*.
+## This session's commit (pushed to origin/main)
+- `6b51c3e` — leg 5: `PartnerK1Computed` model (migs 0168/0169, applied to prod) + issuer persist hooked in
+  compute.py + `k1_import` partner path (merged offers, owner-dispatch) + serializer/views/frontend wiring +
+  `test_1065_k1_import_leg.py` (2 pure + 6 DB). Shareholder pipeline + allocator re-verified green.
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;

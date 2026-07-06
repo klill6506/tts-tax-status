@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 5) — issuer-side K-1 persistence + 1065 → 1040 import → ✅ DONE.**
+> The 1120-S `ShareholderK1Computed` / `k1_import.py` mirror for partnerships. **NEW model
+> `PartnerK1Computed`** (migrations **0168** create + **0169** RLS default-deny — **applied to the shared prod
+> DB** via `migrate returns`; leg 5 is the first S-4 leg with a real schema migration — legs 1–4 were
+> FormFieldValue-backed). `box_shares` is keyed by K-1 **box number** ("1"/"4c"/"14a"…), the OUTPUT keys of
+> `k1_allocator.allocate_k1`, NOT the entity Schedule K "K1" keys the S-corp twin uses. **Issuer COMPUTE
+> already existed** (`allocate_all_k1s`) — this leg added **PERSIST** (`persist_k1_for_partner_db` /
+> `persist_all_partner_k1s_db` in `k1_allocator.py`, hooked in `compute.py` immediately after
+> `compute_1065_se_db` so each partner's box 14a is final and the persisted row always mirrors the entity's
+> current Schedule K). **Import side** (`k1_import.py`): `_PARTNER_BOX_TO_K1_FIELD` (★ the 1065-specific map —
+> box **14a → `se_earnings`**, no 1120-S analog since S-corp shareholders have no SE; §199A QBI = box 1,
+> guaranteed payments excluded) + `available_partner_k1_offers` / `import_partner_k1_offer` /
+> `dismiss_partner_k1_offer`. `available_k1_offers` now MERGES both owner types; every offer carries
+> `owner_kind` / `owner_id` / `source_type`; new `import_k1_offer_by_owner` / `dismiss_k1_offer_by_owner`
+> dispatch by resolving the id as a Shareholder or Partner. `ScheduleK1.imported_from_partner` FK added;
+> `K1ImportDismissal.shareholder` made nullable + `partner` FK + a 2nd unique constraint (Postgres NULLs
+> distinct → no cross-owner collision). Views re-key the URL param `shareholder_id`→`owner_id`; serializer
+> exposes `imported_from_partner`; frontend `K1ImportOffer` type + import banner use `owner_id`. Tests:
+> `test_1065_k1_import_leg.py` — 2 pure (box→field map incl. 14a→se_earnings) + 6 DB (persist 60/40 split +
+> box 14a · non-1065 no-op · offer→import · source-update offer · dismiss/resurface · unknown-owner false).
+> Shareholder pipeline (`test_k1_import_stage3.py`, 6) + `test_k1_allocator.py` re-verified green; frontend
+> `tsc --noEmit` 0 errors. **DEFERRED — STILL OPEN** (leg 5 added a new model, not Partner item-M/N/L-dollar
+> fields; each needs a separate Partner-field migration): `D_M2_1`, `D_K1_704C`, `D_K1_706D`. **▶ NEXT leg 6:
+> the 1065 flow-assertion gate** (none exists — 1065_se is diagnostic-gated only), then S-4 closes.
+
 > **2026-07-05 (S-4 1065 core, leg 4) — Schedule K-1 allocation reconcile (RECON-K1-K) → ✅ DONE.**
 > Built spec-first from RS `SCHEDULE_K1_1065`. **Allocator wiring (`k1_allocator.py`):** promoted the local
 > `k_to_box` to a module-level **`K_TO_BOX`** (single source of truth shared with the reconcile diagnostic)
