@@ -86,12 +86,14 @@ S-4 f1065 render recalibration follow-on.)*
   `S6_5` (Sch6 total). A small `FORMULAS_GA700` follow-up (spec-check + flow gate) closes these for full face
   fidelity. Also deferred in render: Schedule 4 partner detail (needs Partner residency/GA-source migration),
   continuation-page name/FEIN (duplicate AcroForm field names across pages).
-- **NEW — RS reseed + export for the GA §179 fix.** `load_ga700.py` + `load_ga600.py` are amended to $2.5M/$4M
-  (`09d55d9`) but NOT yet reseeded/exported to the deployed RS DB — so the cached tts mirrors still show the old
-  figure: `server/specs/ga700_spec.json` (~22 refs), `ga600s_spec.json`, `form_4562_spec.json`. These mirrors are
-  NON-operative (compute uses the Python constants, already fixed), but reseed+export from an RS session to refresh
-  them. ⚠ **GA-600S (S-corp) has NO RS loader** (only `load_ga600.py` = C-corp) — its `ga600s_spec.json` mirror is
-  an orphan that won't auto-regenerate; its running §179 comes from `depreciation_engine.GA_179_*` (already fixed).
+- **✅ DONE 2026-07-06 — GA §179 RS reseed + mirror refresh.** All RS loaders swept to $2.5M/$4M
+  (`load_ga700`/`load_ga600` `09d55d9`; `load_remaining_1120s` [seeds GA-600S] + `load_1120s_specs` [Form 4562]
+  + `load_sc1040` comment `4ad1ac5`). **Reseeded RS prod Supabase** (all 4 loaders, SQLite-validated first) and
+  **refreshed the 3 cached tts mirrors** from the RS export (`f9d712d`) — `ga700_spec.json`/`ga600s_spec.json`/
+  `form_4562_spec.json` now all show $2.5M/$4M, zero stale. GA-600S turned out NOT to be an orphan (it's seeded
+  by `load_remaining_1120s`). ⚠ **Gotcha (RS loader hygiene):** renaming a scenario orphans the old row —
+  `update_or_create` keys on `scenario_name` — so the reseed left stale GA700-T4/GA600-C scenarios in prod;
+  deleted manually. A durable fix = add stale-scenario cleanup to the loaders (small RS follow-up).
 - **GA §179 conflict RESOLVED** (see the RESUME section) — GA conforms $2.5M/$4M via HB 1199. **GA-700 spec is
   `draft`** (promote→active); check GA-600S's 0.0539 PTET rate for TY2025.
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;
