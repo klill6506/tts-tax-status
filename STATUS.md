@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, nineteenth session: **S-4 1065 core leg 5** — issuer-side `PartnerK1Computed`
-model + 1065→1040 K-1 import (the 1120-S `ShareholderK1Computed`/`k1_import.py` mirror). NEW model +
-migrations 0168/0169 (applied to prod). Next = leg 6, the 1065 flow-assertion gate, then close S-4.*
+*Last updated: 2026-07-05, nineteenth session: **S-4 1065 core COMPLETE** — leg 5 issuer-side
+`PartnerK1Computed` + 1065→1040 import (migs 0168/0169, applied to prod); **leg 6 the 1065 flow-assertion
+gate** (22 active RS assertions + 6 staged pending; the intra-1065 tie chain now gated). S-4 core done;
+render recalibration remains deferred. **Next = Ken directs** among the unblocked SPINE items.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,8 +13,10 @@ migrations 0168/0169 (applied to prod). Next = leg 6, the 1065 flow-assertion ga
   (gates) / `PRODUCT_MAP.md` (scope). BUILD_ORDER is the single source of sequence.
 
 ## Active gates (all green)
-- **1040 flow-assertion gate** — `cd server && pytest tests/test_flow_assertions.py -q` → **398 passed**
-  (unchanged — the 1065 changes touch no 1040 flow). Fast (~1s, pure).
+- **Flow-assertion gate (all entities)** — `cd server && pytest tests/test_flow_assertions.py -q` → **423
+  passed** (was 398; leg 6 added the **1065 gate: 22 active RS assertions + 2 guard tests**). Fast (~1.4s, pure).
+  The 1065 runners live in `_run_1065_assertion` / `_RUNNERS_1065`; unbuilt assertions staged in
+  `specs/flow_assertions_1065_pending.json`.
 - **1065 Schedule K leg 1b** — pure `pytest tests/test_1065_schk_leg.py` (**7** — spec-driven Analysis
   pin 215000 + renumber/allocator assertions) · DB `pytest tests/test_1065_schk_pipeline_leg.py`
   (**9** — pipeline Analysis persist + 8 diagnostics fire/quiet). `test_seed_1065` count now **290**.
@@ -36,43 +39,46 @@ migrations 0168/0169 (applied to prod). Next = leg 6, the 1065 flow-assertion ga
 - ⚠ DB runs on the shared Supabase pooler are SLOW (a fresh `--create-db` ~2min; a 4-file batch took ~38 min).
   Run 1065 DB tests in the background; never `drop_test_db` a slow run (kills the live session).
 
-## ▶ RESUME HERE — **S-4 1065 core (IN PROGRESS). Legs 1a–5 DONE; next = leg 6 (1065 flow-assertion gate), then close S-4.**
-6 RS core specs cached to `server/specs/` (all `approved`, `a4f3370`). Full reconcile map + all-leg detail in
-the `.claude` memory `1065-core-s4-kickoff.md`; per-leg build history in `STATUS_ARCHIVE.md`.
+## ▶ RESUME HERE — **S-4 1065 core COMPLETE (all legs 1a–6). Next = Ken directs** among the unblocked SPINE items.
+Full reconcile map + all-leg detail in the `.claude` memory `1065-core-s4-kickoff.md`; per-leg build history
+in `STATUS_ARCHIVE.md`.
 
-**✅ Leg 5 DONE (`6b51c3e`) — issuer-side K-1 persistence + 1065→1040 import** (the 1120-S
-`ShareholderK1Computed`/`k1_import.py` mirror):
-- **NEW model `PartnerK1Computed`** (migs **0168** create + **0169** RLS default-deny — **APPLIED TO PROD**
-  this session via `migrate returns`). `box_shares` keyed by K-1 BOX NUMBER ("1"/"4c"/"14a"), the
-  `allocate_k1` output keys — NOT the entity Sch-K "K1" keys the S-corp model uses.
-- **Issuer persist** (`k1_allocator.py`): `persist_k1_for_partner_db` / `persist_all_partner_k1s_db`, hooked
-  in `compute.py` right after `compute_1065_se_db` (so each partner's box 14a is final). Compute already
-  existed (`allocate_all_k1s`) — this leg only added persist.
-- **Import side** (`k1_import.py`): `_PARTNER_BOX_TO_K1_FIELD` (★ box **14a→se_earnings**, §199A=box 1) +
-  `available/import/dismiss_partner_k1_offer`. `available_k1_offers` now MERGES both owner types; every offer
-  carries `owner_kind`/`owner_id`/`source_type`; new `import/dismiss_k1_offer_by_owner` dispatch by resolving
-  the id as Shareholder-or-Partner. `ScheduleK1.imported_from_partner` FK; `K1ImportDismissal.shareholder`
-  nullable + `partner` FK + 2nd unique constraint (NULLs distinct → no cross-owner collision). Views re-key
-  URL param `shareholder_id`→`owner_id`; frontend `K1ImportOffer` type + banner use `owner_id`.
+**✅ Leg 6 DONE (`f1c095b`) — 1065 flow-assertion gate** (the first for the partnership entity; 1065_se was
+diagnostic-gated only). Fetched the RS export (`/api/flow-assertions/export/?entity_type=1065`, 28 assertions)
+and split into **`specs/flow_assertions_1065.json` — 22 ACTIVE** (compute built, legs 1a-5) + **`_pending.json`
+— 6 STAGED** (ENTITY_BOUNDARY×3, Form 8990, §704(c)/§706(d), item-L capital roll-forward — not silently
+dropped). Runners in `test_flow_assertions.py` (`_run_1065_assertion`/`_RUNNERS_1065`, all PURE): RECON-* via
+real FORMULAS_1065 / k1_allocator / compute_1065_se; INV-* via allocator + SE worksheet; GATE-*/diagnostic
+ties via source inspection; TI/4562-179/RC004 reuse shared runners. New `gating_check` type registered.
+Full gate **423 passed**.
 
-**▶ NEXT — leg 6 (1065 flow-assertion gate) then close S-4:** no 1065 flow-assertion gate exists (1065_se is
-diagnostic-gated only). Add `server/specs/flow_assertions_1065.json` + a `test_flow_assertions_1065.py` gate
-(mirror the 1040/1120-S gates), then tick S-4 complete in BUILD_ORDER + form_coverage_tracker.
+**✅ Leg 5 DONE (`6b51c3e`) — issuer-side K-1 persistence + 1065→1040 import** (1120-S mirror): NEW
+`PartnerK1Computed` model (migs **0168**/**0169** — APPLIED TO PROD); issuer persist
+(`persist_all_partner_k1s_db` hooked post-SE in compute.py); import side in `k1_import.py` (box 14a→se_earnings;
+merged `available_k1_offers` w/ `owner_kind`/`owner_id` dispatch; `ScheduleK1.imported_from_partner`;
+`K1ImportDismissal` shareholder-nullable + partner FK). 2 pure + 6 DB green. (Legs 1a–4 → STATUS_ARCHIVE.)
 
-**⚠ DEFERRED — STILL OPEN after leg 5** (leg 5 added a NEW model, not Partner item-M/N/L-$ fields, so these
-are unchanged; each needs a separate Partner-field migration): `D_M2_1` (item-L roll-forward), `D_K1_704C`
-(item M §704(c)), `D_K1_706D` (§706(d) mid-year). Plus (DEFERRAL_AUDIT): f1065 page-1 + Schedule K **render
-recalibration** (coords stale for 2025 — one dedicated render leg); `D_1065P1_174A` (needs R&E input line).
+**⚠ S-4 remaining / deferred** (S-4 CORE is done — compute + diagnostics + K-1 issue/import + flow gate — but
+these ride separate future legs): **f1065 page-1 + Schedule K render recalibration** (coords stale for 2025 —
+one dedicated render leg); the 6 STAGED flow assertions (activate as each compute lands); `D_M2_1` /
+`D_K1_704C` / `D_K1_706D` (need a Partner item-M/N/L-$ field migration); `D_1065P1_174A` (R&E input line).
+Because render is deferred, the **1065 form does not fully tick** in form_coverage_tracker yet.
 
-**What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py, compute_1065_se.py, k1_import.py.
-**RED-defers (per specs):** K-2/K-3, §704(c) math, §706(d), item-L roll-forward, M-3, OBBBA flags.
+**▶ NEXT — Ken directs.** Unblocked SPINE items (all `[APP]`): **S-10 GA-700** (was gated behind S-4 1065
+core — now unblocked), **S-11 1041 module**, **S-5 boundary diagnostics** + **S-6 PAL/basis** (RS authoring
+done), **S-3 brokerage front end** (∥), **S-13/S-14 1120 + state C-corp**. Also S-4 follow-on: the f1065
+render recalibration leg.
 
-*(Other unblocked SPINE items if Ken redirects: S-3 brokerage front end ∥, S-11 1041 module, S-5/S-6.)*
+**What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py, compute_1065_se.py, k1_import.py,
+the 1065 flow-assertion gate. **RED-defers (per specs):** K-2/K-3, §704(c) math, §706(d), item-L roll-forward,
+M-3, OBBBA flags.
 
-## This session's commit (pushed to origin/main)
-- `6b51c3e` — leg 5: `PartnerK1Computed` model (migs 0168/0169, applied to prod) + issuer persist hooked in
-  compute.py + `k1_import` partner path (merged offers, owner-dispatch) + serializer/views/frontend wiring +
-  `test_1065_k1_import_leg.py` (2 pure + 6 DB). Shareholder pipeline + allocator re-verified green.
+## This session's commits (pushed to origin/main)
+- `6b51c3e` — leg 5: `PartnerK1Computed` model (migs 0168/0169, applied to prod) + issuer persist + `k1_import`
+  partner path (merged offers, owner-dispatch) + serializer/views/frontend + `test_1065_k1_import_leg.py`
+  (2 pure + 6 DB). `0e2a4e5` — leg 5 docs.
+- `f1c095b` — leg 6: 1065 flow-assertion gate — `flow_assertions_1065.json` (22 active) + `_pending.json`
+  (6 staged) + runners in `test_flow_assertions.py`. Full gate 423 passed; `check` clean. No compute/migration.
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;

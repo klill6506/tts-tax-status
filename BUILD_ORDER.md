@@ -17,26 +17,26 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a–5 DONE; next = leg 6 (1065 flow-assertion
-gate), then close S-4.** ✅ **Leg 5 — issuer-side K-1 persistence + 1065→1040 import (2026-07-05, nineteenth
-session, `6b51c3e`):** the 1120-S `ShareholderK1Computed`/`k1_import.py` mirror. NEW model `PartnerK1Computed`
-(migs **0168** create + **0169** RLS default-deny — **applied to prod**); `box_shares` keyed by K-1 box number
-(the `allocate_k1` output keys). Issuer COMPUTE already existed (`allocate_all_k1s`) → leg 5 added PERSIST
-(`persist_all_partner_k1s_db`, hooked in compute.py after `compute_1065_se_db`). Import side: box 14a→se_earnings
-(§199A=box 1); `available_k1_offers` merges both owner types w/ `owner_kind`/`owner_id`/`source_type`;
-`import/dismiss_k1_offer_by_owner` dispatch Shareholder-or-Partner. 2 pure + 6 DB green; shareholder pipeline +
-allocator re-verified. ⚠ D_M2_1/D_K1_704C/D_K1_706D STILL deferred (leg 5 added a model, not Partner
-item-M/N/L-$ fields — those need their own migration). ✅ **Legs 1a–4 (eighteenth session) — see STATUS_ARCHIVE**
-(1a page-1 renumber `10f1fd2`; 1b Sch K renumber + K_ANALYSIS + `aggregate_schedule_d` K7-royalties fix `8ad96d8`;
-2 Sch L balance `f55a0c8`; 3 M-1/M-2 tie-outs `01a9a95`; 4 K-1 alloc reconcile `b911498`).
-(Prior: ✅ **S-9 NC D-400 COMPLETE all 4 legs** — compute `69cf82b`/input `b31d5c7`/render `c704f21`/diag
-`8358e74`; the three state forms SC1040/AL40/NC D-400 are done.)
-## ▶ NEXT — app: **S-3 brokerage front end** (∥, not spec-gated) · **S-11 1041 module** app build (RS
-authoring DONE 2026-07-05) · **S-4 1065 core** compute build · **S-5/S-6** boundary + PAL/basis app builds ·
-S-10 GA-700 (gated behind S-4 1065 core) · **S-13/S-14 1120 + state C-corp** app builds (RS authoring DONE
-2026-07-05 `9a41581`/`87b66a4`). **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the
-current RS rock (S-13 1120 + S-14 state C-corp both DONE; all earlier RS spine authoring DONE). After S-15,
-net-new RS scope depends on the TaxWise forms-usage report or a law change.
+## ▶ NOW WORKING ON — **S-4 1065 core COMPLETE (all legs 1a–6). Next = Ken directs.** ✅ **Leg 6 — 1065
+flow-assertion gate (2026-07-05, nineteenth session, `f1c095b`):** the FIRST flow-assertion gate for the
+partnership entity (1065_se was diagnostic-gated only). Fetched the RS export
+(`/api/flow-assertions/export/?entity_type=1065`, 28 assertions) → `flow_assertions_1065.json` (**22 ACTIVE**,
+compute built legs 1a-5) + `_pending.json` (**6 STAGED**: ENTITY_BOUNDARY×3, Form 8990, §704(c)/§706(d),
+item-L capital roll-forward — not silently dropped). PURE runners (`_run_1065_assertion`): RECON-* via real
+FORMULAS_1065 / k1_allocator / compute_1065_se; INV-* via allocator + SE worksheet; GATE-*/tie via diagnostic
+source-inspect; TI/4562-179/RC004 reuse shared runners. Full gate **423 passed**. ✅ **Leg 5 — issuer-side K-1
+persistence + 1065→1040 import (`6b51c3e`):** NEW `PartnerK1Computed` model (migs 0168/0169, **applied to
+prod**) + persist hooked post-SE + `k1_import` partner path (box 14a→se_earnings; merged `available_k1_offers`
+w/ owner-dispatch). ✅ **Legs 1a–4 (eighteenth session) — see STATUS_ARCHIVE.** ⚠ S-4 CORE is done (compute +
+diagnostics + K-1 issue/import + flow gate); **f1065 render recalibration + the 6 staged assertions +
+D_M2_1/D_K1_704C/D_K1_706D remain deferred** (separate future legs) → the 1065 form does not fully tick yet.
+(Prior: ✅ **S-9 NC D-400 COMPLETE**; SC1040/AL40/NC D-400 done.)
+## ▶ NEXT — Ken directs. Unblocked app-lane SPINE items: **S-10 GA-700** (was gated behind S-4 1065 core —
+NOW UNBLOCKED) · **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) · **S-3 brokerage
+front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`) · S-4 follow-on: f1065 render
+recalibration leg. **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
+(all earlier RS spine authoring DONE). After S-15, net-new RS scope depends on the TaxWise forms-usage report
+or a law change.
 
 ---
 
@@ -69,7 +69,7 @@ aggregate); `_sr_py_prior_refunded`/`_sr_py_unused_credits` sourcing; TaxWise 10
 `import_brokerage_summary` → 8949 Exception-2, mig 0160). REMAINS: OCR/parse front end +
 YELLOW render + preparer-confirm UI. Not spec-gated. Parallel.
 
-**S-4 · [RS]✅→[APP]⏳ · 1065 core (WO-02) — RS authoring DONE; APP build IN PROGRESS (2026-07-05).**
+**S-4 · [RS]✅→[APP]✅ CORE · 1065 core (WO-02) — RS authoring DONE; APP CORE build COMPLETE (2026-07-05, legs 1a–6). Render recalibration = a deferred follow-on leg.**
 ▸ 6 specs cached (`a4f3370`). ⚠ found the app's 1065 page-1 + Sch K were on PRE-2025 line numbering (verified
 vs f1065.pdf). **✅ leg 1a — page-1 2025 renumber (`10f1fd2`):** ord business income now line 23 (was 22),
 K1←line 23, NEW line 20 §179D, seed→286 lines, 15 DB + flow 398 + SE 36 green. **✅ leg 1b — Schedule K 2025
@@ -90,17 +90,21 @@ warning); 3 pure + 7 DB (`b911498`); D_K1_704C/D_K1_706D deferred (Partner item-
 (`persist_all_partner_k1s_db` hooked post-SE in compute.py; compute pre-existed via `allocate_all_k1s`); import
 side in `k1_import.py` (box 14a→se_earnings; merged `available_k1_offers` w/ `owner_kind`/`owner_id` dispatch;
 `ScheduleK1.imported_from_partner`; `K1ImportDismissal` shareholder-nullable + partner FK); 2 pure + 6 DB green.
-▶ NEXT leg 6: the **1065 flow-assertion gate** (none exists — add flow_assertions_1065.json + gate test), then
-close S-4. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025); D_M2_1/D_K1_704C/D_K1_706D
-still deferred (leg 5 was a new model, not the Partner item-M/N/L-$ field migration).
+**✅ leg 6 — 1065 flow-assertion gate (2026-07-05, nineteenth session, `f1c095b`):** the first for the
+partnership entity. RS export → `flow_assertions_1065.json` (22 active) + `_pending.json` (6 staged:
+ENTITY_BOUNDARY×3 / 8990 / §704(c)/§706(d) / item-L capital); pure runners (`_run_1065_assertion`) exercise the
+built FORMULAS_1065 / k1_allocator / compute_1065_se / diagnostics; new `gating_check` type. Full gate 423
+passed. **S-4 CORE COMPLETE.** ⚠ f1065 render recalibration + the 6 staged assertions + D_M2_1/D_K1_704C/
+D_K1_706D remain deferred (separate future legs) → the 1065 form does not fully tick until render lands.
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
 1065 ATS, issuer-side 1065 K-1 → 1040 import, AND the GA-700 app build (see S-10 dependency).
 - [x] Schedule K — 2026-07-04   - [x] Schedule K-1 — 2026-07-04   - [x] M-1/M-2 — 2026-07-04   - [x] L/B — 2026-07-04   - [x] 8825 (covers 1065)
 - [x] issuer-side 1065 K-1 persistence → 1040 import (parity w/ 1120-S) — 2026-07-05 `6b51c3e`  `[APP]`
-- [ ] 1065 flow-assertion gate (leg 6 — none exists yet) → then close S-4  `[APP]`
-- [ ] tts compute build/reconcile of the 35 formulas against the specs  `[APP]`
+- [x] 1065 flow-assertion gate (leg 6) — 2026-07-05 `f1c095b` (22 active + 6 staged) → **S-4 CORE COMPLETE**  `[APP]`
+- [x] tts compute build/reconcile of the formulas against the specs — the tie chain (legs 1a-5) is gated by leg 6
+- [ ] f1065 page-1 + Schedule K render recalibration (2025 coords) — S-4 follow-on leg  `[APP]`
 
 **S-5 · [RS]✅→[APP]⬜ ∥ · Boundary diagnostics (WO-04) — RS authoring DONE 2026-07-05.** New consolidated
 `ENTITY_BOUNDARY` form (seeded to prod, 96 TaxForms, export 200): M-3 threshold, K-2/K-3 DFE 4-criteria gate
@@ -134,8 +138,8 @@ turn-on waits on the Shelf (DOR approvals).
       also fixed the latent AL40 `refresh_from_federal` GA-pull fall-through) · render (`c704f21`, flat
       NCDOR handwritten template `fnc_d400` w/ instructions-cover stripped, two "00" value columns +
       identity header) · diagnostics (`8358e74`, 8 D_NCD400_*). RS spec is `draft` — promote→active (RS follow-up).
-- [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **⚠ gated behind S-4 1065 core
-      (GA partnership numbers depend on the federal 1065 flow — render OK, trust numbers only after S-4)**
+- [x] S-10 GA-700 + PTET spec — 2026-07-05   → [ ] app build **✅ UNBLOCKED 2026-07-05 (S-4 1065 core
+      COMPLETE — the federal 1065 flow the GA partnership numbers depend on is now built + flow-gated)**
 
 **S-11 · [RS]✅→[APP]⬜ · 1041 module (WO-09), greenfield RS-first. RS authoring COMPLETE 2026-07-05
 (front door + Gate-1 scope walk = RS DECISIONS D-10; f1041_source_brief.md). APP build remains.**

@@ -1,5 +1,26 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 6) — 1065 flow-assertion gate → ✅ DONE. S-4 CORE COMPLETE.**
+> The FIRST flow-assertion gate for the partnership entity (previously `1065_se` was diagnostic-gated only).
+> Fetched the Rule Studio export (`/api/flow-assertions/export/?entity_type=1065`, 28 assertions) and split it
+> (mirroring the 1040 `_pending` convention — nothing silently dropped): **`server/specs/flow_assertions_1065.json`
+> — 22 ACTIVE** (every assertion whose 1065 compute is built in legs 1a-5) + **`flow_assertions_1065_pending.json`
+> — 6 STAGED** (`FA-ENT-BND-01/02/03` = ENTITY_BOUNDARY/S-5 not built; `GATE-8990-163J` = Form 8990 not built;
+> `GATE-704C-706D-DEFER` = Partner item-M/N §704(c)/§706(d) fields not built; `RECON-M2-CAPITAL` = item-L
+> tax-basis capital roll-forward RED-deferred). All runners are in `tests/test_flow_assertions.py`
+> (`_run_1065_assertion` / `_RUNNERS_1065`, PURE / no-DB): **RECON-P1-K1/ANALYSIS/L-BALANCE** re-derived through
+> the real `FORMULAS_1065`; **RECON-K1-K/9C + INV-GP-DIRECT/CHAR** through the real `k1_allocator` (MagicMock
+> partners, `PartnerAllocation` patched); **RECON-14A + INV-SE-BASE** through `compute_1065_se`
+> (`entity_14a_bottom_up`, `worksheet_base`); **RECON-M1-ANALYSIS/L21-M2 + GATE-K2K3/SMALL-PTNR** via diagnostic
+> source-inspection (the tie/suppression is diagnostic-enforced); **TI001-4** (MACRS), **FA-4562-179-02/03**,
+> **RC004** reuse the existing shared runners. A new `gating_check` assertion type was registered; `RECON-*` /
+> `INV-*` are routed into the reconciliation / table_invariant runners by id prefix. Gate result: **24 1065
+> tests green** (22 assertions + loaded/pending-staged guards); **full flow-assertion suite 423 passed**;
+> `manage.py check` clean; no compute/model/migration change. ⚠ **The 1065 FORM still does NOT fully tick** —
+> `f1065` page-1 + Schedule K **render recalibration** (2025 coords) is a deferred follow-on leg; S-4 CORE
+> (compute + diagnostics + K-1 issue/import + flow gate) is what completed here. **▶ Next: Ken directs** —
+> S-10 GA-700 is now UNBLOCKED (depended on the federal 1065 flow), plus S-11 1041 / S-5 / S-6 / S-13/S-14.
+
 > **2026-07-05 (S-4 1065 core, leg 5) — issuer-side K-1 persistence + 1065 → 1040 import → ✅ DONE.**
 > The 1120-S `ShareholderK1Computed` / `k1_import.py` mirror for partnerships. **NEW model
 > `PartnerK1Computed`** (migrations **0168** create + **0169** RLS default-deny — **applied to the shared prod

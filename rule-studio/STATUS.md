@@ -102,11 +102,11 @@ B1–B7 pinned as pending-skips.
 and takes its next authoring order FROM the BUILD_ORDER SPINE — no independent backlog here. At boot, pull
 tts-tax-status and reconcile SPINE node status against THIS file + on-disk loaders (never the draft
 checkboxes). **As of 2026-07-05 ALL prior RS authoring rocks are DONE** (S-1 1040-ATS · S-4 1065-core ·
-S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227). **The next RS authoring order is
-`[WO-11] S-13 · 1120 C-corp module`** — ADDED 2026-07-05 (DECISIONS D-12), status INTAKE. Ken will prompt
-"build 1120"; run the WORK_ORDERS front door from step 1 (gap-check → research-verify → source brief →
-Gate-1 scope walk → author). Required set: 1120 spine (§11 21%), Sch C (DRD), Sch J, Sch K/L, M-1/M-2,
-1125-A/1125-E, GA Form 600.
+S-5 boundary · S-6 PAL/basis · S-7–S-10 states · S-11 1041 · WO-10 5227 · WO-11 1120 · WO-12/13 state
+C-corp+PTE · WO-14 8990 · WO-15 Schedule H). **The active queue is the SPINE S-16 federal-forms gap-fill**
+(author each via the full front door, TOP unchecked item at each boot): 8990 ✅ → Schedule H ✅ → **▶ Form 4684
+(Casualties & Thefts) = NEXT** → Form 4952 → Form 8379 → Form 8814 → Form 8839 → Form 709 → Form 8832 →
+Form 3115. After the queue drains: net-new RS scope needs the TaxWise forms-usage report or a law change.
 
 **► IMMEDIATE NEXT — open (Ken's pick).** The August RS state INDIVIDUAL track is DONE (**SC1040 ✅ · AL
 Form 40 ✅ · NC D-400 ✅ · GA-700 + PTET ✅**), the **1120-S delta audit is COMPLETE ✅**, and the
