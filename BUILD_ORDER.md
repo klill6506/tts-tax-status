@@ -88,7 +88,7 @@ D_M2_3 warning, D_M1_EXEMPT/D_M2_EXEMPT info) wiring K_ANALYSIS=M1_9=M2_3 (RECON
 sum compute already existed → validation-only; 3 pure + 4 DB (`01a9a95`); D_M2_1 deferred to the K-1 leg.
 **✅ leg 4 — K-1 alloc reconcile (2026-07-05, eighteenth session):** promoted `k_to_box`→`K_TO_BOX` + wired
 K13c/K13e; new `rules_1065_k1.py` (D_K1_RECON error, D_K1_9C/D_K1_CAPPCT info, D_K1_SPECIAL_ALLOC/D_K1_ITEML
-warning); 3 pure + 7 DB; D_K1_704C/D_K1_706D deferred (Partner item-M/mid-year fields + migration). ▶ NEXT
+warning); 3 pure + 7 DB (`b911498`); D_K1_704C/D_K1_706D deferred (Partner item-M/mid-year fields + migration). ▶ NEXT
 leg 5: issuer-side `PartnerK1Computed` + 1065→1040 K-1 import (mirror 1120-S ShareholderK1Computed/k1_import.py);
 then leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),

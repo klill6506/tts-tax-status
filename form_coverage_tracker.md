@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-05 (S-4 1065 core, leg 4) — Schedule K-1 allocation reconcile (RECON-K1-K) → ✅ DONE.**
+> Built spec-first from RS `SCHEDULE_K1_1065`. **Allocator wiring (`k1_allocator.py`):** promoted the local
+> `k_to_box` to a module-level **`K_TO_BOX`** (single source of truth shared with the reconcile diagnostic)
+> and wired the leg-1b **`K13c`→box 13c / `K13e`→box 13e** deductions into it + `K_LINES_PRO_RATA`. **New
+> `rules_1065_k1.py` (registered):** **`D_K1_RECON`** (error — Σ per-partner K-1 box ≠ entity Schedule K
+> line; profit/loss %s must total 100% per category; whole-dollar rounding tolerance = #partners),
+> **`D_K1_9C`** (info — entity K9c allocates to box 9c; confirms the pass-through — closes the open box-9c
+> verification), **`D_K1_SPECIAL_ALLOC`** (warning — a PartnerAllocation override is applied but §704(b) SEE
+> is not tested), **`D_K1_ITEML`** (warning — item L tax-basis capital doesn't roll forward: ending ≠
+> beginning + contributed + current-year − withdrawals), **`D_K1_CAPPCT`** (info — an item J capital % is
+> reported; nothing allocates by capital_pct — expected). Tests: 3 pure (K_TO_BOX has 13c/13e; 13c/13e
+> allocate; 60/40 sums to entity) + 7 DB (recon holds/breaks · 9c · special alloc · item-L ties/breaks ·
+> cappct). Flow gate 398, existing allocator suite green. **DEFERRED** (need new Partner boolean fields +
+> migration; RED-defer structure, see DEFERRAL_AUDIT): `D_K1_704C` (item M §704(c)) + `D_K1_706D` (§706(d)
+> mid-year interest change).
+
 > **2026-07-05 (S-4 1065 core, leg 3) — Schedule M-1 / M-2 reconciliation tie-outs → ✅ DONE
 > (diagnostics; the M-1/M-2 sum compute already existed).** Built spec-first from RS `1065_M1` + `1065_M2`.
 > This wires the RECON-ANALYSIS chain that leg-1b's `K_ANALYSIS` unblocked (R-M1-9's flagged "tts computes
