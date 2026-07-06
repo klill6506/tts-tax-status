@@ -17,8 +17,12 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 DONE; next = leg 4 (K-1
-alloc reconcile).** ✅ **Legs 1b + 2 + 3 (2026-07-05, eighteenth session).** **Leg 3 — M-1/M-2 tie-outs:**
+## ▶ NOW WORKING ON — **S-4 1065 core (IN PROGRESS). Legs 1a + 1b + 2 + 3 + 4 DONE; next = leg 5
+(issuer-side K-1 → 1040 import).** ✅ **Leg 4 — K-1 alloc reconcile (RECON-K1-K):** promoted the allocator's
+`k_to_box` → module-level `K_TO_BOX` (reconcile's single source of truth) + wired K13c/K13e into it; new
+`rules_1065_k1.py` (D_K1_RECON error, D_K1_9C info, D_K1_SPECIAL_ALLOC warning, D_K1_ITEML warning, D_K1_CAPPCT
+info); 3 pure + 7 DB; D_K1_704C/D_K1_706D deferred (need Partner item-M/mid-year fields + migration). ✅ **Legs
+1b + 2 + 3 (2026-07-05, eighteenth session).** **Leg 3 — M-1/M-2 tie-outs:**
 new `rules_1065_m.py` (D_M1_ANALYSIS error / D_M2_3 warning / D_M1_EXEMPT + D_M2_EXEMPT info) wiring the
 RECON-ANALYSIS chain K_ANALYSIS = M1_9 = M2_3 that leg-1b's Analysis line unblocked; the M-1/M-2 sum compute
 already existed → validation-only; 3 pure + 4 DB; D_M2_1 (item-L roll-forward) deferred to the K-1 leg. **Leg 1b — Schedule K 2025 renumber +
@@ -81,10 +85,12 @@ error, D_L_21_M2_TIE + D_L_M3 warning, D_L_EXEMPT info; B6 exemption suppresses 
 total compute already existed → validation-only; 7 DB tests (`f55a0c8`). Build-gap #2 closed.
 **✅ leg 3 — M-1/M-2 tie-outs (2026-07-05, eighteenth session):** new `rules_1065_m.py` (D_M1_ANALYSIS error,
 D_M2_3 warning, D_M1_EXEMPT/D_M2_EXEMPT info) wiring K_ANALYSIS=M1_9=M2_3 (RECON-ANALYSIS, unblocked by leg 1b);
-sum compute already existed → validation-only; 3 pure + 4 DB (`01a9a95`); D_M2_1 deferred to the K-1 leg. ▶ NEXT leg 4:
-K-1 alloc reconcile (RECON-K1-K; wire K13c/K13e + 2025 K-1 box codes into k1_allocator); then leg 5 issuer-side
-`PartnerK1Computed`+1065→1040 import, leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration
-DEFERRED (coords stale for 2025).
+sum compute already existed → validation-only; 3 pure + 4 DB (`01a9a95`); D_M2_1 deferred to the K-1 leg.
+**✅ leg 4 — K-1 alloc reconcile (2026-07-05, eighteenth session):** promoted `k_to_box`→`K_TO_BOX` + wired
+K13c/K13e; new `rules_1065_k1.py` (D_K1_RECON error, D_K1_9C/D_K1_CAPPCT info, D_K1_SPECIAL_ALLOC/D_K1_ITEML
+warning); 3 pure + 7 DB; D_K1_704C/D_K1_706D deferred (Partner item-M/mid-year fields + migration). ▶ NEXT
+leg 5: issuer-side `PartnerK1Computed` + 1065→1040 K-1 import (mirror 1120-S ShareholderK1Computed/k1_import.py);
+then leg 6 1065 flow-assertion gate. ⚠ f1065 page-1+SchK render recalibration DEFERRED (coords stale for 2025).
 All 6 core specs authored+seeded+exported (200): Schedule K spine (`1065_PAGE1`+`SCH_K_1065`),
 K-1+alloc, M-1/M-2, L/B; 8825/4562/3800 confirmed cover 1065; 7-form batch in `approved_specs.py`.
 Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond SE" mark). Unblocks
@@ -183,9 +189,11 @@ A new RS authoring queue of federal forms a tax practice needs that weren't in t
 THIS EXACT ORDER** (each = its own front-door order: gap-check → research-verify verbatim → source brief → Gate-1
 scope walk → author `READY_TO_SEED=False` → SQLite-validate → Ken review → seed → export). At each boot, take the
 TOP unchecked item as the current RS rock.
-- [ ] **WO-14 · Form 8990** (§163(j) business-interest limitation) — ▶ IN PROGRESS 2026-07-05 (finishing the 1120
-  module's biggest deferred leg; OBBBA EBITDA-basis ATI for TY2025; entity_types 1120/1065/1120S/1040). Ken doing this NOW pre-context-clear.
-- [ ] **Schedule H** — Household Employment Taxes (1040)
+- [x] **WO-14 · Form 8990** (§163(j) business-interest limitation) — ✅ DONE 2026-07-05 `376f644` (RS). Finished the
+  1120 module's deferred leg: Part I ATI on the OBBBA EBITDA basis (L11 dep/amort/depletion add-back) → 30% limit →
+  allowable + indefinite carryforward; Part II/III EBIE/ETI; $31M §448(c) exemption. entity_types 1120/1065/1120S/1040;
+  prod 110→111; `lookup/8990/export/` = 200; validated 19/0. tts app build = [APP] lane.
+- [ ] **▶ Schedule H** — Household Employment Taxes (1040) — NEXT (top of the queue; fresh session starts here)
 - [ ] **Form 4684** — Casualties & Thefts (federally-declared disasters)
 - [ ] **Form 4952** — Investment Interest Expense Deduction
 - [ ] **Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)*
