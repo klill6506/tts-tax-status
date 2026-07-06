@@ -174,10 +174,27 @@ NC + AL). 4 forms seeded/exported (`lookup/{NC_D403,NC_CD401S,AL_FORM_65,AL_FORM
 - ⚠ [UNVERIFIED] exact NC/AL line numbers (2025 instruction PDFs didn't text-extract) — re-pull before the app build.
 - [ ] tts app build: NC/AL pass-through compute + PTET (owner deduction/credit downstream to D-400/AL-40)  `[APP]`
 
-**▶ RS AUTHORING SPINE COMPLETE (2026-07-05).** All planned RS rocks DONE (S-1..S-11 + WO-10 5227 + S-13 1120 +
-S-14 state C-corp + S-15 NC/AL pass-through). Net-new RS scope now enters via the TaxWise **forms-usage report**
-(Shelf: any form on 20+ returns not yet built → new Spine item) or a law change. The remaining board is the
-[APP] lane (tts builds, on hold) + Shelf items blocked on Ken's external actions.
+**▶ RS AUTHORING — original spine COMPLETE (2026-07-05).** All planned rocks DONE (S-1..S-11 + WO-10 5227 +
+S-13 1120 + S-14 state C-corp + S-15 NC/AL pass-through). The [APP] lane (tts builds, on hold) + Shelf items
+(Ken's external actions) are the rest of that board.
+
+**S-16 · [RS] · Federal-forms gap-fill queue (WO-14+) — Ken's 2026-07-05 pick from the federal not-built list.**
+A new RS authoring queue of federal forms a tax practice needs that weren't in the 92-form prod set. **AUTHOR IN
+THIS EXACT ORDER** (each = its own front-door order: gap-check → research-verify verbatim → source brief → Gate-1
+scope walk → author `READY_TO_SEED=False` → SQLite-validate → Ken review → seed → export). At each boot, take the
+TOP unchecked item as the current RS rock.
+- [ ] **WO-14 · Form 8990** (§163(j) business-interest limitation) — ▶ IN PROGRESS 2026-07-05 (finishing the 1120
+  module's biggest deferred leg; OBBBA EBITDA-basis ATI for TY2025; entity_types 1120/1065/1120S/1040). Ken doing this NOW pre-context-clear.
+- [ ] **Schedule H** — Household Employment Taxes (1040)
+- [ ] **Form 4684** — Casualties & Thefts (federally-declared disasters)
+- [ ] **Form 4952** — Investment Interest Expense Deduction
+- [ ] **Form 8379** — Injured Spouse Allocation *(Ken wrote "8679" — no such form; = 8379, confirm)*
+- [ ] **Form 8814** — Parents' Election to Report Child's Interest & Dividends
+- [ ] **Form 8839** — Qualified Adoption Expenses
+- [ ] **Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)*
+- [ ] **Form 8832** — Entity Classification Election (check-the-box)
+- [ ] **Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
+- After this queue drains: net-new RS scope via the TaxWise forms-usage report or a law change.
 
 ---
 
