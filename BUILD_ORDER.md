@@ -25,10 +25,12 @@ UNMODIFIED and `field_maps/ga700_2025.py` points straight at them (no AcroForm-C
 The "viewer-only" blocker was a false alarm — the DOR "Print Blank Forms" static PDF is a normal AcroForm. Ratio→
 6-dec text (+ copy to Sch2 L4); Total Tax→Sch3 L1; PTET→CBX_ELECT_TO_PAY; S8_6→form line 7. 3 DB tests; visually
 verified all 4 schedule pages; flow gate 422. ✅ **legs 1/2/4 (twentieth session):** compute `FORMULAS_GA700`
-(`1d7f102`) · input `seed_ga700` + federal pull (`6c26d72`) · diagnostics `rules_ga700.py` (`f70a9d4`). ⚠⚠ **GA
-§179 CROSS-SPEC CONFLICT still open for Ken:** GA700 $1.05M/$2.62M vs GA600 $1.25M/$3.13M (§179 separately-stated
-K-1, not on the entity face — didn't block render). (Prior: ✅ **S-4 1065 core COMPLETE all legs 1a–6**; ✅ **S-9
-NC D-400**; SC1040/AL40/NC D-400 done.)
+(`1d7f102`) · input `seed_ga700` + federal pull (`6c26d72`) · diagnostics `rules_ga700.py` (`f70a9d4`). ✅ **GA
+§179 CONFLICT RESOLVED (`b975300` tts / `09d55d9` RS):** Ken-ruled GA CONFORMS to OBBBA §179 = **$2.5M/$4M** for
+TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 4562's $1.25M + the stale 2021 $1.05M);
+swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
+(their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
+1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
 ## ▶ NEXT — **Ken directs** among: **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) ·
 **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`) · S-4 follow-on:
 f1065 render recalibration leg · GA-700 small follow-ups (display-subtotal compute leg; Sch-8 spec line-numbering).

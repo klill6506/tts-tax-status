@@ -50,11 +50,16 @@ PAL/basis (RS DONE) · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + s
 **f1065 render recalibration** follow-on. Small GA-700 follow-ups (non-blocking, see RS/compute follow-ups
 below): the Schedule-8 spec line-numbering and the display-only subtotals.
 
-**⚠⚠ FLAGGED FOR KEN — GA §179 cross-spec conflict:** the GA700 spec pins **$1,050,000 / $2,620,000** (TY2025,
-matches CLAUDE.md) but the **GA600 C-corp spec used $1.25M/$3.13M**. Built GA-700 to its own spec per the
-RS-integration rule; §179 is separately-stated (K-1), so this did NOT block the entity/PTET build. **Ken
-(depreciation CPA) to rule which GA §179 figure is authoritative for TY2025, and RS to reconcile the two specs.**
-Also flagged: GA-600S compute still uses the 0.0539 (TY2024) PTET rate — possibly stale for its own TY2025.
+**✅ RESOLVED 2026-07-06 — GA §179 = $2,500,000 / $4,000,000 (Ken-ruled: HB 1199 retroactive).** Georgia
+CONFORMS to federal/OBBBA §179 for TY2025 via HB 1199 (IRC conformity advanced to Jan 1, 2026, retroactive to
+tax years beginning on/after Jan 1, 2025), superseding both HB 290 (Jan 1, 2025) and the Aug-2025 GA Form 4562
+(which still printed the pre-OBBBA $1.25M). Sources: BDO + Tax Foundation quoting HB 1199. Both stale figures
+($1.05M GA700/CLAUDE.md = 2021; $1.25M GA600 = pre-HB-1199 Form 4562) corrected. Because GA limit AND phaseout
+now equal federal, the GA §179 delta is structurally $0 — the only remaining GA depreciation diff is §168(k)
+bonus. Applied: `depreciation_engine.GA_179_*`, `compute.GA700_SEC179_*`, `rules_ga700`, RS `load_ga700`/
+`load_ga600`, CLAUDE.md, DECISIONS.md (`b975300` tts / `09d55d9` RS). SC ($1.25M/$3.13M) + NC ($25k/$200k) are
+their OWN correct rules — untouched. ⚠ Still flagged separately: GA-600S compute's 0.0539 (TY2024) PTET rate —
+possibly stale for its own TY2025.
 
 **v1 DEFERRED (Partner model has no residency/GA-source field — needs a migration):** partner-level GA-source
 allocation (Sch 4), nonresident 4% withholding (Form G-2-A, page-1 T), composite return (IT-CR), PTET owner-side
@@ -66,6 +71,9 @@ S-4 f1065 render recalibration follow-on.)*
 ## This session's commits (pushed to origin/main)
 - `0d59255` — GA-700 leg 3: `render_ga700_overlay` (AcroForm overlay) + `ga700_2025.py` field map + DOR
   template + 3 DB tests → **S-10 GA-700 COMPLETE**.
+- `b975300` — **GA §179 conformity fix ($2.5M/$4M, HB 1199 retroactive)**: depreciation_engine + compute +
+  rules_ga700 + seed + tests + DECISIONS.md. RS twin: `09d55d9` (load_ga700 + load_ga600). CLAUDE.md (parent)
+  corrected separately.
 - (Prior this session — `1d7f102` leg 1 compute · `6c26d72` leg 2 input · `f70a9d4` leg 4 diagnostics.)
 
 ## ▶ RS / compute follow-ups (rides a dedicated session — all non-blocking)
@@ -78,8 +86,14 @@ S-4 f1065 render recalibration follow-on.)*
   `S6_5` (Sch6 total). A small `FORMULAS_GA700` follow-up (spec-check + flow gate) closes these for full face
   fidelity. Also deferred in render: Schedule 4 partner detail (needs Partner residency/GA-source migration),
   continuation-page name/FEIN (duplicate AcroForm field names across pages).
-- **GA-700 spec is `draft`** (promote→active); **⚠⚠ reconcile the GA §179 conflict** (GA700 $1.05M/$2.62M
-  vs GA600 $1.25M/$3.13M — Ken to rule which is authoritative for TY2025); check GA-600S's 0.0539 PTET rate for TY2025.
+- **NEW — RS reseed + export for the GA §179 fix.** `load_ga700.py` + `load_ga600.py` are amended to $2.5M/$4M
+  (`09d55d9`) but NOT yet reseeded/exported to the deployed RS DB — so the cached tts mirrors still show the old
+  figure: `server/specs/ga700_spec.json` (~22 refs), `ga600s_spec.json`, `form_4562_spec.json`. These mirrors are
+  NON-operative (compute uses the Python constants, already fixed), but reseed+export from an RS session to refresh
+  them. ⚠ **GA-600S (S-corp) has NO RS loader** (only `load_ga600.py` = C-corp) — its `ga600s_spec.json` mirror is
+  an orphan that won't auto-regenerate; its running §179 comes from `depreciation_engine.GA_179_*` (already fixed).
+- **GA §179 conflict RESOLVED** (see the RESUME section) — GA conforms $2.5M/$4M via HB 1199. **GA-700 spec is
+  `draft`** (promote→active); check GA-600S's 0.0539 PTET rate for TY2025.
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;
   GA-500 `R-GA500-MIL` (RS spec correct; tts fix handed off `task_f550dfd2`). `8867_spec.json` stale notes;
   RS Schedule D `D_8949_006`; 8995 sibling loader D_8995_001 note.
