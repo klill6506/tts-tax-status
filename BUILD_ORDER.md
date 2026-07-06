@@ -239,8 +239,15 @@ TOP unchecked item as the current RS rock.
   remainder → Sch 3 6c with 5-yr carryforward; special-needs full credit + §70403 tribal parity. $5,000-cap indexing
   cited to statute (§36C, $5,120 for 2026), not i8839. entity_types 1040; prod 116→117; `lookup/8839/export/` = 200;
   validated 30/0. DECISIONS D-22. tts app build = [APP] lane.
-- [ ] **▶ Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)* — NEXT (top of the queue)
-- [ ] **Form 8832** — Entity Classification Election (check-the-box)
+- [x] **WO-21 · Form 709** — United States Gift (and GST) Tax Return *(the biggest module)* — ✅ DONE 2026-07-06 (RS).
+  Unified cumulative gift tax: §2001(c) rate schedule (top 40%); Part 2 tentative(current+prior) − tentative(prior) −
+  applicable credit **$5,541,800** (= tentative tax on the **$13,990,000** BEA; the 2024 fig was $5,389,800) → gift tax
+  due. Schedule A: annual exclusion **$19,000**/donee ($38k split §2513), unlimited marital (citizen) / **$190,000**
+  noncitizen (§2523(i)), charitable. GST (Sch D) = 40% × inclusion ratio, exemption $13.99M; DSUE (Sch C) → Part 2 L7.
+  **★ OBBBA $15M BEA is 2026+ (year-keyed, NOT 2025).** entity_types 709; prod 117→118; `lookup/709/export/` = 200;
+  validated 32/0. DECISIONS D-23. ⚠ **[UNVERIFIED] Part 1/Sch A recon/Sch D sub-line #s** (raw PDF face unfetchable in
+  research) — re-verify before the tts build; Part 2 lines 1-8 verified. tts app build = [APP] lane.
+- [ ] **▶ Form 8832** — Entity Classification Election (check-the-box) — NEXT (top of the queue)
 - [ ] **Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
 - After this queue drains: net-new RS scope via the TaxWise forms-usage report or a law change.
 
