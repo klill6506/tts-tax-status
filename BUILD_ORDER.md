@@ -17,12 +17,13 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken directs.** ✅ **S-4 f1065 render recalibration COMPLETE — the 1065 form now
-fully ticks; S-4 1065 core done end-to-end** (2026-07-06, twenty-second session, `2599621`). Converted `f1065`
-from the never-calibrated legacy coordinate overlay → the AcroForm-fill backend (whole 6-page form, 2025
-numbering): `field_maps/f1065_2025.py` (191 maps) + registered in `ACROFORM_FORM_IDS`; 3 DB tests; flow gate
-422 unchanged; visually verified all pages. M-1 line-4/line-7 total boxes also DONE same session (`c0dbff8`,
-render-layer synth) → f1065 render has NO known display gaps. Prior
+## ▶ NOW WORKING ON — **idle — Ken directs.** Two units 2026-07-06 (twenty-second session): ✅ **S-5
+entity-boundary diagnostics leg 1** (`50f2874`) — 6 `D_EB_*` REDs for 1065/1120-S + `EntityBoundaryAssertion`
+model (migs 0170/0171 prod), superseded `D_L_M3` deactivated; **leg 2 (React input UI) remains**. ✅ **S-4
+f1065 render recalibration COMPLETE — the 1065 form fully ticks; S-4 done end-to-end** (`2599621`): `f1065`
+coordinate overlay → AcroForm-fill backend (whole 6-page form, `field_maps/f1065_2025.py`, in
+`ACROFORM_FORM_IDS`), M-1 line-4/7 totals also done (`c0dbff8`) → no known display gaps; 3 DB tests; flow
+gate 422; visually verified. Prior
 (twenty-first session): ✅ **S-10 GA-700 (Georgia partnership + PTET) COMPLETE — all 4
 legs**. ✅ **leg 3 render (`0d59255`):** `render_ga700_overlay` fills the DOR
 "web version" GA-700 fillable PDF via the AcroForm text-overlay pipeline (`_acroform_fill`) — the DOR PDF ships
@@ -37,7 +38,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **Ken directs** among: **S-11 1041 module** (RS DONE) · **S-5/S-6** boundary + PAL/basis (RS DONE) ·
+## ▶ NEXT — **Ken directs.** Teed up: **S-5 leg 2 (React input UI)** for the EntityBoundaryAssertion flags · among: **S-11 1041 module** (RS DONE) · **S-6** PAL/basis (RS DONE) ·
 **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp
 is NOT season-one scope per SEASON_PLAN) · small follow-ups (1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
@@ -118,11 +119,16 @@ Reconciled to live RS STATUS 2026-07-05 (corrected the stale "untouched beyond S
   the whole form (`field_maps/f1065_2025.py`, 191 maps, registered in `ACROFORM_FORM_IDS`). 3 DB tests;
   flow gate 422 unchanged. M-1 line-4/line-7 total boxes DONE same session (`c0dbff8`) → no known display gaps.
 
-**S-5 · [RS]✅→[APP]⬜ ∥ · Boundary diagnostics (WO-04) — RS authoring DONE 2026-07-05.** New consolidated
-`ENTITY_BOUNDARY` form (seeded to prod, 96 TaxForms, export 200): M-3 threshold, K-2/K-3 DFE 4-criteria gate
-(computed, RED on fail), §704(c), §754/§743(d)/§734(d), multistate apportionment (P.L. 86-272). APP build remains.
-- [x] M-3 · [x] K-2/K-3 DFE gate · [x] §704(c) · [x] §754 · [x] apportionment — 2026-07-05
-- [ ] tts app build: wire the ENTITY_BOUNDARY RED diagnostics into the 1065/1120-S compute path  `[APP]`
+**S-5 · [RS]✅→[APP]✅ leg 1 (leg 2 UI remains) ∥ · Boundary diagnostics (WO-04) — RS DONE 2026-07-05; APP
+leg 1 DONE 2026-07-06 `50f2874`.** New consolidated `ENTITY_BOUNDARY` form: M-3 threshold, K-2/K-3 DFE gate,
+§704(c), §754/§743(d)/§734(d), multistate apportionment (P.L. 86-272).
+- [x] M-3 · [x] K-2/K-3 DFE gate · [x] §704(c) · [x] §754 · [x] apportionment — 2026-07-05 (RS)
+- [x] tts app build leg 1: 6 `D_EB_*` diagnostics wired into 1065/1120-S (`rules_entity_boundary.py`) +
+  `EntityBoundaryAssertion` model (migs 0170/0171 prod) + `seed_rules` reseed (superseded `D_L_M3` deactivated)
+  — 2026-07-06 `50f2874`. M-3 + K-2/K-3 foreign gate AUTO-DERIVE from data; rest read preparer-assertion flags
+  (default non-firing). 13 tests. `[APP]`
+- [ ] **leg 2: React input UI** for the `EntityBoundaryAssertion` flags — until then §704(c)/§754/apportionment
+  fire only via programmatic/admin flags (auto-derived arms fire from data today). `[APP]`
 
 **S-6 · [RS]✅→[APP]⬜ · PAL/basis deepening (WO-03) — RS authoring DONE 2026-07-05.** Amendments to
 FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. APP build remains.

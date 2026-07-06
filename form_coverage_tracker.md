@@ -1,5 +1,12 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-5 leg 1) — entity-return boundary diagnostics → ✅ DONE, live on prod (`50f2874`).** Not a
+> form face — the season-one "no silent gap" safety net (`apps/diagnostics/rules_entity_boundary.py`, 6
+> `D_EB_*` REDs for 1065 + 1120-S) + `EntityBoundaryAssertion` model (migs 0170/0171). M-3 + K-2/K-3 foreign
+> gate auto-derive from data; §704(c)/§754/apportionment read preparer-assertion flags (default non-firing).
+> Superseded `D_L_M3` deactivated. 13 tests; flow gate 422; `check` clean. ⚠⚠ **leg 2 = React input UI
+> deferred** (DEFERRAL_AUDIT). Detail: `.claude` memory `s5-entity-boundary-diagnostics.md`.
+
 > **2026-07-06 (S-4 follow-on, same session) — Schedule M-1 line-4/line-7 total boxes → ✅ DONE (`c0dbff8`).**
 > Render-layer synthesis (`M1_4`=4a+4b+4c, `M1_7`=7a+7b → `f6_132`/`f6_139`) closes the one display gap noted
 > in the render leg below; the printed 1065 M-1 is now arithmetically self-consistent. **f1065 render has NO

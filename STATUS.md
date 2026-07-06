@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-06, twenty-second session: **S-4 f1065 render recalibration DONE → the Form 1065 now
-FULLY TICKS; S-4 1065 core COMPLETE end-to-end.** Converted `f1065` from the never-calibrated legacy
-coordinate overlay to the AcroForm-fill backend (whole form, 2025 numbering). Prior session (twenty-first):
-S-10 GA-700 COMPLETE (all 4 legs). Build state: **idle — Ken directs the next unit.***
+*Last updated: 2026-07-06, twenty-second session. Two units this session: (1) **S-4 f1065 render recalibration
+DONE → Form 1065 FULLY TICKS; S-4 complete end-to-end** (coordinate overlay → AcroForm backend, `2599621`/
+`c0dbff8`); (2) **S-5 entity-boundary diagnostics leg 1 DONE, live on prod** (`50f2874`) — 6 `D_EB_*` REDs for
+1065/1120-S + `EntityBoundaryAssertion` model (migs 0170/0171 applied to prod). Build state: **idle — Ken
+directs;** the teed-up next is S-5 leg 2 (React input UI) or another spine item.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -16,8 +17,11 @@ S-10 GA-700 COMPLETE (all 4 legs). Build state: **idle — Ken directs the next 
 - **Flow-assertion gate (all entities)** — `cd server && pytest tests/test_flow_assertions.py -q` → **422
   passed** (incl. the 1065 gate: 22 active RS assertions + 2 guards). UNCHANGED by the render leg (no
   compute change). Fast (~1.5s, pure).
-- **1065 render leg (NEW)** — `pytest tests/test_1065_render_leg.py --reuse-db -q` → **3 passed** (valid
-  6-page PDF + page-1/Sch-K values in the text layer + Sch-L contra-net/parens + M-1/M-2 tie). ~60s (pooler).
+- **1065 render leg** — `pytest tests/test_1065_render_leg.py --reuse-db -q` → **3 passed** (valid 6-page PDF +
+  page-1/Sch-K values in text layer + Sch-L contra-net/parens + M-1/M-2 tie). ~60s (pooler).
+- **S-5 entity boundary (NEW)** — `pytest tests/test_entity_boundary_leg.py --create-db -q` → **13 passed**
+  (fire/no-fire per diagnostic across 1065+1120-S + clean-return no-false-REDs). Migs 0170/0171 applied to
+  prod; `seed_rules` reseeded (6 `D_EB_*` active, `D_L_M3` deactivated). ~5min with `--create-db`.
 - `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db`. New DB tests must seed the
   forms they use and filter `FormLine` by `section__form=` NOT `form_definition=`. Must CREATE the `TaxYear`
   (not `get` it) in the fixture.
@@ -41,15 +45,29 @@ Full detail in `.claude` memory `f1065-render-acroform-leg.md` + `1065-core-s4-k
   known display gaps.** (Compute-vs-spec nuance noted below: M1_5/M1_8 include 4c/7b, the RS spec lists only
   4a/4b + 6a/7a — a separate compute leg.)
 
-**▶ NEXT — Ken directs** among unblocked SPINE items (all RS specs DONE): **S-11 1041 module** · **S-5/S-6**
-boundary + PAL/basis · **S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (note: 1120 C-corp
-is NOT season-one scope per SEASON_PLAN — build summer 2027).
+**✅ S-5 entity-boundary diagnostics — leg 1 (this session, `50f2874`)** — the season-one "no silent gap" net
+for entity returns (RS `ENTITY_BOUNDARY`; cached `server/specs/entity_boundary_spec.json`). Live on prod.
+- `apps/diagnostics/rules_entity_boundary.py` — 6 diagnostics for 1065 + 1120-S: `D_EB_M3` (err),
+  `D_EB_K2K3` (err), `D_EB_DFE_OK` (info), `D_EB_704C` (err), `D_EB_754` (err), `D_EB_APPORT` (err).
+- **M-3 + the K-2/K-3 foreign gate AUTO-DERIVE** from return data (Sch L `L15d`, gross receipts `1a`,
+  `K21`/`K16`); the rest read `EntityBoundaryAssertion` (OneToOne→TaxReturn, migs **0170/0171 applied to
+  prod**) — 7 flags, ALL defaulting to the supported/non-firing state (no false RED without an explicit flag).
+- Overlap resolved: the superseded 1065-only `D_L_M3` warning is **deactivated** (reseeded via `seed_rules`).
+- `test_entity_boundary_leg.py` (13 DB). Simplifications documented (M-3 receipts=`1a` proxy; DFE criteria
+  2-4 → `k2k3_dfe_confirmed_met` flag) — see the memory + DEFERRAL_AUDIT.
+
+**▶ NEXT — Ken directs.** Teed up: **S-5 leg 2 — the React input UI** for the `EntityBoundaryAssertion` flags
+(until it ships, §704(c)/§754/apportionment fire only via programmatic/admin flags; the auto-derived arms
+fire from data today). Other unblocked spine items: **S-11 1041 module** · **S-6** PAL/basis · **S-3 brokerage
+front end** (∥) · **S-13/S-14 1120 + state C-corp** (⚠ 1120 C-corp NOT season-one scope per SEASON_PLAN).
 
 ## This session's commits (pushed to origin/main)
-- `2599621` — S-4 f1065 render recalibration → AcroForm backend: `field_maps/f1065_2025.py` (191 maps) +
-  `ACROFORM_FORM_IDS` registration + `test_1065_render_leg.py` (3 DB) + `f1065.fields.json` dump + coordinate
-  map SUPERSEDED note.
+- `2599621` — S-4 f1065 render recalibration → AcroForm backend (`field_maps/f1065_2025.py`, `ACROFORM_FORM_IDS`,
+  `test_1065_render_leg.py`, `f1065.fields.json`, coordinate map SUPERSEDED).
 - `c0dbff8` — Schedule M-1 line-4/line-7 total boxes (render-layer synthesis) → f1065 render has no known gaps.
+- `b273fe7` — docs (M-1 gap resolved).
+- `50f2874` — **S-5 entity-boundary diagnostics leg 1**: `rules_entity_boundary.py` (6 `D_EB_*`) +
+  `EntityBoundaryAssertion` model (migs 0170/0171) + `seed_rules` reseed + `test_entity_boundary_leg.py` (13).
 
 ## ▶ RS / compute follow-ups (all non-blocking)
 - **NEW (from the f1065 render leg) — compute-vs-spec M-1 nuance.** `FORMULAS_1065` M1_5 = 1+2+3+4a+4b+4c and
