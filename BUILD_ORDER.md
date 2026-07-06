@@ -225,8 +225,13 @@ TOP unchecked item as the current RS rock.
   community-property override (9 states); IRS computes the refund share (NOT estimated); 8379 (injured) ≠ 8857
   (innocent). No OBBBA impact. entity_types 1040; prod 114→115; `lookup/8379/export/` = 200; validated 29/0.
   DECISIONS D-20. tts app build = [APP] lane.
-- [ ] **▶ Form 8814** — Parents' Election to Report Child's Interest & Dividends — NEXT (top of the queue)
-- [ ] **Form 8839** — Qualified Adoption Expenses
+- [x] **WO-19 · Form 8814** — Parents' Election to Report Child's Interest & Dividends — ✅ DONE 2026-07-06 (RS).
+  §1(g)(7) election (parent reports child's int/div/cap-gain-dist instead of the child filing 8615 — closes the
+  8615 spec's D_8615_004). 3 tiers: first **$1,350** free / next $1,350 at 10% (max **$135** → 1040 L16) / over
+  **$2,700** carried to parent split by character (L9 QD → 1040 3a/3b, L10 cap-gain → Sch D 13, L12 ordinary → Sch1
+  8z); don't-file if ≥ **$13,500**. 8 eligibility conditions. 8615 link cited to §1(g)/Pub 929 (not i8814). entity_types
+  1040; prod 115→116; `lookup/8814/export/` = 200; validated 26/0. DECISIONS D-21. tts app build = [APP] lane.
+- [ ] **▶ Form 8839** — Qualified Adoption Expenses — NEXT (top of the queue)
 - [ ] **Form 709** — United States Gift (and GST) Tax Return *(new module — bigger)*
 - [ ] **Form 8832** — Entity Classification Election (check-the-box)
 - [ ] **Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
