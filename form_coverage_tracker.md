@@ -1,5 +1,27 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-10) — GA Form 700 (Georgia partnership + PTET, "GA-700") → legs 1/2/4 DONE; render DEFERRED
+> (form does NOT fully tick yet).** The GA-600S analog for a partnership; attaches to a federal **1065**. Built
+> spec-first from RS `GA700` (status `draft` — cached `server/specs/ga700_spec.json`). **Leg 1 compute**
+> (`1d7f102`): `FORMULAS_GA700` (`FORMULA_REGISTRY["GA-700"]`) — Sch 8 income (fed ordinary + guaranteed
+> payments + other, + §168(k) bonus add-back − GA-4562 depreciation) → Sch 7 **single gross-receipts
+> apportionment** (§48-7-31, 6 decimals ROUND_DOWN, **defaults 1.0 / 100% GA** when no everywhere-receipts —
+> single-state, avoids a silent $0) → Sch 2 apportioned → Sch 1 GA taxable (NOL/passive-loss floored) → **PTET
+> 5.19%** (§48-7-21) when `GA_PTET` elected, else blank (pure pass-through). GA §179 $1,050,000/$2,620,000
+> separately-stated K-1 delta (NOT in the entity Sch-8 flow). 9 pure tests (all 5 entity RS pins + §179
+> limit/phaseout + edges). **Leg 2 input** (`6c26d72`, prod-seeded): `seed_ga700` (8 sections / 30 lines);
+> views.py `PARTNERSHIP_STATE_FORM_MAP` (1065→GA-700) + `create_state_return` dispatch + `GA700_FEDERAL_PULL`
+> (federal line 23→S8_1, K4c→S8_5) + `_populate_ga700_from_federal`; FormEditor.tsx `GA_700_SECTION_TABS` +
+> `isGa700` + create-state label distinguishes 1065 (Form 700) from 1120-S (Form 600S). 3 DB tests. **Leg 4
+> diagnostics** (`f70a9d4`, prod-seeded): `rules_ga700.py` (10 D_GA700_*: 2 warning 179LIMIT/CONFORM, 8 info —
+> DEPR/APPORT/NETWORTH/PTET/NRW/COMPOSITE/NOL/UET), runner-registered. 9 DB tests. Flow gate 422; frontend tsc 0.
+> **⚠ render leg 3 DEFERRED** — the GA 700 is served via a fillable-forms VIEWER
+> (`apps.dor.ga.gov/FillableForms/PDFViewer/Index?form=2025GA700`), NOT a static PDF; acquisition path differs
+> from the flat-state recipe. **The GA-700 form ticks only when render lands.** **⚠⚠ GA §179 CROSS-SPEC CONFLICT
+> flagged for Ken:** GA700 spec $1.05M/$2.62M vs GA600 $1.25M/$3.13M. **v1 = entity-level PTET return;
+> partner-level GA-source allocation + nonresident 4% withholding + PTET owner-side Form 500 subtraction
+> DEFERRED** (the app Partner model has no residency field — a future migration; RS spec tests 6-7).
+
 > **2026-07-05 (S-4 1065 core, leg 6) — 1065 flow-assertion gate → ✅ DONE. S-4 CORE COMPLETE.**
 > The FIRST flow-assertion gate for the partnership entity (previously `1065_se` was diagnostic-gated only).
 > Fetched the Rule Studio export (`/api/flow-assertions/export/?entity_type=1065`, 28 assertions) and split it

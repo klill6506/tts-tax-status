@@ -1,9 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-05, nineteenth session: **S-4 1065 core COMPLETE** — leg 5 issuer-side
-`PartnerK1Computed` + 1065→1040 import (migs 0168/0169, applied to prod); **leg 6 the 1065 flow-assertion
-gate** (22 active RS assertions + 6 staged pending; the intra-1065 tie chain now gated). S-4 core done;
-render recalibration remains deferred. **Next = Ken directs** among the unblocked SPINE items.*
+*Last updated: 2026-07-06, twentieth session: **S-10 GA-700 (Georgia partnership + PTET)** — legs 1/2/4 DONE
+(compute `1d7f102` / seed+federal-pull+frontend `6c26d72` / diagnostics `f70a9d4`). Entity-level PTET return
+built (5.19%, single gross-receipts apportionment); **render leg 3 DEFERRED** (GA 700 is a fillable-forms
+viewer, not a static PDF). Prior: S-4 1065 core COMPLETE (all legs 1a–6).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,74 +13,64 @@ render recalibration remains deferred. **Next = Ken directs** among the unblocke
   (gates) / `PRODUCT_MAP.md` (scope). BUILD_ORDER is the single source of sequence.
 
 ## Active gates (all green)
-- **Flow-assertion gate (all entities)** — `cd server && pytest tests/test_flow_assertions.py -q` → **423
-  passed** (was 398; leg 6 added the **1065 gate: 22 active RS assertions + 2 guard tests**). Fast (~1.4s, pure).
-  The 1065 runners live in `_run_1065_assertion` / `_RUNNERS_1065`; unbuilt assertions staged in
-  `specs/flow_assertions_1065_pending.json`.
-- **1065 Schedule K leg 1b** — pure `pytest tests/test_1065_schk_leg.py` (**7** — spec-driven Analysis
-  pin 215000 + renumber/allocator assertions) · DB `pytest tests/test_1065_schk_pipeline_leg.py`
-  (**9** — pipeline Analysis persist + 8 diagnostics fire/quiet). `test_seed_1065` count now **290**.
-- **1065 Schedule L leg 2** — DB `pytest tests/test_1065_l_diagnostics_leg.py` (**7** — balanced quiet ·
-  OOB BOY/EOY fire · exempt suppression · M-3 threshold · M-2 tie equal/differ).
-- **1065 M-1/M-2 leg 3** — pure `pytest tests/test_1065_m_leg.py` (**3** — spec pins M1_9=298000 / M2_9=728000
-  + tie identity) · DB `pytest tests/test_1065_m_diagnostics_leg.py` (**4** — tie quiet · M1/M2_3 fire · exempt).
-- **1065 K-1 leg 4** — pure `pytest tests/test_1065_k1_leg.py` (**3** — K_TO_BOX 13c/13e · alloc · 60/40 sums)
-  · DB `pytest tests/test_1065_k1_diagnostics_leg.py` (**7** — recon holds/breaks · 9c · special alloc ·
-  item-L ties/breaks · cappct). Existing `test_k1_allocator.py` green after the K_TO_BOX refactor.
-- **1065 K-1 IMPORT leg 5** — pure `pytest tests/test_1065_k1_import_leg.py -k box_shares` (**2** — box→field
-  map incl. box 14a→se_earnings, §199A=box 1) · DB same file (**6** — persist 60/40 split + box 14a · non-1065
-  no-op · offer→import · source-update offer · dismiss/resurface · unknown-owner false). Shareholder pipeline
-  `test_k1_import_stage3.py` (**6**, needs 1120-S seeded upstream) + `test_k1_allocator.py` re-verified green.
-- **1065 SE** pure `pytest tests/test_1065_se_compute_leg.py` (**36**) unchanged.
+- **Flow-assertion gate (all entities)** — `cd server && pytest tests/test_flow_assertions.py -q` → **422
+  passed** (incl. the 1065 gate: 22 active RS assertions + 2 guards; runners `_run_1065_assertion`/
+  `_RUNNERS_1065`; unbuilt staged in `specs/flow_assertions_1065_pending.json`). Fast (~2s, pure).
+- **GA-700 (this session)** — pure `pytest tests/test_ga700_compute_leg.py` (**9** — 5 entity RS pins + §179
+  limit/phaseout + ratio truncation + single-state default) · DB `test_ga700_state_return_leg.py` (**3** —
+  federal 1065 pull → Sch 8 → PTET 5.19%) · DB `test_ga700_diagnostics_leg.py` (**9** — 10 D_GA700_* registered
+  + fire/quiet). Seeded to prod: `seed_ga700` (FormDefinition) + `seed_rules` (10 diagnostics).
+- **1065 core S-4 (COMPLETE, all legs)** — the leg-by-leg suites (`test_1065_*`) are green and archived in
+  STATUS_ARCHIVE; migrations 0168/0169 applied to prod.
 - `manage.py check` clean; frontend `tsc --noEmit` → 0 errors. **Test DB `test_postgres` exists** — use
-  `--reuse-db`. **★ Leg 5 ADDED migrations 0168 (PartnerK1Computed) + 0169 (RLS) — APPLIED TO PROD this
-  session** (`migrate returns` OK). New DB tests must `seed_1065`+`seed_1040` (not migration-pre-seeded) and
-  filter `FormLine` by `section__form=` NOT `form_definition=`.
-- ⚠ DB runs on the shared Supabase pooler are SLOW (a fresh `--create-db` ~2min; a 4-file batch took ~38 min).
-  Run 1065 DB tests in the background; never `drop_test_db` a slow run (kills the live session).
+  `--reuse-db`. New DB tests must seed the forms they use (not migration-pre-seeded) and filter `FormLine` by
+  `section__form=` NOT `form_definition=`.
+- ⚠ DB runs on the shared Supabase pooler are SLOW (a fresh `--create-db` ~2min). Run DB tests in the
+  background; never `drop_test_db` a slow run (kills the live session).
 
-## ▶ RESUME HERE — **S-4 1065 core COMPLETE (all legs 1a–6). Next = Ken directs** among the unblocked SPINE items.
-Full reconcile map + all-leg detail in the `.claude` memory `1065-core-s4-kickoff.md`; per-leg build history
-in `STATUS_ARCHIVE.md`.
+## ▶ RESUME HERE — **S-10 GA-700 legs 1/2/4 DONE; leg 3 (render) DEFERRED → the NEXT unit.** Full detail +
+wiring checklist in the `.claude` memory `ga700-build-unit.md`.
 
-**✅ Leg 6 DONE (`f1c095b`) — 1065 flow-assertion gate** (the first for the partnership entity; 1065_se was
-diagnostic-gated only). Fetched the RS export (`/api/flow-assertions/export/?entity_type=1065`, 28 assertions)
-and split into **`specs/flow_assertions_1065.json` — 22 ACTIVE** (compute built, legs 1a-5) + **`_pending.json`
-— 6 STAGED** (ENTITY_BOUNDARY×3, Form 8990, §704(c)/§706(d), item-L capital roll-forward — not silently
-dropped). Runners in `test_flow_assertions.py` (`_run_1065_assertion`/`_RUNNERS_1065`, all PURE): RECON-* via
-real FORMULAS_1065 / k1_allocator / compute_1065_se; INV-* via allocator + SE worksheet; GATE-*/diagnostic
-ties via source inspection; TI/4562-179/RC004 reuse shared runners. New `gating_check` type registered.
-Full gate **423 passed**.
+GA Form 700 (Georgia partnership + PTET, form_code **"GA-700"**, attaches to a federal **1065**). Spec `GA700`
+(RS **draft** — promote→active is an RS follow-up); cached `server/specs/ga700_spec.json`.
+- **✅ Leg 1 compute (`1d7f102`)** — `FORMULAS_GA700` (`FORMULA_REGISTRY["GA-700"]`): Sch 8 income → additions/
+  subtractions → Sch 7 single gross-receipts apportionment (ROUND_DOWN, defaults **1.0 / 100% GA** single-state)
+  → Sch 2 apportioned → Sch 1 GA taxable → **PTET 5.19%** (§48-7-21) when `GA_PTET`, else blank (pass-through).
+  GA §179 $1.05M/$2.62M separately-stated delta (K-1; NOT in the entity flow). 9 pure tests.
+- **✅ Leg 2 input (`6c26d72`)** — `seed_ga700` (8 sec/30 lines, **prod-seeded**); views.py
+  `PARTNERSHIP_STATE_FORM_MAP` (1065→GA-700) + `GA700_FEDERAL_PULL` (line 23→S8_1, K4c→S8_5) +
+  `_populate_ga700_from_federal`; frontend `GA_700_SECTION_TABS`/`isGa700`. 3 DB tests.
+- **✅ Leg 4 diagnostics (`f70a9d4`)** — `rules_ga700.py` (10 D_GA700_*, 2 warning/8 info), runner-registered +
+  **prod-seeded** (`seed_rules`). 9 DB tests.
 
-**✅ Leg 5 DONE (`6b51c3e`) — issuer-side K-1 persistence + 1065→1040 import** (1120-S mirror): NEW
-`PartnerK1Computed` model (migs **0168**/**0169** — APPLIED TO PROD); issuer persist
-(`persist_all_partner_k1s_db` hooked post-SE in compute.py); import side in `k1_import.py` (box 14a→se_earnings;
-merged `available_k1_offers` w/ `owner_kind`/`owner_id` dispatch; `ScheduleK1.imported_from_partner`;
-`K1ImportDismissal` shareholder-nullable + partner FK). 2 pure + 6 DB green. (Legs 1a–4 → STATUS_ARCHIVE.)
+**▶ NEXT — leg 3 (render), a dedicated leg.** ⚠ The GA 700 is served via a **fillable-forms viewer**
+(`apps.dor.ga.gov/FillableForms/PDFViewer/Index?form=2025GA700`), NOT a static PDF — acquisition path differs
+from the flat-state recipe (try the DOR "Print Blank Forms" static PDF, or extract from the viewer). Then apply
+the flat-state render recipe (NC_D400/SC1040 precedent). **Until render lands the GA-700 form does not fully
+tick** in form_coverage_tracker.
 
-**⚠ S-4 remaining / deferred** (S-4 CORE is done — compute + diagnostics + K-1 issue/import + flow gate — but
-these ride separate future legs): **f1065 page-1 + Schedule K render recalibration** (coords stale for 2025 —
-one dedicated render leg); the 6 STAGED flow assertions (activate as each compute lands); `D_M2_1` /
-`D_K1_704C` / `D_K1_706D` (need a Partner item-M/N/L-$ field migration); `D_1065P1_174A` (R&E input line).
-Because render is deferred, the **1065 form does not fully tick** in form_coverage_tracker yet.
+**⚠⚠ FLAGGED FOR KEN — GA §179 cross-spec conflict:** the GA700 spec pins **$1,050,000 / $2,620,000** (TY2025,
+matches CLAUDE.md) but the **GA600 C-corp spec used $1.25M/$3.13M**. Built GA-700 to its own spec per the
+RS-integration rule; §179 is separately-stated (K-1), so this did NOT block the entity/PTET build. **Ken
+(depreciation CPA) to rule which GA §179 figure is authoritative for TY2025, and RS to reconcile the two specs.**
+Also flagged: GA-600S compute still uses the 0.0539 (TY2024) PTET rate — possibly stale for its own TY2025.
 
-**▶ NEXT — Ken directs.** Unblocked SPINE items (all `[APP]`): **S-10 GA-700** (was gated behind S-4 1065
-core — now unblocked), **S-11 1041 module**, **S-5 boundary diagnostics** + **S-6 PAL/basis** (RS authoring
-done), **S-3 brokerage front end** (∥), **S-13/S-14 1120 + state C-corp**. Also S-4 follow-on: the f1065
-render recalibration leg.
+**v1 DEFERRED (Partner model has no residency/GA-source field — needs a migration):** partner-level GA-source
+allocation (Sch 4), nonresident 4% withholding (Form G-2-A, page-1 T), composite return (IT-CR), PTET owner-side
+Form 500 subtraction. Surfaced by info diagnostics (D_GA700_NRW/_COMPOSITE), never silently computed.
 
-**What exists (reconcile, don't rebuild):** FORMULAS_1065, k1_allocator.py, compute_1065_se.py, k1_import.py,
-the 1065 flow-assertion gate. **RED-defers (per specs):** K-2/K-3, §704(c) math, §706(d), item-L roll-forward,
-M-3, OBBBA flags.
+*(Other unblocked SPINE items if Ken redirects: S-11 1041 module, S-5/S-6, S-3 brokerage ∥, S-13/S-14; plus the
+S-4 f1065 render recalibration follow-on.)*
 
 ## This session's commits (pushed to origin/main)
-- `6b51c3e` — leg 5: `PartnerK1Computed` model (migs 0168/0169, applied to prod) + issuer persist + `k1_import`
-  partner path (merged offers, owner-dispatch) + serializer/views/frontend + `test_1065_k1_import_leg.py`
-  (2 pure + 6 DB). `0e2a4e5` — leg 5 docs.
-- `f1c095b` — leg 6: 1065 flow-assertion gate — `flow_assertions_1065.json` (22 active) + `_pending.json`
-  (6 staged) + runners in `test_flow_assertions.py`. Full gate 423 passed; `check` clean. No compute/migration.
+- `1d7f102` — GA-700 leg 1: `FORMULAS_GA700` compute + spec cache + 9 pure tests.
+- `6c26d72` — GA-700 leg 2: `seed_ga700` + federal-pull wiring + frontend tabs + 3 DB tests.
+- `f70a9d4` — GA-700 leg 4: `rules_ga700.py` (10 diagnostics) + 9 DB tests.
+- (Prior session, S-4: `6b51c3e`/`0e2a4e5` leg 5, `f1c095b`/`b316d5b` leg 6 — S-4 1065 core COMPLETE.)
 
 ## ▶ RS follow-ups (rides a dedicated RS session)
+- **NEW — GA-700 spec is `draft`** (promote→active); **⚠⚠ reconcile the GA §179 conflict** (GA700 $1.05M/$2.62M
+  vs GA600 $1.25M/$3.13M — Ken to rule which is authoritative for TY2025); check GA-600S's 0.0539 PTET rate for TY2025.
 - Carried — **NC_D400 / AL_FORM_40 specs are `draft`** (promote→active). SC1040 `D_SC1040_BRACKET` threshold;
   GA-500 `R-GA500-MIL` (RS spec correct; tts fix handed off `task_f550dfd2`). `8867_spec.json` stale notes;
   RS Schedule D `D_8949_006`; 8995 sibling loader D_8995_001 note.
