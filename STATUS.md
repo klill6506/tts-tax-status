@@ -1,85 +1,93 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-07, twenty-sixth session (Ken-directed detour). Unit: **Lacerte regression
-harness v1 BUILT + first real 2025 return recreated in-app and diffed against Lacerte** —
-`scripts/lacerte_regression/` (parse → load → compare). The first return surfaced **two live engine
-bugs** (fix chips spawned; see below). MeF entity track (Scenario-5 doc mappers) and S-11 1041 legs
-6-8 both unchanged from session 25.*
+*Last updated: 2026-07-07, twenty-seventh session (continuation of the regression detour). Unit:
+**regression bugs FIXED + whole-dollar rounding LANDED engine-wide** — the app now reproduces
+Lacerte regression return #1 with **0 differences across 59 compared lines** (refunds match to the
+dollar) and **zero cent-valued FormFieldValues** on either return. Ken ruled: "a tax return should
+never have cents anywhere." ⚠ ONE VERIFICATION STEP REMAINS (below) before this unit fully closes.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
-- Durable history → `STATUS_ARCHIVE.md` *(not read at boot)*; deferrals → `DEFERRAL_AUDIT.md`;
-  open questions → `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
-- **Boot planners live in `tts-tax-status`**: pull it, read `BUILD_ORDER.md` (order) / `SEASON_PLAN.md`
-  (gates) / `PRODUCT_MAP.md` (scope). BUILD_ORDER is the single source of sequence.
-- **PII rule**: this file mirrors to the PUBLIC status repo — regression clients are referred to by
-  number only. The mapping + PDFs + facts JSONs + diff reports live in `D:\tax-test-data\` (never a repo).
+- Durable history → `STATUS_ARCHIVE.md`; deferrals → `DEFERRAL_AUDIT.md`; open questions →
+  `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
+- **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
+- **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## 🔴 KNOWN ENGINE BUGS (found by Lacerte regression return #1, 2026-07-07)
-1. **Sch E line 22 — released prior-year passive loss never flows back.** A rental with current-year
-   net income + `prior_year_unallowed_passive` computes 8582 correctly (line 3 ≥ 0 → all losses
-   allowed) but `compute_schedule_e.py` writes `line22 = -rental_allowed` from the per-activity
-   allocation, which assigns 0 when the activity's own income absorbs its prior loss → Sch 1 L5 /
-   AGI overstated by the carryover. Also the prior loss is folded into line 21 (IRS face: line 21 =
-   line 3 − line 20; the PY-loss deduction belongs on line 22). **Fix chip spawned.**
-2. **Form 8960 line 4a — passive rental net income missing from NII** (NIIT understated).
-   `compute_8960` has a `rental` param; the caller doesn't feed Sch E net. **Fix chip spawned.**
-3. *(Policy, → REVIEW_QUEUE)* App persists cents on computed lines; Lacerte/IRS round each line to
-   whole dollars. Comparator rounds before diffing, but decide round-at-write vs round-at-render.
+## ▶ RESUME HERE — finish the verification, then back to the spine
+**(0) FIRST ACTION NEXT SESSION — run the 25-test pin suite + broad batches.** All engine changes
+are committed and the mandatory gates are green, but two things still need a green run:
+1. `pytest $(cat pin_nodes list) --reuse-db` — the 25 tests whose cent-string pins were updated to
+   whole-dollar this session (node list: `tests/test_diagnostics.py -k "m1_3b"`,
+   `tests/test_returns.py -k "OtherDeductions or LineItemDetails or RentalProperties or
+   ComputeOverride or Compute1065 or Compute1120 or ShareholderDistributions or update_fields"`,
+   `tests/test_1040x_baseline.py -k snapshot`, `tests/test_schedule_f_diagnostics_leg.py -k
+   above_qbi`). Pins were updated by write-path analysis, NOT yet executed.
+2. Broad entity/state batches (1120-S / 1065 / 1041 / GA-500 / SC / NC / AL / Sch L balance / 2210 /
+   retirement / K-1 / render suites). ⚠ RUN IN SMALL BATCHES (2-3 files), background, --reuse-db —
+   a 5-file batch of heavy DB suites ran 3+ hours on the pooler this session and was killed.
+   ⚠ NEVER edit compute .py files while a DB suite runs (imports are cached → results tainted).
+3. Then delete the stale-pin risk note here and tick the BUILD_ORDER items fully.
 
-## ▶ RESUME HERE — three live threads
-**(0) NEW: fix the two regression bugs above** (chips exist; RS specs 8582/Sch E/8960 first, per
-CLAUDE.md), then re-run the comparator on regression return #1 — expected result: **0 differences**
-(federal refund + GA refund match Lacerte to the dollar). Return UUIDs + full line-by-line diff:
-return #1's `*_diff_report.md` in `D:\tax-test-data\` (local only).
+**(A) Spine: S-11 1041 legs 6-8 unchanged** — leg 6 GA Form 501 next.
+**(B) MeF entity e-file (∥): 1120-S ATS Scenario-5 doc mappers unchanged** — 1125-A first.
+SOR mailbox watch continues.
 
-**(A) Spine (BUILD_ORDER): S-11 1041 legs 6-8 unchanged** — leg 6 GA Form 501 (resident-only v1, RS
-spec `GA501`), then leg 7 frontend verify, leg 8 flow gate. Leg-5 follow-on: f1041sk1 K-1 PDF.
+## What landed this session (all committed)
+- **Bug 1 — Sch E released prior-year passive loss** (`compute_8582.per_activity_allocation`): BOTH
+  branches now grant every activity its full deduction (loss + prior) when not in the Part VII pool
+  — incl. an activity whose own income absorbs its prior loss. Sch E line 21 = face net (no prior);
+  released loss lands on line 22 → 26. Specs verified (FORM_8582/SCHEDULE_E — conforming fix).
+- **Bug 2 — 8960 line 4a**: auto-feeds Sch 1 line 5 (override `e8960_rental` takes the row manual);
+  auto 4b backs out non-§1411 slice (`schedule_e_non_1411_income`: self-rental recharacterized +
+  nonpassive non-PTP K-1 net). Render face mirrors (4a/4b/4c added to f8960 field map). ⚠ RS spec
+  amendment wanted (spec is draft; 4a listed as bare preparer entry) — handoff:
+  `docs/rs_handoff/2026-07-07_8582_sche_8960_lacerte_regression_fixes.md`.
+- **Bug 3 (found during verification) — 1040 line 24 stale total**: mid-chain Sch-2 re-sums (8960
+  NIIT, 6252, HSA) update the line-23 FFV through their own row fetches; `values["23"]` was never
+  refreshed → line 24 totaled $10 short. Fixed: refresh_from_db sync before the second downstream
+  pass (compute.py).
+- **Whole-dollar rounding engine-wide**: ~131 quantize sites flipped to `Decimal("1"),
+  ROUND_HALF_UP` across every compute module + views rollups + 8812/Sch-1A writers + the 25c roster.
+  KEPT at cents (deliberate): FICA penny tolerances (w2_fica_check), §72 per-payment amount, SC1040
+  proration ratio, 8962 line-7 applicable figure, §179 share allocation internals. K-1 allocators
+  were already whole. PDF `format_currency` always printed whole (`,.0f`) — unchanged.
+- **Test pins updated** (25 cent-string pins → whole; overrides/direct-writes/in-memory fakes left).
+- **Read-only audit (Ken/Chat request): client-table inventory** of the shared Supabase →
+  `docs/audits/2026-07-07_client_table_inventory.md`. Headlines: no canonical shared clients table
+  (1099 = parallel universe; 27/68 filers TIN-match the central record, only 5/321 recipients); NO
+  client-number-like column exists anywhere; portal rides `clients_client` via portal_portaluser;
+  **NEW `checkin` schema** (2,566 free-text-identity events, zero FKs — third client universe);
+  central record still has no primary-individual SSN column. SUITE_CONTRACT deltas noted in the
+  audit file (its MCP-stale-password note is obsolete). Feeds the upcoming client-ID project.
 
-**(B) MeF entity e-file (∥ track): 1120-S ATS Scenario-5 doc mappers unchanged** — next = 1125-A
-(smallest), then 1125-E/4562/4797/8825 + itemized statements; then S5 through the real engine.
-SOR mailbox watch continues (want-list email sent 2026-07-07).
+## Active gates
+- **Flow-assertion gate — 422 passed** (after all changes; two getsource pins were preserved by
+  keeping the pinned source lines intact — see auto-memory).
+- 8960 compute leg 13 passed · new `test_pal_release_and_8960_rental.py` 6 passed (pure) · client
+  suite 275 passed · py_compile + `manage.py check` clean · regression-return-#1 comparator exit 0 (0 diffs).
+- ⚠ Pin suite + broad batches = the RESUME item above; not yet run against final code.
 
-## Lacerte regression harness (NEW this session)
-- `scripts/lacerte_regression/`: `parse_lacerte_pdf.py` (client-copy PDF → facts JSON skeleton:
-  expected federal/GA summary lines high-confidence + best-effort inputs) → human/Claude completes
-  the facts JSON → `load_return.py` (ORM entry into an existing 1040 shell + compute + GA-500
-  attach/compute) → `compare_return.py` (whole-dollar diff vs expected → `*_diff.md`, exit 1 on any
-  diff). README has the full procedure. **Loader writes to the shared PROD DB** (that's the point —
-  returns land in the app), so it hard-aborts if the return already has W-2s/dependents/rentals.
-- Return #1 results: **30 lines matched exactly** (wages/int/div aggregation, OBBBA SALT phase-down
-  → $10k floor, QDCGT incl. 20% bracket, the whole 8959 chain incl. withholding reconciliation →
-  25c, 8889 family-HDHP $0-deduction, depreciation engine to-the-dollar incl. AMT + GA columns,
-  8812 $0-CTC via AGI phaseout, QBI $0 with −5,113 carryforward, GA-500 std/exemptions/5.19%);
-  29 lines differ, ALL traced to bugs 1+2 above. Harness validated: it reproduces the hand analysis.
-- TaxWise: same spine, only the parser differs; October TaxWise importer can emit the same
-  facts-JSON schema (the contract between stages).
-- Dependent DOBs for return #1 not in the Lacerte print — **Ken to add in the UI** (CTC stays $0
-  either way at this AGI).
+## Lacerte regression harness (built session 26, unchanged)
+`scripts/lacerte_regression/` parse → load → compare; procedure in its README. Return #1 now fully
+green — rerun the comparator after any engine change: it is the fastest full-return smoke test.
 
-## Active gates (all green, unchanged — no compute code touched this session)
-- **Flow-assertion gate** — 422 passed (untouched; harness is scripts-only).
-- MeF 1120-S mapper 10 passed · S-11 1041 suites green · client suite 275 passed (all from session 25).
-- `manage.py check` clean. Test DB `test_postgres` — `--reuse-db`; ⚠ pooler runs SLOW — background them.
-
-## ▶ RS / compute follow-ups (non-blocking, carried)
-- **NEW**: 8582 "line 3 ≥ 0 → stop" — app fills Parts II/III where the form says stop (cosmetic,
-  fold into bug-1 fix). Sch B prints at $597 interest (< $1,500 threshold — harmless).
-- **S-11 1041**: legs 6/7/8; f1041sk1 K-1 PDF; Sch A charitable; Sch G Part II; D_1041_AMT trigger;
-  specs draft→active; K-1 v1 class deferrals; seed payments-section reconciliation.
-- **S-6**: §172 forward NOL; R3 REP compute bypass; R4 §465 Form 6198 compute (deferred by design).
-- **f1065 M-1 nuance**: FORMULAS_1065 M1_5/M1_8 include 4c/7b, RS spec lists 4a/4b/6a/7a — reconcile.
-- Carried GA-700 / NC_D400 / AL_FORM_40 / SC1040 / GA-500 / 8867 items (STATUS_ARCHIVE 2026-07-06).
-- Carried S-4: 6 staged 1065 flow assertions + `D_M2_1`/`D_K1_704C`/`D_K1_706D`.
+## ▶ RS / compute follow-ups
+- **RS spec amendments from this unit**: R-8960-INCOME 4a auto-feed (+ 4b auto back-out); RS
+  integrity gate `check_schedule_e_8582_integrity.recompute_per_activity` re-verify vs the
+  gain-activity case; RS scenario pins re-pin whole-dollar on next touch. Handoff doc above.
+- 8582 cosmetic: app fills Parts II/III when line 3 ≥ 0 (form says stop) — fold into a later leg.
+- 8960 render face line 15 not shown (pre-existing, cosmetic).
+- Carried items unchanged (S-11 legs 6-8; S-6 §172/6198; f1065 M-1 nuance; GA-700/NC/AL/SC/8867;
+  S-4 staged assertions; see session-26 STATUS in STATUS_ARCHIVE).
 
 ## ▶ Waiting on Ken / external
-1. **SOR mailbox watch** — want-list email sent 2026-07-07 (1040 v5.3/v5.4, 1120x v6.2, 1065 v5.3,
-   1041 v5.3). When they land: drop zips in `docs/mef/`, file/hash/extract per `README_schemas.md`.
-2. IFA-upload 1040 scenarios 8 (SIGNED) + 5 — REBUILD artifact sets first (pre-§12.5).
+1. SOR mailbox watch (want-list sent 2026-07-07).
+2. IFA-upload 1040 scenarios 8 + 5 rebuild (pre-§12.5).
 3. TY2025 4868 schema (carried).
-4. **Regression return #1 dependent DOBs** (app UI) + decision on rounding policy (REVIEW_QUEUE).
+4. ~~Regression return #1 dependent DOBs~~ DONE — Ken entered them (8812 shows 4 QCs, CTC $0 ✓).
+5. ~~Rounding policy decision~~ RESOLVED — Ken ruled whole-dollar everywhere (landed this session).
 
 ## Authoritative files read at boot
-- **`tts-tax-status`:** `BUILD_ORDER.md` (order) · `SEASON_PLAN.md` (gates) · `PRODUCT_MAP.md` (scope).
+- **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
 - **tax-app root:** `SPRINT_SCOPE.md` · `MASTER_PROMPT.md` · `MEMORY.md`/`DECISIONS.md`/`SUITE_CONTRACT.md` ·
   `REVIEW_QUEUE.md` · `form_coverage_tracker.md` · `STATUS_ARCHIVE.md` (history) · RS `session_log.md`.

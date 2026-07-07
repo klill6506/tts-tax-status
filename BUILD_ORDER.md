@@ -24,10 +24,14 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
   compare; procedure in its README). First real 2025 return recreated in-app and diffed: **30 lines match
   Lacerte exactly, 29 differ — ALL traced to two engine bugs.** Details: tax-app `STATUS.md` (bugs) +
   `STATUS_ARCHIVE.md` 2026-07-07 (full session detail). Return identity lives in `D:\tax-test-data\` only.
-- [ ] `[APP]` **Sch E line 22 — released prior-year passive loss never flows back** (8582 line 3 ≥ 0 path;
-  AGI overstated by the carryover). Fix chip spawned; RS specs 8582/Sch E first.
-- [ ] `[APP]` **Form 8960 line 4a — passive rental net income missing from NII.** Fix chip spawned; RS spec
-  8960 first. After both: re-run the comparator on regression return #1 → expected 0 diffs.
+- [x] `[APP]` **Sch E line 22 — released prior-year passive loss** — 2026-07-07 `0afdcb4` (both 8582
+  branches; specs verified, conforming fix; line 21 face corrected).
+- [x] `[APP]` **Form 8960 line 4a rental NII** — 2026-07-07 `0afdcb4` (auto-feed Sch 1 L5 + auto 4b
+  back-out; RS spec amendment handoff filed). BONUS fixes same commit: 1040 line-24 stale values["23"]
+  ($10 short) + **whole-dollar rounding engine-wide (Ken-ruled — no cents anywhere)**.
+  **Comparator re-run: 0 diffs / 59 lines; flow gate 422.**
+- [ ] `[APP]` **Session-28 FIRST ACTION: run the 25 updated-pin tests + broad entity/state batches**
+  (2-3 files per batch — a 5-file batch ran 3+ hrs on the pooler and was killed; see tax-app STATUS).
 
 **Prior NOW item — MeF entity e-file (∥): 1120-S mapper leg 1 DONE — next = ATS Scenario-5 doc mappers.** 2026-07-07
 (twenty-fifth session; ADDED to the plan — was not on the Spine; Ken directed "start S-corp MeF testing"):
