@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-06, twenty-third session. Two units: **(1) S-5 leg 2 input UI DONE (`d74b016`) → S-5
-COMPLETE;** **(2) S-6 PAL/basis deepening app build COMPLETE, all 5 R-items** (R1 self-rental `c4cd928`; R2-R5
-boundary diagnostics + Form 461 `07fb29f`). Build state: **idle — Ken directs;** next spine items are S-11
-1041, S-3 brokerage front end (∥), S-13/S-14 1120 (⚠ NOT season-one scope).*
+*Last updated: 2026-07-06, twenty-third session. Units: **(1) S-5 leg 2 input UI (`d74b016`) → S-5 COMPLETE;**
+**(2) S-6 PAL/basis deepening COMPLETE, all 5 R-items** (`c4cd928`/`07fb29f`); **(3) S-6 follow-ups DONE** —
+Form 461 §461(l) EBL now ADDS BACK to Schedule 1 line 8p (`296b9f3`; RS `d5b76b2`) so returns compute correctly,
++ RS reconciliation (FORM_461/FORM_8582/SCHEDULE_E promoted draft→active, RE_PRO message de-staled, cached
+mirrors refreshed). Build state: **idle — Ken directs;** next spine items are S-11 1041, S-3 brokerage (∥).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -59,16 +60,17 @@ per SEASON_PLAN). Non-blocking follow-ups below.
 - `c4cd928` — **S-6 R1 self-rental** recharacterization (mig 0172; compute_schedule_e + D_SCHE_SELFRENTAL + 7 tests).
 - `07fb29f` — **S-6 R2-R5** PAL boundary diagnostics + Form 461 (migs 0173/0174; rules_8582/rules_461/compute_461
   + 11 + 9 tests + existing-test severity/set updates).
+- `296b9f3` — **S-6 R5 follow-up: §461(l) add-back → Schedule 1 line 8p** (compute_461_db wired into
+  compute_return; d_461_ebl message; +2 pipeline tests; refreshed cached specs 461/8582/sche). RS side `d5b76b2`
+  (sherpa-tax-rule-studio): R-461-SCH1 + FA-1040-461-04 + promote 461/8582/SchE draft→active + RE_PRO de-stale.
 
 ## ▶ RS / compute follow-ups (all non-blocking)
-- **NEW (S-6) — deferred by design.** (1) Form 461 §461(l): the disallowed EBL add-back to Schedule 1 (line 8p)
-  + the §172 NOL carryover mechanic are NOT built — diagnostic-scope only (a return with an EBL over-deducts on
-  screen; `D_461_EBL` warns the preparer to add it back). Consider wiring the Sch 1 add-back / hard-RED. (2) R3
-  REP: compute does NOT bypass 8582 for materially-participated rentals (diagnostic-only per Ken) — the on-screen
-  loss is still limited for a true REP; preparer adjusts. (3) R4 at-risk: Form 6198 compute not built (routes via
-  `D_8582_ATRISK`). **RS reconciliation:** `FORM_8582`/`SCHEDULE_E`/`461` specs are all `status: draft` (promote→
-  active); the RS `D_8582_RE_PRO` message assumes a compute bypass we don't do (tts message diverged, documented);
-  the RS flow-assertion FA-04 severity should re-export to info.
+- **S-6 (updated 2026-07-06 follow-up).** ✅ Form 461 Sch-1 line-8p add-back DONE (`296b9f3`) — returns compute
+  correctly now. ✅ RS reconciliation DONE (`d5b76b2`): 461/8582/SchE promoted draft→active, RE_PRO message
+  de-staled, cached mirrors refreshed. **Still deferred by design:** (a) the §172 NOL carryover to NEXT year (the
+  current-year add-back is built; the forward NOL is not); (b) R3 REP compute bypass NOT built — a true REP's
+  materially-participated rental loss is still 8582-limited on screen (`D_8582_RE_PRO` info; Ken diagnostic-only);
+  (c) R4 §465 at-risk Form 6198 compute not built (`D_8582_ATRISK` routes the preparer).
 - **NEW (from the f1065 render leg) — compute-vs-spec M-1 nuance.** `FORMULAS_1065` M1_5 = 1+2+3+4a+4b+4c and
   M1_8 = 6+7a+7b, but the RS `1065_M1` spec formulas (R-M1-5 / R-M1-8) list only 4a/4b and 6a/7a (no 4c/7b).
   The form face names only 4a/4b and 7a (4c/7b are "other itemize" catch-alls). Reconcile compute↔spec (or
