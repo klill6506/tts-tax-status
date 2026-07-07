@@ -13,9 +13,18 @@ never have cents anywhere." ⚠ ONE VERIFICATION STEP REMAINS (below) before thi
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — finish the verification, then back to the spine
-**(0) FIRST ACTION NEXT SESSION — run the 25-test pin suite + broad batches.** All engine changes
-are committed and the mandatory gates are green, but two things still need a green run:
+## ▶ RESUME HERE — MeF SOR intake FIRST (Ken-directed 2026-07-07 evening), pin suite alongside
+**(0) FIRST ACTION — MeF: the SOR want-list packages LANDED** (Ken received the business rules +
+the 2025v5.3 material today). Intake per `docs/mef/README_schemas.md`: drop the zips in `docs/mef/`,
+file/hash/extract, record in `schema_versions.md`. Expected contents vs the want-list: 1040 2025v5.3
+schemas+BR · 1040 v5.4 BR · 1120x TY2025v6.2 schemas+BR (→ one-line re-stamp of the 1120-S mapper
+registry + revalidate) · 1065 2025v5.3 schemas+full BR · 1041 TY2025v5.3 schemas+BR — verify what
+actually arrived against that list. Then continue the MeF track (Scenario-5 doc mappers, 1125-A
+first). Ask Ken where he saved the downloaded files.
+
+**(0b) IN PARALLEL — run the 25-test pin suite + broad batches** (background; SAFE alongside MeF
+work, which is serialization/docs-only — but the never-edit-compute-.py-mid-run rule applies if any
+engine change comes up). Two things still need a green run:
 1. `pytest $(cat pin_nodes list) --reuse-db` — the 25 tests whose cent-string pins were updated to
    whole-dollar this session (node list: `tests/test_diagnostics.py -k "m1_3b"`,
    `tests/test_returns.py -k "OtherDeductions or LineItemDetails or RentalProperties or

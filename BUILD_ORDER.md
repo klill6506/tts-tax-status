@@ -17,7 +17,10 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **Lacerte-regression bug fixes (session 26 detour output): Sch E PY-PAL release + 8960 rental NII — then back to MeF Scenario-5 doc mappers / 1041 legs 6-8.** 2026-07-07
+## ▶ NOW WORKING ON — **MeF SOR-package intake (Ken-directed 2026-07-07 evening: business rules + 2025v5.3 material RECEIVED) → then Scenario-5 doc mappers.** Pin-suite verification runs alongside in background (see tax-app STATUS).
+
+**Session 27 wrap:** regression bugs ALL FIXED + whole-dollar rounding landed (`0afdcb4`) — comparator
+0 diffs / 59 lines, flow gate 422. Residual: 25 updated pins + broad batches need a green run (0b).
 
 **Session 26 (Ken-directed detour; ADDED to the plan — was not on the Spine):**
 - [x] `[APP]` **Lacerte regression harness v1** — 2026-07-07 `39e7258` (scripts/lacerte_regression/: parse → load →
