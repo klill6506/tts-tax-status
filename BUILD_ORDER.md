@@ -17,17 +17,18 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-11 1041 fiduciary module — APP BUILD STARTED (legs 1/2/4 DONE).** 2026-07-06
-(twenty-fourth session, Ken-directed "start 1041"): greenfield estates & trusts entity type. **Leg 1 seed +
-plumbing (`539b204`):** `1041` FormDefinition (8 sections / 72 lines) seeded to prod; `ENTITY_FORM_MAP`
-`"trust"→"1041"` (EntityType.TRUST + React frontend already existed; entity type = `form_definition.code`, no
-`entity_type` field). **Leg 2 compute spine (`539b204`):** dedicated `compute_1041.py` (`compute_1041_db`
-early-return in `compute_return`, NOT the Decimal-only FORMULA_REGISTRY — the DNI/IDD/§662-tier engine can't fit
-it) — R-1041 TOTINC/TOTDED/ATI/DNI(§643(a))/IDD/TIERS(§662)/EXEMPT(§642(b))/TAXINC/TAX(§1(e) + 0/15/20 cap-gain
-wksht)/ESBT(37%)/NIIT/TOTTAX; year-guarded TY2025; 13 pure + 1 DB smoke. **Leg 4 diagnostics (`d1117d8`):** 11
-`D_1041_*` (registered + reseeded to prod; AMT/bankruptcy RED-defer per D-2); 6 DB tests. Flow gate 422.
-**REMAINS: leg 3 K-1 (`SCHEDULE_K1_1041`) · 5 f1041 render (IRS PDF not downloaded) · 6 GA 501 · 7 frontend
-verify · 8 flow-assertion gate.** Prior (twenty-third session): ✅ **S-6 PAL/basis deepening
+## ▶ NOW WORKING ON — **S-11 1041 fiduciary module — APP BUILD (legs 1/2/3/4 DONE).** 2026-07-06
+(twenty-fourth session, Ken-directed "start 1041" + "continue"): greenfield estates & trusts entity type.
+**Legs 1-2 (`539b204`):** `seed_1041` (`1041` FormDefinition; `ENTITY_FORM_MAP` `trust→1041`; EntityType.TRUST +
+React frontend already existed) + dedicated `compute_1041.py` (`compute_1041_db` early-return in `compute_return`,
+NOT the FORMULA_REGISTRY) — DNI/IDD §643(a) / §662 tiers / §642(b) exemptions / §1(e) rate sched + 0/15/20
+cap-gain wksht / ESBT 37% / NIIT / total tax; year-guarded TY2025; 13 pure + 1 DB. **Leg 4 diagnostics
+(`d1117d8`):** 11 `D_1041_*` (AMT/bankruptcy RED-defer per D-2); 6 DB. **Leg 3 Schedule K-1 (1041) issuance
+(`99a8943`):** `Beneficiary` + `BeneficiaryK1Computed` models (migs 0175 create / 0176 RLS, prod + test DB);
+`k1_allocator_1041` (character-retained `box[c]=ent×dni_pct/100`, grantor→no K-1, persist wired into
+`compute_return`); `k1_sources` seed section (→ 9 sec / 83 lines); 6 `D_K1041_*`; 6 pure + 3 DB. Flow gate 422.
+**REMAINS: leg 5 f1041 render (⚠ IRS PDF not downloaded) · 6 GA 501 · 7 frontend verify · 8 flow-assertion
+gate.** Prior (twenty-third session): ✅ **S-6 PAL/basis deepening
 app build COMPLETE, all 5 R-items** (R1 self-rental `c4cd928`; R2-R5 boundary diagnostics + Form 461 `07fb29f`)
 — extends the existing 8582/Sch E engine; R1 = the only real compute change (type-7 net income→non-passive),
 R2-R5 diagnostic-only; migs 0172/0173/0174; 27 tests; flow 422. ✅ **S-5 leg 2 — entity-boundary input UI**
@@ -52,7 +53,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **S-11 1041 leg 3 (K-1 issuance)**, then legs 5-8; or Ken directs. Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — **S-11 1041 leg 5 (f1041 render)**, then legs 6-8; or Ken directs. Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
@@ -196,13 +197,15 @@ turn-on waits on the Shelf (DOR approvals).
 - [x] K-1 (1041) `SCHEDULE_K1_1041` — 2026-07-05 *(issuer-side; full verbatim box codes)*   - [x] GA 501 `GA501` —
   2026-07-05 *(resident-only)*   - [x] Sch I RED-defer diag (D-2)
 - All 3 forms seeded/exported (`lookup/{1041,SCHEDULE_K1_1041,GA501}/export/` = 200); RS prod 99 TaxForms / 471 FA / 859 rules.
-- [~] tts app build STARTED 2026-07-06 (Ken-directed): **legs 1/2/4 DONE** (`539b204` seed+compute, `d1117d8`
-  diagnostics). Leg 1 `seed_1041` (`1041` FormDefinition, 8 sections/72 lines, prod) + `ENTITY_FORM_MAP`
-  `trust→1041`. Leg 2 `compute_1041.py` dedicated `compute_1041_db` (DNI/IDD §643(a) / §662 tiers / §642(b)
-  exemptions / §1(e) rate sched + 0/15/20 cap-gain wksht / ESBT 37% / NIIT / total tax); 13 pure + 1 DB test.
-  Leg 4 `rules_1041.py` 11 `D_1041_*` (AMT/bankruptcy RED-defer per D-2); 6 DB tests, reseeded. Flow 422.
-  **REMAINS: leg 3 K-1 issuance (`SCHEDULE_K1_1041`) · 5 f1041 render (⚠ IRS PDF not downloaded) · 6 GA 501
-  (resident-only v1) · 7 frontend editor verify · 8 flow-assertion gate + the 4 ATS scenarios.**  `[APP]`
+- [~] tts app build STARTED 2026-07-06 (Ken-directed): **legs 1/2/3/4 DONE** (`539b204` seed+compute, `d1117d8`
+  diagnostics, `99a8943` K-1). Leg 1 `seed_1041` + `ENTITY_FORM_MAP` `trust→1041`. Leg 2 `compute_1041.py`
+  dedicated `compute_1041_db` (DNI/IDD §643(a) / §662 tiers / §642(b) exemptions / §1(e) rate sched + 0/15/20
+  cap-gain wksht / ESBT 37% / NIIT / total tax); 13 pure + 1 DB. Leg 4 `rules_1041.py` 11 `D_1041_*`
+  (AMT/bankruptcy RED-defer per D-2); 6 DB. **Leg 3** `Beneficiary` + `BeneficiaryK1Computed` (migs 0175/0176,
+  prod+test) + `k1_allocator_1041` (character-retained K-1, grantor→no K-1, wired into compute_return) +
+  `k1_sources` seed section + 6 `D_K1041_*`; 6 pure + 3 DB. Flow 422.
+  **REMAINS: leg 5 f1041 render (⚠ IRS PDF not downloaded) · 6 GA 501 (resident-only v1) · 7 frontend editor
+  verify · 8 flow-assertion gate + the 4 ATS scenarios.**  `[APP]`
 - [x] **WO-10 — Form 5227** split-interest trusts (CRAT/CRUT/PIF/CLT/§4947) — RS authoring DONE 2026-07-05
   (`load_5227.py`; DECISIONS D-11; `lookup/5227/export/` = 200). §664(b) four-tier char engine (tier-level) +
   §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure. RS prod **100 TaxForms / 475 FA / 867 rules**.

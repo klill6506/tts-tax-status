@@ -1,6 +1,16 @@
 # Form Coverage Tracker — tts-tax-app
 
-> **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD STARTED, legs 1/2/4) — ⏳ IN PROGRESS (does NOT tick).**
+> **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD, legs 1/2/3/4) — ⏳ IN PROGRESS (does NOT tick).**
+> **Leg 3 Schedule K-1 (1041) beneficiary issuance (`99a8943`):** new `Beneficiary` + `BeneficiaryK1Computed`
+> models (migs 0175 create / 0176 RLS, applied to prod + test DB). `k1_allocator_1041.py` allocates the entity's
+> DNI classes to each beneficiary with CHARACTER RETAINED (§652(b)/§662(b)): `box[c]=round(ent_[c]×dni_pct/100)`,
+> boxes 1-8 floored at 0, box 9 directly-apportioned, box 11 final-year (final return only), box 14
+> tax-exempt/NIIT/§199A; carry-out ratio = min(1, IDD/taxable-DNI); grantor → no K-1; persisted via
+> `persist_all_beneficiary_k1s_db` wired into `compute_return`. Seed grew a `k1_sources` section → 9 sections /
+> 83 lines. 6 `D_K1041_*` diagnostics (`rules_1041_k1.py`, reseeded). 6 pure + 3 DB tests. **The K-1 still does
+> NOT render** (leg 5). Below: legs 1/2/4.
+>
+> **2026-07-06 (S-11 Form 1041 fiduciary — legs 1/2/4) — ⏳ IN PROGRESS (does NOT tick).**
 > Greenfield estates & trusts entity type (Ken-directed "start 1041"). **Leg 1 seed (`539b204`):** `1041`
 > FormDefinition, 8 sections / 72 lines (page-1 L1-25b + Sch B DNI/IDD + Sch G tax + entity/elections + ESBT +
 > payments), seeded to prod; `ENTITY_FORM_MAP` `"trust"→"1041"` (EntityType.TRUST + the React frontend already

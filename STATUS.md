@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-06, twenty-fourth session. Unit: **S-11 1041 fiduciary module — APP BUILD STARTED,
-legs 1/2/4 DONE** (Ken-directed "start 1041"). Greenfield estates & trusts entity type. Leg 1 seed + plumbing
-(`539b204`), leg 2 DNI/IDD/Sch-G compute spine (`539b204`), leg 4 the 11 `D_1041_*` diagnostics (`d1117d8`).
-All green, pushed. **REMAINS: leg 3 K-1 issuance · 5 f1041 render · 6 GA 501 · 7 frontend verify · 8 flow
-gate.** Full detail: `.claude` memory `s11-1041-fiduciary-kickoff.md`.*
+*Last updated: 2026-07-06, twenty-fourth session. Unit: **S-11 1041 fiduciary module — APP BUILD, legs
+1/2/3/4 DONE** (Ken-directed "start 1041" + "continue"). Greenfield estates & trusts entity type. Leg 1 seed +
+plumbing (`539b204`), leg 2 DNI/IDD/Sch-G compute spine (`539b204`), leg 4 the 11 `D_1041_*` diagnostics
+(`d1117d8`), leg 3 Schedule K-1 (1041) beneficiary issuance + 6 `D_K1041_*` (`99a8943`, migs 0175/0176).
+All green, pushed. **REMAINS: leg 5 f1041 render · 6 GA 501 · 7 frontend verify · 8 flow gate.** Full detail:
+`.claude` memory `s11-1041-fiduciary-kickoff.md`.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -32,6 +33,10 @@ gate.** Full detail: `.claude` memory `s11-1041-fiduciary-kickoff.md`.*
   subset (`-k "not smoke"`) is ~0.14s. `1041` FormDefinition seeded to prod (8 sections/72 lines).
 - **S-11 1041 diagnostics** — `pytest tests/test_1041_diagnostics_leg.py --reuse-db -q` → **6 passed** (each
   `D_1041_*` fires for its trigger + clean-return no-op). `seed_rules` reseeded to prod (11 `D_1041_*` active).
+- **S-11 1041 K-1 (leg 3)** — `pytest tests/test_1041_k1_leg.py --reuse-db -q` → **6 pure + 3 DB** (all
+  SCHEDULE_K1_1041 spec cases; persist+reconcile, grantor no-K-1, K-1 diagnostics). Migs **0175** (Beneficiary +
+  BeneficiaryK1Computed) + **0176** (RLS) applied to prod AND test DB (`DB_NAME=test_postgres … migrate` in-place
+  trick). `seed_rules` reseeded (6 `D_K1041_*` active). Seed grew to 9 sections / 83 lines (new `k1_sources`).
 - **Client suite** — `cd client && npx vitest run` → **275 passed**; `npx tsc --noEmit` → **0 errors**.
 - `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db`. New DB tests must seed the
   forms they use and filter `FormLine` by `section__form=` NOT `form_definition=`. Must CREATE the `TaxYear`
@@ -39,8 +44,11 @@ gate.** Full detail: `.claude` memory `s11-1041-fiduciary-kickoff.md`.*
 - ⚠ DB runs on the shared Supabase pooler are SLOW/flaky ("terminating connection due to administrator
   command" = transient, retry; never `drop_test_db` a slow run). Run DB tests in the background.
 
-## ▶ RESUME HERE — **S-11 1041 fiduciary module: legs 1/2/4 DONE. Next = leg 3 (K-1 issuance).**
-Full detail in `.claude` memory `s11-1041-fiduciary-kickoff.md`. Ken-directed "start 1041" this session.
+## ▶ RESUME HERE — **S-11 1041 fiduciary module: legs 1/2/3/4 DONE. Next = leg 5 (f1041 render).**
+Full detail in `.claude` memory `s11-1041-fiduciary-kickoff.md`. Ken-directed "start 1041" + "continue".
+**Leg 5 needs the IRS f1041 PDF downloaded first** (not in `resources/irs_forms/2025/`; add to
+`forms_manifest.json`, run `scripts/update_irs_forms.py`, then dump AcroForm fields → `field_maps/f1041.py`).
+The render must also emit a Schedule K-1 per beneficiary from `BeneficiaryK1Computed.box_shares`.
 
 **Greenfield entity type (estates & trusts).** Entity type = `TaxReturn.form_definition.code` (NO `entity_type`
 field). `EntityType.TRUST="trust"` + the frontend already existed; the only plumbing gap was `ENTITY_FORM_MAP`
@@ -63,14 +71,21 @@ to `forms_manifest.json`), leg 6 GA 501 (resident-only v1), leg 7 frontend verif
 - `539b204` — **S-11 legs 1-2** — fiduciary entity type + DNI/IDD/Sch-G compute spine (seed_1041 + compute_1041 +
   ENTITY_FORM_MAP + 13 pure + 1 DB smoke test).
 - `d1117d8` — **S-11 leg 4** — 11 `D_1041_*` diagnostics (rules_1041 + runner registration + 6 DB tests).
+- `a94b99f` — docs (legs 1/2/4).
+- `99a8943` — **S-11 leg 3** — Schedule K-1 (1041) beneficiary issuance: `Beneficiary`+`BeneficiaryK1Computed`
+  models (migs 0175 create / 0176 RLS, prod+test DB), `k1_allocator_1041` (character-retained allocation +
+  grantor no-K-1, wired into compute_return), `k1_sources` seed section, 6 `D_K1041_*` diagnostics; 6 pure + 3 DB.
 
 ## ▶ RS / compute follow-ups (all non-blocking)
-- **S-11 1041 (NEW 2026-07-06).** Remaining legs: 3 K-1 (`SCHEDULE_K1_1041` — spec exists) · 5 f1041 render
-  (⚠ IRS PDF NOT downloaded — add to `forms_manifest.json`, run `update_irs_forms.py`) · 6 GA 501 (spec `GA501`) ·
-  7 frontend editor verify (create_return path) · 8 flow-assertion gate (`flow_assertions_1041.json` — RS export).
-  ⚠ **Ken to confirm the D_1041_AMT trigger** (currently fires on tax-exempt interest as a PAB-preference proxy;
-  the 1041 face carries no ISO/accel-depreciation input this season). RS spec `1041` is `draft` (promote→active).
-  Also carried: WO-10 Form 5227 (§664 four-tier) is its own module; §1062 Form 1062 = structure+flag only.
+- **S-11 1041 (updated 2026-07-06).** Remaining legs: 5 f1041 render (⚠ IRS PDF NOT downloaded — add to
+  `forms_manifest.json`, run `update_irs_forms.py`; also render a Schedule K-1 per beneficiary from
+  `BeneficiaryK1Computed`) · 6 GA 501 (spec `GA501`) · 7 frontend editor verify (create_return path + Beneficiary
+  CRUD UI) · 8 flow-assertion gate (`flow_assertions_1041.json` — RS export). ⚠ **Ken to confirm the D_1041_AMT
+  trigger** (fires on tax-exempt interest as a PAB-preference proxy; the 1041 face carries no ISO/accel-depreciation
+  input this season). RS specs `1041` + `SCHEDULE_K1_1041` are `draft` (promote→active). **K-1 v1 deferrals:** the
+  carry-out ratio = min(1, IDD/taxable-DNI) treats classes proportionally (no per-class tier partition); ST/28%/
+  §1250/other-portfolio/other-rental classes are RED-defer (only common classes on the 1041 face). Also carried:
+  WO-10 Form 5227 (§664 four-tier) is its own module; §1062 Form 1062 = structure+flag only.
 - **S-6 (updated 2026-07-06 follow-up).** ✅ Form 461 Sch-1 line-8p add-back DONE (`296b9f3`) — returns compute
   correctly now. ✅ RS reconciliation DONE (`d5b76b2`): 461/8582/SchE promoted draft→active, RE_PRO message
   de-staled, cached mirrors refreshed. **Still deferred by design:** (a) the §172 NOL carryover to NEXT year (the
