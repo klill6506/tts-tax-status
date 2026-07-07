@@ -276,9 +276,16 @@ TOP unchecked item as the current RS rock.
   liability); effective window (75 days before / 12 months after); Rev. Proc. 2009-41 late relief (3yr 75 days);
   S-election → Form 2553 (not 8832); updated addresses (Kansas City/Ogden). Rev. 12-2013 (no annual reissue); no OBBBA
   impact. entity_types 1065/1120/1120S/1040; prod 118→119; `lookup/8832/export/` = 200; validated 31/0. DECISIONS D-24.
-- [ ] **▶ Form 3115** — Application for Change in Accounting Method (§481(a) depreciation catch-up — Ken's specialty)
-  — NEXT (the LAST S-16 queue item)
-- After this queue drains: net-new RS scope via the TaxWise forms-usage report or a law change.
+- [x] **WO-23 · Form 3115** — Application for Change in Accounting Method (§481(a)) — ✅ DONE 2026-07-06 (RS). Ken's
+  specialty. The §446(e)/§481(a) method-change application: the §481(a) spread engine (negative 1-yr / positive 4-yr
+  ratable / de minimis **$50k** 1-yr / under-exam 2-yr, Rev. Proc. 2015-13 §7.03); the Schedule E depreciation catch-up
+  = (depr taken present) − (depr allowable proposed) at BOY + **DCN 7** routing (Rev. Proc. 2025-23 §6.01); the
+  Schedule A cash↔accrual 2a–2h netting → Line 26; scope limits (under-exam L6a / 5-year L11a / cut-off L25 / DCN-7
+  ≥2-yr) = diagnostics. **Form 3115 Rev. 12-2022** (no annual reissue); **no OBBBA impact** on the procedural
+  machinery/§481(a). entity_types 1040/1065/1120/1120S; prod 119→**120**; `lookup/3115/export/` = 200; validated 36/0.
+  DECISIONS D-25. tts app build = [APP] lane. **← the LAST S-16 item.**
+- **✅ S-16 federal-forms gap-fill queue FULLY DRAINED 2026-07-06** (all 10: 8990 · Sch H · 4684 · 4952 · 8379 · 8814
+  · 8839 · 709 · 8832 · 3115). Net-new RS scope now needs the **TaxWise forms-usage report** or a law change.
 
 ---
 
