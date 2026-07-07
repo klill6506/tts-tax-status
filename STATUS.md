@@ -1,11 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-06, twenty-fourth session. Unit: **S-11 1041 fiduciary module — APP BUILD, legs
-1/2/3/4 DONE** (Ken-directed "start 1041" + "continue"). Greenfield estates & trusts entity type. Leg 1 seed +
-plumbing (`539b204`), leg 2 DNI/IDD/Sch-G compute spine (`539b204`), leg 4 the 11 `D_1041_*` diagnostics
-(`d1117d8`), leg 3 Schedule K-1 (1041) beneficiary issuance + 6 `D_K1041_*` (`99a8943`, migs 0175/0176).
-All green, pushed. **REMAINS: leg 5 f1041 render · 6 GA 501 · 7 frontend verify · 8 flow gate.** Full detail:
-`.claude` memory `s11-1041-fiduciary-kickoff.md`.*
+1/2/3/4/5 DONE** (Ken-directed "start 1041" + "continue"). Greenfield estates & trusts entity type; the federal
+1041 now computes + issues K-1s + diagnoses + renders. Leg 1-2 seed + DNI/IDD/Sch-G compute (`539b204`), leg 4
+the 11 `D_1041_*` diagnostics (`d1117d8`), leg 3 Schedule K-1 (1041) issuance + 6 `D_K1041_*` (`99a8943`, migs
+0175/0176), leg 5 f1041 AcroForm render (`72b38bb`). All green, pushed. **REMAINS: leg 6 GA 501 · 7 frontend
+verify · 8 flow gate; + per-beneficiary K-1 PDF (f1041sk1) follow-on.** Full detail: `.claude` memory
+`s11-1041-fiduciary-kickoff.md`.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,6 +38,10 @@ All green, pushed. **REMAINS: leg 5 f1041 render · 6 GA 501 · 7 frontend verif
   SCHEDULE_K1_1041 spec cases; persist+reconcile, grantor no-K-1, K-1 diagnostics). Migs **0175** (Beneficiary +
   BeneficiaryK1Computed) + **0176** (RLS) applied to prod AND test DB (`DB_NAME=test_postgres … migrate` in-place
   trick). `seed_rules` reseeded (6 `D_K1041_*` active). Seed grew to 9 sections / 83 lines (new `k1_sources`).
+- **S-11 1041 render (leg 5)** — `pytest tests/test_1041_render_leg.py --reuse-db -q` → **1 passed** (estate
+  return renders; L1 20,000 / L23 19,400 / L24 5,165 / L21 600 + header name in the PDF text layer). AcroForm
+  `field_maps/f1041_2025.py`; `f1041` in ACROFORM_FORM_IDS + form_code_to_id. IRS f1041.pdf + f1041sk1.pdf
+  downloaded to `resources/irs_forms/2025/`. Visually probe-verified (page 1 + page 2 every box correct).
 - **Client suite** — `cd client && npx vitest run` → **275 passed**; `npx tsc --noEmit` → **0 errors**.
 - `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db`. New DB tests must seed the
   forms they use and filter `FormLine` by `section__form=` NOT `form_definition=`. Must CREATE the `TaxYear`
@@ -44,11 +49,14 @@ All green, pushed. **REMAINS: leg 5 f1041 render · 6 GA 501 · 7 frontend verif
 - ⚠ DB runs on the shared Supabase pooler are SLOW/flaky ("terminating connection due to administrator
   command" = transient, retry; never `drop_test_db` a slow run). Run DB tests in the background.
 
-## ▶ RESUME HERE — **S-11 1041 fiduciary module: legs 1/2/3/4 DONE. Next = leg 5 (f1041 render).**
+## ▶ RESUME HERE — **S-11 1041 fiduciary module: legs 1/2/3/4/5 DONE. Next = leg 6 (GA 501).**
 Full detail in `.claude` memory `s11-1041-fiduciary-kickoff.md`. Ken-directed "start 1041" + "continue".
-**Leg 5 needs the IRS f1041 PDF downloaded first** (not in `resources/irs_forms/2025/`; add to
-`forms_manifest.json`, run `scripts/update_irs_forms.py`, then dump AcroForm fields → `field_maps/f1041.py`).
-The render must also emit a Schedule K-1 per beneficiary from `BeneficiaryK1Computed.box_shares`.
+**Leg 6 = GA Form 501** (resident-only v1, RS spec `GA501`): federal 1041 Adjusted Total Income (L17, PRE-IDD) →
+Sch 2 adj → Sch 3 beneficiary subtraction (L4) → $1,350 trust / $2,700 estate exemption → 5.19% → Sch 5/6
+credits. Mirror the state-return pattern (dedicated `compute_ga501_db` + `render_ga501` + `rules_ga501`; attaches
+via `state_returns` FK). RED-defer Sch 4 NR allocation + §168(k)/§179 add-backs. Then leg 7 frontend verify
+(create_return trust→1041 + Beneficiary CRUD UI), leg 8 flow-assertion gate. **Leg-5 follow-on:** per-beneficiary
+Schedule K-1 PDF (f1041sk1 downloaded, renders from `BeneficiaryK1Computed`); Sch A charitable; Sch G Part II detail.
 
 **Greenfield entity type (estates & trusts).** Entity type = `TaxReturn.form_definition.code` (NO `entity_type`
 field). `EntityType.TRUST="trust"` + the frontend already existed; the only plumbing gap was `ENTITY_FORM_MAP`
@@ -75,17 +83,24 @@ to `forms_manifest.json`), leg 6 GA 501 (resident-only v1), leg 7 frontend verif
 - `99a8943` — **S-11 leg 3** — Schedule K-1 (1041) beneficiary issuance: `Beneficiary`+`BeneficiaryK1Computed`
   models (migs 0175 create / 0176 RLS, prod+test DB), `k1_allocator_1041` (character-retained allocation +
   grantor no-K-1, wired into compute_return), `k1_sources` seed section, 6 `D_K1041_*` diagnostics; 6 pure + 3 DB.
+- `fadca04` — docs (leg 3).
+- `72b38bb` — **S-11 leg 5** — f1041 AcroForm render: downloaded f1041.pdf + f1041sk1.pdf (manifest +
+  update_irs_forms.py); `field_maps/f1041_2025.py` (73 fields, position-correlated); registered in
+  ACROFORM_FORM_IDS + form_code_to_id; entity-type checkbox block in render_tax_return; visually probe-verified;
+  render test (L1/L23/L24/L21 + name land).
 
 ## ▶ RS / compute follow-ups (all non-blocking)
-- **S-11 1041 (updated 2026-07-06).** Remaining legs: 5 f1041 render (⚠ IRS PDF NOT downloaded — add to
-  `forms_manifest.json`, run `update_irs_forms.py`; also render a Schedule K-1 per beneficiary from
-  `BeneficiaryK1Computed`) · 6 GA 501 (spec `GA501`) · 7 frontend editor verify (create_return path + Beneficiary
-  CRUD UI) · 8 flow-assertion gate (`flow_assertions_1041.json` — RS export). ⚠ **Ken to confirm the D_1041_AMT
-  trigger** (fires on tax-exempt interest as a PAB-preference proxy; the 1041 face carries no ISO/accel-depreciation
-  input this season). RS specs `1041` + `SCHEDULE_K1_1041` are `draft` (promote→active). **K-1 v1 deferrals:** the
-  carry-out ratio = min(1, IDD/taxable-DNI) treats classes proportionally (no per-class tier partition); ST/28%/
-  §1250/other-portfolio/other-rental classes are RED-defer (only common classes on the 1041 face). Also carried:
-  WO-10 Form 5227 (§664 four-tier) is its own module; §1062 Form 1062 = structure+flag only.
+- **S-11 1041 (updated 2026-07-06).** Remaining legs: 6 GA 501 (spec `GA501`) · 7 frontend editor verify
+  (create_return path + Beneficiary CRUD UI) · 8 flow-assertion gate (`flow_assertions_1041.json` — RS export).
+  **Leg-5 follow-on:** the per-beneficiary Schedule K-1 PDF (f1041sk1 downloaded, renders from
+  `BeneficiaryK1Computed`); Schedule A charitable breakdown; Sch G Part II payments detail; other-info questions.
+  ⚠ **Ken to confirm the D_1041_AMT trigger** (fires on tax-exempt interest as a PAB-preference proxy; the 1041
+  face carries no ISO/accel-depreciation input this season). RS specs `1041` + `SCHEDULE_K1_1041` are `draft`
+  (promote→active). **K-1 v1 deferrals:** carry-out ratio = min(1, IDD/taxable-DNI) treats classes proportionally;
+  ST/28%/§1250/other-portfolio/other-rental classes are RED-defer. ⚠ **Render:** the seed's payments section
+  differs from the real form (page-1 25a = Form 965-A; est-payments/withholding live on Sch G Part II) — the field
+  map bridges the semantic keys, but a seed reconciliation is a clean follow-up. Also: WO-10 Form 5227 (§664
+  four-tier) is its own module; §1062 Form 1062 = structure+flag only.
 - **S-6 (updated 2026-07-06 follow-up).** ✅ Form 461 Sch-1 line-8p add-back DONE (`296b9f3`) — returns compute
   correctly now. ✅ RS reconciliation DONE (`d5b76b2`): 461/8582/SchE promoted draft→active, RE_PRO message
   de-staled, cached mirrors refreshed. **Still deferred by design:** (a) the §172 NOL carryover to NEXT year (the

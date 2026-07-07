@@ -17,8 +17,13 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-11 1041 fiduciary module — APP BUILD (legs 1/2/3/4 DONE).** 2026-07-06
-(twenty-fourth session, Ken-directed "start 1041" + "continue"): greenfield estates & trusts entity type.
+## ▶ NOW WORKING ON — **S-11 1041 fiduciary module — APP BUILD (legs 1/2/3/4/5 DONE).** 2026-07-06
+(twenty-fourth session, Ken-directed "start 1041" + "continue"): the federal 1041 now computes + issues K-1s +
+diagnoses + renders. **Leg 5 f1041 render (`72b38bb`):** downloaded f1041.pdf + f1041sk1.pdf from irs.gov;
+`field_maps/f1041_2025.py` (73 AcroForm fields, position-correlated) — page-1 L1-24 / Sch B B1-B15 / Sch G Part I
+G1a-G9 / entity-type checkboxes / header; registered `f1041` in ACROFORM_FORM_IDS + form_code_to_id; visually
+probe-verified. **REMAINS: leg 6 GA 501 · 7 frontend verify · 8 flow gate + the per-beneficiary K-1 PDF.** Below,
+greenfield estates & trusts entity type.
 **Legs 1-2 (`539b204`):** `seed_1041` (`1041` FormDefinition; `ENTITY_FORM_MAP` `trust→1041`; EntityType.TRUST +
 React frontend already existed) + dedicated `compute_1041.py` (`compute_1041_db` early-return in `compute_return`,
 NOT the FORMULA_REGISTRY) — DNI/IDD §643(a) / §662 tiers / §642(b) exemptions / §1(e) rate sched + 0/15/20
@@ -53,7 +58,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **S-11 1041 leg 5 (f1041 render)**, then legs 6-8; or Ken directs. Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — **S-11 1041 leg 6 (GA Form 501)**, then legs 7-8; or Ken directs. Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
@@ -203,9 +208,11 @@ turn-on waits on the Shelf (DOR approvals).
   cap-gain wksht / ESBT 37% / NIIT / total tax); 13 pure + 1 DB. Leg 4 `rules_1041.py` 11 `D_1041_*`
   (AMT/bankruptcy RED-defer per D-2); 6 DB. **Leg 3** `Beneficiary` + `BeneficiaryK1Computed` (migs 0175/0176,
   prod+test) + `k1_allocator_1041` (character-retained K-1, grantor→no K-1, wired into compute_return) +
-  `k1_sources` seed section + 6 `D_K1041_*`; 6 pure + 3 DB. Flow 422.
-  **REMAINS: leg 5 f1041 render (⚠ IRS PDF not downloaded) · 6 GA 501 (resident-only v1) · 7 frontend editor
-  verify · 8 flow-assertion gate + the 4 ATS scenarios.**  `[APP]`
+  `k1_sources` seed section + 6 `D_K1041_*`; 6 pure + 3 DB. **Leg 5** f1041 AcroForm render (`72b38bb`):
+  downloaded f1041.pdf + f1041sk1.pdf; `field_maps/f1041_2025.py` (73 fields); registered in ACROFORM_FORM_IDS +
+  form_code_to_id; entity-type checkbox from ENTITY_TYPE; visually probe-verified; render test. Flow 422.
+  **REMAINS: leg 6 GA 501 (resident-only v1) · 7 frontend editor verify · 8 flow-assertion gate + the 4 ATS
+  scenarios + the per-beneficiary Schedule K-1 PDF (f1041sk1).**  `[APP]`
 - [x] **WO-10 — Form 5227** split-interest trusts (CRAT/CRUT/PIF/CLT/§4947) — RS authoring DONE 2026-07-05
   (`load_5227.py`; DECISIONS D-11; `lookup/5227/export/` = 200). §664(b) four-tier char engine (tier-level) +
   §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure. RS prod **100 TaxForms / 475 FA / 867 rules**.

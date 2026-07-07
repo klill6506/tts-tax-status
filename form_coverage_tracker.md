@@ -1,5 +1,18 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD, leg 5 f1041 render) — ⏳ IN PROGRESS (does NOT tick).**
+> **Leg 5 f1041 render (`72b38bb`):** renders onto the official IRS f1041.pdf AcroForm template. Downloaded
+> f1041.pdf + f1041sk1.pdf from irs.gov (manifest + `update_irs_forms.py`, hashes recorded); dumped the 173
+> AcroForm fields and position-correlated each widget with its line label. `field_maps/f1041_2025.py` (73 fields):
+> page-1 L1-24 + payments (25a/25e→Sch G Part II 10/14, 25b/26-30) + Schedule B B1-B15 + Schedule G Part I
+> G1a-G9 + entity-type checkboxes (`cb_<type>`, set from ENTITY_TYPE by a `render_tax_return` block) + HEADER_MAP
+> (name/EIN/fiduciary/address/final-return). Registered `f1041` in `ACROFORM_FORM_IDS` + `form_code_to_id`.
+> **Visually probe-verified** (field-probe render — every mapped box holds its own key; page 1 header/checkboxes/
+> income/deductions/tax/payments + page 2 Sch B / Sch G Part I all land correctly). Render test asserts L1 20,000 /
+> L23 19,400 / L24 5,165 / L21 600 + header name in the PDF text layer. **The 1041 form STILL does not fully tick**
+> — legs 6 (GA 501) / 7 (frontend verify) / 8 (flow gate) + the per-beneficiary K-1 PDF (f1041sk1) remain. Below:
+> legs 1/2/3/4.
+>
 > **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD, legs 1/2/3/4) — ⏳ IN PROGRESS (does NOT tick).**
 > **Leg 3 Schedule K-1 (1041) beneficiary issuance (`99a8943`):** new `Beneficiary` + `BeneficiaryK1Computed`
 > models (migs 0175 create / 0176 RLS, applied to prod + test DB). `k1_allocator_1041.py` allocates the entity's
