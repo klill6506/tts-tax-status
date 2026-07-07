@@ -20,7 +20,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 ## ▶ NOW WORKING ON — **Lacerte-regression bug fixes (session 26 detour output): Sch E PY-PAL release + 8960 rental NII — then back to MeF Scenario-5 doc mappers / 1041 legs 6-8.** 2026-07-07
 
 **Session 26 (Ken-directed detour; ADDED to the plan — was not on the Spine):**
-- [x] `[APP]` **Lacerte regression harness v1** — 2026-07-07 (scripts/lacerte_regression/: parse → load →
+- [x] `[APP]` **Lacerte regression harness v1** — 2026-07-07 `39e7258` (scripts/lacerte_regression/: parse → load →
   compare; procedure in its README). First real 2025 return recreated in-app and diffed: **30 lines match
   Lacerte exactly, 29 differ — ALL traced to two engine bugs.** Details: tax-app `STATUS.md` (bugs) +
   `STATUS_ARCHIVE.md` 2026-07-07 (full session detail). Return identity lives in `D:\tax-test-data\` only.
