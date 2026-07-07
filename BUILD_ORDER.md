@@ -17,7 +17,19 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-11 1041 fiduciary module — APP BUILD (legs 1/2/3/4/5 DONE).** 2026-07-06
+## ▶ NOW WORKING ON — **MeF entity e-file (∥ Ken-directed detour): 1120-S mapper leg 1 DONE — next = ATS Scenario-5 doc mappers.** 2026-07-07
+(twenty-fifth session; ADDED to the plan — was not on the Spine; Ken directed "start S-corp MeF testing"):
+**July SOR release filed** (`9b77c7e` — BMF 1041 v5.5 / 1065 v5.4 / 1120x v6.3 extracted+hashed, IMF v5.5/2026v2.0
+recorded; `docs/mef/schema_versions.md`). **1120-S MeF mapper leg 1 (`c2edd0d`):** schema_locator corp-tree support;
+`read_model_1120s` + `builder_1120s` 1:1 vs TY2025v6.3 XSDs (v6.3 = the Jan-2027 PRODUCTION version — right target;
+ATS window opens fall 2026); synthetic S corp XSD-validates GREEN; 10 tests + 59 regress. ⚠ live-page check: ATS-active
+TODAY = 1040 v5.3 / 1120x v6.2 / 1065 v5.3 / 1041 v5.3 (the in-hand 1041 v5.5 is "Not valid for ATS") — **SOR
+want-list email SENT 2026-07-07** (all four families). **NEXT MeF legs:** Scenario-5 doc mappers (1125-A, 1125-E,
+4562, 4797, 8825 — engine-computed already, serialization-only) + Itemized*Schedule attachment docs + engine-driven
+scenario build (1040-Scenario-8 playbook) + DB leg on a real return + v6.2 re-stamp when SOR lands. Data-model gaps:
+signing officer (BusinessOfficerGrp), B4a/B4b tables, K10/K13g codes. Scenario PDFs → `docs/mef/scenarios/`.
+
+**Prior spine item — S-11 1041 fiduciary module, APP BUILD (legs 1/2/3/4/5 DONE), REMAINS legs 6-8** — 2026-07-06
 (twenty-fourth session, Ken-directed "start 1041" + "continue"): the federal 1041 now computes + issues K-1s +
 diagnoses + renders. **Leg 5 f1041 render (`72b38bb`):** downloaded f1041.pdf + f1041sk1.pdf from irs.gov;
 `field_maps/f1041_2025.py` (73 AcroForm fields, position-correlated) — page-1 L1-24 / Sch B B1-B15 / Sch G Part I
@@ -58,7 +70,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **S-11 1041 leg 6 (GA Form 501)**, then legs 7-8; or Ken directs. Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — **MeF 1120-S ATS Scenario 5 (∥, Ken-directed)** — doc mappers 1125-A → 1125-E → 4562 → 4797 → 8825, then statements + scenario build; **spine: S-11 1041 leg 6 (GA Form 501)**, then legs 7-8. Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
