@@ -299,6 +299,17 @@
 > full-return serialization since the 7-04 Form 8835 unit). RS follow-up: SC1040 spec is `draft` + carries
 > the wrong $50k pin.
 
+> **2026-07-07 (twenty-eighth session) — MeF SOR intake + ATS-active re-stamps + 2 engine fixes, no
+> coverage change.** No form leg moved. (1) **MeF** (`199cfff`): 5 SOR packages intaken; 1040 mapper
+> re-stamped 2025v5.4→**v5.3** and 1120-S 2025v6.3→**v6.2** (today's ATS-active versions; deltas not
+> emitted); new `apps/efile/validation/business_rules.py` loads the BR publications (CSV + XLSX) so an
+> ATS reject number resolves to text locally — the 1040 business rules are now IN HAND. (2) **Form 2441
+> line 8** — the CDCC applicable percentage (a RATIO) was flattened to "0" by the session-27 whole-dollar
+> sweep; fixed (same commit), caught by IRS2441.xsd during the v5.3 revalidation. (3) **Whole-dollar
+> zero-clears** (`117cb68`): the s27 sweep left literal "0.00" clears (K2 rental / K7-K8a Sch D /
+> disposition K9-K10-K8c-K9c-K15b-4-6) + a K2 cents quantize; fixed. Flow gate 422; pin suite +
+> dispositions/4797 green. No migration.
+
 > **2026-07-05 (thirteenth session) — e-file/diagnostics HARDENING, no coverage change.** Two latent
 > bugs on already-complete forms, no leg status moved: (1) **Schedule 3 e-file leg** — `build_schedule3`
 > now emits the lines 6z + 13z repeating groups (`OtherNonrefundableCreditsGrp` / `OtherRefundableCreditsGrp`

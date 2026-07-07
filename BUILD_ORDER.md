@@ -17,10 +17,26 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **MeF SOR-package intake (Ken-directed 2026-07-07 evening: business rules + 2025v5.3 material RECEIVED) → then Scenario-5 doc mappers.** Pin-suite verification runs alongside in background (see tax-app STATUS).
+## ▶ NOW WORKING ON — **MeF entity track: 1120-S ATS Scenario-5 doc mappers (1125-A first).** SOR intake + both mapper re-stamps DONE (session 28). Spine federal: S-11 1041 legs 6-8.
+
+**Session 28 wrap (2026-07-07 evening; Ken-directed "go back to MeF — 1040 business rules + v5.3"):**
+- [x] `[APP]` **MeF SOR want-list intake** — 2026-07-07 `199cfff`. 5 SOR zips hashed+extracted+recorded
+  (`schema_versions.md`). Received: 1040 v5.3 schemas+**BR (first 1040 BR in hand)**, 1120x v6.2 sch+BR,
+  1065 v5.3 sch+full BR. ⚠ 1041 came **v3.0 not v5.3** (re-request); 1040 v5.4 BR missing.
+- [x] `[APP]` **Both mappers re-stamped to ATS-ACTIVE** — same commit. 1040 v5.4→**v5.3** (flip back
+  8/9/2026); 1120-S v6.3→**v6.2** (v6.3 = Jan-2027 prod stamp). Deltas not emitted; 59+10 tests green.
+- [x] `[APP]` **`business_rules.py` loader** — same commit. Reject-number → text/category/severity;
+  CSV (1040 v5.3) + XLSX (1120x v6.2) variants. 5 tests.
+- [x] `[APP]` **Engine fix: 2441 line-8 ratio** flattened to "0" by the s27 whole-dollar sweep — same
+  commit; caught by IRS2441.xsd during the v5.3 revalidation. Scenario 5+8 rebuilt+revalidated (42 DB green).
+- [x] `[APP]` **Engine fix: whole-dollar zero-clears** — 2026-07-07 `117cb68`. s27 sweep left literal
+  "0.00" clears (K2/K7/K8a/disposition lines) + a K2 cents quantize; the s27-updated pins caught them.
+  Flow gate 422; pin suite fully green; dispositions/4797 (39) green.
+- [x] `[APP]` **Session-27 residual pin suite** — DONE this session (was 0b in STATUS). All green.
+  ⚠ broad state/2210/retirement sweep NOT fully re-run (pooler degraded); blast-radius covered only.
 
 **Session 27 wrap:** regression bugs ALL FIXED + whole-dollar rounding landed (`0afdcb4`) — comparator
-0 diffs / 59 lines, flow gate 422. Residual: 25 updated pins + broad batches need a green run (0b).
+0 diffs / 59 lines, flow gate 422. (Residual pin suite → closed session 28 above.)
 
 **Session 26 (Ken-directed detour; ADDED to the plan — was not on the Spine):**
 - [x] `[APP]` **Lacerte regression harness v1** — 2026-07-07 `39e7258` (scripts/lacerte_regression/: parse → load →

@@ -1,10 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-07, twenty-seventh session (continuation of the regression detour). Unit:
-**regression bugs FIXED + whole-dollar rounding LANDED engine-wide** — the app now reproduces
-Lacerte regression return #1 with **0 differences across 59 compared lines** (refunds match to the
-dollar) and **zero cent-valued FormFieldValues** on either return. Ken ruled: "a tax return should
-never have cents anywhere." ⚠ ONE VERIFICATION STEP REMAINS (below) before this unit fully closes.*
+*Last updated: 2026-07-07, twenty-eighth session (Ken-directed: "go back to MeF — 1040 business
+rules + v5.3"). Unit: **MeF SOR want-list intake + both mappers re-stamped to today's ATS-ACTIVE
+versions (1040 2025v5.3 / 1120-S 2025v6.2) + business-rules loader + two engine fixes surfaced by
+the revalidation**. Pin suite (session-27 residual) fully green. Two commits: `199cfff` (MeF) +
+`117cb68` (whole-dollar zero-clear fix).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,88 +13,63 @@ never have cents anywhere." ⚠ ONE VERIFICATION STEP REMAINS (below) before thi
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — MeF SOR intake FIRST (Ken-directed 2026-07-07 evening), pin suite alongside
-**(0) FIRST ACTION — MeF: the SOR want-list packages LANDED** (Ken received the business rules +
-the 2025v5.3 material today). Intake per `docs/mef/README_schemas.md`: drop the zips in `docs/mef/`,
-file/hash/extract, record in `schema_versions.md`. Expected contents vs the want-list: 1040 2025v5.3
-schemas+BR · 1040 v5.4 BR · 1120x TY2025v6.2 schemas+BR (→ one-line re-stamp of the 1120-S mapper
-registry + revalidate) · 1065 2025v5.3 schemas+full BR · 1041 TY2025v5.3 schemas+BR — verify what
-actually arrived against that list. Then continue the MeF track (Scenario-5 doc mappers, 1125-A
-first). Ask Ken where he saved the downloaded files.
+## ▶ RESUME HERE — MeF entity track: 1120-S ATS Scenario-5 doc mappers (1125-A first)
+The SOR intake + re-stamps are DONE (below). Next MeF unit = **1120-S ATS Scenario-5 doc mappers**
+(1125-A → 1125-E → 4562 → 4797 → 8825; all engine-computed, serialization-only) + Itemized*Schedule
+attachment docs, then the engine-driven scenario build. **Spine (federal) still on deck: S-11 1041
+legs 6-8** (leg 6 GA Form 501 next).
 
-**(0b) IN PARALLEL — run the 25-test pin suite + broad batches** (background; SAFE alongside MeF
-work, which is serialization/docs-only — but the never-edit-compute-.py-mid-run rule applies if any
-engine change comes up). Two things still need a green run:
-1. `pytest $(cat pin_nodes list) --reuse-db` — the 25 tests whose cent-string pins were updated to
-   whole-dollar this session (node list: `tests/test_diagnostics.py -k "m1_3b"`,
-   `tests/test_returns.py -k "OtherDeductions or LineItemDetails or RentalProperties or
-   ComputeOverride or Compute1065 or Compute1120 or ShareholderDistributions or update_fields"`,
-   `tests/test_1040x_baseline.py -k snapshot`, `tests/test_schedule_f_diagnostics_leg.py -k
-   above_qbi`). Pins were updated by write-path analysis, NOT yet executed.
-2. Broad entity/state batches (1120-S / 1065 / 1041 / GA-500 / SC / NC / AL / Sch L balance / 2210 /
-   retirement / K-1 / render suites). ⚠ RUN IN SMALL BATCHES (2-3 files), background, --reuse-db —
-   a 5-file batch of heavy DB suites ran 3+ hours on the pooler this session and was killed.
-   ⚠ NEVER edit compute .py files while a DB suite runs (imports are cached → results tainted).
-3. Then delete the stale-pin risk note here and tick the BUILD_ORDER items fully.
-
-**(A) Spine: S-11 1041 legs 6-8 unchanged** — leg 6 GA Form 501 next.
-**(B) MeF entity e-file (∥): 1120-S ATS Scenario-5 doc mappers unchanged** — 1125-A first.
-SOR mailbox watch continues.
-
-## What landed this session (all committed)
-- **Bug 1 — Sch E released prior-year passive loss** (`compute_8582.per_activity_allocation`): BOTH
-  branches now grant every activity its full deduction (loss + prior) when not in the Part VII pool
-  — incl. an activity whose own income absorbs its prior loss. Sch E line 21 = face net (no prior);
-  released loss lands on line 22 → 26. Specs verified (FORM_8582/SCHEDULE_E — conforming fix).
-- **Bug 2 — 8960 line 4a**: auto-feeds Sch 1 line 5 (override `e8960_rental` takes the row manual);
-  auto 4b backs out non-§1411 slice (`schedule_e_non_1411_income`: self-rental recharacterized +
-  nonpassive non-PTP K-1 net). Render face mirrors (4a/4b/4c added to f8960 field map). ⚠ RS spec
-  amendment wanted (spec is draft; 4a listed as bare preparer entry) — handoff:
-  `docs/rs_handoff/2026-07-07_8582_sche_8960_lacerte_regression_fixes.md`.
-- **Bug 3 (found during verification) — 1040 line 24 stale total**: mid-chain Sch-2 re-sums (8960
-  NIIT, 6252, HSA) update the line-23 FFV through their own row fetches; `values["23"]` was never
-  refreshed → line 24 totaled $10 short. Fixed: refresh_from_db sync before the second downstream
-  pass (compute.py).
-- **Whole-dollar rounding engine-wide**: ~131 quantize sites flipped to `Decimal("1"),
-  ROUND_HALF_UP` across every compute module + views rollups + 8812/Sch-1A writers + the 25c roster.
-  KEPT at cents (deliberate): FICA penny tolerances (w2_fica_check), §72 per-payment amount, SC1040
-  proration ratio, 8962 line-7 applicable figure, §179 share allocation internals. K-1 allocators
-  were already whole. PDF `format_currency` always printed whole (`,.0f`) — unchanged.
-- **Test pins updated** (25 cent-string pins → whole; overrides/direct-writes/in-memory fakes left).
-- **Read-only audit (Ken/Chat request): client-table inventory** of the shared Supabase →
-  `docs/audits/2026-07-07_client_table_inventory.md`. Headlines: no canonical shared clients table
-  (1099 = parallel universe; 27/68 filers TIN-match the central record, only 5/321 recipients); NO
-  client-number-like column exists anywhere; portal rides `clients_client` via portal_portaluser;
-  **NEW `checkin` schema** (2,566 free-text-identity events, zero FKs — third client universe);
-  central record still has no primary-individual SSN column. SUITE_CONTRACT deltas noted in the
-  audit file (its MCP-stale-password note is obsolete). Feeds the upcoming client-ID project.
+## What landed this session (both commits pushed)
+- **MeF SOR want-list intake** (`199cfff`) — Ken pulled 5 SOR zips to `docs/mef/`, all hashed +
+  extracted + recorded in `schema_versions.md` / `README_schemas.md`. **Received:** 1040 2025v5.3
+  schemas + **business rules (first time 1040 BR in hand)**, 1120x TY2025v6.2 schemas+BR, 1065
+  2025v5.3 schemas + full BR. **Missing / wrong:** no 1040 v5.4 BR; **1041 arrived v3.0, not the
+  wanted ATS-active v5.3** — re-request from e-help (see Waiting-on-Ken).
+- **Both mappers re-stamped to today's ATS-active versions** (same commit):
+  - **1040 → 2025v5.3** (was v5.4; ATS-active until 8/9/2026). v5.3↔v5.4 delta = IRS5329.xsd only,
+    not emitted. builder SCHEMA_VERSION + registration + 7 scenario modules/commands + tests. 59 pure green.
+  - **1120-S → 2025v6.2** (was v6.3; v6.3 stays the Jan-2027 production stamp, flip back when its
+    fall-2026 ATS window opens). Delta = IRS4255/8825/8933, not emitted. 10 tests green.
+    ⚠ v6.2 Return1120S.xsd does NOT fix the returnVersion attr → local validation can't catch a
+    wrong 1120-S stamp.
+- **NEW `apps/efile/validation/business_rules.py`** (same commit) — resolves an ATS reject number →
+  full rule text/category/severity locally. Handles both publication formats (1040 v5.3 CSV cp1252;
+  1120x v6.2 XLSX). 5 tests. Unsigned-return reject rules now identified: F1040-310…318 + R0000-095/096.
+- **Engine fix 1 — Form 2441 line 8** (same commit): the CDCC applicable percentage (0.20–0.35) was
+  flattened to `"0"` by the session-27 whole-dollar sweep (it's a RATIO). Caught by IRS2441.xsd's
+  CareExpensesDecimalAmt enumeration during the v5.3 scenario-5 revalidation. Ratio audit of
+  1116/8829/6252 clean. Scenario 5+8 artifacts rebuilt+revalidated vs v5.3 (42 DB tests green).
+- **Engine fix 2 — whole-dollar zero-clears** (`117cb68`): the session-27 sweep left literal
+  `"0.00"` clears (K2 rental, K7/K8a Sch D, K9/K10/K8c/K9c/K15b/4/6 disposition lines) + one K2
+  cents quantize — cents-form values that violate no-cents-anywhere. The session-27-updated
+  RentalProperties pins caught them. Fixed; the 4 affected pins + dispositions/4797 (39) green.
 
 ## Active gates
-- **Flow-assertion gate — 422 passed** (after all changes; two getsource pins were preserved by
-  keeping the pinned source lines intact — see auto-memory).
-- 8960 compute leg 13 passed · new `test_pal_release_and_8960_rental.py` 6 passed (pure) · client
-  suite 275 passed · py_compile + `manage.py check` clean · regression-return-#1 comparator exit 0 (0 diffs).
-- ⚠ Pin suite + broad batches = the RESUME item above; not yet run against final code.
+- **Flow-assertion gate — 422 passed** (after both commits).
+- Pure MeF suites: 59 (1040) + 10 (1120-S) + 5 (business_rules) green.
+- Scenario 5+8 DB artifacts: 42 passed vs v5.3.
+- **Pin suite (session-27 residual) — DONE**: m1_3b + 1040x snapshot + sch-F above_qbi + 25/29
+  test_returns pins all green; the 4 that failed were the real zero-clear bug (now fixed +
+  reverified). dispositions + 4797 compute (39) green (blast-radius of the clear fix).
 
-## Lacerte regression harness (built session 26, unchanged)
-`scripts/lacerte_regression/` parse → load → compare; procedure in its README. Return #1 now fully
-green — rerun the comparator after any engine change: it is the fastest full-return smoke test.
-
-## ▶ RS / compute follow-ups
-- **RS spec amendments from this unit**: R-8960-INCOME 4a auto-feed (+ 4b auto back-out); RS
-  integrity gate `check_schedule_e_8582_integrity.recompute_per_activity` re-verify vs the
-  gain-activity case; RS scenario pins re-pin whole-dollar on next touch. Handoff doc above.
-- 8582 cosmetic: app fills Parts II/III when line 3 ≥ 0 (form says stop) — fold into a later leg.
-- 8960 render face line 15 not shown (pre-existing, cosmetic).
-- Carried items unchanged (S-11 legs 6-8; S-6 §172/6198; f1065 M-1 nuance; GA-700/NC/AL/SC/8867;
-  S-4 staged assertions; see session-26 STATUS in STATUS_ARCHIVE).
+## ▶ Known issues / deferrals
+- **Broad entity/state regression sweep NOT fully re-run this session** (pooler badly degraded today
+  — a 4-test batch took 7 min, the 29-pin batch 46 min with connection drops). Re-run covered the
+  compute change's blast radius only (rental/Sch-D/disposition/4797 + Compute1065/1120). The
+  state/2210/retirement/K-1/render suites are UNTOUCHED by this session's engine changes and were
+  green last session — re-run when the pooler recovers, low priority.
+- **schema_locator version-string collision**: 1040 v5.3 owns `schemas/2025v5.3/`; the 1065 v5.3
+  tree (same version string, also ships `IndividualIncomeTax/`) is STAGED under
+  `schemas/bmf_july/1065_2025v5.3/` — the locator needs family awareness before the 1065 mapper leg.
+- RS spec follow-ups carried from session 27 (8960 4a auto-feed, 8582 cosmetic, etc.) unchanged —
+  see `docs/rs_handoff/2026-07-07_*.md` + STATUS_ARCHIVE.
 
 ## ▶ Waiting on Ken / external
-1. SOR mailbox watch (want-list sent 2026-07-07).
-2. IFA-upload 1040 scenarios 8 + 5 rebuild (pre-§12.5).
-3. TY2025 4868 schema (carried).
-4. ~~Regression return #1 dependent DOBs~~ DONE — Ken entered them (8812 shows 4 QCs, CTC $0 ✓).
-5. ~~Rounding policy decision~~ RESOLVED — Ken ruled whole-dollar everywhere (landed this session).
+1. **1041 ATS-active v5.3 schemas+BR** — the SOR drop gave v3.0 (old); re-request from e-help.
+2. **1040 v5.4 business rules** — for the 8/9/2026 version flip (not in this drop).
+3. SOR mailbox watch continues (1120-S family access, etc.).
+4. IFA-upload 1040 scenarios 8 + 5 (now v5.3-stamped, artifacts rebuilt) — real EFIN + PINs to sign.
+5. TY2025 4868 schema (carried).
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
