@@ -1,11 +1,13 @@
 # Form Coverage Tracker — tts-tax-app
 
-> **2026-07-06 (S-5 leg 1) — entity-return boundary diagnostics → ✅ DONE, live on prod (`50f2874`).** Not a
-> form face — the season-one "no silent gap" safety net (`apps/diagnostics/rules_entity_boundary.py`, 6
-> `D_EB_*` REDs for 1065 + 1120-S) + `EntityBoundaryAssertion` model (migs 0170/0171). M-3 + K-2/K-3 foreign
-> gate auto-derive from data; §704(c)/§754/apportionment read preparer-assertion flags (default non-firing).
-> Superseded `D_L_M3` deactivated. 13 tests; flow gate 422; `check` clean. ⚠⚠ **leg 2 = React input UI
-> deferred** (DEFERRAL_AUDIT). Detail: `.claude` memory `s5-entity-boundary-diagnostics.md`.
+> **2026-07-06 (S-5 COMPLETE — legs 1 + 2) — entity-return boundary safety net → ✅ DONE, live on prod.** Not a
+> form face — the season-one "no silent gap" net (`apps/diagnostics/rules_entity_boundary.py`, 6 `D_EB_*` REDs
+> for 1065 + 1120-S) + `EntityBoundaryAssertion` model (migs 0170/0171). **Leg 1 (`50f2874`):** diagnostics;
+> M-3 + K-2/K-3 foreign gate auto-derive from data; §704(c)/§754/apportionment read preparer-assertion flags
+> (default non-firing); superseded `D_L_M3` deactivated. **Leg 2 (`d74b016`):** React "Boundary" input tab on
+> the 1065 + 1120-S editors (`EntityBoundarySection.tsx`) + `entity-boundary` GET/PATCH API action + serializer
+> — the preparer-flag arms now fire from the UI. 17 tests (13 diagnostics + 4 endpoint); flow gate 422; `check`
+> clean; client tsc 0 err / vitest 275. Detail: `.claude` memory `s5-entity-boundary-diagnostics.md`.
 
 > **2026-07-06 (S-4 follow-on, same session) — Schedule M-1 line-4/line-7 total boxes → ✅ DONE (`c0dbff8`).**
 > Render-layer synthesis (`M1_4`=4a+4b+4c, `M1_7`=7a+7b → `f6_132`/`f6_139`) closes the one display gap noted
