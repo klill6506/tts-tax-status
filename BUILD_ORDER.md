@@ -17,10 +17,11 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken directs.** 2026-07-06 (twenty-third session): ✅ **S-5 leg 2 —
-entity-boundary preparer-assertion input UI** (`d74b016`) → **S-5 COMPLETE end-to-end.** New "Boundary" tab on
-the 1065 + 1120-S editors driving the `EntityBoundaryAssertion` flags (`EntityBoundarySection.tsx`) +
-`entity-boundary` GET/PATCH API action + serializer + 4 endpoint tests; preparer arms now fire from the UI.
+## ▶ NOW WORKING ON — **idle — Ken directs.** 2026-07-06 (twenty-third session): ✅ **S-6 PAL/basis deepening
+app build COMPLETE, all 5 R-items** (R1 self-rental `c4cd928`; R2-R5 boundary diagnostics + Form 461 `07fb29f`)
+— extends the existing 8582/Sch E engine; R1 = the only real compute change (type-7 net income→non-passive),
+R2-R5 diagnostic-only; migs 0172/0173/0174; 27 tests; flow 422. ✅ **S-5 leg 2 — entity-boundary input UI**
+(`d74b016`) → **S-5 COMPLETE end-to-end** (new "Boundary" tab + `entity-boundary` GET/PATCH API + 4 tests).
 Prior (twenty-second session): ✅ **S-5 entity-boundary diagnostics leg 1** (`50f2874`) — 6 `D_EB_*` REDs for
 1065/1120-S + `EntityBoundaryAssertion` model (migs 0170/0171 prod), superseded `D_L_M3` deactivated. ✅ **S-4
 f1065 render recalibration COMPLETE — the 1065 form fully ticks; S-4 done end-to-end** (`2599621`): `f1065`
@@ -41,9 +42,9 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **Ken directs.** Teed up among: **S-11 1041 module** (RS DONE) · **S-6** PAL/basis (RS DONE) ·
-**S-3 brokerage front end** (∥) · **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp
-is NOT season-one scope per SEASON_PLAN) · small follow-ups (1065 compute-vs-spec M-1 4c/7b nuance; GA-700
+## ▶ NEXT — **Ken directs.** Teed up among: **S-11 1041 module** (RS DONE) · **S-3 brokerage front end** (∥) ·
+**S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
+SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
 **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
 (all earlier RS spine authoring DONE). After S-15, net-new RS scope depends on the TaxWise forms-usage report
@@ -135,10 +136,16 @@ threshold, K-2/K-3 DFE gate, §704(c), §754/§743(d)/§734(d), multistate appor
   `EntityBoundaryAssertionSerializer` + 4 endpoint tests. The preparer-flag arms now fire from the UI (no
   longer admin-only). Flow gate 422; client tsc 0 err / vitest 275. **S-5 COMPLETE.** `[APP]`
 
-**S-6 · [RS]✅→[APP]⬜ · PAL/basis deepening (WO-03) — RS authoring DONE 2026-07-05.** Amendments to
-FORM_8582/SCHEDULE_E + new Form 461; seeded to prod (95 TaxForms), exports 200. APP build remains.
+**S-6 · [RS]✅→[APP]✅ COMPLETE · PAL/basis deepening (WO-03) — RS authoring DONE 2026-07-05; APP build DONE
+2026-07-06 (R1 `c4cd928`, R2-R5 `07fb29f`).** Amendments to FORM_8582/SCHEDULE_E + new Form 461. Extends the
+existing 8582 per-activity engine. Ken ruled R3 diagnostic-only + R5 preparer-entered inputs (2026-07-06).
 - [x] R1 self-rental + R2 PTP (one 8582 unit) — 2026-07-05   - [x] R3 REP checkbox + §1.469-9(g) election — 2026-07-05   - [x] R4 at-risk diag — 2026-07-05   - [x] R5 §461(l) Form 461 diag ($313k/$626k) — 2026-07-05
-- [ ] tts app build: self-rental recharacterization, PTP segregation, REP checkbox, at-risk route, §461(l) EBL diagnostic  `[APP]`
+- [x] tts app build — 2026-07-06 `c4cd928`/`07fb29f`. **R1 self-rental = the only real compute change** (type-7
+  net income → non-passive, excluded from the 8582 passive buckets; mig 0172; `D_SCHE_SELFRENTAL`). R2 PTP
+  (`D_8582_PTP` auto-derived from `is_ptp`) · R3 REP (`D_8582_RE_PRO` RED→info + `_REP_MATLPART`/`_REP_TESTS`) ·
+  R4 at-risk (`D_8582_ATRISK`) · R5 §461(l) (`compute_461` + `rules_461` D_461_*) — all diagnostic-only, migs
+  0173/0174. 27 tests; flow 422. ⚠ deferred by design: Form 461 Sch-1 add-back + §172 NOL, REP compute bypass,
+  6198 at-risk compute (see STATUS follow-ups). RS specs still `draft` (promote→active).  `[APP]`
 
 **S-7…S-10 · [RS]✅→[APP] · States — SPECS ALREADY AUTHORED (7/4–7/5), app build remains.**
 Authoring done a month early; these dropped OFF Ken's authoring path. Forms build now; e-file

@@ -1,5 +1,14 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-6 PAL/basis deepening) — app build COMPLETE, all 5 R-items → ✅ DONE.** Extends the existing
+> 8582 per-activity + Schedule E engine. **R1 self-rental** (§1.469-2(f)(6), `c4cd928`) = the only real compute
+> change (Sch E type-7 net income recharacterized non-passive, excluded from the 8582 passive buckets; mig 0172;
+> `D_SCHE_SELFRENTAL`). **R2-R5** (`07fb29f`) all diagnostic-only: R2 PTP `D_8582_PTP` (auto-derived from
+> `is_ptp`) · R3 REP `D_8582_RE_PRO` RED→info + `_REP_MATLPART`/`_REP_TESTS` · R4 at-risk `D_8582_ATRISK` · R5
+> **new Form 461** §461(l) EBL (`compute_461` + `rules_461`, $313k/$626k 2025, diagnostic scope — NO Sch-1
+> add-back/NOL). migs 0173/0174. 27 tests; flow 422; tsc 0 / vitest 275. Detail: `.claude` memory
+> `s6-pal-basis-deepening.md`.
+
 > **2026-07-06 (S-5 COMPLETE — legs 1 + 2) — entity-return boundary safety net → ✅ DONE, live on prod.** Not a
 > form face — the season-one "no silent gap" net (`apps/diagnostics/rules_entity_boundary.py`, 6 `D_EB_*` REDs
 > for 1065 + 1120-S) + `EntityBoundaryAssertion` model (migs 0170/0171). **Leg 1 (`50f2874`):** diagnostics;
