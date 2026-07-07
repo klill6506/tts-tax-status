@@ -17,7 +17,19 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **MeF entity e-file (∥ Ken-directed detour): 1120-S mapper leg 1 DONE — next = ATS Scenario-5 doc mappers.** 2026-07-07
+## ▶ NOW WORKING ON — **Lacerte-regression bug fixes (session 26 detour output): Sch E PY-PAL release + 8960 rental NII — then back to MeF Scenario-5 doc mappers / 1041 legs 6-8.** 2026-07-07
+
+**Session 26 (Ken-directed detour; ADDED to the plan — was not on the Spine):**
+- [x] `[APP]` **Lacerte regression harness v1** — 2026-07-07 (scripts/lacerte_regression/: parse → load →
+  compare; procedure in its README). First real 2025 return recreated in-app and diffed: **30 lines match
+  Lacerte exactly, 29 differ — ALL traced to two engine bugs.** Details: tax-app `STATUS.md` (bugs) +
+  `STATUS_ARCHIVE.md` 2026-07-07 (full session detail). Return identity lives in `D:\tax-test-data\` only.
+- [ ] `[APP]` **Sch E line 22 — released prior-year passive loss never flows back** (8582 line 3 ≥ 0 path;
+  AGI overstated by the carryover). Fix chip spawned; RS specs 8582/Sch E first.
+- [ ] `[APP]` **Form 8960 line 4a — passive rental net income missing from NII.** Fix chip spawned; RS spec
+  8960 first. After both: re-run the comparator on regression return #1 → expected 0 diffs.
+
+**Prior NOW item — MeF entity e-file (∥): 1120-S mapper leg 1 DONE — next = ATS Scenario-5 doc mappers.** 2026-07-07
 (twenty-fifth session; ADDED to the plan — was not on the Spine; Ken directed "start S-corp MeF testing"):
 **July SOR release filed** (`9b77c7e` — BMF 1041 v5.5 / 1065 v5.4 / 1120x v6.3 extracted+hashed, IMF v5.5/2026v2.0
 recorded; `docs/mef/schema_versions.md`). **1120-S MeF mapper leg 1 (`c2edd0d`):** schema_locator corp-tree support;
