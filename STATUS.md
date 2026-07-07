@@ -1,10 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-06, twenty-third session. Units: **(1) S-5 leg 2 input UI (`d74b016`) → S-5 COMPLETE;**
-**(2) S-6 PAL/basis deepening COMPLETE, all 5 R-items** (`c4cd928`/`07fb29f`); **(3) S-6 follow-ups DONE** —
-Form 461 §461(l) EBL now ADDS BACK to Schedule 1 line 8p (`296b9f3`; RS `d5b76b2`) so returns compute correctly,
-+ RS reconciliation (FORM_461/FORM_8582/SCHEDULE_E promoted draft→active, RE_PRO message de-staled, cached
-mirrors refreshed). Build state: **idle — Ken directs;** next spine items are S-11 1041, S-3 brokerage (∥).*
+*Last updated: 2026-07-06, twenty-fourth session. Unit: **S-11 1041 fiduciary module — APP BUILD STARTED,
+legs 1/2/4 DONE** (Ken-directed "start 1041"). Greenfield estates & trusts entity type. Leg 1 seed + plumbing
+(`539b204`), leg 2 DNI/IDD/Sch-G compute spine (`539b204`), leg 4 the 11 `D_1041_*` diagnostics (`d1117d8`).
+All green, pushed. **REMAINS: leg 3 K-1 issuance · 5 f1041 render · 6 GA 501 · 7 frontend verify · 8 flow
+gate.** Full detail: `.claude` memory `s11-1041-fiduciary-kickoff.md`.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -27,6 +27,11 @@ mirrors refreshed). Build state: **idle — Ken directs;** next spine items are 
   tests/test_form_461.py --reuse-db -q` → **7 + 11 + 9 passed**. Existing 8582 leg
   (`test_schedule_e_8582_diagnostics_leg.py` + `_compute_leg.py`) → **31 passed / 1 skipped** after the
   RE_PRO error→info + registration-set updates. Migs 0172/0173/0174 applied to prod; diagnostics reseeded.
+- **S-11 1041 compute** — `pytest tests/test_1041_compute_leg.py --reuse-db -q` → **13 pure + 1 DB smoke**
+  (all 8 numeric spec cases + rate-schedule/cap-gain pins; smoke persists L23=19400/L24=5165/L21=600). Pure
+  subset (`-k "not smoke"`) is ~0.14s. `1041` FormDefinition seeded to prod (8 sections/72 lines).
+- **S-11 1041 diagnostics** — `pytest tests/test_1041_diagnostics_leg.py --reuse-db -q` → **6 passed** (each
+  `D_1041_*` fires for its trigger + clean-return no-op). `seed_rules` reseeded to prod (11 `D_1041_*` active).
 - **Client suite** — `cd client && npx vitest run` → **275 passed**; `npx tsc --noEmit` → **0 errors**.
 - `manage.py check` clean. **Test DB `test_postgres` exists** — use `--reuse-db`. New DB tests must seed the
   forms they use and filter `FormLine` by `section__form=` NOT `form_definition=`. Must CREATE the `TaxYear`
@@ -34,37 +39,38 @@ mirrors refreshed). Build state: **idle — Ken directs;** next spine items are 
 - ⚠ DB runs on the shared Supabase pooler are SLOW/flaky ("terminating connection due to administrator
   command" = transient, retry; never `drop_test_db` a slow run). Run DB tests in the background.
 
-## ▶ RESUME HERE — **S-5 + S-6 both COMPLETE this session. Build is idle; next unit = Ken directs.**
-Full detail in `.claude` memory `s6-pal-basis-deepening.md` + `s5-entity-boundary-diagnostics.md`.
+## ▶ RESUME HERE — **S-11 1041 fiduciary module: legs 1/2/4 DONE. Next = leg 3 (K-1 issuance).**
+Full detail in `.claude` memory `s11-1041-fiduciary-kickoff.md`. Ken-directed "start 1041" this session.
 
-**✅ S-6 PAL/basis deepening (this session) — app build COMPLETE, all 5 R-items.** Extends the existing 8582
-per-activity engine + Schedule E. Ken ruled R3 diagnostic-only + R5 preparer-entered (2026-07-06).
-- **R1 self-rental (§1.469-2(f)(6), `c4cd928`)** — the ONE real compute change. A Self-Rental (`RentalProperty.
-  property_type=="7"`) with net income + material participation in the tenant → net income NON-passive: kept on
-  Sch E lines 21/24/26 but EXCLUDED from the 8582 passive buckets (can't absorb passive losses); net loss stays
-  passive. Field `selfrental_matl_part_tenant` (mig 0172); `D_SCHE_SELFRENTAL` (info); type-7 checkbox. 7 tests.
-- **R2-R5 (`07fb29f`) — all diagnostic-only.** R2 PTP `D_8582_PTP` (info, auto-derived from `is_ptp`). R3 REP:
-  `D_8582_RE_PRO` RED→info (message made honest — engine still limits; adjust manually) + `D_8582_REP_MATLPART` +
-  `D_8582_REP_TESTS`; fields `f8582_rep_agg_election`/`_hours`/`_services_majority`. R4 at-risk `D_8582_ATRISK`
-  (warning); field `f8582_at_risk_limited`. R5 §461(l): new `compute_461` (EBL, $313k/$626k 2025) + `rules_461`
-  (`D_461_EBL` warning/`_NOL` info/`_ORDER` info); preparer fields `f461_agg_business_income`/`_deductions`.
-  migs 0173/0174. 11 + 9 tests.
+**Greenfield entity type (estates & trusts).** Entity type = `TaxReturn.form_definition.code` (NO `entity_type`
+field). `EntityType.TRUST="trust"` + the frontend already existed; the only plumbing gap was `ENTITY_FORM_MAP`
+(`"trust"→"1041"`). Compute uses a **dedicated `compute_1041_db`** (early-return in `compute_return` on
+`form_code == "1041"`, before the entity aggregations) — the DNI/IDD/§662-tier machinery can't live in the
+Decimal-only FORMULA_REGISTRY. Raw dict keyed by **line_number**.
+- **Leg 1 (`539b204`)** — `seed_1041.py`: `1041` FormDefinition, 8 sections / 72 lines (seeded to prod).
+  `ENTITY_FORM_MAP` + views.
+- **Leg 2 (`539b204`)** — `compute_1041.py`: R-1041-TOTINC/TOTDED/ATI/DNI/IDD/TIERS/EXEMPT/TAXINC/TAX/ESBT/
+  NIIT/TOTTAX. §1(e) rate schedule + 0/15/20 cap-gain worksheet + §642(b) exemptions (600/300/100/5100/0) +
+  ESBT 37%. Year-guarded TY2025. `tier1_included`/`tier2_included` emitted for the leg-3 allocator.
+- **Leg 4 (`d1117d8`)** — `rules_1041.py`: 11 `D_1041_*`; registered in `seed_builtin_rules`, reseeded to prod.
+  RED-defer: D_1041_AMT (Sch I; fires on TE_INT>0 proxy — ⚠ Ken confirm) + D_1041_BANKR.
 
-**▶ NEXT — Ken directs.** Unblocked spine items: **S-11 1041 module** (RS done, greenfield) · **S-3 brokerage
-front end** (∥, skeleton done) · **S-13/S-14 1120 + state C-corp** (RS done, ⚠ 1120 C-corp NOT season-one scope
-per SEASON_PLAN). Non-blocking follow-ups below.
+**▶ NEXT — leg 3: K-1 (1041) issuance.** `SCHEDULE_K1_1041` seed + allocator + persistence; consumes
+`tier1_included`/`tier2_included` + character retention. Then leg 5 f1041 render (⚠ IRS PDF NOT downloaded — add
+to `forms_manifest.json`), leg 6 GA 501 (resident-only v1), leg 7 frontend verify, leg 8 flow-assertion gate.
 
 ## This session's commits (pushed to origin/main)
-- `d74b016` — **S-5 leg 2 entity-boundary input UI** (EntityBoundarySection.tsx + `entity-boundary` API + 4 tests).
-- `c6f431c` — docs (S-5 complete).
-- `c4cd928` — **S-6 R1 self-rental** recharacterization (mig 0172; compute_schedule_e + D_SCHE_SELFRENTAL + 7 tests).
-- `07fb29f` — **S-6 R2-R5** PAL boundary diagnostics + Form 461 (migs 0173/0174; rules_8582/rules_461/compute_461
-  + 11 + 9 tests + existing-test severity/set updates).
-- `296b9f3` — **S-6 R5 follow-up: §461(l) add-back → Schedule 1 line 8p** (compute_461_db wired into
-  compute_return; d_461_ebl message; +2 pipeline tests; refreshed cached specs 461/8582/sche). RS side `d5b76b2`
-  (sherpa-tax-rule-studio): R-461-SCH1 + FA-1040-461-04 + promote 461/8582/SchE draft→active + RE_PRO de-stale.
+- `539b204` — **S-11 legs 1-2** — fiduciary entity type + DNI/IDD/Sch-G compute spine (seed_1041 + compute_1041 +
+  ENTITY_FORM_MAP + 13 pure + 1 DB smoke test).
+- `d1117d8` — **S-11 leg 4** — 11 `D_1041_*` diagnostics (rules_1041 + runner registration + 6 DB tests).
 
 ## ▶ RS / compute follow-ups (all non-blocking)
+- **S-11 1041 (NEW 2026-07-06).** Remaining legs: 3 K-1 (`SCHEDULE_K1_1041` — spec exists) · 5 f1041 render
+  (⚠ IRS PDF NOT downloaded — add to `forms_manifest.json`, run `update_irs_forms.py`) · 6 GA 501 (spec `GA501`) ·
+  7 frontend editor verify (create_return path) · 8 flow-assertion gate (`flow_assertions_1041.json` — RS export).
+  ⚠ **Ken to confirm the D_1041_AMT trigger** (currently fires on tax-exempt interest as a PAB-preference proxy;
+  the 1041 face carries no ISO/accel-depreciation input this season). RS spec `1041` is `draft` (promote→active).
+  Also carried: WO-10 Form 5227 (§664 four-tier) is its own module; §1062 Form 1062 = structure+flag only.
 - **S-6 (updated 2026-07-06 follow-up).** ✅ Form 461 Sch-1 line-8p add-back DONE (`296b9f3`) — returns compute
   correctly now. ✅ RS reconciliation DONE (`d5b76b2`): 461/8582/SchE promoted draft→active, RE_PRO message
   de-staled, cached mirrors refreshed. **Still deferred by design:** (a) the §172 NOL carryover to NEXT year (the

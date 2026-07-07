@@ -1,5 +1,18 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD STARTED, legs 1/2/4) — ⏳ IN PROGRESS (does NOT tick).**
+> Greenfield estates & trusts entity type (Ken-directed "start 1041"). **Leg 1 seed (`539b204`):** `1041`
+> FormDefinition, 8 sections / 72 lines (page-1 L1-25b + Sch B DNI/IDD + Sch G tax + entity/elections + ESBT +
+> payments), seeded to prod; `ENTITY_FORM_MAP` `"trust"→"1041"` (EntityType.TRUST + the React frontend already
+> existed). **Leg 2 compute (`539b204`):** dedicated `compute_1041.py` (`compute_1041_db` early-return in
+> `compute_return`, NOT the FORMULA_REGISTRY) — R-1041-TOTINC/TOTDED/ATI/DNI(§643(a) corpus back-out)/IDD(smaller-of)
+> /TIERS(§662)/EXEMPT(§642(b) 600/300/100/5100/0)/TAXINC/TAX(§1(e) sched + 0/15/20 cap-gain wksht)/ESBT(37%)/NIIT/
+> TOTTAX; year-guarded TY2025; 13 pure + 1 DB smoke test (persist L23=19400/L24=5165). **Leg 4 diagnostics
+> (`d1117d8`):** 11 `D_1041_*` (`rules_1041.py`, registered + reseeded to prod; AMT/bankruptcy RED-defer per
+> Gate-1 D-2); 6 DB tests. Flow gate 422. **Form does NOT tick — legs 3 (K-1 `SCHEDULE_K1_1041`) / 5 (f1041
+> render — IRS PDF not yet downloaded) / 6 (GA 501) / 7 (frontend verify) / 8 (flow gate) REMAIN.** Detail:
+> `.claude` memory `s11-1041-fiduciary-kickoff.md`.
+
 > **2026-07-06 (S-6 PAL/basis deepening) — app build COMPLETE, all 5 R-items → ✅ DONE.** Extends the existing
 > 8582 per-activity + Schedule E engine. **R1 self-rental** (§1.469-2(f)(6), `c4cd928`) = the only real compute
 > change (Sch E type-7 net income recharacterized non-passive, excluded from the 8582 passive buckets; mig 0172;
