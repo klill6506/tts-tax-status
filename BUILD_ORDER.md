@@ -144,8 +144,11 @@ existing 8582 per-activity engine. Ken ruled R3 diagnostic-only + R5 preparer-en
   net income → non-passive, excluded from the 8582 passive buckets; mig 0172; `D_SCHE_SELFRENTAL`). R2 PTP
   (`D_8582_PTP` auto-derived from `is_ptp`) · R3 REP (`D_8582_RE_PRO` RED→info + `_REP_MATLPART`/`_REP_TESTS`) ·
   R4 at-risk (`D_8582_ATRISK`) · R5 §461(l) (`compute_461` + `rules_461` D_461_*) — all diagnostic-only, migs
-  0173/0174. 27 tests; flow 422. ⚠ deferred by design: Form 461 Sch-1 add-back + §172 NOL, REP compute bypass,
-  6198 at-risk compute (see STATUS follow-ups). RS specs still `draft` (promote→active).  `[APP]`
+  0173/0174. 27 tests; flow 422.  `[APP]`
+- [x] **follow-ups DONE 2026-07-06** (`296b9f3`; RS `d5b76b2`): §461(l) EBL now **adds back to Schedule 1 line
+  8p** (verified vs i461 2025) so returns compute correctly + **RS reconciliation** (FORM_461/FORM_8582/SCHEDULE_E
+  promoted draft→active, RE_PRO message de-staled, cached mirrors refreshed). ⚠ still deferred: §172 NOL carryover
+  to next year, R3 REP compute bypass, R4 6198 at-risk compute (all diagnostic-only, see DEFERRAL_AUDIT).  `[APP]`
 
 **S-7…S-10 · [RS]✅→[APP] · States — SPECS ALREADY AUTHORED (7/4–7/5), app build remains.**
 Authoring done a month early; these dropped OFF Ken's authoring path. Forms build now; e-file
