@@ -17,7 +17,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken directs.** 🏁 **1040 MeF ATS COMPLETE: ALL SEVEN designated TY2025 scenarios ACCEPTED (2026-07-08, tag `mef-1040-ats-accepted`)** — the 1040 e-file stack is proven against the live IRS gateway. Ken-next: ATS assistor call (production status). ▶ NEXT candidates: **S-11 1041 legs 6-8** (GA 501 → frontend → flow gate) · **1120-S Scenario-5 doc mappers** (4562→4797→8825; upload lane waits on business-family access).
+## ▶ NOW WORKING ON — **idle — Ken directs.** 🏁 **1040 MeF ATS COMPLETE: ALL SEVEN designated TY2025 scenarios ACCEPTED (2026-07-08, tag `mef-1040-ats-accepted`)** — the 1040 e-file stack is proven against the live IRS gateway. Ken-next: ATS assistor call (production status + A2A enrollment, same call). ▶ NEXT candidates: **S-11 1041 legs 6-8** (GA 501 → frontend → flow gate) · **1120-S Scenario-5 doc mappers** (4562→4797→8825; upload lane waits on business-family access) · **NEW S-17 productionize-1040-e-file block** (17a coverage audit / 17b direct deposit are unblocked now).
 
 **Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
 - [x] `[APP+EXT]` **🏁 1040 MeF ATS COMPLETE — ALL SEVEN SCENARIOS ACCEPTED** — 2026-07-08
@@ -167,8 +167,8 @@ or a law change.
 8936_SCHA specs authored+seeded+exported (RS, 7/4). App mappers BUILT: the whole 1040 ATS
 scenario set (S2/S3/S4/S5/S8/S12/S13) is built and live-XSD-valid; S1 dropped.
 - [x] RS specs — 2026-07-04   - [x] tts S3/S4 (+all) mappers — 2026-07-04 (built, live-XSD-valid)
-- [ ] S3/S4/S5/S8 ATS **accepted** ← on the Shelf: artifacts UNSIGNED (placeholder EFIN);
-  awaiting Ken sign + IFA upload (+ S5/S8 pre-§12.5 artifact rebuild).
+- [x] 🏁 ALL SEVEN scenarios ATS **ACCEPTED** — 2026-07-08 `6c24813` tag `mef-1040-ats-accepted`
+  (rounds 5-7 live loop; S-1 CLOSED).
 
 **S-2 · [APP]✅ · Proforma/rollover PRODUCER** — DONE 2026-07-04 `3a55f31`. App-to-app
 snapshotter; fires on 1040 DRAFT→FILED; owns the year-shift (Sch D carryover, 4562 L13, 8606
@@ -405,6 +405,34 @@ TOP unchecked item as the current RS rock.
 - **✅ S-16 federal-forms gap-fill queue FULLY DRAINED 2026-07-06** (all 10: 8990 · Sch H · 4684 · 4952 · 8379 · 8814
   · 8839 · 709 · 8832 · 3115). Net-new RS scope now needs the **TaxWise forms-usage report** or a law change.
 
+**S-17 · [APP] · PRODUCTIONIZE 1040 E-FILE (added 2026-07-08, Ken-directed after the ATS
+completion — "how do we expand the forms / will there be an e-filing UI").** ATS proved the
+stack (tag `mef-1040-ats-accepted`); this block turns it into something real clients file
+through. Sequenced; each item is its own leg. ⚠ Serialization-only lane — competes with
+1120-S/1041 ATS for CC time, Ken sequences.
+- [ ] **17a · E-file coverage audit** — inventory the practice's real form mix (Lacerte
+  regression data + the TaxWise forms-usage report when it lands) vs. the mapper registry →
+  a RANKED doc-mapper backlog (expected top: 8949 detail, K-1→1040 XML, 4562, 2210). Output:
+  a checklist appended here as 17f.
+- [ ] **17b · Direct deposit** — 1040 line-35 RTN/account/type fields + the
+  AdditionalFilerInformation RefundDisbursementGrp bank wiring (R0000-250/251). FIRST gap:
+  paper-check-only e-filing now triggers CP53E refund freezes (2026 e-refund mandate).
+- [ ] **17c · E-file readiness diagnostics** — surface UnmappableValue reasons as per-return
+  REDs ("can't e-file yet: needs Form X") through the existing diagnostics framework.
+- [ ] **17d · Form 8879 workflow** — generate/print the e-file signature authorization
+  (Practitioner PIN method requires a retained signed 8879 per return).
+- [ ] **17e · E-file models + UI** — EfileTransmission/Submission/Acknowledgement models
+  (+RLS, firm-scoped; long-deferred) → per-return E-file panel (readiness → build → status →
+  acks w/ plain-language rule text via `business_rules.py`) → firm-level EF-Center dashboard.
+  IN the tax-app SPA, not a separate app (DECISIONS: `apps/efile/` narrow-interface seam).
+- [ ] **17f · Doc-mapper grind** — the ranked backlog from 17a, one leg per form.
+- [ ] **17g · A2A channel** — Automated Enrollment (ASID) + X.509 cert + ID.me (Ken/EXT,
+  ~7-14 day cert lead) → `A2ATransmitter` behind the existing Transmitter ABC → **A2A
+  communication test in ATS** (channel-only; the scenario acceptances stand) → production
+  A2A. IFA manual upload stays the pilot channel until this lands.
+- [ ] **17h · GA Fed/State piggyback** — DOR software-developer registration + state ATS
+  (already on the Shelf as "State e-file enablement"; listed here for sequence).
+
 ---
 
 ## THE SHELF (blocked on external — each with its unblock action)
@@ -412,11 +440,12 @@ TOP unchecked item as the current RS rock.
 
 - **1120-S mapper + 7004 mapper** `[APP]` ← **IRS business-family access notice.**
   UNBLOCK: watch e-Services inbox; e-help 866-255-0654 if not arrived in days. *High impact.*
-- **Remaining 1040 ATS scenarios** ← **SOR schema pulls** (TY2025 1040 business rules,
-  2025v5.3 schema, 4868 schema from e-Services SOR).
-- **S8 / S5 IFA upload + S2/S3/S4 acceptance** ← artifact rebuild (pre-§12.5) + **Ken sign** (EFIN/PINs).
+- ~~Remaining 1040 ATS scenarios / S8-S5 upload~~ **✅ RESOLVED 2026-07-08 — ALL SEVEN ACCEPTED** (S-1).
+- **1040 PRODUCTION status** ← **Ken calls the ATS assistor/e-help** (866-255-0654): confirm the
+  scenario set complete; ask the production-cutover steps + A2A enrollment in the same call.
 - **LLC e-file application** ← **EIN propagation.** UNBLOCK: retry ~Jul 16 (gate).
-- **A2A (ASID/cert/SOAP/comm test)** ← **cert issuance 7–14 days.** SOAP build can roll; comm test gated.
+- **A2A (ASID/cert/SOAP/comm test)** ← **cert issuance 7–14 days.** SOAP build can roll; comm test
+  gated. (Sequenced as Spine item 17g — channel-only ATS comm test, scenario acceptances stand.)
 - **State e-file enablement** ← **DOR software-dev approvals** (the four calls). *(Specs done;
   only the e-file turn-on waits here — the forms/compute build now.)*
 - **Bank integration** `[APP]` ← **bank agreement** (⛔ Sep 15). UNBLOCK: TPG/Republic/Pathward calls.
