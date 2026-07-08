@@ -17,7 +17,17 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **ATS round 5 (1040): per-return content fixes from the round-4 acks** (queue in tax-app STATUS + `docs/mef/ats_receipts.md`), then rebuild+BUNDLE the 5 remaining scenarios into one transmission. Spine federal: S-11 1041 legs 6-8.
+## ▶ NOW WORKING ON — **idle — Ken uploads the ATS round-5 bundle** (`docs/mef/ats_out/round5/1419220261890000000b.mime`, ALL SEVEN 1040 scenarios in one signed transmission) → acks back to CC for the next reject round. Spine federal while waiting: S-11 1041 legs 6-8; 1120-S Scenario-5 doc mappers (4562→4797→8825).
+
+**Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
+- [x] `[APP]` **ATS round 5: all five round-4 content fixes + the seven-scenario bundle** —
+  2026-07-08 `ed5c823`. R0000-248/249 `AdditionalFilerInformation`
+  always-on (⚠ RefundDisbursementCd enum UNPUBLISHED — "0"=paper-check reasoned; e-help Q#2) ·
+  IND-114 `CapitalDistributionInd` · IND-434 S8 synthetic MFS spouse (Pub 1436 "00" test range) ·
+  F1040-003/111 dependent counts · S1-F1040-120-01 `ClaimStorageFeesInd` (Ken-delegated: scenario
+  form list has no 3903). NEW `mef_build_ats_round5` bundles all 7 (seqs 11-17; spouse PIN
+  S13-only). 3 new pure tests; suites green; fixes grep-verified in the built XML.
+  Deferrals logged: ClaimStorageFeesInd app input; direct-deposit RTN/DAN in the header group.
 
 **Session 28-continuation wrap (2026-07-07 evening→midnight; Ken-directed "my priority is MeF testing"):**
 - [x] `[APP+EXT]` **FIRST LIVE ATS SUBMISSIONS — 4 upload/ack rounds in one evening** (Ken uploaded,
