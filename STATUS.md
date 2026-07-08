@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, twenty-eighth session CONTINUATION-2 ("go", Ken delegated the 3903 +
-disbursement-code rulings). Unit: **ATS ROUND 5 BUILT — all five round-4 content fixes landed and
-ALL SEVEN 1040 scenarios rebuilt + bundled into ONE signed transmission, ready for Ken to upload.***
+*Last updated: 2026-07-08, twenty-eighth session CONTINUATION-2. Unit: **ATS rounds 5→7 worked in
+one sitting — 🎉 S4/S8/S12 ACCEPTED (the first-ever Sherpa MeF acceptances); round-7 bundle for the
+remaining four (S2/S3/S5/S13) built, verified, ready to upload.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,18 +11,26 @@ ALL SEVEN 1040 scenarios rebuilt + bundled into ONE signed transmission, ready f
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — Ken uploads the ROUND-6 bundle, then acks → CC
-**The upload file: `docs/mef/ats_out/round6/1419220261890000000l.mime`** (ONE transmission,
-all seven 1040 scenarios, signed, seqs 21-27; sid↔scenario table in `round6/README.txt` and
-`docs/mef/ats_receipts.md`). Portal steps in `docs/mef/ATS_UPLOAD_RUNBOOK.md`.
-**Round-5 result (acks worked same session): ALL FIVE round-4 content fixes ACCEPTED on all
-seven submissions**; the only remaining error ×7 was IND-195-01 — the FSI device-IP env value
-had never been persisted after rounds 3/4, so the fresh build silently dropped IPAddress.
-Fixed structurally: `MEF_DEVICE_IP` now in `server/.env` + the build command REFUSES to run
-without it. Round 6 = round 5 content + the IP, verified in both FSI groups ×7.
-Acks arrive PER SUBMISSION — drop in `docs/mef/ats_out/` and hand to CC.
+## ▶ RESUME HERE — 🎉 THREE RETURNS ACCEPTED; Ken uploads the ROUND-7 bundle
+**Round-6 acks: S4, S8, S12 = ACCEPTED — the first federal returns Sherpa has ever passed
+through MeF, engine-computed end-to-end.** (Round 5 had cleared all five content fixes; round
+6 fixed the IND-195-01 device-IP regression — `MEF_DEVICE_IP` now persisted in `server/.env`
++ build-command guard.)
+**Upload: `docs/mef/ats_out/round7/1419220261890000000v.mime`** (S2/S3/S5/S13 only, seqs
+31-34 — accepted scenarios don't re-upload; `--only` flag added). Round-7 fixes, all
+grep-verified in the XML: S2 decedent header (InCareOfNm "% "-type + SurvivingSpouseInd; the
+IND-018/019/424/425/426 family fully encoded, non-derivable rep name refuses) + exemption
+counts (IND-089-01: TotalExemptionsCnt/TotalExemptPrimaryAndSpouseCnt whenever the dependent
+counts emit) · S3 referenceDocumentId links ("attached to" = LINKED: line 7 → Sch D, Sch 1
+line 6 → Sch F ids) · S5 exemption counts · S13 spouse signature trio (SpousePINEnteredByCd
+on every MFJ + SpouseSignatureDt with a spouse PIN). Acks per submission → hand to CC.
 
 ## What landed this session (committed at close)
+- **Rounds 5→7 in one sitting** (upload↔ack↔fix loop with Ken live): round-5 acks accepted all
+  five content fixes (sole reject = the device-IP regression, fixed + guarded); round-6 acks =
+  **S4/S8/S12 ACCEPTED**; round-7 fixes for the last four rejects (decedent-header family,
+  IND-089 exemption counts, referenceDocumentId links, spouse signature trio) + `--only` bundle
+  flag. Full ack-by-ack detail: `docs/mef/ats_receipts.md`.
 - **All five round-4 content fixes** (mapper/serialization only — no compute change):
   1. R0000-248/249 — `AdditionalFilerInformation/AtSubmissionFilingGrp` ALWAYS emitted in the
      1040 header (RefundProductElectionInd=false + RefundDisbursementCd=0). ⚠ the Cd enum (0-7)

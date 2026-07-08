@@ -17,14 +17,16 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken uploads the ATS ROUND-6 bundle** (`docs/mef/ats_out/round6/1419220261890000000l.mime`, ALL SEVEN 1040 scenarios, one signed transmission) → acks back to CC. Round-5 acks: **all five content fixes ACCEPTED**; sole remaining error ×7 = IND-195-01 (device-IP env never persisted — now in `server/.env` + build-command guard). Spine federal while waiting: S-11 1041 legs 6-8; 1120-S Scenario-5 doc mappers (4562→4797→8825).
+## ▶ NOW WORKING ON — **idle — Ken uploads the ATS ROUND-7 bundle** (`docs/mef/ats_out/round7/1419220261890000000v.mime`, S2/S3/S5/S13 only). **🎉 Round-6 acks: S4/S8/S12 ACCEPTED — the first Sherpa returns ever through MeF.** Spine federal while waiting: S-11 1041 legs 6-8; 1120-S Scenario-5 doc mappers (4562→4797→8825).
 
 **Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
-- [x] `[APP+EXT]` **ATS round-5 upload + acks worked → round-6 bundle** — 2026-07-08. Round-5
-  acks: ALL five round-4 content errors CLEARED ×7 (fixes accepted wholesale); sole reject =
-  IND-195-01 regression (`MEF_DEVICE_IP` lived only in the r3/4 shell — the fresh build silently
-  omitted the XSD-optional IPAddress). Fixed structurally: value persisted in `server/.env` +
-  `mef_build_ats_round5` errors when empty. Round-6 rebuilt (seqs 21-27), IP verified ×7.
+- [x] `[APP+EXT]` **🎉 ATS rounds 5-6-7 live loop → FIRST ACCEPTANCES: S4/S8/S12 ACCEPTED** —
+  2026-07-08. Round-5 acks: ALL five round-4 content errors CLEARED ×7; sole reject =
+  IND-195-01 regression (`MEF_DEVICE_IP` lived only in the r3/4 shell) → persisted in
+  `server/.env` + build-command guard. Round-6 acks: THREE ACCEPTED; four rejects fixed same
+  sitting (S2 decedent-header family IND-018/019/424/425/426 + IND-089 exemption counts · S3
+  referenceDocumentId links — "attached to" = LINKED · S5 counts · S13 spouse signature trio)
+  → round-7 bundle (seqs 31-34, `--only` flag). 51 pure tests green.
 - [x] `[APP]` **ATS round 5: all five round-4 content fixes + the seven-scenario bundle** —
   2026-07-08 `ed5c823`. R0000-248/249 `AdditionalFilerInformation`
   always-on (⚠ RefundDisbursementCd enum UNPUBLISHED — "0"=paper-check reasoned; e-help Q#2) ·
