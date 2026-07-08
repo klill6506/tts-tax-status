@@ -11,14 +11,16 @@ ALL SEVEN 1040 scenarios rebuilt + bundled into ONE signed transmission, ready f
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — Ken uploads the round-5 bundle, then acks → CC
-**The upload file: `docs/mef/ats_out/round5/1419220261890000000b.mime`** (ONE transmission,
-all seven 1040 scenarios, signed; sid↔scenario table in `round5/README.txt` and
-`docs/mef/ats_receipts.md`). Portal steps unchanged (`docs/mef/ATS_UPLOAD_RUNBOOK.md`, updated).
-Acks arrive PER SUBMISSION — drop them in `docs/mef/ats_out/` and hand to CC
-(`ack/parser.py` + `validation/business_rules.py` resolve codes locally).
-Rebuild command if needed: `manage.py mef_build_ats_round5` (creds in the runbook; spouse PIN
-rides ONLY the MFJ S13; --seq-base bumps past burned sequences).
+## ▶ RESUME HERE — Ken uploads the ROUND-6 bundle, then acks → CC
+**The upload file: `docs/mef/ats_out/round6/1419220261890000000l.mime`** (ONE transmission,
+all seven 1040 scenarios, signed, seqs 21-27; sid↔scenario table in `round6/README.txt` and
+`docs/mef/ats_receipts.md`). Portal steps in `docs/mef/ATS_UPLOAD_RUNBOOK.md`.
+**Round-5 result (acks worked same session): ALL FIVE round-4 content fixes ACCEPTED on all
+seven submissions**; the only remaining error ×7 was IND-195-01 — the FSI device-IP env value
+had never been persisted after rounds 3/4, so the fresh build silently dropped IPAddress.
+Fixed structurally: `MEF_DEVICE_IP` now in `server/.env` + the build command REFUSES to run
+without it. Round 6 = round 5 content + the IP, verified in both FSI groups ×7.
+Acks arrive PER SUBMISSION — drop in `docs/mef/ats_out/` and hand to CC.
 
 ## What landed this session (committed at close)
 - **All five round-4 content fixes** (mapper/serialization only — no compute change):
