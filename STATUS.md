@@ -63,11 +63,19 @@ access status; (4) SOR re-request (1041 v5.3 + 1040 v5.4 BR); (5) low-priority h
   session hit a pytest-timeout on the pooler mid-query (no summary line); second re-run
   in flight at close — **verify at next boot** (see "In flight" below).
 
-## In flight at close
-- `pytest tests/test_4797_pipeline_leg.py --reuse-db` re-run (pooler). If it times out again:
-  documented pooler-slow class (≤17 min normal, see [[pooler-slow-not-hung-17min]]) — check
-  pg_stat_activity before assuming a hang; the leg's logic is refactor-identical
-  (classify_disposal bridge-gate) and the pure 4797 tests (49) + mapper suite are green.
+## In flight at close → ⚠ OPEN: 4797 pipeline DB verify (3 pooler timeouts)
+`pytest tests/test_4797_pipeline_leg.py --reuse-db` timed out THREE times this session (per-test
+`--timeout=300` fired), every time ~15-16 quick passes in, always inside
+`run_diagnostics(tax_year)` (twice pinned at `rules.int_8825_flow_check`'s RentalProperty
+SELECT, stack in `select.select()` — the SERVER not answering, not a CPU loop). Lingering
+test_postgres sessions were pg_terminate'd between runs and after the last. Most likely the
+documented degraded-pooler class ([[pooler-slow-not-hung-17min]]); a real diagnostics-runner
+stall under this test's data shape is NOT excluded. **Next boot, discriminate before anything
+else**: `pytest "tests/test_4797_pipeline_leg.py::test_section_1245_exception_diagnostics_fire"
+--reuse-db --timeout=900 -q` alone on a fresh morning connection — green ⇒ pooler load (run the
+full file); stalls again ⇒ treat as a REAL bug in the diagnostics path for this shape and debug
+`int_8825_flow_check`. The compute logic itself is refactor-identical (classify_disposal
+bridge-gate); pure 4797 (49) + mapper (41) + flow gate 422 (s29) are green.
 
 ## ▶ Waiting on Ken / external
 1. **§179-disposition pass-through ruling** (REVIEW_QUEUE 2026-07-08) — blocks the S5 truck
