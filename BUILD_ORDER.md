@@ -17,7 +17,24 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **MeF entity track: 1120-S ATS Scenario-5 doc mappers (1125-A first).** SOR intake + both mapper re-stamps DONE (session 28). Spine federal: S-11 1041 legs 6-8.
+## ▶ NOW WORKING ON — **ATS round 5 (1040): per-return content fixes from the round-4 acks** (queue in tax-app STATUS + `docs/mef/ats_receipts.md`), then rebuild+BUNDLE the 5 remaining scenarios into one transmission. Spine federal: S-11 1041 legs 6-8.
+
+**Session 28-continuation wrap (2026-07-07 evening→midnight; Ken-directed "my priority is MeF testing"):**
+- [x] `[APP+EXT]` **FIRST LIVE ATS SUBMISSIONS — 4 upload/ack rounds in one evening** (Ken uploaded,
+  CC fixed): the full stack is PROVEN into per-return content validation (MeF computed S5's refund
+  = the engine's $7,640 to the dollar). Gateway-only defects found+fixed: **MIME multipart file**
+  `4a067f6` (Pub 5446; bare ZIP = "Invalid mime format") → **envelope root namespaces** `30ea3b4`
+  (X0000-008's REAL trigger — placeholder ack identity = transmission-level tell; Return-root fix
+  `676f3ca` was necessary-not-sufficient) → **FilingSecurityInformation telemetry** `2c36799`
+  (IND-189…203; XSD-optional/BR-required; settings MEF_DEVICE_ID/MEF_DEVICE_IP). Loop log:
+  `docs/mef/ats_receipts.md`. Round-5 queue: R0000-248/249 header group · IND-114 CapDistribInd ·
+  IND-434 S8 spouse data · F1040-003/111 dependent counts · ⚠ Ken-ruling S1-F1040-120-01
+  (moving expense w/o 3903 → ClaimStorageFeesInd?).
+- [x] `[APP]` **1120-S ATS Scenario-5 doc mappers legs 1-2**: 1125-A `e7bebb9` + 1125-E `35e3b59`
+  (16 tests incl. live XSD). NEXT legs: 4562(×2 activities — needs a per-activity derivation
+  bridge-gated to the print renderer) → 4797 → 8825 → Itemized*Schedule statements.
+- [x] `[APP]` **S2/S3 whole-dollar re-pins** `53a229b` (first run since the s27 sweep; 8995-A cents
+  boundary superseded; hand-verified + execution-proven).
 
 **Session 28 wrap (2026-07-07 evening; Ken-directed "go back to MeF — 1040 business rules + v5.3"):**
 - [x] `[APP]` **MeF SOR want-list intake** — 2026-07-07 `199cfff`. 5 SOR zips hashed+extracted+recorded

@@ -299,6 +299,16 @@
 > full-return serialization since the 7-04 Form 8835 unit). RS follow-up: SC1040 spec is `draft` + carries
 > the wrong $50k pin.
 
+> **2026-07-08 (twenty-eighth session continuation) — FIRST LIVE ATS SUBMISSIONS (4 rounds), no
+> coverage change.** No form leg moved; the e-file TRANSMISSION stack graduated from local-valid to
+> live-proven. Rounds: (1) "Invalid mime format" → real MIME multipart transmission file per Pub 5446
+> (`4a067f6`); (2) X0000-008 → Return root (`676f3ca`) then the REAL trigger, the envelope root
+> (`30ea3b4`); (3) FilingSecurityInformation IND-189…203 (`2c36799`); (4) per-return content rules
+> (round-5 queue in `docs/mef/ats_receipts.md` — dependent counts, CapDistribInd, S8 spouse data,
+> AdditionalFilerInformation, ⚠ moving-expense/3903 Ken-ruling). MeF computed S5's refund = engine's
+> $7,640 exactly. Also: 1120-S doc mappers 1125-A (`e7bebb9`) + 1125-E (`35e3b59`); S2/S3 whole-dollar
+> re-pins (`53a229b`). No migration.
+
 > **2026-07-07 (twenty-eighth session) — MeF SOR intake + ATS-active re-stamps + 2 engine fixes, no
 > coverage change.** No form leg moved. (1) **MeF** (`199cfff`): 5 SOR packages intaken; 1040 mapper
 > re-stamped 2025v5.4→**v5.3** and 1120-S 2025v6.3→**v6.2** (today's ATS-active versions; deltas not
