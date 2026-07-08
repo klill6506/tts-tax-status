@@ -17,7 +17,20 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken directs.** S-11 1041 is built to its EXTERNAL blockers: legs 1-7 + the f1041sk1 K-1 PDF are ALL GREEN (session 31); remaining = leg 8a flow-assertion gate (**RS has ZERO 1041 FAs** — tax-app REVIEW_QUEUE 2026-07-08 s31 proposes the ~15-20-FA authoring plan; Ken green-light = the next RS rock candidate) + the 4 ATS scenarios (1041 v5.3 ATS schemas owed by SOR). S5 1120-S stays PARKED on **two Ken rulings (§179 pass-through · K-1 rounding)** + the binary-attachment leg + business-family IFA access. Candidate CC lanes: S-17b direct deposit · 1120-S scenarios 6/7/8 fact extraction · `test_4797_pipeline_leg.py` full file (pooler healthy in s31 — DB legs ran 50-62s). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+## ▶ NOW WORKING ON — **idle — Ken directs.** 🏁 **S-11 1041 COMPLETE — the form FULLY TICKS** (session 31, tag `1041-complete`): all eight legs green incl. the flow-assertion gate (**flow gate 422 → 440**). Remaining 1041 work is MeF-lane only (the 4 ATS scenarios — 1041 v5.3 ATS schemas owed by SOR, e-help ask #4). S5 1120-S stays PARKED on **two Ken rulings (§179 pass-through · K-1 rounding)** + the binary-attachment leg + business-family IFA access. Candidate CC lanes: S-17b direct deposit · 1120-S scenarios 6/7/8 fact extraction · `test_4797_pipeline_leg.py` full file (pooler healthy all of s31 — DB legs 50-62s) · RS `load_ga501` amendments (HB 1199 text + line_map 9c/11c-20, handoff filed). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+
+**Session 31 wrap 3 (2026-07-08; Ken: "go ahead with the 1041 FA authoring plan"):**
+- [x] `[RS]` **1041 flow-assertion family consolidated + activated** — 2026-07-08 RS `adc4710`.
+  Root cause of the "zero FAs" export: the 2026-07-05 S-11 authoring had staged 10 DRAFTS across
+  the spine/K-1 loaders, never activated. NEW `load_1041_flow_assertions` = the single FA home
+  (17 active + 2 staged; FA-1041-TAX/FA-K1041-RECON disabled as superseded; drafts tombstoned out
+  of the spec loaders so a reseed can't regress). SQLite-validated · Supabase-seeded · deployed
+  export = exactly the 17 actives.
+- [x] `[APP]` **S-11 leg 8a — the 1041 flow-assertion gate** — 2026-07-08 `06c8946` + tag
+  `1041-complete`. Export cached (`flow_assertions_1041.json`); `_RUNNERS_1041` 17 pure runners
+  over compute_1041 / rate-schedule / cap-gain worksheet / allocate_k1_boxes / compute_ga501.
+  **Full gate 440.** → **S-11 COMPLETE end-to-end; the 1041 fully ticks.** Staged pair
+  (trust-side 8960 · K-1 box-14H import) activates when each compute lands.
 
 **Session 31 continuation wrap (2026-07-08; "continue"):**
 - [x] `[APP]` **S-11 legs 7 + 8b — beneficiary UI/API + f1041sk1 K-1 PDF + live frontend verify** —
@@ -221,7 +234,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — **Ken directs.** S-11 built to external blockers (legs 6/7/8b ✅ s31 `370fdb0`/`7c62cc0`; 8a = RS 1041-FA authoring, REVIEW_QUEUE). Candidates: S-17b direct deposit · 1120-S scenarios 6/7/8 fact extraction · RS 1041-FA authoring on green-light. MeF 1120-S S5 parked on the two Ken rulings + binary-attachment leg. Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — **Ken directs.** 🏁 S-11 COMPLETE (all legs, tag `1041-complete`; only the MeF ATS scenarios remain, SOR-blocked). Candidates: S-17b direct deposit · 1120-S scenarios 6/7/8 fact extraction · 4797 full-file run · RS load_ga501 amendments. MeF 1120-S S5 parked on the two Ken rulings + binary-attachment leg. Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
@@ -377,8 +390,9 @@ turn-on waits on the Shelf (DOR approvals).
   **Leg 6 GA-501 DONE 2026-07-08 `370fdb0`** (all four legs one unit — compute/input/render/diagnostics,
   RS pins to the dollar, DOR fillable render, 8 D_GA501_*, prod-seeded; RS handoff: HB 1199 text + line_map
   9c/11c-20 extension). **Legs 7 + 8b DONE 2026-07-08 `7c62cc0`** (beneficiary UI/API + FIDUCIARY_TABS +
-  f1041sk1 K-1 PDF + live frontend verify). **REMAINS (external): 8a flow-assertion gate — RS has NO 1041
-  FAs (REVIEW_QUEUE authoring plan) · the 4 ATS scenarios (1041 v5.3 schemas owed by SOR).**  `[APP]`
+  f1041sk1 K-1 PDF + live frontend verify). **Leg 8a DONE 2026-07-08 `06c8946` + RS `adc4710`** (the FA
+  family consolidated/activated in RS — 17 active + 2 staged; tts gate 422 → 440). 🏁 **S-11 COMPLETE —
+  tag `1041-complete`. Remaining = MeF-lane only: the 4 ATS scenarios (1041 v5.3 schemas owed by SOR).**  `[APP]`
 - [x] **WO-10 — Form 5227** split-interest trusts (CRAT/CRUT/PIF/CLT/§4947) — RS authoring DONE 2026-07-05
   (`load_5227.py`; DECISIONS D-11; `lookup/5227/export/` = 200). §664(b) four-tier char engine (tier-level) +
   §664(c)(2) 100% UBTI excise; CRAT/CRUT compute, PIF/CLT/§4947 structure. RS prod **100 TaxForms / 475 FA / 867 rules**.

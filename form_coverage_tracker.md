@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 (S-11 Form 1041 fiduciary — leg 8a: the 1041 flow-assertion gate) — ✅ THE 1041
+> FULLY TICKS (tag `1041-complete`, commit `06c8946`; full gate 422 → 440).**
+> Ken green-lit the FA authoring plan. **Root cause of the "zero 1041 FAs":** the 2026-07-05 S-11 RS
+> authoring HAD staged 10 DRAFT FlowAssertions across load_1041_spine / load_1041_schedule_k1 — never
+> activated; the export serves active-only. **RS side (`adc4710`):** NEW `load_1041_flow_assertions`
+> = the single FA home — 17 active (page-1 chains · Subchapter J DNI/IDD/§662-tier core · §642(b)
+> exemption table · §1(e) rates + 0/15/20 stacking pins · ESBT 37% · K-1 character/Σ-reconciliation/
+> §642(h) final-year gating · AMT/bankruptcy/grantor defers · the GA-501 state base) + 2 staged
+> (FA-1041-NIIT trust-side 8960 · FA-K1041-NIIT box-14H import — activate when built); FA-1041-TAX /
+> FA-K1041-RECON disabled as superseded; the drafts tombstoned OUT of the spec loaders so a reseed
+> can't regress statuses; SQLite-validated, Supabase-seeded, deployed export = exactly the 17.
+> **tts side:** export cached (`server/specs/flow_assertions_1041.json`); `_RUNNERS_1041` = 17 pure
+> runners over compute_1041 / rate-schedule / cap-gain worksheet / allocate_k1_boxes / compute_ga501.
+> Remaining 1041 work is MeF-lane only (the 4 ATS scenarios — 1041 v5.3 ATS schemas owed by SOR),
+> which does not gate the form tick (the 1065 precedent).
+
 > **2026-07-08 (S-11 Form 1041 fiduciary — legs 7 + 8b: beneficiary UI/API + f1041sk1 K-1 PDF + live
 > frontend verify) — ⏳ ALL BUILDABLE LEGS GREEN (ticks when the RS-blocked FA gate lands).**
 > **Legs 7+8b (session 31 continuation):** `field_maps/f1041sk1_2025.py` (position-correlated IRS f1_NN;
