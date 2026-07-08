@@ -17,7 +17,20 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **1120-S ATS Scenario-5 doc mappers, leg 3: Form 4562 (Ken-picked 2026-07-08)** — then 4797 → 8825 → Itemized*Schedule statements → scenario build. ⚠ 4562 needs a per-activity derivation bridge-gated to the print renderer (×2 activities in the scenario). Pattern = the 1125-A/1125-E legs (`e7bebb9`/`35e3b59`); XSD = 2025v6.2 Corp1120S tree; scenario PDF `docs/mef/scenarios/ty25-f1120s-ats-scenario05-08012025.pdf`. Upload lane still waits on business-family access (Ken's e-help call — script in tax-app STATUS). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5 mappers: S-11 1041 legs 6-8 · S-17b direct deposit.
+## ▶ NOW WORKING ON — **1120-S ATS Scenario-5 doc mappers, leg 4: Form 4797** — then 8825 → Itemized*Schedule statements → scenario build. Scenario intel: the PDF's 4797 fills ONLY lines 13/17 = $5,179 (§1245 recapture → page-1 line 4); Part III columns BLANK — engine fills Part III properly, engine-truth wins. Pattern = the 4562 leg (`ac927b5`); XSD = `…/Common/IRS4797/IRS4797.xsd` (2,082 lines). Upload lane still waits on business-family access (Ken's e-help call — script in tax-app runbook). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5 mappers: S-11 1041 legs 6-8 · S-17b direct deposit.
+
+**Session 29 wrap (2026-07-08; "go" — autonomous continuation of the Ken-picked S5-mapper lane):**
+- [x] `[APP]` **1120-S Scenario-5 leg 3 — per-activity IRS4562 doc mapper** — 2026-07-08 `ac927b5`.
+  One IRS4562 per activity (page1/8825-per-rental/farm = the aggregate_depreciation flow split);
+  Part I §179 return-level on doc 1 (OBBBA $2.5M/$4M, never the PDF's stale 2023 figures);
+  per-activity line 22 excludes §179 → ties exactly to page-1 L14 / 8825 flow. **Bridge-gate:**
+  asset classification extracted into shared `apps/tts_forms/f4562_derivation.py`; render_4562
+  refactored onto it, print output unchanged. referenceDocumentId links: page-1 DepreciationAmt →
+  trade 4562, Sch K L11 → Part-I doc (`plan_4562_documents` exposes rental doc ids for the 8825
+  leg). Refuse seams: unmapped line-19 life (print silently skips — XML refuses), §179 on ≤50%
+  listed. 8 new pure tests + live-XSD two-doc validation; flow gate 422; render 21; MeF pure 75.
+  DEFERRAL_AUDIT ×3 (24a/24b evidence input · entity line-11 §179 income limit · print-side 4562
+  gaps: aggregate-not-per-activity, line-22 §179 inclusion, missing 7/29/43).
 
 **Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
 - [x] `[APP+EXT]` **🏁 1040 MeF ATS COMPLETE — ALL SEVEN SCENARIOS ACCEPTED** — 2026-07-08
