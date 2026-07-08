@@ -17,9 +17,19 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **1120-S ATS Scenario-5 doc mappers, leg 4: Form 4797** — then 8825 → Itemized*Schedule statements → scenario build. Scenario intel: the PDF's 4797 fills ONLY lines 13/17 = $5,179 (§1245 recapture → page-1 line 4); Part III columns BLANK — engine fills Part III properly, engine-truth wins. Pattern = the 4562 leg (`ac927b5`); XSD = `…/Common/IRS4797/IRS4797.xsd` (2,082 lines). Upload lane still waits on business-family access (Ken's e-help call — script in tax-app runbook). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5 mappers: S-11 1041 legs 6-8 · S-17b direct deposit.
+## ▶ NOW WORKING ON — **1120-S ATS Scenario-5, leg 6: Itemized*Schedule attachment statements** — then leg 7: engine-driven scenario build (1040-Scenario-8 playbook). ALL FIVE document mappers DONE (1125-A/1125-E/4562/4797/8825). Start leg 6 from the scenario PDF's Attachment pages (pdf pp. 0-3) + the referenceDocumentName fixed lists in IRS1120S.xsd; 8825 L17 wants a Schedule A (Form 8825). ⚠ verify `test_4797_pipeline_leg.py --reuse-db` green at boot (DB stamp was pooler-in-flight at close). Upload lane still waits on business-family access (Ken's e-help call — script in tax-app runbook). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5: S-11 1041 legs 6-8 · S-17b direct deposit.
 
 **Session 29 wrap (2026-07-08; "go" — autonomous continuation of the Ken-picked S5-mapper lane):**
+- [x] `[APP]` **1120-S Scenario-5 legs 4+5 — IRS4797 + IRS8825 doc mappers** — 2026-07-08 `f5724fa`.
+  4797: routing extracted into shared `apps/returns/dispositions_4797.classify_disposal`
+  (aggregate_dispositions refactored onto it, behavior identical); Part I/II rows + Part III
+  columns; S-corp face rules (skip 8/9/11/12); **reconcile-or-refuse** vs the flowed FFVs
+  (L17↔page-1 L4 · L7↔K9 · unrecap↔K8c); links L4/K9. 8825 (v6.2 = Dec-2025 face): parallel
+  per-property groups; interest→one line 8; mgmt+supplies+other→L17 so L18 ties exactly; L23
+  reconciled to flowed K2; per-property L14 → its rental's IRS4562 doc id; K2 links IRS8825;
+  royalties refuse seam. 9 new pure + 2 live-XSD tests (suite 34); flow gate 422. ⚠ DEFERRAL:
+  **render_4797 print diverges from compute** (pre-existing — group-label §1250 + 26a=0 vs
+  resolve_recapture_type + resolved addl depr) — print fix = its own render leg.
 - [x] `[APP]` **1120-S Scenario-5 leg 3 — per-activity IRS4562 doc mapper** — 2026-07-08 `ac927b5`.
   One IRS4562 per activity (page1/8825-per-rental/farm = the aggregate_depreciation flow split);
   Part I §179 return-level on doc 1 (OBBBA $2.5M/$4M, never the PDF's stale 2023 figures);
