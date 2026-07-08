@@ -1,5 +1,25 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 (S-11 Form 1041 fiduciary — APP BUILD, leg 6 GA Form 501) — ⏳ IN PROGRESS (does NOT tick).**
+> **Leg 6 GA-501 (`370fdb0`): the Georgia fiduciary state return, all four legs in one unit.** Spec-first
+> from the live RS `GA501` export (cached `server/specs/ga501_spec.json`). **Compute** `compute_ga501.py`
+> (dedicated, GA-500 pattern): federal 1041 ATI (L17) base → Sch 2 §48-7-27 netting → beneficiary share
+> removed at L4 (never the federal IDD) → trust $1,350/estate $2,700 exemption → 5.19% (year-keyed, 2026
+> 4.99%) → face-verbatim 9c credit cap → the page-2 11c-20 settle block (face arithmetic beyond the spec —
+> RS handoff filed to extend the line_map). All 4 RS pins tie (T1 2,525 / T2 1,936 / T3 708 / T4 −3,000);
+> 16 pure tests. **Input** `seed_ga501` (3 sections/42 lines, prod-seeded); `FIDUCIARY_STATE_FORM_MAP`
+> trust→GA-501; federal pull L17→L1 + FID_TYPE from ENTITY_TYPE (+ fixed the pre-existing GA-700
+> refresh-from-federal fall-through); client "Georgia (Form 501)" option on 1041 returns (tsc 0 err).
+> **Render** `render_ga501_overlay` on the DOR web-version fillable (semantic names S1L1..S1L20/S2L*,
+> template `ga501_2025.pdf` unmodified — the GA-700 recipe); 6a/6b exemption boxes share ONE field name →
+> abs_pos "X" literals; residency digit; Sch 3 box-D copy of L4; probe-rendered + visually verified.
+> **Diagnostics** `rules_ga501.py` — 8 `D_GA501_*` incl. the part-year/NR Schedule-4 RED-defer; conformity
+> text carries the HB 1199 ruling (RS spec text drift → `docs/rs_handoff/2026-07-08_ga501_spec_drift.md`).
+> **DB leg 5/5 green (50s — healthy pooler); flow gate 422 unchanged.** v1 boundaries (stated): Schedule 4
+> NR allocation RED-defers; Sch 3 per-beneficiary rows render-deferred (L4 total only); Sch 5/5B/6/7 ride
+> direct-entry lines; fiduciary name/title boxes blank (no app source — the f1041 boundary). **The 1041
+> STILL does not tick** — legs 7 (frontend verify) / 8 (1041 flow-assertion gate) + the f1041sk1 K-1 PDF remain.
+
 > **2026-07-06 (S-11 Form 1041 fiduciary — APP BUILD, leg 5 f1041 render) — ⏳ IN PROGRESS (does NOT tick).**
 > **Leg 5 f1041 render (`72b38bb`):** renders onto the official IRS f1041.pdf AcroForm template. Downloaded
 > f1041.pdf + f1041sk1.pdf from irs.gov (manifest + `update_irs_forms.py`, hashes recorded); dumped the 173
