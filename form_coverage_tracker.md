@@ -1,5 +1,20 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 (S-11 Form 1041 fiduciary — legs 7 + 8b: beneficiary UI/API + f1041sk1 K-1 PDF + live
+> frontend verify) — ⏳ ALL BUILDABLE LEGS GREEN (ticks when the RS-blocked FA gate lands).**
+> **Legs 7+8b (session 31 continuation):** `field_maps/f1041sk1_2025.py` (position-correlated IRS f1_NN;
+> box 9 = 3 code rows / 11 = 5 / 12 = 5 / 13 = 3 / 14 = 6) + `render_k1_1041`/`render_all_k1s_1041`
+> printing the SAME allocator output persisted to `BeneficiaryK1Computed` (box-11 A-F overflow → STMT +
+> statement page; grantor refuses; wired into the k1s package + render_complete). Beneficiary INPUT link
+> closed: `BeneficiarySerializer` + nested `beneficiaries` (Meta.fields gotcha guarded by test) +
+> CRUD endpoints w/ mutation-recompute; `FIDUCIARY_TABS` (the 1041 editor no longer falls through to the
+> 1120-S tab set — entity/Sch G/ESBT/K-1-sources/payments now reachable) + Beneficiaries tab +
+> `GA501_SECTION_TABS`. **Live UI verify** (dev servers, isolated probe firm, deleted after): interest
+> 10,000 → L9/L17 round-trip · Sch B B11/B15=10,000 · beneficiaries 60/40 · GA-501 created from the State
+> tab (pull 10,000 / exemption 1,350 / L8 449) · K-1 Package PDF served. 6 new DB tests; tsc 0; vitest 275.
+> **REMAINS (externally blocked):** leg 8a flow-assertion gate — RS has ZERO 1041 FAs (REVIEW_QUEUE
+> 2026-07-08 s31, authoring plan proposed) · the 4 ATS scenarios (1041 v5.3 ATS schemas still owed by SOR).
+
 > **2026-07-08 (S-11 Form 1041 fiduciary — APP BUILD, leg 6 GA Form 501) — ⏳ IN PROGRESS (does NOT tick).**
 > **Leg 6 GA-501 (`370fdb0`): the Georgia fiduciary state return, all four legs in one unit.** Spec-first
 > from the live RS `GA501` export (cached `server/specs/ga501_spec.json`). **Compute** `compute_ga501.py`
