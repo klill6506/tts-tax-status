@@ -17,11 +17,12 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken uploads the ATS ROUND-7 bundle** (`docs/mef/ats_out/round7/1419220261890000000v.mime`, S2/S3/S5/S13 only). **🎉 Round-6 acks: S4/S8/S12 ACCEPTED — the first Sherpa returns ever through MeF.** Spine federal while waiting: S-11 1041 legs 6-8; 1120-S Scenario-5 doc mappers (4562→4797→8825).
+## ▶ NOW WORKING ON — **idle — Ken directs.** 🏁 **1040 MeF ATS COMPLETE: ALL SEVEN designated TY2025 scenarios ACCEPTED (2026-07-08, tag `mef-1040-ats-accepted`)** — the 1040 e-file stack is proven against the live IRS gateway. Ken-next: ATS assistor call (production status). ▶ NEXT candidates: **S-11 1041 legs 6-8** (GA 501 → frontend → flow gate) · **1120-S Scenario-5 doc mappers** (4562→4797→8825; upload lane waits on business-family access).
 
 **Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
-- [x] `[APP+EXT]` **🎉 ATS rounds 5-6-7 live loop → FIRST ACCEPTANCES: S4/S8/S12 ACCEPTED** —
-  2026-07-08. Round-5 acks: ALL five round-4 content errors CLEARED ×7; sole reject =
+- [x] `[APP+EXT]` **🏁 1040 MeF ATS COMPLETE — ALL SEVEN SCENARIOS ACCEPTED** — 2026-07-08
+  `6c24813` + tag `mef-1040-ats-accepted`. Rounds 5-6-7 live loop in one sitting: r5 accepted
+  all five content fixes; r6 = S4/S8/S12 ACCEPTED; r7 = S2/S3/S5/S13 ACCEPTED. Round-5 acks: ALL five round-4 content errors CLEARED ×7; sole reject =
   IND-195-01 regression (`MEF_DEVICE_IP` lived only in the r3/4 shell) → persisted in
   `server/.env` + build-command guard. Round-6 acks: THREE ACCEPTED; four rejects fixed same
   sitting (S2 decedent-header family IND-018/019/424/425/426 + IND-089 exemption counts · S3

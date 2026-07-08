@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, twenty-eighth session CONTINUATION-2. Unit: **ATS rounds 5→7 worked in
-one sitting — 🎉 S4/S8/S12 ACCEPTED (the first-ever Sherpa MeF acceptances); round-7 bundle for the
-remaining four (S2/S3/S5/S13) built, verified, ready to upload.***
+*Last updated: 2026-07-08, twenty-eighth session CONTINUATION-2. Unit: **🏁 ALL SEVEN 1040 ATS
+SCENARIOS ACCEPTED — rounds 5/6/7 worked live in one sitting (upload↔ack↔fix with Ken). The 1040
+MeF e-file stack is PROVEN against the live IRS gateway, engine-computed end-to-end. Tagged
+`mef-1040-ats-accepted`.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,26 +12,20 @@ remaining four (S2/S3/S5/S13) built, verified, ready to upload.***
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — 🎉 THREE RETURNS ACCEPTED; Ken uploads the ROUND-7 bundle
-**Round-6 acks: S4, S8, S12 = ACCEPTED — the first federal returns Sherpa has ever passed
-through MeF, engine-computed end-to-end.** (Round 5 had cleared all five content fixes; round
-6 fixed the IND-195-01 device-IP regression — `MEF_DEVICE_IP` now persisted in `server/.env`
-+ build-command guard.)
-**Upload: `docs/mef/ats_out/round7/1419220261890000000v.mime`** (S2/S3/S5/S13 only, seqs
-31-34 — accepted scenarios don't re-upload; `--only` flag added). Round-7 fixes, all
-grep-verified in the XML: S2 decedent header (InCareOfNm "% "-type + SurvivingSpouseInd; the
-IND-018/019/424/425/426 family fully encoded, non-derivable rep name refuses) + exemption
-counts (IND-089-01: TotalExemptionsCnt/TotalExemptPrimaryAndSpouseCnt whenever the dependent
-counts emit) · S3 referenceDocumentId links ("attached to" = LINKED: line 7 → Sch D, Sch 1
-line 6 → Sch F ids) · S5 exemption counts · S13 spouse signature trio (SpousePINEnteredByCd
-on every MFJ + SpouseSignatureDt with a spouse PIN). Acks per submission → hand to CC.
+## ▶ RESUME HERE — 🏁 1040 ATS COMPLETE; next lane is Ken's call
+**All seven designated TY2025 1040 scenarios (2/3/4/5/8/12/13) are ACCEPTED** — acceptance
+table + the seven-round loop log in `docs/mef/ats_receipts.md`; post-completion steps in
+`docs/mef/ATS_UPLOAD_RUNBOOK.md` (contact the ATS assistor re: production status).
+Nothing in-flight. Next per BUILD_ORDER (Ken directs): **S-11 1041 legs 6-8** (GA 501 →
+frontend → flow gate) or **1120-S ATS Scenario-5 doc mappers** (4562 → 4797 → 8825) — the
+1120-S lane still waits on the business-family e-file access notice.
 
 ## What landed this session (committed at close)
 - **Rounds 5→7 in one sitting** (upload↔ack↔fix loop with Ken live): round-5 acks accepted all
   five content fixes (sole reject = the device-IP regression, fixed + guarded); round-6 acks =
-  **S4/S8/S12 ACCEPTED**; round-7 fixes for the last four rejects (decedent-header family,
-  IND-089 exemption counts, referenceDocumentId links, spouse signature trio) + `--only` bundle
-  flag. Full ack-by-ack detail: `docs/mef/ats_receipts.md`.
+  **S4/S8/S12 ACCEPTED**; round-7 fixes (decedent-header family, IND-089 exemption counts,
+  referenceDocumentId links, spouse signature trio) → **round-7 acks: S2/S3/S5/S13 ACCEPTED —
+  ALL SEVEN DONE.** Full ack-by-ack detail: `docs/mef/ats_receipts.md`.
 - **All five round-4 content fixes** (mapper/serialization only — no compute change):
   1. R0000-248/249 — `AdditionalFilerInformation/AtSubmissionFilingGrp` ALWAYS emitted in the
      1040 header (RefundProductElectionInd=false + RefundDisbursementCd=0). ⚠ the Cd enum (0-7)
@@ -56,16 +51,17 @@ on every MFJ + SpouseSignatureDt with a spouse PIN). Acks per submission → han
 
 ## Active gates
 - Flow gate 422 (unchanged — serialization-only session, no compute touched).
-- Pure MeF suites green. S5+S8 DB scenario suites: batch run in flight at close (pooler-slow);
-  the same build paths ran green end-to-end inside `mef_build_ats_round5` (XSD-validated ×7).
+- Pure MeF suites green (51 mapper + MIME; 40 1120-S/BR/scaffold). S5+S8 DB scenario batch
+  42/42 green (14:55, pooler-typical). Live gate: **all seven scenarios IRS-ACCEPTED.**
 
 ## ▶ Waiting on Ken / external
-1. **Upload `docs/mef/ats_out/round5/1419220261890000000b.mime`** via IFA → retrieve acks → hand to CC.
+1. **Contact the ATS assistor / e-help (866-255-0654):** confirm the TY2025 1040 scenario set
+   is complete + ask how to move the software ID to PRODUCTION status for Jan-2027.
 2. 1041 ATS-active v5.3 schemas+BR (SOR drop gave v3.0) + 1040 v5.4 BR — re-request.
-3. 1120-S business-family e-file access notice (e-help 866-255-0654 if overdue) — 1120-S mapper
-   waits on it; 4562/4797/8825 doc mappers remain.
-4. e-help questions (low priority, both values XSD-validate): DeviceTypeCd 0|1 semantics;
-   RefundDisbursementCd 0-7 semantics (NEW this session).
+3. 1120-S business-family e-file access notice — 1120-S ATS lane waits on it; 4562/4797/8825
+   doc mappers remain buildable meanwhile.
+4. e-help enum questions (DeviceTypeCd, RefundDisbursementCd) — now LOW priority: both chosen
+   values survived live acceptance.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
