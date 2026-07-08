@@ -17,7 +17,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **idle — Ken directs.** 🏁 **1040 MeF ATS COMPLETE: ALL SEVEN designated TY2025 scenarios ACCEPTED (2026-07-08, tag `mef-1040-ats-accepted`)** — the 1040 e-file stack is proven against the live IRS gateway. Ken-next: ATS assistor call (production status + A2A enrollment, same call). ▶ NEXT candidates: **S-11 1041 legs 6-8** (GA 501 → frontend → flow gate) · **1120-S Scenario-5 doc mappers** (4562→4797→8825; upload lane waits on business-family access) · **NEW S-17 productionize-1040-e-file block** (17a coverage audit / 17b direct deposit are unblocked now).
+## ▶ NOW WORKING ON — **1120-S ATS Scenario-5 doc mappers, leg 3: Form 4562 (Ken-picked 2026-07-08)** — then 4797 → 8825 → Itemized*Schedule statements → scenario build. ⚠ 4562 needs a per-activity derivation bridge-gated to the print renderer (×2 activities in the scenario). Pattern = the 1125-A/1125-E legs (`e7bebb9`/`35e3b59`); XSD = 2025v6.2 Corp1120S tree; scenario PDF `docs/mef/scenarios/ty25-f1120s-ats-scenario05-08012025.pdf`. Upload lane still waits on business-family access (Ken's e-help call — script in tax-app STATUS). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5 mappers: S-11 1041 legs 6-8 · S-17b direct deposit.
 
 **Session 28-continuation-2 wrap (2026-07-08; "go" — Ken delegated the 3903 + disbursement-code rulings):**
 - [x] `[APP+EXT]` **🏁 1040 MeF ATS COMPLETE — ALL SEVEN SCENARIOS ACCEPTED** — 2026-07-08

@@ -12,13 +12,22 @@ MeF e-file stack is PROVEN against the live IRS gateway, engine-computed end-to-
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — 🏁 1040 ATS COMPLETE; next lane is Ken's call
-**All seven designated TY2025 1040 scenarios (2/3/4/5/8/12/13) are ACCEPTED** — acceptance
-table + the seven-round loop log in `docs/mef/ats_receipts.md`; post-completion steps in
-`docs/mef/ATS_UPLOAD_RUNBOOK.md` (contact the ATS assistor re: production status).
-Nothing in-flight. Next per BUILD_ORDER (Ken directs): **S-11 1041 legs 6-8** (GA 501 →
-frontend → flow gate) or **1120-S ATS Scenario-5 doc mappers** (4562 → 4797 → 8825) — the
-1120-S lane still waits on the business-family e-file access notice.
+## ▶ RESUME HERE — 1120-S Scenario-5 doc mappers, leg 3: Form 4562 (Ken-picked 2026-07-08)
+Build the IRS4562 doc mapper for the 1120-S MeF lane: read the scenario-5 asset facts
+(`docs/mef/scenarios/ty25-f1120s-ats-scenario05-08012025.pdf`), follow the 1125-A/1125-E
+mapper pattern (`builder_1120s.py`/`read_model_1120s.py`, commits `e7bebb9`/`35e3b59`), map
+1:1 vs `docs/mef/schemas/2025v6.2/…/IRS4562.xsd`. ⚠ The scenario has TWO activities (page-1
+trade + 8825 rental) → per-activity 4562 derivation must bridge-gate to the SAME rows the
+print renderer uses. Then legs: 4797 → 8825 → Itemized*Schedule statements → scenario build.
+Upload waits on business-family access (Ken's e-help call — script below). 🏁 1040 ATS
+COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`; loop log in `ats_receipts.md`).
+
+## Ken's e-help call — five asks
+Full script WITH identifiers lives in `docs/mef/ATS_UPLOAD_RUNBOOK.md` (repo-internal, NOT
+mirrored — the PII guard correctly blocked it here). The asks: (1) 1040 → PRODUCTION status;
+(2) A2A enrollment (ASID + X.509 cert + ID.me) in the same call; (3) 1120-S business-family
+access status; (4) SOR re-request (1041 v5.3 + 1040 v5.4 BR); (5) low-priority: the two
+unpublished header-enum semantics.
 
 ## What landed this session (committed at close)
 - **Rounds 5→7 in one sitting** (upload↔ack↔fix loop with Ken live): round-5 acks accepted all
