@@ -17,7 +17,23 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **1120-S ATS Scenario-5, leg 6: Itemized*Schedule attachment statements** — then leg 7: engine-driven scenario build (1040-Scenario-8 playbook). ALL FIVE document mappers DONE (1125-A/1125-E/4562/4797/8825). Start leg 6 from the scenario PDF's Attachment pages (pdf pp. 0-3) + the referenceDocumentName fixed lists in IRS1120S.xsd; 8825 L17 wants a Schedule A (Form 8825). ⚠ verify `test_4797_pipeline_leg.py --reuse-db` green at boot (DB stamp was pooler-in-flight at close). Upload lane still waits on business-family access (Ken's e-help call — script in tax-app runbook). 🏁 1040 ATS COMPLETE (all seven ACCEPTED, tag `mef-1040-ats-accepted`). ▶ NEXT after S5: S-11 1041 legs 6-8 · S-17b direct deposit.
+## ▶ NOW WORKING ON — **1120-S ATS Scenario-5, leg 7: engine-driven scenario build** (1040-Scenario-8 playbook; fact sheet READY at tax-app `docs/mef/scenarios/scenario5_1120s_analysis.md`; name the command distinctly — `mef_build_ats_scenario5` is the 1040 S5). Leg 6 statements DONE (`ca7e956`). ⚠⚠ **PARTIAL BLOCKER, Ken ruling needed (tax-app REVIEW_QUEUE 2026-07-08): §179-disposition pass-through** — the scenario truck must ride K-1 box 17 code K + DispositionOfPropWithSect179DedStmt, NOT the corp 4797; RS 4797 spec silent; MeF mapper refuses §179 disposals meanwhile. Everything else in leg 7 buildable. ⚠ `test_4797_pipeline_leg.py --reuse-db` re-verify carried to next boot (pooler timeouts ×2 this session). Upload lane still waits on business-family access (Ken's e-help call). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`). ▶ NEXT after S5: S-11 1041 legs 6-8 · S-17b direct deposit.
+
+**Session 30 wrap (2026-07-08; "go" — autonomous continuation):**
+- [x] `[APP]` **1120-S Scenario-5 leg 6 — Itemized*Schedule attachment statement mappers** — 2026-07-08
+  `ca7e956`. Eleven LineItemDetail-backed statement documents (page-1 5/19 · 1125-A A5 · Sch L
+  6/9/14/18 two-column · M-1 2/6 w/ synthesized 6a Depreciation row · M-2 3a/5a); each
+  reconciles-or-refuses vs the emitted parent line; refDocId anchors incl. 1125-A OtherCostsAmt;
+  ReturnData order per the XSD sequence (ItemizedOtherDeductionSch2 rides LAST, ref 3706).
+  SUBSCHEDULE_CONFIG rollup extended (5/19/A5/M2_3a/M2_5a; client UI = deferred input leg).
+  7 new pure tests incl. live-XSD full-set validation — mapper suite 41.
+- [x] `[APP]` **§179-disposition pass-through gap FOUND + refuse-seamed** — same commit. i4797:
+  pass-through entities don't report §179-property disposals on their own 4797 (K-1 17K +
+  statement + M-2 3a instead); engine currently mis-routes them through corp 4797; RS 4797 spec
+  SILENT → mapper refuses, print unchanged, full unit queued for Ken (tax-app REVIEW_QUEUE).
+- [x] `[APP]` **Leg-7 fact sheet** — agent-extracted scenario5_1120s_analysis.md (all forms,
+  line values, checkbox resolutions, [MISMATCH] ledger — SSN pairing reversed, 156,855 = line-11
+  rents, stale TY2023 §179 threshold on the scenario 4562 face).
 
 **Session 29 wrap (2026-07-08; "go" — autonomous continuation of the Ken-picked S5-mapper lane):**
 - [x] `[APP]` **1120-S Scenario-5 legs 4+5 — IRS4797 + IRS8825 doc mappers** — 2026-07-08 `f5724fa`.
