@@ -32,9 +32,19 @@ Internal Revenue Bulletin index (the sub-regulatory channel the FR MISSES: Rev.P
 Announcements — e.g. the Form 3115 automatic-change list, indexed amounts) and opens a `feed_poll` item per new
 WEEKLY BULLETIN (bulletin-level; triage drills into the individual items), idempotent by `external_ref` `IRB-YYYY-NN`;
 `--since-bulletin`/`--limit`/`--dry-run`; browser UA, stdlib urllib. No govinfo/IRS API exists → index scrape (verified
-the anchor pattern before coding). Live dry-run parsed 25 bulletins, selected the 6 most recent. Deferred: FEED_POLL
-leg 3+ (Congress.gov statutes; item-LEVEL IRB parsing), a weekly scheduler, and the staleness auto-flag (→ future
-`stale_rules_report`). Register is live + empty (both FR + IRB runs were dry-run only).
+the anchor pattern before coding). Live dry-run parsed 25 bulletins, selected the 6 most recent. **+SCHEDULER BUILT
+2026-07-08** — `poll_change_feeds` runs both automated arms resiliently (one arm's network failure doesn't stop the
+other; exits non-zero only if ALL arms fail) + optional env-gated Pushover ping on new items; wired as a **Render cron
+job** (`render.yaml` `type: cron` `sherpa-rs-change-feeds`, Mondays 12:00 UTC, lightweight `pip install` build). Live
+dry-run drove both real APIs (2/2 arms ok). **One-time deploy step for Ken:** next Render Blueprint sync creates the
+cron service; set its `DATABASE_URL` to the same Supabase value as the web service (optional `PUSHOVER_TOKEN`/`_USER`
+for the ping). **+STALENESS REPORT BUILT 2026-07-08** — `stale_rules_report --change CR-id | --source CODE [--json]`: read-only
+blast radius (Authoritative-Source Rule step 5). Given a promoted change, lists the authored rules that depend on the
+moved authority — rules that CITE the source (via RuleAuthorityLink), rules named in triage (affected_rule_ids), and
+every rule on an affected form — grouped by form with reason + support_level + relevance_note; strongest-reason wins
+on dedupe. Does NOT touch rules (D-26: report, don't auto-edit). Live test on real prod: `--source REVPROC_2025_23`
+correctly flagged the 2 Form 3115 DCN-7 rules. Deferred: FEED_POLL leg 3+ (Congress.gov statutes; item-LEVEL IRB
+parsing) + a possible future on-rule stale FLAG. Register is live + empty (all fetcher runs were dry-run only).
 
 Active spec-authoring tool. RS Supabase holds **120 TaxForms / 527 FlowAssertions / 973 FormRules**
 (**+WO-23 Form 3115 2026-07-06** — Application for Change in Accounting Method (`3115`, entity_types
@@ -371,6 +381,29 @@ Nothing blocking RS. Item 2 above waits on Ken's scoping (his depreciation-speci
 
 ## Recent wins
 
+- 2026-07-08: **STALENESS REPORT BUILT — `stale_rules_report` (Authoritative-Source Rule step 5, operational).**
+  Closes the funnel's last core gap: when a change is promoted, which authored rules depend on the moved authority?
+  Read-only report (D-26: report, don't auto-edit — no FormRule change, no migration). Given `--change CR-id` (uses
+  the item's authority_source + affected_rule_ids + affected_forms) or `--source CODE`, it lists dependent rules by
+  three reasons, strongest first: **cites_source** (a RuleAuthorityLink to the moved source), **named** (rule_id in
+  triage's affected_rule_ids), **on_affected_form** (any rule on an affected form); grouped by form with support_level
+  + relevance_note; `--json` for machine output. Dedupe keeps the strongest reason per rule. 10 new tests (source/
+  change/forms/named/reason-precedence/no-match/json/error-paths) — **full RS suite 72/72 green.** Live proof on real
+  prod: `stale_rules_report --source REVPROC_2025_23` flagged the 2 Form 3115 DCN-7 rules (R-3115-CATCHUP, R-3115-DCN)
+  with their §6.01 relevance notes — exactly what to re-verify when the annual automatic-change list is superseded.
+  See [[rs-change-register-funnel]].
+- 2026-07-08: **SCHEDULER BUILT — `poll_change_feeds` + Render cron (the funnel now runs unattended).**
+  The piece that turns "on demand" into "it watches for you." `poll_change_feeds` is the single entry point the cron
+  calls: runs `fetch_federal_register` + `fetch_irb` RESILIENTLY (each wrapped so one arm's network blip doesn't stop
+  the other), reports opened counts per arm, exits 0 if ≥1 arm succeeded / non-zero only if ALL failed (so Render
+  surfaces a real outage, not a quiet week), and fires an OPTIONAL Pushover ping when new items open (env-gated on
+  `PUSHOVER_TOKEN`/`PUSHOVER_USER` — best-effort, never breaks the poll; RS had no prior Pushover integration).
+  Flags: `--fr-lookback-days` (8) / `--irb-limit` (3) / `--no-fr` / `--no-irb` / `--dry-run`. Wired as a Render cron
+  service in `render.yaml` (`type: cron`, `sherpa-rs-change-feeds`, virginia, **Mondays 12:00 UTC**, lightweight
+  `pip install -r requirements.txt` build — no frontend). 6 new tests (both-arms / resilience-one-fails /
+  all-fail-raises / dry-run / --no-fr / no-Pushover-when-unset) — **full RS suite 62/62 green.** Live dry-run drove
+  both real APIs (2/2 arms ok). **Ken one-time deploy:** next Blueprint sync creates the cron; set its `DATABASE_URL`
+  to the web service's Supabase value. See [[rs-change-register-funnel]].
 - 2026-07-08: **FEED_POLL leg 2 — the INTERNAL REVENUE BULLETIN fetcher BUILT (sub-regulatory intake).**
   The channel the Federal Register misses: Rev.Procs / Notices / Rev.Rulings / Announcements (where the Form 3115
   automatic-change list, indexed amounts, etc. actually publish). Research first (never from memory): confirmed

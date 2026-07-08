@@ -17,7 +17,21 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **1120-S ATS Scenario-5, leg 7: engine-driven scenario build** (1040-Scenario-8 playbook; fact sheet READY at tax-app `docs/mef/scenarios/scenario5_1120s_analysis.md`; name the command distinctly — `mef_build_ats_scenario5` is the 1040 S5). Leg 6 statements DONE (`ca7e956`). ⚠⚠ **PARTIAL BLOCKER, Ken ruling needed (tax-app REVIEW_QUEUE 2026-07-08): §179-disposition pass-through** — the scenario truck must ride K-1 box 17 code K + DispositionOfPropWithSect179DedStmt, NOT the corp 4797; RS 4797 spec silent; MeF mapper refuses §179 disposals meanwhile. Everything else in leg 7 buildable. ⚠ `test_4797_pipeline_leg.py --reuse-db` re-verify carried to next boot (pooler timeouts ×2 this session). Upload lane still waits on business-family access (Ken's e-help call). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`). ▶ NEXT after S5: S-11 1041 legs 6-8 · S-17b direct deposit.
+## ▶ NOW WORKING ON — **idle — Ken directs.** S5 build PARTIAL-COMPLETE: the engine-driven scenario (`9754388`) ties EVERY key line to the dollar + XSD-validates; an UPLOADABLE package waits on **two Ken rulings (tax-app REVIEW_QUEUE 2026-07-08: §179 pass-through · K-1 rounding)** + the binary-attachment leg (8453-CORP/8822-B) + business-family IFA access (e-help call). Candidate next CC lanes: **S-11 1041 legs 6-8** · S-17b direct deposit · 1120-S scenarios 6/7/8 fact extraction (playbook proven). ⚠ `test_4797_pipeline_leg.py` full file → healthy-pooler window (discriminator GREEN — pooler-load, not a bug). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+
+**Session 30 continuation wrap (2026-07-08; "go"):**
+- [x] `[APP]` **Statement-source revision (leg-6 amendment)** — 2026-07-08 `bebd7db`. Line 19 +
+  M-2 3a/5a statements decompose their COMPUTE FORMULAS (D_* components + K items; LineItemDetail
+  = the M-2 override tier); SUBSCHEDULE_CONFIG drops the computed lines; Sch B "other/Hybrid"
+  method (`accounting_method_other_desc`, mig 0177 prod-applied); `MEF_SOFTWARE_ID_1120`. Suite 45.
+- [x] `[APP]` **1120-S Scenario-5 leg 7 — engine-driven scenario build** — 2026-07-08 `9754388`.
+  `apps/efile/ats/scenario5_1120s.py` + `mef_build_ats_1120s_s5` (rollback-txn): ALL key lines tie
+  TO THE DOLLAR; full submission XSD-valid (2025v6.2) w/ statements + Hybrid method; 4 DB tests.
+  Truck §179 disposition DELIBERATELY absent (refuse-seam test proves it); preparer overrides
+  carry the key's book-vs-engine gaps; engine-truth divergences documented in the module.
+  ⚠ NEW Ken flag: K-1 whole-dollar rounding drifts K-1 sums vs Sch K (REVIEW_QUEUE).
+- [x] `[APP]` **4797 DB verify discriminated** — the stalling test GREEN alone (327s) → pooler-load
+  class, refactor exonerated; full-file run carried to a healthy window.
 
 **Session 30 wrap (2026-07-08; "go" — autonomous continuation):**
 - [x] `[APP]` **1120-S Scenario-5 leg 6 — Itemized*Schedule attachment statement mappers** — 2026-07-08

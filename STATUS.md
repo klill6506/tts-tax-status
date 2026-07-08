@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, thirtieth session. Unit: **1120-S ATS Scenario-5 leg 6 —
-Itemized*Schedule attachment statement mappers (`ca7e956`) — COMPLETE.***
+*Last updated: 2026-07-08, thirtieth session (continued on "go"). Units: **1120-S ATS
+Scenario-5 legs 6 (`ca7e956`) + statement-source revision (`bebd7db`) + leg 7 engine-driven
+scenario build (`9754388`) — ALL COMPLETE.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,80 +11,60 @@ Itemized*Schedule attachment statement mappers (`ca7e956`) — COMPLETE.***
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — 1120-S Scenario-5, leg 7: engine-driven scenario build (partial)
-Leg 6 statements DONE (`ca7e956`) — all 11 LineItemDetail-backed Itemized*Schedule documents
-(page-1 5/19 · 1125-A A5 · Sch L 6/9/14/18 · M-1 2/6 · M-2 3a/5a), reconcile-or-refuse,
-refDocId-anchored, XSD-sequence-ordered; suite 41 green incl. live-XSD.
-**Leg 7 input fact sheet is READY**: `docs/mef/scenarios/scenario5_1120s_analysis.md`
-(gitignored folder — local only; full per-form line values, checkbox resolutions, cross-check
-mismatches). Build on the 1040-Scenario-8 playbook (`apps/efile/ats/scenario8.py` shape:
-`build_scenario5_1120s_return(firm, user)` + rollback-txn command; NOTE
-`mef_build_ats_scenario5.py` is the 1040 S5 — the new command needs a distinct name, e.g.
-`mef_build_ats_1120s_s5`). Key fact-sheet findings: ordinary income 87,920; K-1s 50/50 with
-penny-offsets (box 1 = 43,960 each; box 2 = 1,788/1,787); the shareholder↔TIN pairing is
-REVERSED from the attachment-page guess (Mak = the …0001 TIN, Issa = …0005 — full synthetic
-identifiers in the local fact sheet, not here); 156,855 = line 11 RENTS;
-line 14 depreciation 1,019 (§179 excluded, ties trade 4562 L22); scenario 4562 face prints the
-STALE TY2023 §179 threshold (engine-truth OBBBA $2.5M/$4M wins, per the ATS-keys-stale rule);
-K-1 box 17 prints `K* 1,400`.
-
-**⚠⚠ LEG-7 PARTIAL BLOCKER — §179-disposition pass-through (REVIEW_QUEUE 2026-07-08, needs
-Ken).** The scenario's Dodge-truck sale (§179 1,000) must NOT be on the corp 4797 (i4797:
-pass-through → K-1 box 17 code K + DispositionOfPropWithSect179DeductionsStatement + M-2 3a
-gain). `aggregate_dispositions` currently routes §179 disposals through the corp 4797; RS 4797
-spec is SILENT → the MeF mapper now REFUSES any disposed asset with §179 (`ca7e956`, print
-unchanged). Everything else in leg 7 is buildable; the truck (and the two
-DispositionOfPropWithSect179DedStmt docs + K17-K) waits on the ruling + RS spec amendment +
-the compute/allocator/print unit.
+## ▶ RESUME HERE — S5 build is PARTIAL-COMPLETE; two Ken rulings decide the rest
+The engine-driven Scenario-5 build is LIVE (`apps/efile/ats/scenario5_1120s.py` +
+`mef_build_ats_1120s_s5` command, rollback-txn): **every EXPECTED_LINES value ties to the
+IRS key to the dollar and the full submission XSD-validates (2025v6.2)** — 4 DB tests green
+(lines · K-1 split · XSD · truck-refuse). Remaining for an UPLOADABLE scenario package:
+1. **§179 pass-through ruling** (REVIEW_QUEUE) → then the RS 4797 spec amendment + the unit
+   (compute exclusion / k1_allocator facts / K-1 print code K / XML statement / M-2 3a
+   addition) → add the truck to the scenario module (facts in its docstring).
+2. **K-1 rounding ruling** (REVIEW_QUEUE, new) — allocator penny-offset vs diagnostic;
+   test re-pin noted inline.
+3. **Binary-attachment leg** (8453-CORP signature + 8822-B) — unmodeled; own leg.
+4. Business-family IFA access (Ken's e-help call) — upload lane.
+Next CC lanes while those wait: S-11 1041 legs 6-8 · S-17b direct deposit · 1120-S
+scenarios 6/7/8 fact extraction (same playbook; PDFs already local).
 
 ## Ken's e-help call — five asks (unchanged)
 Full script WITH identifiers: `docs/mef/ATS_UPLOAD_RUNBOOK.md` (repo-internal, NOT mirrored).
 Asks: (1) 1040 → PRODUCTION status; (2) A2A enrollment same call; (3) 1120-S business-family
 access status; (4) SOR re-request (1041 v5.3 + 1040 v5.4 BR); (5) low-priority header enums.
-**NEW ask for Ken (in-app): the §179 pass-through ruling above — REVIEW_QUEUE 2026-07-08.**
+**Plus two in-app rulings in REVIEW_QUEUE 2026-07-08: §179 pass-through · K-1 rounding.**
 
-## What landed this session (`ca7e956`, pushed)
-- **Leg 6 statement mappers**: `build_statement_documents` in builder_1120s (11 docs; M-1
-  line-6 statement synthesizes the 6a "Depreciation" row — scenario Attachment-8 shape);
-  `LineDetailSource` + `line_details` on the extract; anchors set referenceDocumentId on the
-  page-1/Sch L/M-1/M-2/1125-A elements; ReturnData order = the XSD sequence
-  (AccumAdjAcct* first, ItemizedOtherDeductionSch2 LAST — ref line 3706, not alphabetical).
-- **SUBSCHEDULE_CONFIG** (views.py) extended: 5/19/A5/M2_3a/M2_5a single-amount rollups
-  (client sub-schedule UI = deferred input leg, DEFERRAL_AUDIT).
-- **§179 refuse seam**: `Disposed4797Source.sec_179_elected` + build_irs4797 refusal.
-- **Tests**: 7 new pure (shapes/order, M-1 synth row, reconcile-refuse, anchor links,
-  absent-without-rows, §179 refusal, live-XSD full statement set) — mapper suite 41 green.
-- **Leg-7 fact sheet** agent-extracted → `docs/mef/scenarios/scenario5_1120s_analysis.md`.
+## What landed this session (`ca7e956` → `bebd7db` → `9754388`, all pushed)
+- **Leg 6** (`ca7e956`): 11 Itemized*Schedule statement mappers, reconcile-or-refuse,
+  refDocId anchors, XSD-sequence order; §179-disposal refuse seam in the 4797 mapper.
+- **Statement-source revision** (`bebd7db`): line 19 + M-2 3a/5a statements decompose their
+  COMPUTE FORMULAS (D_* components w/ seed labels + D_FREE descs; Schedule K items), with
+  LineItemDetail as the M-2 override tier; SUBSCHEDULE_CONFIG drops the computed lines;
+  Sch B "other/Hybrid" accounting method (`TaxReturn.accounting_method_other_desc`, mig
+  **0177 applied to prod**, serializer exposed); `MEF_SOFTWARE_ID_1120` (25025303). Mapper
+  suite **45** green incl. live-XSD.
+- **Leg 7** (`9754388`): the scenario module + command + 4 DB tests (above). Engine-truth
+  divergences + preparer overrides (L3a/L3d/L10d/L10e/L24d) documented in the module.
+  Fact sheet: `docs/mef/scenarios/scenario5_1120s_analysis.md` (local-only, gitignored dir).
+- **4797 DB verify**: discriminator GREEN (the stalling test passes alone, 327s) —
+  pooler-load, NOT a code bug (see below).
 
 ## Active gates
-- Flow gate NOT rerun this session — no compute/renderer change (mapper + views rollup config
-  + tests only). Last green 422 (session 29).
-- Pure suites: 1120-S mapper **41** green (was 34).
-- ⚠ `test_4797_pipeline_leg.py --reuse-db` (session-29 in-flight DB stamp): first re-run this
-  session hit a pytest-timeout on the pooler mid-query (no summary line); second re-run
-  in flight at close — **verify at next boot** (see "In flight" below).
-
-## In flight at close → ⚠ OPEN: 4797 pipeline DB verify (3 pooler timeouts)
-`pytest tests/test_4797_pipeline_leg.py --reuse-db` timed out THREE times this session (per-test
-`--timeout=300` fired), every time ~15-16 quick passes in, always inside
-`run_diagnostics(tax_year)` (twice pinned at `rules.int_8825_flow_check`'s RentalProperty
-SELECT, stack in `select.select()` — the SERVER not answering, not a CPU loop). Lingering
-test_postgres sessions were pg_terminate'd between runs and after the last. Most likely the
-documented degraded-pooler class ([[pooler-slow-not-hung-17min]]); a real diagnostics-runner
-stall under this test's data shape is NOT excluded. **Next boot, discriminate before anything
-else**: `pytest "tests/test_4797_pipeline_leg.py::test_section_1245_exception_diagnostics_fire"
---reuse-db --timeout=900 -q` alone on a fresh morning connection — green ⇒ pooler load (run the
-full file); stalls again ⇒ treat as a REAL bug in the diagnostics path for this shape and debug
-`int_8825_flow_check`. The compute logic itself is refactor-identical (classify_disposal
-bridge-gate); pure 4797 (49) + mapper (41) + flow gate 422 (s29) are green.
+- 1120-S mapper pure suite **45** green (live-XSD incl. statements).
+- Scenario-5 DB suite **4/4** green (`test_mef_scenario5_1120s_compute.py`).
+- Flow gate not re-run — compute.py/renderer.py untouched this session (last green 422, s29).
+- ⚠ `test_4797_pipeline_leg.py` full file: 3 pooler timeouts, then the discriminating
+  single test PASSED alone (327s with `--timeout=900`) → verdict pooler latency
+  (run_diagnostics ≈5.5 min/call tonight). Remaining: one full-file green run,
+  `pytest tests/test_4797_pipeline_leg.py --reuse-db --timeout=900 -q` in a healthy
+  window (~30 min at tonight's latency). pg_terminate lingering test_postgres
+  sessions after any kill.
 
 ## ▶ Waiting on Ken / external
-1. **§179-disposition pass-through ruling** (REVIEW_QUEUE 2026-07-08) — blocks the S5 truck
-   piece of leg 7 + real S-corp §179-disposal e-filing.
-2. ATS assistor / e-help call (866-255-0654) — the five asks above.
-3. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.
-4. 1120-S business-family e-file access notice — upload lane blocked; leg 7 build remains
-   buildable meanwhile.
+1. **§179-disposition pass-through ruling** (REVIEW_QUEUE) — blocks the S5 truck + real
+   §179-disposal e-filing; RS 4797 spec amendment follows the ruling.
+2. **K-1 whole-dollar rounding ruling** (REVIEW_QUEUE) — penny-offset vs diagnostic.
+3. ATS assistor / e-help call (866-255-0654) — the five asks above.
+4. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.
+5. 1120-S business-family e-file access — upload lane.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
