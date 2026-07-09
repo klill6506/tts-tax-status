@@ -77,6 +77,14 @@ SOR-blocked (ATS-active v5.3 schemas+BR re-request). **1120** — RS specs done
 options / ETIN-EFIN status) → PDF into docs/mef/.
 
 ## ▶ Waiting on Ken / external
+0. **TaxWise forms-usage report incoming** (Ken, ~next few days): all forms across last
+   year's returns WITH per-form counts, entities included. When it lands → the
+   **forms-gap-analysis unit** (diff vs engine + MeF-builder coverage → (a) per-family
+   IRS questionnaire checklists for the e-services Software Package checkboxes — Ken
+   marks ONLY what we support, extend as forms land; (b) prioritized app-build queue;
+   (c) RS spec-authoring queue for Ken's lane). Ken holds the checkbox marking until
+   the checklist exists. Also Ken-noted: **A2A build should NOT wait until November** —
+   pull it forward after the 1120-S scenario set (BUILD_ORDER re-order pending).
 1. **S7/S8 declared-forms ruling** (shapes "the full 1120-S set"): recommendation —
    declare only forms the firm files (5471/8975/8858 OUT → S7/S8 likely not required);
    confirm with the ATS assistor/e-help (Pub 1436; REVIEW_QUEUE).
