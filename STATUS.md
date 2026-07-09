@@ -3,7 +3,8 @@
 *Last updated: 2026-07-09, thirty-seventh session ("go" — the standing overnight work order).
 Unit: **S6 unit 3 — the Scenario-6 build `mef_build_ats_1120s_s6` COMPLETE** (all 41 key
 lines tie to the dollar; submission live-XSD-valid; PIN-signed). **THE OVERNIGHT WORK ORDER
-(units 1→2→3) IS DONE.***
+(units 1→2→3) IS DONE.*** *(Amended later 2026-07-09: A2A enrollment kicked off — see the
+A2A section below.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -21,7 +22,31 @@ Ken-directed:
    key-inversion + the s36 entity-8824 ratifications resolve in-loop).
 3. Interleavable while waiting: the REVIEW_QUEUE set (RS FA-export reconciliation pass ·
    1065/1041 allocator residual-offset units) · the TaxWise forms-usage gap-analysis unit
-   (report incoming) · A2A pull-forward planning.
+   (report incoming) · the A2A client build (`a2a.py` SOAP + signing vs a scratch key).
+
+## S-18 platform trio (added 2026-07-09, Ken-directed — BUILD_ORDER S-18)
+Ken queued 3 platform items (prompts fleshed out in Claude-chat): **18a optimistic
+concurrency** (version column + 409 + reload prompt; NO pessimistic locks) → pre-January ·
+**18b presence indicator** (heartbeat TTL banner) → fast-follow · **18c PWA install** →
+**BUILT this session** (vite-plugin-pwa; manifest "Delvio Tax" Ken-ruled; autoUpdate SW;
+/api/ never cached; zero Django URL changes — WHITENOISE_ROOT serves SW at root scope;
+verified live via `npm run preview`: SW activated at root scope, manifest 200, API fetches
+bypass cache, precache = 9 shell entries; vitest 275 green). **Ken's remaining verify:**
+install from Chrome (address-bar install icon) → check independent windows on 2 clients →
+confirm next Render deploy gets picked up on reload. · **18d support-ticket system** —
+parked in BUILD_ORDER as design-pending (do not build before a Ken design pass).
+⚠ NEW known issue (pre-existing, found during 18c): `tsc -p tsconfig.renderer.json` reports
+~148 error lines (TaxpayerInfoSection etc.) despite s36's "tsc 0" note — same count with
+the PWA change stashed, so not from 18c. Reconcile the tsc invocation / fix in a
+maintenance pass.
+
+## A2A enrollment — IN FLIGHT, on hold at the certificate step (2026-07-09)
+Ken started IRS Automated Enrollment; the create-ASID screen needs the X.509 cert at Save,
+so AE is **paused until the IdenTrust cert issues** (~7–14 day vetting). Forms packet in
+hand: notarize (wet ink, in-person) + submit; pre-submit support call (3 confirms) and the
+30-day download clock are the traps. **Full detail + agreed AE field values:
+`docs/mef/A2A_ENROLLMENT.md`** (not mirrored; identifiers live there). On cert arrival:
+AE enrollment → activate ASID → A2A comms test in ATS.
 
 ## Session-37 state (S6 unit 3)
 - **`apps/efile/ats/scenario6_1120s.py` + `mef_build_ats_1120s_s6`** (rollback-txn, seq 22):
@@ -57,8 +82,10 @@ Recorded in SEASON_PLAN (scope-change note) + BUILD_ORDER (mission header + NEXT
 
 ## ▶ Waiting on Ken / external
 0. **TaxWise forms-usage report incoming** → the forms-gap-analysis unit (checklists /
-   build queue / RS authoring queue). A2A pull-forward after the 1120-S set (BUILD_ORDER
-   re-order pending).
+   build queue / RS authoring queue). A2A pull-forward is now IN FLIGHT (see A2A section;
+   BUILD_ORDER re-order pending).
+0b. **IdenTrust cert vetting** (~7–14 days once the packet is submitted) — gates AE
+   enrollment → ASID activation → A2A comms test. Runbook: `docs/mef/A2A_ENROLLMENT.md`.
 1. **S7/S8 declared-forms ruling** (Pub 1436; e-help) — shapes "the full 1120-S set."
 2. **8941 key-inversion** — law 51,014 vs key 12,753 (REVIEW_QUEUE s34) — e-help.
 3. Ratify the two s36 entity-8824 spec-silent rulings (REVIEW_QUEUE s36).
