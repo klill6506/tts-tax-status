@@ -712,11 +712,13 @@ system is a reason this app exists (18a); PWA desktop install à la QBO = big va
   Alt-Tab (the practical answer to "one taskbar button per open client": windows group
   under the one app icon, but hover-previews/Alt-Tab now show the client names).
   Live-verified via probe firm (deleted after; clean cascade); vitest 275 green.
-- [ ] **18f · Per-preparer settings (landing page + client sort)** — Ken wants HIS login
-  to land on individual clients, alphabetical. **`accounts.UserPreferences` already exists**
-  (per-user-per-firm; theme + return-list order) — extend with `landing_page` +
-  `client_sort` fields + settings UI + router default. Small unit. More landing-page
-  cosmetic items follow after Ken approves this one.
+- [x] **18f · Per-preparer settings (default entity tab; sort already existed)** —
+  2026-07-09 `a022817`. `UserPreferences.return_list_entity_type` (mig 0003 → prod):
+  the LAST-CLICKED entity tab becomes the login's landing tab (server-synced, "all"
+  sentinel); saved sort (`return_list_ordering`, incl. alphabetical) already existed.
+  Ken setup: click **Individual** once + sort **Name** once — every login lands there.
+  Server prefs 14 + vitest 276 green; probe-verified live. **NEXT: Ken's further
+  landing-page cosmetics (he has a list) — Ken directs.**
 - [ ] **18g · Multi-client visibility — open-returns tab bar (QBO-desktop feel)** — a
   persistent in-app tab strip of the returns open in this window (click = switch, x =
   close), so "what do I have open" is visible in ONE window instead of many. DESIGN with
