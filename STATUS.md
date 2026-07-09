@@ -60,13 +60,31 @@ S6 quirks to honor (docs/mef/scenarios/scenario6_1120s_analysis.md + the s34/s35
   test green in at least one run; infrastructure class, re-verify on a healthy window
   if it recurs.
 
+## 🟢 UNBLOCKED 2026-07-09 (Ken-verified): IRS e-services approval for the BUSINESS FAMILIES
+Ken confirmed this morning we hold the e-services approvals needed to begin ATS testing
+**1120-S, 1065, 1120, and 1041**. Practical effect, per family:
+- **1120-S: READY TO UPLOAD NOW** — the S5 package is complete (PIN-less 8453 binary
+  path, XSD-valid, built by `mef_build_ats_1120s_s5`); start the live upload/ack loop
+  (the s28 1040 pattern: Ken uploads via IFA, CC fixes same sitting;
+  docs/mef/ATS_UPLOAD_RUNBOOK.md). S6 joins after unit 3 (its upload alone stays gated
+  on the 8941 key-inversion e-help item — S5 is NOT gated).
+- **1065**: mapper is leg 1 only (synthetic return XSD-valid; no ATS scenario built yet)
+  — needs its own scenario/doc-mapper lane before an upload.
+- **1041**: engine complete, but STILL SOR-BLOCKED — the in-hand schemas are v3.0/v5.5;
+  the ATS-active v5.3 schemas+BR re-request must land first.
+- **1120 C-corp**: not built (not season-one scope per SEASON_PLAN).
+Proof to stash when convenient (for the runbook + A2A enrollment later): the e-services
+e-file Application Summary showing the authorized form families/provider options +
+ETIN/EFIN status — drop a PDF/screenshot in docs/mef/ (no PII beyond firm identifiers).
+
 ## ▶ Waiting on Ken / external
-1. **S6 upload decision** (after unit 3): the 8941 key-inversion — law (51,014) vs key
+1. **1120-S S5 IFA upload — GO** (approval verified above; package READY).
+2. **S6 upload decision** (after unit 3): the 8941 key-inversion — law (51,014) vs key
    (12,753) — raise with the ATS assistor/e-help (REVIEW_QUEUE s34).
-2. Ratify the two s36 entity-8824 spec-silent rulings (REVIEW_QUEUE s36).
-3. ATS assistor / e-help call (866-255-0654) — the five asks (docs/mef/ATS_UPLOAD_RUNBOOK.md).
-4. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.
-5. 1120-S business-family e-file access — the S5 IFA upload (package READY).
+3. Ratify the two s36 entity-8824 spec-silent rulings (REVIEW_QUEUE s36).
+4. ATS assistor / e-help call (866-255-0654) — the five asks (docs/mef/ATS_UPLOAD_RUNBOOK.md).
+5. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request (blocks 1041 ATS
+   despite the new approval).
 6. Scope call: Scenario 7 (M-3/5471/Sch N) in declared-forms ATS scope (Pub 1436)?
 
 ## Authoritative files read at boot
