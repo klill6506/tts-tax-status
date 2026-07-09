@@ -14,6 +14,19 @@ extension · SCHD_1120S 2025-face renumber; deployed exports verified; tts mirro
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
+## ⏰ OVERNIGHT WORK ORDER (Ken, 2026-07-08 night — autonomous, NO QUESTIONS)
+Ken is asleep. Standing instruction: **finish units 1→2→3 below in order, asking nothing.**
+Every judgment call is pre-ruled (the four S6 rulings + standing policy); specifically:
+- **Law-vs-key on the 8941 credit**: build the engine to the LAW (spec pin F8941-T1 —
+  line 8 = 51,014 on the S6 inputs). The scenario build documents the key's inverted
+  12,753 chain as a divergence (the S5 book-vs-engine precedent); the UPLOAD decision
+  stays with Ken/e-help — do not resolve it, just document.
+- **The S6 truck 8824**: personal property = hard RED on real returns (D_8824_009); the
+  scenario build reproduces the key's 8824 face via a documented-quirk override path only.
+- Commit + push at every green leg. If the pooler drags or context nears **80%**, run the
+  FULL session-close protocol and stop cleanly — Ken picks up in the morning. Never
+  compact past a unit boundary; prefer stopping between units.
+
 ## ▶ RESUME HERE — the Form 8941 app unit (spec live: `server/specs/8941_spec.json`)
 S6 build sequence, now all APP-lane:
 1. **8941 unit** — compute (`compute_8941`? — worksheet rollup inputs per the spec's v1
