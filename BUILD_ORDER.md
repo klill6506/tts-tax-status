@@ -690,14 +690,16 @@ system is a reason this app exists (18a); PWA desktop install à la QBO = big va
   guard. Priority: pre-January; Ken's roadmap slots it after client numbering wraps.
 - [ ] **18b · Presence indicator** — "X also has this return open" banner via heartbeat
   with self-expiring TTL (~60s). Warns, never blocks. Fast follow to 18a.
-- [ ] **18c · PWA installability** — vite-plugin-pwa: manifest (display standalone, colors
-  from the existing palette, 192/512 + maskable icons from the existing mark; **name = Ken
-  decision: "Sherpa Tax" per the prompt vs the "Delvio Tax" DBA ruled 2026-07-07**); SW
-  `autoUpdate` + skipWaiting + clientsClaim; **NEVER cache /api/** (precache the static
-  shell only); manifest+SW served at root scope through Django/WhiteNoise. Verify ×4:
-  Lighthouse installable · two independent windows on two clients · deploy picked up on
-  reload · normal browser use unchanged. Light win, any open slot. (Prompt names a feature
-  branch; repo convention is main-only — Ken to pick.)
+- [ ] **18c · PWA installability — CODE COMPLETE 2026-07-09 (same session; on MAIN,
+  Ken-ruled; manifest name "Delvio Tax", Ken-ruled).** vite-plugin-pwa: standalone
+  manifest, palette colors (#1e40af/#e2e8f0), TTS-mark icons 192/512+maskable
+  (`scripts/generate_pwa_icons.py`); SW autoUpdate+skipWaiting+clientsClaim; **/api/ never
+  cached** (no runtimeCaching; nav-fallback denylist). Zero Django URL changes —
+  WHITENOISE_ROOT already serves SW/manifest at root scope; prod.py adds the .webmanifest
+  MIME. CC-verified live (`npm run preview`): SW ACTIVATED at root scope · manifest 200 ·
+  API fetches bypass cache · precache = shell only · vitest 275 green (tsc's ~148 error
+  lines are PRE-EXISTING — stash-compared; maintenance item). **TICKS when Ken verifies:**
+  Chrome install → 2 independent windows → next-deploy pickup on reload.
 - [ ] **18d · Support ticket system — DESIGN PENDING (parked 2026-07-09 so it isn't
   forgotten; do NOT build before a design pass with Ken).** Two-fold: (1) pre-release
   internal — dogfood channel to help finish the app; (2) production — internal + licensee
