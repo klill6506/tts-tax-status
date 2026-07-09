@@ -1,5 +1,18 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 session 33 (S-17b refund direct deposit) — 1040 MeF + input coverage DEEPENED
+> (no new form; the 1040 already ticks).** The 1040 line-35 direct-deposit group now e-files:
+> `_extract_direct_deposit` (elected on a 35a refund + BOTH TaxReturn bank fields; partial or
+> lexically-invalid data REFUSES — never a silent paper-check downgrade) → IRS1040 35b/c/d
+> (RoutingTransitNum/BankAccountTypeCd/DepositorAccountNum directly after RefundAmt; no Form
+> 8888 — single account only) + the ReturnHeader `RefundDisbursementGrp` RTN/DAN
+> (R0000-250/251). ⚠ `RefundDisbursementCd` enum unpublished: DD emits the reasoned "1"
+> (module constant, e-help Q#5); paper check keeps the live-accepted "0". INPUT gap closed:
+> the bank fields were entity-editors-only — the 1040 Payments tab now carries a "Refund
+> Direct Deposit (lines 35b–35d)" card (debounced `/info/` autosave, inline RTN validation,
+> live-UI-verified on an isolated probe). Pure suite 51 incl. live-XSD DD validation; flow
+> gate 444 unchanged.
+
 > **2026-07-08 session 32 (§179 pass-through + K-1 rounding + S5 binary attachments) — the
 > 4797 (entity lane), K-1 (1120-S), and M-2 coverage DEEPENED; two NEW attachment forms.**
 > **§179 pass-through (RS `R-4797-ENTPASS`, Ken-ruled)**: the entity 4797 now EXCLUDES

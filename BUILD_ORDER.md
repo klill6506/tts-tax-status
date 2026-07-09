@@ -17,7 +17,21 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **S-17b direct deposit** (the last non-e-help queue item; bank RTN/DAN/type fields exist on TaxReturn — wire into the 1040 mapper's refund/AdditionalFilerInformation groups per R0000-248/249/250/251). The REST of the Ken-set s31-evening queue COMPLETED session 32 (wrap below): §179 pass-through unit ✅ · K-1 residual-offset rounding ✅ · S5 binary attachments ✅ · RS load_ga501 amendments ✅ · 4797 full-file run ✅ · scenario 6/7/8 fact sheets ✅ — **the S5 package is COMPLETE and uploadable; only IFA business-family access (e-help) gates the upload.** EXCLUDED (e-help/external): 1040 production cutover · S5 IFA upload · 1041 ATS scenarios (SOR) · business-family access. 🏁 s31: **S-11 1041 COMPLETE, fully ticks** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+## ▶ NOW WORKING ON — **1120-S Scenario 6 build** (next-buildable ATS scenario per the s32 fact sheets — entity-side 8824 + 8941 + 8949/Sch D mapper legs; PIN-signed, no binaries). **THE ENTIRE KEN-SET NON-E-HELP QUEUE IS COMPLETE as of session 33** — S-17b direct deposit landed (wrap below); everything else open on the MeF lanes waits on e-help/external. Parallel candidates: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation) · S-3 brokerage front end (∥). 🏁 s31: **S-11 1041 COMPLETE, fully ticks** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+
+**Session 33 wrap (2026-07-08 night; "go" — S-17b, the last non-e-help queue item):**
+- [x] `[APP]` **S-17b — 1040 refund direct deposit end-to-end** — 2026-07-08. Extract:
+  `DirectDepositSource` + `_extract_direct_deposit` (elected only on a line-35a refund with
+  BOTH TaxReturn bank fields; partial/invalid REFUSES — never a silent paper-check downgrade;
+  no refund → bank fields ignored). Builder: IRS1040 35b/c/d directly after RefundAmt +
+  header `RefundDisbursementGrp` RTN/DAN (R0000-250/251); ⚠ unpublished enum → DD emits the
+  reasoned "1" via module constant (`REFUND_DISBURSEMENT_CD_DIRECT_DEPOSIT`, e-help Q#5
+  one-line fix); paper check keeps the live-accepted "0". `values.py` RTN/DAN validators
+  pinned to efileTypes.xsd 2025v5.3. Input leg: NEW "Refund Direct Deposit" card on the 1040
+  Payments tab (the bank fields had been entity-editors-only — a 1040 preparer had NO input
+  path). Verified: pure 51 (live-XSD DD return) · flow gate 444 · tsc 0 / vitest 275 ·
+  live-UI probe-firm round-trip (autosave → DB exact; probe deleted). DEFERRAL_AUDIT s28
+  item (2) RESOLVED.
 
 **Session 32 wrap (2026-07-08 evening; "go" — the Ken-set non-e-help queue, all spec-first):**
 - [x] `[RS+APP]` **§179-disposition pass-through unit COMPLETE** — 2026-07-08 RS `d9923e7` /
@@ -274,7 +288,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — after S-17b: **1120-S Scenario 6 build** (the next-buildable ATS scenario per the s32 fact sheets — needs entity-side 8824 + 8941 + 8949/Sch D mapper legs; PIN-signed, no binaries) · the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · Ken scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — after Scenario 6: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · Ken scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b direct deposit ✅ 2026-07-08 s33 — see the session-33 wrap under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
