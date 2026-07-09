@@ -19,7 +19,25 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **the S6 scenario build `mef_build_ats_1120s_s6` (S6 unit 3)**. 🏁 s36: **S6 unit 2 — the entity-8824 unit COMPLETE** (tts `e2cae48` / RS `a54c406`; flow gate 446→447; R-8824-ENTROUTE end-to-end). After unit 3, the 1120-S ATS lane continues per the no-piecemeal rule: **S7/S8 scope ruling (declared-forms, Pub 1436 — Ken/e-help) → any required S7/S8 builds → full-set bundle → the live upload loop** (the 8941 key-inversion question resolves inside that loop). The unit-3 BUILD itself is sanctioned (S5 playbook, PIN-signed, documented-quirk overrides for the key's 8941 inversion + the personal-property truck 8824). Stopped cleanly at the unit-2 boundary per the work order's context guardrail.
+## ▶ NOW WORKING ON — **idle — the 1120-S ATS completion lane is Ken-gated**. 🏁 s37: **S6 unit 3 — the Scenario-6 build COMPLETE** (tts `f824dc0`; all 41 key lines to the dollar; PIN-signed; live-XSD-valid; ⚠⚠ upload gated on the 8941 e-help ask) → **the s34→s37 S6 lane AND the overnight work order (units 1→2→3) are DONE**. The lane continues per the no-piecemeal rule: **S7/S8 scope ruling (declared-forms, Pub 1436 — Ken/e-help) → any required S7/S8 builds → full-set bundle → the live upload loop** (8941 key-inversion + the s36 entity-8824 ratifications resolve in-loop). CC-startable without Ken: the REVIEW_QUEUE interleaves (RS FA-export reconciliation pass · 1065/1041 allocator residual-offset units) or the 1065 ATS scenario lane.
+
+**Session 37 wrap (2026-07-09; "go" — the standing overnight work order, unit 3):**
+- [x] `[APP]` **S6 unit 3 — the Scenario-6 build `mef_build_ats_1120s_s6`** — 2026-07-09
+  `f824dc0`. `apps/efile/ats/scenario6_1120s.py` + command (rollback-txn, seq 22) + 4 DB
+  tests: ALL 41 pinned key lines tie TO THE DOLLAR (first scenario exercise of the s34
+  8949/SchD chain — K7 78,649 — and the s35/s36 8941 + entity-8824 units); submission +
+  manifest live-XSD-valid 2025v6.2; **PIN signature end-to-end** (Signature1120SInfo, no
+  binaries). NEW mapper channel: **K-1 box-10 code** (the XSD group requires a per-item
+  code) — caller-supplied `extract.k10_other_income_code` (listed_evidence pattern; the
+  scenario asserts the key's A; an un-asserted nonzero K10 still refuses) → DEFERRAL_AUDIT
+  s37 (app input leg + print-side bare-amount box 10). Documented-quirk overrides at build
+  only: 8941 = LAW (K13g 51,014; the key's inverted 12,753 chain documented — upload
+  e-help-gated) · truck 8824 `is_real_property=True` (face = key exact, zero feeds; Ken's
+  override ruling) · M1_6b=0 override (M1_1 back-computes to the key's book loss (10,842)) ·
+  1125-A's own 540 typo absorbed in the Misc row · Silverado 24,492 · K-1 odd dollars to
+  Carrie via sort_order 0. Suites: S6 4 DB · MeF 1120-S 64 · flow gate 447 (no compute
+  changes). ⚠ new infra note: a fresh pytest right after a completed run can hit "test DB
+  in use" → `--reuse-db`.
 
 **Session 36 wrap (2026-07-09; "go" — the standing work order):**
 - [x] `[APP]` **S6 unit 2 — entity-8824 unit, ALL LEGS** — 2026-07-09 `e2cae48` (RS `a54c406`).
@@ -362,7 +380,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — after the S6 scenario build (NOW): **the 1120-S ATS completion lane** (mission rule: full scenario set, THEN test) — S7/S8 declared-forms ruling (Ken/e-help; recommendation: declare only the forms the firm files — 5471/8975/8858 out → S7/S8 likely NOT required) → any required builds → full-set bundle → live upload loop (8941 key-inversion resolves in-loop). Then the mission ladder: **1065 ATS lane** (scenario/doc-mapper legs — the S5/S6 playbook) → **1041 ATS** (SOR v5.3 schemas+BR still block) → **S-13/S-14 1120 + state C-corp APP build** (RS specs DONE `9a41581`/`87b66a4`; scope ADDED by the 2026-07-09 mission — the old "not season-one" mark is SUPERSEDED) → **Form 709 module** (greenfield: RS spec authoring first — no spec exists; MeF-e-fileable since 7/14/2025; needs its own SOR schema request for the 709 family). Interleave: the REVIEW_QUEUE set (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass · the s36 entity-8824 ratifications). *(The 8941 unit ✅ s35 + the entity-8824 unit ✅ s36 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
+## ▶ NEXT — the S6 build ✅ s37 (`f824dc0`) — now: **the 1120-S ATS completion lane** (mission rule: full scenario set, THEN test) — S7/S8 declared-forms ruling (Ken/e-help; recommendation: declare only the forms the firm files — 5471/8975/8858 out → S7/S8 likely NOT required) → any required builds → full-set bundle → live upload loop (8941 key-inversion resolves in-loop). Then the mission ladder: **1065 ATS lane** (scenario/doc-mapper legs — the S5/S6 playbook) → **1041 ATS** (SOR v5.3 schemas+BR still block) → **S-13/S-14 1120 + state C-corp APP build** (RS specs DONE `9a41581`/`87b66a4`; scope ADDED by the 2026-07-09 mission — the old "not season-one" mark is SUPERSEDED) → **Form 709 module** (greenfield: RS spec authoring first — no spec exists; MeF-e-fileable since 7/14/2025; needs its own SOR schema request for the 709 family). Interleave: the REVIEW_QUEUE set (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass · the s36 entity-8824 ratifications). *(The 8941 unit ✅ s35 + the entity-8824 unit ✅ s36 + the S6 scenario build ✅ s37 — wraps under NOW; the S6 lane is closed.)* Also teed up: **S-3 brokerage front end** (∥) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering). ⚠ SEASON_PLAN's month-by-month runway needs a re-cut for 1120/709 (dedicated planning session with Ken).
 **▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the S6 trio (8941 ·
 8824 entity · SCHD_1120S renumber) DONE 2026-07-08 s34-continuation, RS `b4c71b8`. After

@@ -1,5 +1,33 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-09 session 37 (S6 unit 3) — the 1120-S ATS Scenario-6 BUILD is COMPLETE; the
+> s34→s37 S6 lane and the overnight work order are DONE.** `apps/efile/ats/scenario6_1120s.py`
+> + `mef_build_ats_1120s_s6` (rollback-txn, seq 22) built through the REAL engine: **all 41
+> pinned key lines tie TO THE DOLLAR** (page-1 chain 11,468,259 → 424,118 · COGS 10,061,879 ·
+> 4797 14,433 · Sch D/8949 K7 78,649 · §179 62,935 · M-1 back-computed book loss (10,842) ·
+> M-2 AAA 1,600,791 · Sch L both years) and the full submission + manifest are live-XSD-valid
+> (2025v6.2). **PIN-signed** (`Signature1120SInfo`: practitioner/officer PINs, entered-by ERO,
+> jurat facts, IRSResponsiblePrtyInfoCurrInd true, NO 8822-B/binaries — S6's signature
+> option, exercised end-to-end for the first time). **NEW mapper channel: K-1 box 10 code**
+> — the K-1 XSD's box-10 group REQUIRES a per-item code; the s34 refuse seam now yields to a
+> caller-supplied `extract.k10_other_income_code` (the listed_evidence pattern; scenario
+> asserts the key's code A), an un-asserted nonzero K10 still refuses → DEFERRAL_AUDIT s37
+> (app input leg + the print-side bare-amount box 10). **Documented-quirk overrides (never
+> engine changes)**: 8941 chain pins the LAW (K13g 51,014; the key's inverted 12,753 chain
+> documented — ⚠⚠ UPLOAD GATED on the e-help ask, REVIEW_QUEUE s34) · the personal-property
+> truck 8824 rides `is_real_property=True` at build only (face = key exact: 40,000 deferred /
+> 0 recognized, all feeds zero; Ken's hard-RED + override ruling) · M1_6b overridden 0 (key's
+> books expensed §179) · 1125-A Att-10's own 540 typo absorbed in the Misc row · Silverado
+> depr 24,492 (the key's 24,619 cell contradicts its own 23/25a) · K-1 codes L/BA vs the
+> key's quirk A/P · prior-year MACRS 17/20a split rides line 17 as one sum (no ADS channel).
+> K-1 odd-dollar splits = key exact (Carrie sort_order 0; residual-to-last). Artifacts →
+> docs/mef/ats_out/1120s_scenario6 (built with the documented placeholder originator id —
+> pass the real one via `--efin` on the real run; ids in the local README.txt).
+> Suites: S6 scenario 4 DB (key pins · K-1 splits · live-XSD XML · capital/8824/8941 chain) ·
+> MeF 1120-S mapper 64 · flow gate 447 (no compute changes). ⚠ Test-DB lingering-session
+> class: a fresh pytest run right after a completed one can hit "database is being accessed
+> by other users" — rerun `--reuse-db`.
+
 > **2026-07-09 session 36 (S6 unit 2) — Form 8824 coverage EXTENDED TO ENTITIES
 > (1120-S/1065), ALL LEGS.** Spec-first from `server/specs/form_8824_spec.json`
 > (R-8824-ENTROUTE, RS `b4c71b8`; live export re-verified — mirror semantically current).
