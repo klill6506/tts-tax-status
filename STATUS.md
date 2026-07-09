@@ -42,9 +42,9 @@ maintenance pass.
 
 ## A2A enrollment — IN FLIGHT, on hold at the certificate step (2026-07-09)
 Ken started IRS Automated Enrollment; the create-ASID screen needs the X.509 cert at Save,
-so AE is **paused until the IdenTrust cert issues** (~7–14 day vetting). Forms packet in
-hand: notarize (wet ink, in-person) + submit; pre-submit support call (3 confirms) and the
-30-day download clock are the traps. **Full detail + agreed AE field values:
+so AE is **paused until the IdenTrust cert issues** (~7–14 day vetting). **Forms packet
+OVERNIGHTED 2026-07-09** (+ email to IdenTrust); ⚠ the 30-day download clock runs from the
+Part 2 notarization date — download promptly on approval. **Full detail + agreed AE field values:
 `docs/mef/A2A_ENROLLMENT.md`** (not mirrored; identifiers live there). On cert arrival:
 AE enrollment → activate ASID → A2A comms test in ATS.
 
