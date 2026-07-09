@@ -17,7 +17,24 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **the entity-8824 unit (S6 unit 2)**. 🏁 s35 (overnight): **S6 unit 1 — the Form 8941 unit COMPLETE** (tts `9e65aff` / RS `ab3b0ab`; flow gate 444→446; F8941-T1 statutory 51,014 green; the key's 12,753 inversion documented only). Then unit 3 = `mef_build_ats_1120s_s6` (PIN-signed; ⚠⚠ UPLOAD gated on the key-inversion e-help item). Stopped cleanly at the unit-1 boundary per the work order's context guardrail.
+## ▶ NOW WORKING ON — **the S6 scenario build `mef_build_ats_1120s_s6` (S6 unit 3, LAST)**. 🏁 s36: **S6 unit 2 — the entity-8824 unit COMPLETE** (tts `e2cae48` / RS `a54c406`; flow gate 446→447; R-8824-ENTROUTE end-to-end). ⚠⚠ Unit 3 UPLOAD stays gated on the 8941 key-inversion e-help item; the BUILD itself is sanctioned (S5 playbook, PIN-signed, documented-quirk overrides for the key's 8941 inversion + the personal-property truck 8824). Stopped cleanly at the unit-2 boundary per the work order's context guardrail.
+
+**Session 36 wrap (2026-07-09; "go" — the standing work order):**
+- [x] `[APP]` **S6 unit 2 — entity-8824 unit, ALL LEGS** — 2026-07-09 `e2cae48` (RS `a54c406`).
+  entity_8824_feeds_from_rows (pure) → aggregate_dispositions (L21+ord-L22 → entity 4797 L16;
+  §1231 L22 → L5 → K9/K10 + page-1 4/6, both entities) + aggregate_schedule_d (capital L22 →
+  Sch D (1120-S) 5/12 → K7/K8a nets; entity §1043 EXCLUDED by construction) · Like-Kind tab on
+  both entity editors (shared section/endpoint) · MeF refuse seam RETIRED → per-exchange IRS8824
+  docs (ReturnData ref 1291; extract refuses red-defer/§1043/related-party — Part II identity
+  unmodeled; ⚠ NO refDocId channel exists 8824↔SchD/4797 in the XSD — ties numeric via
+  reconcile-or-refuse; ⚠ NN line 19 omits on a realized loss, signed L24 carries it) ·
+  D_8824_001-010 now fire on entities (009 = the F8824-E1 truck arm) + D_8824_010 entity-§1043
+  ERROR arm + NEW D_8824_011 (1065 capital → K8/9a manual; no Sch D (1065) aggregation/spec) —
+  both spec-silent rulings → tax-app REVIEW_QUEUE for Ken · render_8824_entity (shared core,
+  1040 output unchanged 8/8) · FA-ENT-8824-01 ACTIVATED (Supabase reseeded; deployed export
+  30 actives; pinned mirror 26) + runner — **flow gate 447**. Suites: 12 unit (5 pure + 7 DB) ·
+  MeF 64 live-XSD (incl. IRS8824 ×2) · tsc 0/vitest 275. ⚠ pooler degraded window (rotating
+  admin-kill single-test errors on long batches — every test green in ≥1 run; not code).
 
 **Session 35 wrap (2026-07-09 overnight; the standing work order — autonomous):**
 - [x] `[APP]` **S6 unit 1 — Form 8941 unit, ALL LEGS** — 2026-07-09 `9e65aff`. compute_8941
@@ -343,7 +360,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — after the entity-8824 unit (NOW): the S6 scenario build `mef_build_ats_1120s_s6` (upload gated on the key-inversion e-help item). *(The 8941 unit ✅ s35 — wrap under NOW.)* Then: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b ✅ s33; S6 buildable legs + the RS trio ✅ s34 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — after the S6 scenario build (NOW; upload gated on the key-inversion e-help item): the REVIEW_QUEUE set (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass · the s36 entity-8824 spec-silent-ruling ratifications) · scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(The 8941 unit ✅ s35 + the entity-8824 unit ✅ s36 — wraps under NOW.)* *(S-17b ✅ s33; S6 buildable legs + the RS trio ✅ s34 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).

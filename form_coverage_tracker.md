@@ -1,5 +1,34 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-09 session 36 (S6 unit 2) — Form 8824 coverage EXTENDED TO ENTITIES
+> (1120-S/1065), ALL LEGS.** Spec-first from `server/specs/form_8824_spec.json`
+> (R-8824-ENTROUTE, RS `b4c71b8`; live export re-verified — mirror semantically current).
+> **Compute**: `entity_8824_feeds_from_rows` (pure) — L21 + ordinary L22 → entity 4797
+> line 16; §1231 L22 → entity 4797 line 5 (`aggregate_dispositions` rolls both into the
+> Part I/II sums → K9/K10 + page-1 4/6); capital L22 → Schedule D (1120-S) lines 5/12 →
+> line 7/15 nets → K7/K8a (`aggregate_schedule_d`). §1043 rows EXCLUDED at entity
+> (categorically ineligible — never silent). **Input**: "Like-Kind (8824)" tab on both
+> entity editors (shared section/endpoint — no new serializer). **MeF**: the s34
+> LikeKindExchange refuse seam RETIRED — per-exchange IRS8824 documents (ReturnData ref
+> 1291, XSD lineNumber-verified), 4797 `GainLossForm8824Amt`/`OrdinaryGainLossForm8824Amt`
+> + SchD `ST/LTCapGainLossLikeKindExchAmt` in the sums, reconcile-or-refuse vs the flowed
+> FFVs; ⚠ NO refDocId channel exists in the XSD between 8824 and its destinations — ties
+> are numeric; extract refuses RED-deferred/§1043/related-party rows (Part II identity
+> unmodeled); NN line 19 omits on a realized loss (signed L24 carries it). **Diagnostics**:
+> the D_8824_001-010 set now fires on entity returns (generalized `_state`); D_8824_010
+> escalates to ERROR on entity §1043; NEW code-registered D_8824_011 (1065 capital — enter
+> K8/K9a manually; no Schedule D (1065) aggregation/spec exists) — seed_rules run on prod;
+> both spec-silent rulings → REVIEW_QUEUE for Ken. **Render**: `render_8824_entity`
+> (shared `_render_8824_copies` core, 1040 output unchanged 8/8) in the entity packet
+> after 4797. **FA**: FA-ENT-8824-01 ACTIVATED (RS `a54c406`, Supabase reseeded, deployed
+> export 30 actives; pinned mirror spliced → 26) + `_run_ent8824_assertion` — flow gate
+> **446→447**. Boundaries → DEFERRAL_AUDIT s36 (1065-capital no-auto-flow · related-party
+> MeF refuse · entity-§1043 · NN-line-19). tts `e2cae48`. Suites: 12 (5 pure + 7 DB) ·
+> MeF 64 (live-XSD incl. IRS8824 ×2) · 1040-lane 8824 18 + render 8 · tsc 0 / vitest 275.
+> ⚠ Pooler degraded window during the session: rotating single-test
+> `terminating connection due to administrator command` kills on test_4797_pipeline_leg —
+> every test green in at least one run; not a code class.
+
 > **2026-07-09 session 35 (overnight, S6 unit 1) — NEW FORM: Form 8941 (§45R small-employer
 > health-insurance credit), ALL LEGS GREEN on the 1120-S.** Spec-first from
 > `server/specs/8941_spec.json` (RS `b4c71b8`). **Input**: `Form8941` OneToOne model (migs
