@@ -726,6 +726,18 @@ system is a reason this app exists (18a); PWA desktop install à la QBO = big va
   18b presence + 18a concurrency. (Native PWA "tabbed" display mode is still
   experimental/Chromium-flagged — build our own strip; revisit the manifest flag later.)
 
+**S-19 · [APP] ∥ · PREPARER USABILITY QUEUE (opened 2026-07-09, Ken-directed — "start
+hammering away on cosmetic/usability fixes").** Sources: **Whit's 1040 list + Whit's
+2-page 1120-S list + Ken's own items** — intake: Ken pastes text or photographs the pages;
+CC triages into `USABILITY_QUEUE.md` (tax-app root) with per-item status, then works items
+one at a time (live-verify each; commit per item or small batch). Guardrails: the
+RED/YELLOW/GREEN data-entry color semantics are untouchable; incremental changes only, no
+redesigns; anything that turns out to be a COMPUTE issue gets promoted out of this queue
+into a proper form unit (spec-first). Interleaves freely; drops when the ATS lane unblocks.
+- [ ] 19-intake · receive + triage Whit's 1040 list → USABILITY_QUEUE.md
+- [ ] 19-intake · receive + triage Whit's 1120-S list (2 pages) → USABILITY_QUEUE.md
+- [ ] 19-intake · Ken's own items (incl. the landing-page cosmetics he mentioned at 18f)
+
 ---
 
 ## THE SHELF (blocked on external — each with its unblock action)
