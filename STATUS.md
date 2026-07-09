@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, thirty-fourth session ("go" — 1120-S Scenario 6 kickoff).
-Units this session: **S6 buildable mapper legs COMPLETE** (IRS8949 + IRS1120SScheduleD
-doc mappers + Disposition `form_8949_box` field/UI + 1120-S PIN-signature header).
-**The S6 scenario BUILD is RS-BLOCKED on three Ken-lane items** (8941 greenfield spec ·
-8824 entity extension · SCHD_1120S renumber) — handoff filed.*
+*Last updated: 2026-07-08, thirty-fourth session (S6 kickoff + the Ken-delegated RS trio).
+Units: **S6 buildable mapper legs** (IRS8949 + IRS1120SScheduleD + `form_8949_box` + PIN
+signature; tts `ff30464`) then — Ken ruled four judgment calls in-session and delegated —
+**ALL THREE S6 RS ITEMS AUTHORED + SEEDED** (RS `b4c71b8`: 8941 greenfield · 8824 entity
+extension · SCHD_1120S 2025-face renumber; deployed exports verified; tts mirrors refreshed).
+**Scenario 6 is now APP-lane only.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,51 +14,50 @@ doc mappers + Disposition `form_8949_box` field/UI + 1120-S PIN-signature header
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — Scenario 6 is RS-blocked; next APP lane = REVIEW_QUEUE pair or S-3
-**S6 status:** the app-buildable legs are DONE (below). The scenario build needs, in order:
-1. `[RS — Ken]` **Form 8941 spec** — does not exist (`lookup/8941/export/` 404); the K13g
-   credit (12,753) + K-1 13P can't compute without it.
-2. `[RS — Ken]` **8824 entity amendment** — spec entity_types = ['1040'] only; entity
-   routing (Sch D (1120-S) L5/L12 · entity 4797 L16) unspecced. An extract refuse seam now
-   blocks e-filing any 1120-S with LikeKindExchange rows (declared-form fidelity).
-3. `[RS — Ken]` **SCHD_1120S line_map renumber** — draft spec uses pre-2025 numbering
-   (R011 "Line 5→K7"; the 2025 face nets on line 7); diagnostics/tests export null ids.
-Full scope: `docs/rs_handoff/2026-07-08_s6_rs_gaps.md` + REVIEW_QUEUE (s34 item).
-Then `[APP]`: the 8941 unit (compute/input/render/mapper) + the entity-8824 unit (engine
-flows + IRS8824 doc + drop the refuse seam) + `mef_build_ats_1120s_s6`.
-**Meanwhile the top unblocked APP items:** the REVIEW_QUEUE allocator pair (1065/1041
-residual-offset rounding, each spec-first — 1065 spec amendment is also Ken-lane) · the RS
-FA-export reconciliation pass · S-3 brokerage front end (∥, not spec-gated).
+## ▶ RESUME HERE — the Form 8941 app unit (spec live: `server/specs/8941_spec.json`)
+S6 build sequence, now all APP-lane:
+1. **8941 unit** — compute (`compute_8941`? — worksheet rollup inputs per the spec's v1
+   facts; line 5 preparer-entered per the Ken ruling) + input UI + K13g flow + K-1 box 13 +
+   render (f8941 PDF is in resources, field-map stub exists) + IRS8941 doc mapper +
+   D_8941_* diagnostics (§280C reminder = D_8941_004, diagnostic-only per the Ken ruling).
+   Activate the staged FA-8941-01/02 when green.
+2. **Entity-8824 unit** — engine flows per R-8824-ENTROUTE (entity Sch D L5/L12 via the
+   compute_8824 feeds · entity 4797 L16/L5) + IRS8824 doc mapper + DROP the extract refuse
+   seam (`read_model_1120s`, LikeKindExchange check) + activate FA-ENT-8824-01. §1031
+   real-property hard RED applies to entities (D_8824_009); the S6 truck rides the
+   documented-quirk override only.
+3. **`mef_build_ats_1120s_s6`** — engine-driven build (S5 playbook; PIN-signed via
+   `Signature1120SInfo`, no binaries). ⚠ UPLOAD-GATED on the REVIEW_QUEUE key-inversion
+   item: the key's 8941 line 8 (12,753) inverts §45R(d)(3)(A) — the law says 51,014; the
+   spec pins the law (F8941-T1); law-vs-key at upload = Ken/e-help.
 
-## Session-34 state (all committed + pushed)
-- **IRS8949 doc mapper** (`builder_1120s.build_irs8949`): per-box Part I/II groups (A-F;
-  1099-DA boxes unmodeled), rows + line-2/4 totals; first 8949 document mapper anywhere
-  (the 1040 lane's Sch D is aggregate-path-only).
-- **IRS1120SScheduleD mapper** (`build_1120s_schedule_d`): box-total groups (1b/2/3 +
-  8b/9/10) + line 7/15 nets; **reconcile-or-refuse vs the flowed K7/K8a**; K nonzero with
-  no rows refuses; QOF question caller-supplied (`schd_qof_disposal`, input leg deferred).
-  Links: Sch K 7/8a → Schedule D doc; Schedule D → IRS8949 (the "attached to" class).
-- **Disposition `form_8949_box`** (mig 0178, prod-applied): A-F choices, blank → C/F
-  derivation (`resolve_8949_box`, box/term contradictions refuse); serializer + a select on
-  the entity Dispositions editor (live-UI-verified on an isolated probe; deleted after).
-- **PIN signature** (`Signature1120SInfo`): PractitionerPINGrp + PINEnteredByCd +
-  SignatureOptionCd + officer TaxpayerPIN/phone/email/SignatureDt/Discuss +
-  IRSResponsiblePrtyInfoCurrInd/Form8822BAttachedInd; "PIN Number" without both 5-digit
-  PINs refuses. S5's 8453 path unchanged (option string now emittable there too).
-- **Extract refuse seams**: expenses-of-sale on a capital transaction (8949 code-E
-  adjustment leg unbuilt) · 'various' sold date · entity LikeKindExchange rows (8824 gap).
-- **Verified**: 1120-S mapper pure suite **55** (incl. live-XSD capgains+PIN return) ·
-  flow gate 444 · S5 DB scenario suite green (background run, exit 0) · tsc 0 / vitest 275.
+## Session-34 state (tts `ff30464` + RS `b4c71b8`; mirrors + docs in the closing commit)
+- **Mapper legs** (details in form_coverage_tracker): first IRS8949 doc mapper · Sch D
+  (1120-S) reconcile-or-refuse vs K7/K8a · `form_8949_box` (mig 0178 prod) + entity
+  Dispositions-tab select (probe-verified) · PIN signature · refuse seams (expenses-of-sale,
+  'various' sold date, entity LKE rows — the LKE seam now drops with unit 2 above).
+- **RS trio**: `load_8941` NEW (verbatim f8941 2025 face + i8941 2025; 16 facts/8 rules/
+  23 lines/6 diags/4 scenarios/2 staged FAs) · `load_8824` entity amendment
+  (R-8824-ENTROUTE; F8824-E1; FA-ENT-8824-01 staged) · SCHD_1120S renumbered to the 2025
+  face (stale line rows deleted in-loader; R011/R012 + Sch K R013/R014 corrected).
+  Supabase TaxForms 121 / FA 550; deployed exports verified.
+- **tts mirrors refreshed**: `8941_spec.json` (NEW) · `form_8824_spec.json` ·
+  `sched_d_1120s_spec.json`.
+- **⚠ Two new REVIEW_QUEUE flags from the verbatim sourcing**: (1) f8941 face
+  $33,000/$67,000 vs i8941 WS6 $33,300 self-contradiction (D_8941_005 hand-verify band);
+  (2) ⚠⚠ the ATS S6 key INVERTS the WS5 FTE phaseout — upload decision for Ken/e-help.
+- Retraction: the "null diagnostic/test ids in the RS export" claim (s34 morning) was a
+  wrong-key dump artifact — corrected in the handoff doc.
 
 ## Active gates
-- **Flow-assertion gate 444** — green (mapper-only session; no compute changes).
-- MeF 1120-S mapper pure 55 · MeF 1040 pure 51.
-- Migration 0178 applied to prod; no RS spec changes (mapper legs ride the existing
-  8949/SCHD_1120S coverage; the drift items are flagged, not silently coded around).
+- **Flow-assertion gate 444** — green. MeF 1120-S mapper pure 55 · MeF 1040 pure 51 ·
+  tsc 0 / vitest 275. Spec-driven suites (8824/SchD/1120s) re-running vs the refreshed
+  mirrors at close (pooler-slow; sibling-drift check) — verify green before building on them.
+- Migration 0178 applied to prod. RS: no reseed pending; the loaders self-heal stale rows.
 
 ## ▶ Waiting on Ken / external
-1. **NEW: the three S6 RS items** (8941 greenfield · 8824 entity · SCHD_1120S renumber) —
-   `docs/rs_handoff/2026-07-08_s6_rs_gaps.md`.
+1. **S6 upload decision** (after units 1-3): the 8941 key-inversion — law (51,014) vs key
+   (12,753) — raise with the ATS assistor/e-help (REVIEW_QUEUE s34).
 2. ATS assistor / e-help call (866-255-0654) — the five asks (docs/mef/ATS_UPLOAD_RUNBOOK.md).
 3. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.
 4. 1120-S business-family e-file access — the S5 IFA upload (package READY).
