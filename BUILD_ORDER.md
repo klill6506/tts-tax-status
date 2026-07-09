@@ -17,7 +17,26 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **the Form 8941 app unit** (spec live as of s34-continuation: `server/specs/8941_spec.json`). **The S6 RS trio is AUTHORED + SEEDED (Ken delegated with four in-session rulings; RS `b4c71b8`)** — Scenario 6 is now APP-lane only: ① 8941 unit (compute/input/K13g+K-1/render/mapper; staged FA-8941-01/02 activate when green) → ② entity-8824 unit (R-8824-ENTROUTE engine flows + IRS8824 doc + drop the extract refuse seam; FA-ENT-8824-01 activates) → ③ `mef_build_ats_1120s_s6` (PIN-signed). ⚠⚠ S6 UPLOAD gated on the REVIEW_QUEUE key-inversion item (the key's 8941 line 8 = 12,753 inverts §45R(d)(3)(A); the spec pins the statutory 51,014 — law-vs-key = Ken/e-help). 🏁 s33: S-17b + THE KEN-SET NON-E-HELP QUEUE COMPLETE. 🏁 s31: **S-11 1041 COMPLETE** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+## ▶ NOW WORKING ON — **the entity-8824 unit (S6 unit 2)**. 🏁 s35 (overnight): **S6 unit 1 — the Form 8941 unit COMPLETE** (tts `9e65aff` / RS `ab3b0ab`; flow gate 444→446; F8941-T1 statutory 51,014 green; the key's 12,753 inversion documented only). Then unit 3 = `mef_build_ats_1120s_s6` (PIN-signed; ⚠⚠ UPLOAD gated on the key-inversion e-help item). Stopped cleanly at the unit-1 boundary per the work order's context guardrail.
+
+**Session 35 wrap (2026-07-09 overnight; the standing work order — autonomous):**
+- [x] `[APP]` **S6 unit 1 — Form 8941 unit, ALL LEGS** — 2026-07-09 `9e65aff`. compute_8941
+  (statutory §45R(d)(3)(A) chain; WS3 floor-to-$1,000; WS5/WS6 reductions clamped ≥0; face
+  $33,000 vs WS6 $33,300 encoded verbatim, D_8941_005 bands) · Form8941 model (migs 0179+0180
+  RLS prod) · `form-8941` GET/PATCH w/ mutation-recompute (**row-locked — probe caught
+  concurrent focusout autosaves losing fields via stale full-row serializer saves**) ·
+  "8941 Credit" 1120-S editor tab (live-UI probe verified: autosave → K13g 51,014 on Sched K;
+  probe deleted) · K13g → residual-offset K-1 allocation + box 13 code **BA** (i8941 verbatim;
+  key's P = pre-2023 quirk) on the shared `k13g_is_8941_sourced` bridge-gate; un-sourced K13g
+  still refuses; print box 13 packs 5 rows dynamically · f8941 AcroForm render + manifest +
+  packet + action · IRS8941 MeF doc (XSD lineNumber-verified; ReturnData ref 1697; K13g
+  OtherCreditsAmt refDocId; reconcile-or-refuse) live-XSD valid · D_8941_001-006 seeded
+  (§280C warning-only per the Ken ruling) · **FA-8941-01/02 ACTIVATED** (RS `ab3b0ab`,
+  Supabase reseeded) + tts runners — **flow gate 446**. ⚠ FA-mirror PINNED (prior set + 8941):
+  the deployed export now carries the s32-drift actives (FA008-012/RC001-variant/ENT-BND/
+  4562-179) with no tts runners — the queued reconciliation pass adopts them.
+- Deferrals filed: 1065-K15 + 1040-3800-4h 8941 lanes · manual-other-credit + 8941 K13g
+  coexistence · entity-boundary PATCH same race class (low stakes).
 
 **Session 34 continuation wrap (2026-07-08 night; Ken: "Can you author those?" + four rulings):**
 - [x] `[RS]` **The S6 trio authored + seeded** — 2026-07-08 RS `b4c71b8`. **load_8941 GREENFIELD**
@@ -324,7 +343,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — after the 8941 unit: the entity-8824 unit → the S6 scenario build (upload gated on the key-inversion e-help item). Then: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b ✅ s33; S6 buildable legs + the RS trio ✅ s34 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — after the entity-8824 unit (NOW): the S6 scenario build `mef_build_ats_1120s_s6` (upload gated on the key-inversion e-help item). *(The 8941 unit ✅ s35 — wrap under NOW.)* Then: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b ✅ s33; S6 buildable legs + the RS trio ✅ s34 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).

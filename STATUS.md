@@ -1,11 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, thirty-fourth session (S6 kickoff + the Ken-delegated RS trio).
-Units: **S6 buildable mapper legs** (IRS8949 + IRS1120SScheduleD + `form_8949_box` + PIN
-signature; tts `ff30464`) then — Ken ruled four judgment calls in-session and delegated —
-**ALL THREE S6 RS ITEMS AUTHORED + SEEDED** (RS `b4c71b8`: 8941 greenfield · 8824 entity
-extension · SCHD_1120S 2025-face renumber; deployed exports verified; tts mirrors refreshed).
-**Scenario 6 is now APP-lane only.***
+*Last updated: 2026-07-09, thirty-fifth session (overnight autonomous; Ken's standing work
+order). Unit: **S6 unit 1 — the Form 8941 unit COMPLETE end-to-end** (tts `9e65aff`; RS
+`ab3b0ab` FA activation). Stopped CLEANLY at the unit boundary per the work order's 80%
+context guardrail — units 2 (entity-8824) and 3 (S6 build) remain.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -14,62 +12,56 @@ extension · SCHD_1120S 2025-face renumber; deployed exports verified; tts mirro
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ⏰ OVERNIGHT WORK ORDER (Ken, 2026-07-08 night — autonomous, NO QUESTIONS)
-Ken is asleep. Standing instruction: **finish units 1→2→3 below in order, asking nothing.**
-Every judgment call is pre-ruled (the four S6 rulings + standing policy); specifically:
-- **Law-vs-key on the 8941 credit**: build the engine to the LAW (spec pin F8941-T1 —
-  line 8 = 51,014 on the S6 inputs). The scenario build documents the key's inverted
-  12,753 chain as a divergence (the S5 book-vs-engine precedent); the UPLOAD decision
-  stays with Ken/e-help — do not resolve it, just document.
-- **The S6 truck 8824**: personal property = hard RED on real returns (D_8824_009); the
-  scenario build reproduces the key's 8824 face via a documented-quirk override path only.
-- Commit + push at every green leg. If the pooler drags or context nears **80%**, run the
-  FULL session-close protocol and stop cleanly — Ken picks up in the morning. Never
-  compact past a unit boundary; prefer stopping between units.
+## ⏰ OVERNIGHT WORK ORDER (Ken, 2026-07-08 night — autonomous, NO QUESTIONS) — STILL STANDING
+Units 1→2→3 in order, asking nothing; every judgment call pre-ruled (the four S6 rulings +
+standing policy). **Unit 1 ✅ done (s35).** Law-vs-key on the 8941: engine emits the LAW
+(51,014); the scenario build documents the key's 12,753 chain; UPLOAD stays Ken/e-help.
+The S6 truck 8824: personal property = hard RED (D_8824_009); the scenario reproduces the
+key's 8824 face via a documented-quirk override only. Commit+push every green leg; stop
+cleanly before 80% context (done here — unit boundary).
 
-## ▶ RESUME HERE — the Form 8941 app unit (spec live: `server/specs/8941_spec.json`)
-S6 build sequence, now all APP-lane:
-1. **8941 unit** — compute (`compute_8941`? — worksheet rollup inputs per the spec's v1
-   facts; line 5 preparer-entered per the Ken ruling) + input UI + K13g flow + K-1 box 13 +
-   render (f8941 PDF is in resources, field-map stub exists) + IRS8941 doc mapper +
-   D_8941_* diagnostics (§280C reminder = D_8941_004, diagnostic-only per the Ken ruling).
-   Activate the staged FA-8941-01/02 when green.
-2. **Entity-8824 unit** — engine flows per R-8824-ENTROUTE (entity Sch D L5/L12 via the
-   compute_8824 feeds · entity 4797 L16/L5) + IRS8824 doc mapper + DROP the extract refuse
-   seam (`read_model_1120s`, LikeKindExchange check) + activate FA-ENT-8824-01. §1031
-   real-property hard RED applies to entities (D_8824_009); the S6 truck rides the
-   documented-quirk override only.
-3. **`mef_build_ats_1120s_s6`** — engine-driven build (S5 playbook; PIN-signed via
-   `Signature1120SInfo`, no binaries). ⚠ UPLOAD-GATED on the REVIEW_QUEUE key-inversion
-   item: the key's 8941 line 8 (12,753) inverts §45R(d)(3)(A) — the law says 51,014; the
-   spec pins the law (F8941-T1); law-vs-key at upload = Ken/e-help.
+## ▶ RESUME HERE — S6 unit 2: the entity-8824 unit
+1. **Entity-8824 unit** — engine flows per R-8824-ENTROUTE (spec mirror
+   `server/specs/form_8824_spec.json`, entity_types now 1040/1120S/1065): L21+ordinary L22
+   → the ENTITY 4797 line 16 · business §1231 L22 → entity 4797 line 5 · capital L22 →
+   Schedule D (1120-S) line 5 (ST) / line 12 (LT), same numbers on the 1065. compute_8824's
+   feeds (`form_8824_to_4797_line5/_line16`, `form_8824_sch_d_st/_lt`) are already pure per-
+   return — wire them into the ENTITY block (compute_8824_db currently runs only in the 1040
+   branch; order it BEFORE aggregate_dispositions/aggregate_schedule_d, mirroring the 1040
+   sequencing) and roll the Sch D 5/12 rows into line 7/15 → K7/K8a. Then: IRS8824 doc
+   mapper (ReturnData ref 1291 — after 4797 976, before 8825 1312; link Sch D
+   STCapGainLossLikeKindExchAmt/LT twin + entity 4797 L16 via refDocId) · DROP the
+   LikeKindExchange refuse seam in `extract_return_1120s` (replace with reconcile-or-refuse)
+   · extend rules_8824 D_8824_009 to entity returns (hard RED, personal property) · entity
+   render leg (render_8824 for the entity packet — the 1040 renderer's face compute
+   `compute_8824_face` is entity-agnostic) · activate FA-ENT-8824-01 (RS loader flip →
+   Supabase reseed → mirror + runner, the s35 FA-8941 recipe).
+2. **`mef_build_ats_1120s_s6`** — engine-driven build (S5 playbook; PIN-signed via
+   `Signature1120SInfo`, no binaries). ⚠ UPLOAD-GATED on the key-inversion e-help item.
+   S6 quirks to honor (docs/mef/scenarios/scenario6_1120s_analysis.md + the s34 memory):
+   K12d §59(e)(2) row carries the §212 502,369 · K-1 odd dollars to the FIRST owner in the
+   key (verify vs allocate_whole residual-to-LAST at build) · stale 4562 Part I limits on
+   the key face · the truck 8824 rides the documented-quirk override.
 
-## Session-34 state (tts `ff30464` + RS `b4c71b8`; mirrors + docs in the closing commit)
-- **Mapper legs** (details in form_coverage_tracker): first IRS8949 doc mapper · Sch D
-  (1120-S) reconcile-or-refuse vs K7/K8a · `form_8949_box` (mig 0178 prod) + entity
-  Dispositions-tab select (probe-verified) · PIN signature · refuse seams (expenses-of-sale,
-  'various' sold date, entity LKE rows — the LKE seam now drops with unit 2 above).
-- **RS trio**: `load_8941` NEW (verbatim f8941 2025 face + i8941 2025; 16 facts/8 rules/
-  23 lines/6 diags/4 scenarios/2 staged FAs) · `load_8824` entity amendment
-  (R-8824-ENTROUTE; F8824-E1; FA-ENT-8824-01 staged) · SCHD_1120S renumbered to the 2025
-  face (stale line rows deleted in-loader; R011/R012 + Sch K R013/R014 corrected).
-  Supabase TaxForms 121 / FA 550; deployed exports verified.
-- **tts mirrors refreshed**: `8941_spec.json` (NEW) · `form_8824_spec.json` ·
-  `sched_d_1120s_spec.json`.
-- **⚠ Two new REVIEW_QUEUE flags from the verbatim sourcing**: (1) f8941 face
-  $33,000/$67,000 vs i8941 WS6 $33,300 self-contradiction (D_8941_005 hand-verify band);
-  (2) ⚠⚠ the ATS S6 key INVERTS the WS5 FTE phaseout — upload decision for Ken/e-help.
-- Retraction: the "null diagnostic/test ids in the RS export" claim (s34 morning) was a
-  wrong-key dump artifact — corrected in the handoff doc.
+## Session-35 state (tts `9e65aff` + RS `ab3b0ab`)
+- **Form 8941 unit complete** — all legs green; details in form_coverage_tracker (s35 entry).
+  Statutory line 8 = 51,014 (F8941-T1); key divergence documented only.
+- **Probe-caught endpoint bug fixed in-unit**: concurrent focusout autosaves + full-row DRF
+  saves = lost update; `form-8941` PATCH now `select_for_update`-locked. ⚠ The same race
+  class exists on `entity-boundary` PATCH (diagnostic-only fields, low stakes) — REVIEW_QUEUE.
+- **FA mirror pinned**: deployed 1120S export = 29 actives incl. the s32-drift set
+  (FA008-012 / RC001-variant / FA-ENT-BND / FA-4562-179) which have NO tts runners; mirror
+  = prior 23 actives + FA-8941-01/02 (25) with `_mirror_note` inside the JSON. The drift
+  reconciliation pass stays queued (BUILD_ORDER ▶ NEXT).
+- Migration 0179+0180 applied to prod; D_8941_* seeded (`seed_rules` run).
 
 ## Active gates
-- **Flow-assertion gate 444** — green. MeF 1120-S mapper pure 55 · MeF 1040 pure 51 ·
-  tsc 0 / vitest 275. Spec-driven suites (8824/SchD/1120s) re-running vs the refreshed
-  mirrors at close (pooler-slow; sibling-drift check) — verify green before building on them.
-- Migration 0178 applied to prod. RS: no reseed pending; the loaders self-heal stale rows.
+- **Flow-assertion gate 446** — green (444 + FA-8941-01/02). MeF 1120-S suite 59 (live-XSD
+  incl. IRS8941) · 8941 pure 14 · 8941 DB 10 · acroform-K1 + S5 scenario 16 · tsc 0 /
+  vitest 275 · spec-driven suites (8824/SchD/1120s) 71 green vs the refreshed mirrors.
 
 ## ▶ Waiting on Ken / external
-1. **S6 upload decision** (after units 1-3): the 8941 key-inversion — law (51,014) vs key
+1. **S6 upload decision** (after units 2-3): the 8941 key-inversion — law (51,014) vs key
    (12,753) — raise with the ATS assistor/e-help (REVIEW_QUEUE s34).
 2. ATS assistor / e-help call (866-255-0654) — the five asks (docs/mef/ATS_UPLOAD_RUNBOOK.md).
 3. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.

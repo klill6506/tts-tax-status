@@ -1,5 +1,32 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-09 session 35 (overnight, S6 unit 1) — NEW FORM: Form 8941 (§45R small-employer
+> health-insurance credit), ALL LEGS GREEN on the 1120-S.** Spec-first from
+> `server/specs/8941_spec.json` (RS `b4c71b8`). **Input**: `Form8941` OneToOne model (migs
+> 0179+0180 RLS, prod-applied) + `form-8941` GET/PATCH endpoint (row-locked — concurrent
+> focusout autosaves lost fields via stale full-row serializer saves, probe-caught) + the
+> "8941 Credit" tab on the 1120-S editor (live-UI probe verified). **Compute**:
+> `compute_8941` — STATUTORY chain (WS5/WS6 phaseouts are REDUCTIONS per §45R(d)(3)(A),
+> clamped ≥0; WS3 floor-to-$1,000; the face-$33,000 vs WS6-$33,300 self-contradiction
+> encoded verbatim with D_8941_005 flagging the band); line 5 preparer-entered (Ken ruling);
+> line 16 → Schedule K line 13g after the FFV backfill. Spec pin F8941-T1 green: line 8 =
+> **51,014** on the ATS S6 inputs — the key's inverted 12,753 is documented (F8941-T2),
+> never built; upload = Ken/e-help. **K-1**: K13g allocates residual-offset; box 13 prints/
+> e-files code **BA** (i8941 verbatim; the key's code P = pre-2023 quirk) gated on the
+> shared `k13g_is_8941_sourced` bridge-gate; an un-sourced K13g still refuses in MeF; print
+> box 13 packs its 5 rows dynamically (6 possible codes). **Render**: f8941 AcroForm map
+> (field-map validation test) + manifest entry + `render_8941` + `render-8941` action +
+> entity packet block. **MeF**: IRS8941 document (XSD lineNumber-verified), ReturnData ref
+> 1697, K13g `OtherCreditsAmt` refDocId link, extract reconcile-or-refuse; live-XSD valid.
+> **Diagnostics** D_8941_001–006 seeded (§280C = warning-only per Ken ruling). **FAs**:
+> FA-8941-01/02 ACTIVATED (RS `ab3b0ab`) + runners — flow gate **444→446**. ⚠ Mirror note:
+> the deployed 1120S FA export now carries the s32-drift actives (FA008-012/RC001-variant/
+> ENT-BND/4562-179) with no tts runners; the mirror is PINNED to the prior set + 8941 until
+> the queued reconciliation pass. Boundaries → DEFERRAL_AUDIT: 1065 K15 / 1040-3800-4h 8941
+> lanes; manual-other-credit + 8941 K13g coexistence; lines 17-20 (coop/exempt) never emit.
+> tts `9e65aff`. Suites: 14 pure · 10 DB · MeF 59 (live-XSD) · S5 scenario + acroform-K1 16 ·
+> tsc 0 / vitest 275.
+
 > **2026-07-08 session 34 (S6 kickoff) — NEW MeF coverage: IRS8949 + Schedule D (1120-S)
 > documents + the 1120-S PIN signature; Scenario 6 itself RS-BLOCKED.** The entity capital-
 > gain chain now e-files end-to-end: Disposition rows (is_4797=False) → per-box IRS8949
