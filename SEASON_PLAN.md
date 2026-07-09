@@ -17,11 +17,25 @@ PRODUCT_MAP = scope. All three live here canonically.*
 
 ---
 
+> **⚡ SCOPE CHANGE — Ken, 2026-07-09 (explicit direction, recorded per the rule above):**
+> **Mission = finish 1040, 1120-S, 1120, 1065, 1041, AND 709 by the end of 2026.** This
+> ADDS the 1120 C-corp (superseding locked decision #2 below, which deferred it to summer
+> 2027) and ADDS Form 709 gift tax (never previously in scope; **verified 2026-07-09: 709
+> is MeF-e-fileable — the IRS opened the 709 family on MeF July 14, 2025 for authorized
+> e-file providers**, so it gets the full engine+MeF treatment, not print-only). Also
+> Ken-ruled same day: **no piecemeal ATS testing** — finish ALL work required for the full
+> 1120-S ATS scenario set first, then run the upload loop (the S5-only upload is OFF).
+> IRS e-services approvals for the business families (1120-S/1065/1120/1041) were
+> Ken-verified 2026-07-09. **The month-by-month runway below is now STALE for 1120/709 —
+> re-cut it in a dedicated planning session with Ken** (open inputs: RS authoring lane for
+> 1120/709 specs; whether the 1120-S ATS set requires S7/S8 under declared-forms scope).
+
 ## Definition of "finished" for season one
 Sherpa prepares and e-files the returns The Tax Shelter actually produces, at TaxWise/Lacerte
 quality, for the Jan 2027 season: **1040, 1120-S, 1065, 1041 — federal + GA, SC, AL, NC** —
 prepared, transmitted via A2A, and **accepted**, with bank fee-collect products attached where
-clients want them.
+clients want them. *(2026-07-09: the mission above extends the build target to 1120 + 709 by
+year-end; season-one filing scope vs build scope to be reconciled in the re-cut.)*
 
 **Prime directive: tax law accuracy.** Correctness over speed, always. Spec-first (Rule Studio)
 for all tax law. Four-leg verification (Input → Compute → Render → Flow-assertion) before merge.

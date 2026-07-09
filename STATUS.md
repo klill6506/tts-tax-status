@@ -60,32 +60,33 @@ S6 quirks to honor (docs/mef/scenarios/scenario6_1120s_analysis.md + the s34/s35
   test green in at least one run; infrastructure class, re-verify on a healthy window
   if it recurs.
 
-## 🟢 UNBLOCKED 2026-07-09 (Ken-verified): IRS e-services approval for the BUSINESS FAMILIES
-Ken confirmed this morning we hold the e-services approvals needed to begin ATS testing
-**1120-S, 1065, 1120, and 1041**. Practical effect, per family:
-- **1120-S: READY TO UPLOAD NOW** — the S5 package is complete (PIN-less 8453 binary
-  path, XSD-valid, built by `mef_build_ats_1120s_s5`); start the live upload/ack loop
-  (the s28 1040 pattern: Ken uploads via IFA, CC fixes same sitting;
-  docs/mef/ATS_UPLOAD_RUNBOOK.md). S6 joins after unit 3 (its upload alone stays gated
-  on the 8941 key-inversion e-help item — S5 is NOT gated).
-- **1065**: mapper is leg 1 only (synthetic return XSD-valid; no ATS scenario built yet)
-  — needs its own scenario/doc-mapper lane before an upload.
-- **1041**: engine complete, but STILL SOR-BLOCKED — the in-hand schemas are v3.0/v5.5;
-  the ATS-active v5.3 schemas+BR re-request must land first.
-- **1120 C-corp**: not built (not season-one scope per SEASON_PLAN).
-Proof to stash when convenient (for the runbook + A2A enrollment later): the e-services
-e-file Application Summary showing the authorized form families/provider options +
-ETIN/EFIN status — drop a PDF/screenshot in docs/mef/ (no PII beyond firm identifiers).
+## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
+Recorded in SEASON_PLAN (scope-change note) + BUILD_ORDER (mission header + NEXT ladder).
+1120 + 709 = Ken-directed scope ADDITIONS (709 verified MeF-e-fileable — IRS opened the
+709 family on MeF 7/14/2025; needs RS spec authoring + its own SOR schema request).
+**No piecemeal ATS testing** (Ken rule, same day): finish ALL work for the full 1120-S
+scenario set FIRST, then run the upload loop — the S5-only upload is OFF.
+
+## 🟢 IRS e-services approvals VERIFIED (Ken, 2026-07-09): 1120-S / 1065 / 1120 / 1041
+Business-family ATS testing is authorized. Per family: **1120-S** — S5 package ready,
+S6 = unit 3 (NOW), S7/S8 need the declared-forms ruling; test when the SET is complete.
+**1065** — mapper leg 1 only; needs its scenario lane. **1041** — engine complete;
+SOR-blocked (ATS-active v5.3 schemas+BR re-request). **1120** — RS specs done
+(S-13/S-14); app build now IN scope per the mission. Proof to stash when convenient
+(runbook + A2A enrollment): the e-file Application Summary (form families / provider
+options / ETIN-EFIN status) → PDF into docs/mef/.
 
 ## ▶ Waiting on Ken / external
-1. **1120-S S5 IFA upload — GO** (approval verified above; package READY).
-2. **S6 upload decision** (after unit 3): the 8941 key-inversion — law (51,014) vs key
-   (12,753) — raise with the ATS assistor/e-help (REVIEW_QUEUE s34).
+1. **S7/S8 declared-forms ruling** (shapes "the full 1120-S set"): recommendation —
+   declare only forms the firm files (5471/8975/8858 OUT → S7/S8 likely not required);
+   confirm with the ATS assistor/e-help (Pub 1436; REVIEW_QUEUE).
+2. **8941 key-inversion** — law (51,014) vs key (12,753) — raise with e-help before the
+   S6 upload rides the full-set loop (REVIEW_QUEUE s34).
 3. Ratify the two s36 entity-8824 spec-silent rulings (REVIEW_QUEUE s36).
 4. ATS assistor / e-help call (866-255-0654) — the five asks (docs/mef/ATS_UPLOAD_RUNBOOK.md).
-5. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request (blocks 1041 ATS
-   despite the new approval).
-6. Scope call: Scenario 7 (M-3/5471/Sch N) in declared-forms ATS scope (Pub 1436)?
+5. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request. NEW: add the **709
+   family schemas** to the next SOR want-list.
+6. SEASON_PLAN month-by-month re-cut for 1120/709 — dedicated planning session with Ken.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
