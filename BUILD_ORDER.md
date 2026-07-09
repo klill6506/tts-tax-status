@@ -656,9 +656,10 @@ through. Sequenced; each item is its own leg. ⚠ Serialization-only lane — co
   regression data + the TaxWise forms-usage report when it lands) vs. the mapper registry →
   a RANKED doc-mapper backlog (expected top: 8949 detail, K-1→1040 XML, 4562, 2210). Output:
   a checklist appended here as 17f.
-- [ ] **17b · Direct deposit** — 1040 line-35 RTN/account/type fields + the
-  AdditionalFilerInformation RefundDisbursementGrp bank wiring (R0000-250/251). FIRST gap:
-  paper-check-only e-filing now triggers CP53E refund freezes (2026 e-refund mandate).
+- [x] **17b · Direct deposit** — 2026-07-08 `0e8d096` (s33; stale mark reconciled
+  2026-07-09). 1040 35b/c/d + header RefundDisbursementGrp RTN/DAN wiring + Payments-tab
+  input card; refuse-not-downgrade; RTN prefix 01-12/21-32. ⚠ emits unpublished enum "1"
+  (e-help Q#5). Detail: STATUS_ARCHIVE s33 / auto-memory s17b.
 - [ ] **17c · E-file readiness diagnostics** — surface UnmappableValue reasons as per-return
   REDs ("can't e-file yet: needs Form X") through the existing diagnostics framework.
 - [ ] **17d · Form 8879 workflow** — generate/print the e-file signature authorization
@@ -674,6 +675,34 @@ through. Sequenced; each item is its own leg. ⚠ Serialization-only lane — co
   A2A. IFA manual upload stays the pilot channel until this lands.
 - [ ] **17h · GA Fed/State piggyback** — DOR software-developer registration + state ATS
   (already on the Shelf as "State e-file enablement"; listed here for sequence).
+
+**S-18 · [APP] ∥ · PLATFORM PRE-LAUNCH TRIO (added 2026-07-09, Ken-directed — ideas fleshed
+out in Claude-chat; prompts in hand for 18a-c).** Non-tax platform work — no compute risk;
+interleaves with the Ken-gated ATS waits. Ken's framing: TaxWise's crash-prone lock-file
+system is a reason this app exists (18a); PWA desktop install à la QBO = big value add (18c).
+- [ ] **18a · Optimistic concurrency on returns** — version column on the return record;
+  DRF save-time version check (reject stale saves with 409); React "modified elsewhere —
+  reload" prompt. **NO pessimistic locks anywhere** — reentry must never depend on cleanup
+  by a crashed process (the TaxWise failure mode). ⚠ Build-time design detail: version
+  granularity vs the per-field focusout-autosave cadence (FormFieldValue) — a preparer must
+  not 409 against their own parallel autosaves; composes with the s35 `select_for_update`
+  row locks (same-row write serialization) — versioning adds the cross-session staleness
+  guard. Priority: pre-January; Ken's roadmap slots it after client numbering wraps.
+- [ ] **18b · Presence indicator** — "X also has this return open" banner via heartbeat
+  with self-expiring TTL (~60s). Warns, never blocks. Fast follow to 18a.
+- [ ] **18c · PWA installability** — vite-plugin-pwa: manifest (display standalone, colors
+  from the existing palette, 192/512 + maskable icons from the existing mark; **name = Ken
+  decision: "Sherpa Tax" per the prompt vs the "Delvio Tax" DBA ruled 2026-07-07**); SW
+  `autoUpdate` + skipWaiting + clientsClaim; **NEVER cache /api/** (precache the static
+  shell only); manifest+SW served at root scope through Django/WhiteNoise. Verify ×4:
+  Lighthouse installable · two independent windows on two clients · deploy picked up on
+  reload · normal browser use unchanged. Light win, any open slot. (Prompt names a feature
+  branch; repo convention is main-only — Ken to pick.)
+- [ ] **18d · Support ticket system — DESIGN PENDING (parked 2026-07-09 so it isn't
+  forgotten; do NOT build before a design pass with Ken).** Two-fold: (1) pre-release
+  internal — dogfood channel to help finish the app; (2) production — internal + licensee
+  firms once the app sells. Sketch: in-app button → issue form → routes to CC → CC triages
+  with Ken → fix/respond loop; possibly a Slack channel as the transport. Details TBD.
 
 ---
 
