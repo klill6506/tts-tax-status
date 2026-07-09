@@ -17,7 +17,27 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **1120-S Scenario 6 build** (next-buildable ATS scenario per the s32 fact sheets — entity-side 8824 + 8941 + 8949/Sch D mapper legs; PIN-signed, no binaries). **THE ENTIRE KEN-SET NON-E-HELP QUEUE IS COMPLETE as of session 33** — S-17b direct deposit landed (wrap below); everything else open on the MeF lanes waits on e-help/external. Parallel candidates: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation) · S-3 brokerage front end (∥). 🏁 s31: **S-11 1041 COMPLETE, fully ticks** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+## ▶ NOW WORKING ON — idle, Ken directs. **Scenario 6's app-buildable legs are DONE (s34 wrap below); the S6 BUILD is RS-BLOCKED on three Ken-lane items** (8941 greenfield spec — 404 · 8824 entity_types/routing amendment — spec is 1040-only · SCHD_1120S line_map renumber — pre-2025 draft): `docs/rs_handoff/2026-07-08_s6_rs_gaps.md`. **Top unblocked APP candidates:** the REVIEW_QUEUE allocator pair (1065/1041 residual-offset rounding — 1065's spec amendment is also Ken-lane) · the RS FA-export reconciliation pass · S-3 brokerage front end (∥). 🏁 s33: S-17b direct deposit + THE KEN-SET NON-E-HELP QUEUE COMPLETE. 🏁 s31: **S-11 1041 COMPLETE** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+
+**Session 34 wrap (2026-07-08 night; "go" — 1120-S Scenario 6 kickoff):**
+- [x] `[APP]` **S6 buildable mapper legs COMPLETE** — 2026-07-08. **IRS8949 doc mapper**
+  (first anywhere — the 1040 Sch D is aggregate-path-only): per-box Part I/II groups,
+  rows + totals. **IRS1120SScheduleD mapper**: box groups 1b/2/3//8b/9/10 + line 7/15
+  nets, reconcile-or-refuse vs flowed K7/K8a (K-without-rows refuses); QOF caller-supplied;
+  refDocId links (Sch K 7/8a → SchD → 8949). **Disposition `form_8949_box`** (mig 0178
+  prod; blank → C/F via `resolve_8949_box`, contradictions refuse; serializer + entity
+  Dispositions-tab select, live-UI probe-verified). **PIN-signature header**
+  (`Signature1120SInfo`: PractitionerPINGrp/PINEnteredByCd/SignatureOptionCd/officer
+  TaxpayerPIN+jurat facts/IRSResponsiblePrtyInfoCurrInd; half-signed PIN option refuses).
+  Refuse seams: capital-tx expenses-of-sale · 'various' sold date · **entity
+  LikeKindExchange rows (8824 entity gap — declared-form fidelity)**. Suite 55 (live-XSD
+  capgains+PIN green) · flow 444 · S5 DB green · tsc 0/vitest 275.
+- [x] `[APP→RS]` **S6 RS-gap handoff filed** — 8941 greenfield (`lookup/8941` 404) ·
+  8824 entity extension (entity_types ['1040']; Sch D (1120-S) L5/L12 + entity 4797 L16
+  routing) · SCHD_1120S renumber (draft; R011 "L5→K7" vs the 2025 face's line 7; null
+  diagnostic/test ids in the export). REVIEW_QUEUE s34 item + the handoff doc carry the
+  full authoring scope. **S6 build sequence:** RS items → app 8941 unit + entity-8824
+  unit (drop the refuse seam) → `mef_build_ats_1120s_s6`.
 
 **Session 33 wrap (2026-07-08 night; "go" — S-17b, the last non-e-help queue item):**
 - [x] `[APP]` **S-17b — 1040 refund direct deposit end-to-end** — 2026-07-08. Extract:
@@ -288,13 +308,14 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — after Scenario 6: the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · Ken scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b direct deposit ✅ 2026-07-08 s33 — see the session-33 wrap under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — Ken's pick: (a) author the three S6 RS items (unblocks the Scenario 6 build) · (b) the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · (c) scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). *(S-17b ✅ s33; S6 buildable legs ✅ s34 — wraps under NOW.)* Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).
-**▶ RS authoring NOW: S-15 NC + AL pass-through entity batch (WO-13)** — the current RS rock
-(all earlier RS spine authoring DONE). After S-15, net-new RS scope depends on the TaxWise forms-usage report
-or a law change.
+**▶ RS authoring NOW: the three S6 items (8941 greenfield · 8824 entity amendment · SCHD_1120S
+renumber — `docs/rs_handoff/2026-07-08_s6_rs_gaps.md`, s34) then S-15 NC + AL pass-through
+entity batch (WO-13)** — after those, net-new RS scope depends on the TaxWise forms-usage
+report or a law change.
 
 ---
 

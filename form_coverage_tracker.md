@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 session 34 (S6 kickoff) — NEW MeF coverage: IRS8949 + Schedule D (1120-S)
+> documents + the 1120-S PIN signature; Scenario 6 itself RS-BLOCKED.** The entity capital-
+> gain chain now e-files end-to-end: Disposition rows (is_4797=False) → per-box IRS8949
+> groups (NEW `form_8949_box` field, mig 0178; blank → C/F derivation; box/term
+> contradictions refuse) → IRS1120SScheduleD box totals + line 7/15 nets
+> **reconciled-or-refused vs the flowed K7/K8a** → refDocId links (Sch K 7/8a → SchD →
+> 8949). First IRS8949 document mapper in the app (the 1040 lane is aggregate-path-only).
+> PIN signature: `Signature1120SInfo` (PractitionerPINGrp / SignatureOptionCd / officer
+> TaxpayerPIN + jurat facts / IRSResponsiblePrtyInfoCurrInd) — S6's signature option;
+> S5's 8453-binary path unchanged. Refuse seams: capital-tx expenses-of-sale (code-E
+> adjustment leg unbuilt) · entity LikeKindExchange rows (**8824's RS spec is 1040-only —
+> an 1120-S with an exchange cannot e-file until the entity amendment + unit land**).
+> ⚠ Scenario 6 BUILD blocked on three RS items (8941 greenfield — no spec exists · 8824
+> entity extension · SCHD_1120S pre-2025 line_map renumber):
+> `docs/rs_handoff/2026-07-08_s6_rs_gaps.md`. Mapper suite 55 · flow 444.
+
 > **2026-07-08 session 33 (S-17b refund direct deposit) — 1040 MeF + input coverage DEEPENED
 > (no new form; the 1040 already ticks).** The 1040 line-35 direct-deposit group now e-files:
 > `_extract_direct_deposit` (elected on a 35a refund + BOTH TaxReturn bank fields; partial or
