@@ -4,6 +4,53 @@ Created 2026-06-10 during the 1040 campaign Phase 0 state audit (this file did n
 
 ---
 
+## 2026-07-08 (evening) — K1_1120S ROUNDING LEG + GA501 drift amendments seeded
+*Same session as the 4797 entity leg below (the Ken-set non-e-help queue).*
+- **K1_1120S rounding (Ken ruling: residual-offset allocator):** NEW rule `R-K1-ROUND` —
+  whole-dollar half-up per shareholder, the ROUNDING RESIDUAL to the LAST shareholder
+  (canonical K-1 order) so Σ K-1 == Schedule K EXACTLY (§1377(a) + the ATS S5 key's
+  1,788/1,787 · 5,732/5,731 behavior; the spec was silent on rounding). + scenario
+  "Residual-offset rounding" + links (IRC_1377 primary). NEW FA `FA-K1-ROUND` in
+  seed_flow_assertions (entity_types 1120S). Seeded; deployed export verified
+  (R-K1-ROUND + scenario served). tts build = the k1_issuer leg (same session).
+- **GA501 (the 2026-07-08_ga501_spec_drift.md handoff, all three items):**
+  (1) `D_GA501_CONFORM`/`D_GA501_DEPR` texts amended to the HB 1199 ruling (GA conforms
+  to OBBBA §179 $2.5M/$4M; decouples ONLY from §168(k)/(n) bonus) — mirrors the
+  Ken-approved rules_ga700/rules_ga501 wording; (2) line_map extended 15→27 lines
+  (9c credit cap + the page-2 settle block 11a-20, face verbatim Rev. 07/09/25) with
+  amended `R-GA501-CREDITS` (routes through 9c) + NEW `R-GA501-SETTLE` + 6 new input
+  facts + scenario GA501-T6 (9c cap + refund path 449/433); (3) face-mechanics notes
+  were already carried in the tts render. Seeded; deployed export verified (27 lines,
+  R-GA501-SETTLE, HB 1199 text); tts mirror `server/specs/ga501_spec.json` refreshed +
+  T6 transcribed as a pure pin (`test_spec_t6_settle_block_refund_path`, 17/17).
+
+## 2026-07-08 (evening) — 4797 ENTITY PASS-THROUGH LEG authored + seeded (Ken ruling: "build the full unit")
+*The §179-disposition pass-through gap found in the tts S5 mapper build (REVIEW_QUEUE 2026-07-08);
+Ken ruled build-the-full-unit on the recommended option. Spec-first — this is the RS leg.*
+- **Law verified verbatim 2026-07-08** (live i4797 HTML + i1120s PDF p.15/41 + i1065 PDF p.20/52,
+  pymupdf): i4797 "Partnerships and S corporations do not report these transactions on Form 4797,
+  4684, 6252, or 8824…"; i1120s line 4 → K-1 box 17 code K + the 8-item PRO-RATA statement list;
+  i1065 line 6 → box 20 code L; i1120s M-2 adjustment 1 (AAA increase by income) = the 3a
+  other-addition home for the corp-level gain.
+- **load_4797 amended** (in-loader — this loader preserves entity_types on every seed):
+  NEW rule `R-4797-ENTPASS` (routing; per-property `f4797_sec179_passthrough` excludes the property
+  from EVERY 4797 line; outputs `f4797_ent179_gain/price/cost/s179` — the statement dataset +
+  the AAA 3a addition) · NEW diagnostic `D_4797_ENTPASS` (info, never-silent) · 2 new facts +
+  4 output facts · scenarios F4797-E1/E2 (the ATS S5 Dodge-truck numbers: gain 1,400, statement
+  cost 1,000 EXCLUDING §179, §179 1,000) · NEW source `IRS_2025_1065_INSTR` + excerpts on
+  `IRS_2025_4797_INSTR`/`IRS_2025_1120S_INSTR` · 2 new FAs `FA-ENT-4797-179` (1120S+1065
+  exclusion + Σ pro-rata = entity totals) / `FA-1120S-M2-179` (gain → M-2 3a).
+- **KEY-QUIRK NOTE encoded in the rule:** the ATS S5 key prints FULL facts on EACH 50% K-1 and
+  2×gain (2,800) on M-2 3a — contradicts the i1120s verbatim "pro rata share" + §1377(a); the
+  spec encodes the LAW (pro-rata per owner, gain enters AAA once). Owner-side 1040 reporting
+  from K-1 17K facts = stated follow-up unit.
+- `check_4797_integrity.py` extended (own transcription of the exclusion) — **ALL CHECKS PASS**
+  (33 facts / 9 rules / 15 diagnostics / 22 scenarios / 9 FAs). **Seeded RS Supabase**
+  (FlowAssertions 539→541); **deployed export verified** (R-4797-ENTPASS + D_4797_ENTPASS +
+  the 6 new facts + E1/E2 all served); tts canonical `server/specs/4797_spec.json` refreshed.
+- Pre-existing drift noted, not touched: the export still serves the stale `F4797-G2` scenario
+  row (removed from the loader 2026-06-28; seeder can't delete DB rows).
+
 ## 2026-07-08 — 1041 flow-assertion family CONSOLIDATED + ACTIVATED (S-11 leg 8a, Ken-approved)
 *Ken green-lit the tax-app REVIEW_QUEUE authoring plan ("go ahead with the 1041 FA authoring plan").*
 - **Root cause of the "zero 1041 FAs" export:** the 2026-07-05 S-11 authoring HAD staged 10 draft

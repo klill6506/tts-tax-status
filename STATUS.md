@@ -1,8 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-08, thirty-first session (Ken: "go ahead with the 1041 FA authoring plan").
-Units this session: **S-11 legs 6 (`370fdb0`) · 7+8b (`7c62cc0`) · 8a (`06c8946` + RS `adc4710`) —
-🏁 THE 1041 FULLY TICKS (tag `1041-complete`; flow gate 422 → 440).***
+*Last updated: 2026-07-08, thirty-second session ("go" — the Ken-set non-e-help queue).
+Units this session: **§179 pass-through unit (RS `d9923e7`; tts `421d365`+`5b8fa25`) ·
+K-1 residual-offset rounding (RS `05cbe72`; tts `100bd71`) · GA501 RS amendments (same RS
+commit) · S5 binary attachments (8453-CORP/8822-B) · scenario 6/7/8 fact sheets — flow
+gate 440 → 444; THE S5 PACKAGE IS COMPLETE AND UPLOADABLE (IFA access pending).***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,56 +13,52 @@ Units this session: **S-11 legs 6 (`370fdb0`) · 7+8b (`7c62cc0`) · 8a (`06c894
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — regression clients by number only; identities in `D:\tax-test-data\`.
 
-## ▶ RESUME HERE — KEN RULED BOTH S5 ITEMS + set the work queue (2026-07-08 evening)
-**Ken's direction for the next session(s): "do everything but whatever relies on the e-help
-call."** Both S5 rulings landed on the recommended options (full sequences in REVIEW_QUEUE
-Resolved-since, session 31 evening):
-1. **§179-disposition pass-through unit** — BUILD IT, spec-first: RS 4797 amendment (entity
-   exclusion + 17K statement fields, i4797 verbatim) → compute exclusion + M-2 3a + allocator
-   disposition facts + K-1 print code K + XML statement → add the S5 truck.
-2. **K-1 rounding** — RESIDUAL-OFFSET allocator, spec-first: RS 1120-S K-1 spec amendment →
-   k1_issuer residual-to-last-shareholder → re-pin S5 tests (notes inline).
-Then the rest of the non-e-help backlog, suggested order: **S5 binary-attachment leg**
-(8453-CORP + 8822-B — completes the uploadable S5 package except IFA access) · **RS
-load_ga501 amendments** (docs/rs_handoff/2026-07-08_ga501_spec_drift.md) · **4797 full-file
-run** (healthy pooler) · **S-17b direct deposit** · **1120-S scenarios 6/7/8 fact
-extraction**. EXCLUDED (e-help/external): 1040 production cutover, S5 IFA upload, 1041 ATS
-scenarios (SOR schemas), business-family access.
+## ▶ RESUME HERE — S-17b direct deposit (the last non-e-help queue item)
+The s31-evening Ken queue is DONE except S-17b: wire the existing TaxReturn bank fields
+(`bank_routing_number`/`bank_account_number`/`bank_account_type`, models.py ~line 203) into
+the 1040 mapper — the refund direct-deposit group (1040 line 35b/c/d) + the
+AdditionalFilerInformation header group (R0000-248/249/250/251 demand RTN/DAN inside
+bank-type disbursement groups; `build_additional_filer_information()` currently hardcodes
+paper-check RefundDisbursementCd=0). ⚠ The RefundDisbursementCd enum semantics (0-7) are
+unpublished — e-help question #5; build the RTN/DAN wiring, keep the enum conservative.
+After S-17b: **1120-S Scenario 6 build** (next-buildable per the s32 fact sheets — entity
+8824 + 8941 + 8949/Sch D mapper legs) · the REVIEW_QUEUE pair (1065/1041 allocator
+residual-offset units; RS FA-export reconciliation).
 
-## S-11 1041 — COMPLETE this session (tag `1041-complete`, gate 440)
-The 1041 module is done end-to-end: compute/K-1 issuance/diagnostics/render/GA-501 state
-return/beneficiary UI+API/f1041sk1 K-1 PDF/live frontend verify/flow-assertion gate. Session-31
-detail: form_coverage_tracker head notes (three entries) + STATUS_ARCHIVE when next rotated.
-- **Leg 8a resolution worth knowing:** RS had ALREADY staged 10 draft 1041 FAs (2026-07-05,
-  never activated → the export served zero). Consolidated into RS `load_1041_flow_assertions`
-  (17 active + 2 staged, supersessions disabled, spec-loader drafts tombstoned); tts runners
-  in `_RUNNERS_1041`. Staged pair activates when trust-side 8960 / the K-1 box-14H import land.
-- **1041 MeF (the 4 ATS scenarios)** stays externally blocked: 1041 v5.3 ATS schemas owed by
-  the SOR re-request (e-help ask #4).
-
-## S5 1120-S ATS — UNBLOCKED for building (rulings landed)
-Engine-driven scenario build LIVE (`9754388`). With both rulings ruled (above), the remaining
-S5 work is ALL buildable: the §179 truck unit + the K-1 rounding fix + the binary-attachment
-leg (8453-CORP/8822-B). Only the IFA UPLOAD of the finished package waits on business-family
-access (e-help).
-
-## Ken's e-help call — five asks (unchanged; no in-app rulings pending anymore)
-Full script WITH identifiers: `docs/mef/ATS_UPLOAD_RUNBOOK.md` (repo-internal, NOT mirrored).
-Asks: (1) 1040 → PRODUCTION status; (2) A2A enrollment same call; (3) 1120-S business-family
-access status; (4) SOR re-request (1041 v5.3 + 1040 v5.4 BR); (5) low-priority header enums.
+## Session-32 state (all committed + pushed)
+- **§179 pass-through (R-4797-ENTPASS)**: entity 4797 excludes §179-passed-through
+  disposals (elected + `sec_179_prior`); facts ride K-1 17K "STMT" + statement page +
+  `DisposOfPropWithSect179DedStmt` XML; `ENT179_GAIN` → M-2 3a. The S5 truck is live —
+  engine emits pro-rata law (700/500/500, gain once); key quirk documented. 1065 box-20-L
+  print = deferred to the partner-K-1-PDF unit (none exists); owner-side 1040 = own unit.
+- **K-1 rounding (R-K1-ROUND)**: `allocate_whole` residual-to-last; Σ K-1 == Sch K exactly.
+  1065/1041 allocators carry the same drift → REVIEW_QUEUE.
+- **S5 binary attachments**: 8453-CORP (= `f8453crp.pdf`; 8453-S superseded) + 8822-B
+  filled via the renderer pipeline, in the submission ZIP /attachment/ +
+  BinaryAttachment docs + binaryAttachmentCnt=2. Production swaps in the SIGNED 8453 scan.
+- **GA501 RS amendments**: HB 1199 text + 9c/settle-block line_map (15→27) + R-GA501-SETTLE
+  + GA501-T6; tts mirror + T6 pin.
+- **Scenario fact sheets** (local-only docs/mef/scenarios/): S6 next-buildable; S7 =
+  M-3/5471/Sch N (Ken scope call — declared-forms ATS scope); S8 = 8975 CbC (its PDF text
+  layer drops regions — rasterize).
 
 ## Active gates
-- **Flow-assertion gate 440** (422 + the 18 new 1041 tests) — green.
-- GA-501 pure 16 + DB 5/5 · f1041sk1 render DB 3/3 · beneficiary endpoints 3/3.
-- Client tsc 0 errors; vitest 275 green.
-- Prod DB seeded: GA-501 form + rules. RS Supabase seeded: the 1041 FA family (deployed
-  export verified = 17 active).
-- Tags: `1041-complete` (tts). RS handoff open: `docs/rs_handoff/2026-07-08_ga501_spec_drift.md`.
+- **Flow-assertion gate 444** (440 + FA-ENT-4797-179 ×2 entity files + FA-1120S-M2-179 +
+  FA-K1-ROUND) — green.
+- MeF 1120-S mapper pure suite 49 · 1120s spec 39 · ga501 pure 17 · attachment field maps 2.
+- S5 DB suite green (rounding re-pins DB-verified in a 34:55 pooler run; the final batch
+  re-verified the package with attachments + the 4797 pipeline file).
+- Prod DB seeded: 1120-S ENT179_GAIN line (339 lines) + D_4797_ENTPASS rule. RS Supabase
+  seeded: 4797 entity leg (FA 541) + K1_1120S rounding + GA501 (27 lines).
+- ⚠ known-flaky: test_tts_forms 1125A/7203 endpoint tests errored once in the 35-min run,
+  clean in isolation (pooler transient).
 
-## ▶ Waiting on Ken / external (e-help-call family only — both rulings RESOLVED)
-1. ATS assistor / e-help call (866-255-0654) — the five asks.
-2. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request (blocks 1041 ATS scenarios).
-3. 1120-S business-family e-file access — the S5 IFA upload lane.
+## ▶ Waiting on Ken / external (unchanged — e-help family)
+1. ATS assistor / e-help call (866-255-0654) — the five asks (script: docs/mef/ATS_UPLOAD_RUNBOOK.md).
+2. 1041 ATS-active v5.3 schemas+BR + 1040 v5.4 BR — SOR re-request.
+3. 1120-S business-family e-file access — the S5 IFA upload (the package itself is READY).
+4. NEW scope call: is Scenario 7 (M-3/5471/Schedule N) inside Sherpa's declared-forms ATS
+   scope (Pub 1436)? S6 and S8 have their own unbuilt-form lists too (fact sheets).
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.

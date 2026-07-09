@@ -17,7 +17,47 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 **Status marks below are reconciled to live STATUS.md + form_coverage_tracker.md as of
 2026-07-05 (session 15).** Keep them current at session close; never trust a stale mark.
 
-## ▶ NOW WORKING ON — **the Ken-set non-e-help queue (2026-07-08 evening: "do everything but whatever relies on the e-help call").** Both S5 rulings LANDED on the recommended options (tax-app REVIEW_QUEUE Resolved-since s31-evening carries the full build sequences): **(1) §179-disposition pass-through unit** (spec-first: RS 4797 amendment → compute exclusion/M-2 3a/allocator facts/K-1 code K/XML statement → the S5 truck) · **(2) K-1 residual-offset rounding** (spec-first: RS 1120-S K-1 amendment → k1_issuer residual-to-last → S5 re-pins) · then **S5 binary-attachment leg (8453-CORP/8822-B)** · **RS load_ga501 amendments** (handoff) · **4797 full-file run** · **S-17b direct deposit** · **1120-S scenarios 6/7/8 fact extraction**. EXCLUDED (e-help/external): 1040 production cutover · S5 IFA upload · 1041 ATS scenarios (SOR) · business-family access. 🏁 s31: **S-11 1041 COMPLETE, fully ticks** (tag `1041-complete`; gate 422→440). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+## ▶ NOW WORKING ON — **S-17b direct deposit** (the last non-e-help queue item; bank RTN/DAN/type fields exist on TaxReturn — wire into the 1040 mapper's refund/AdditionalFilerInformation groups per R0000-248/249/250/251). The REST of the Ken-set s31-evening queue COMPLETED session 32 (wrap below): §179 pass-through unit ✅ · K-1 residual-offset rounding ✅ · S5 binary attachments ✅ · RS load_ga501 amendments ✅ · 4797 full-file run ✅ · scenario 6/7/8 fact sheets ✅ — **the S5 package is COMPLETE and uploadable; only IFA business-family access (e-help) gates the upload.** EXCLUDED (e-help/external): 1040 production cutover · S5 IFA upload · 1041 ATS scenarios (SOR) · business-family access. 🏁 s31: **S-11 1041 COMPLETE, fully ticks** (tag `1041-complete`). 🏁 1040 ATS COMPLETE (tag `mef-1040-ats-accepted`).
+
+**Session 32 wrap (2026-07-08 evening; "go" — the Ken-set non-e-help queue, all spec-first):**
+- [x] `[RS+APP]` **§179-disposition pass-through unit COMPLETE** — 2026-07-08 RS `d9923e7` /
+  tts `421d365`+`5b8fa25`. RS 4797 amended with i4797 + i1120s (p.15/41) + i1065 (p.20/52)
+  VERBATIM (`R-4797-ENTPASS` · `D_4797_ENTPASS` · E-scenarios · NEW `IRS_2025_1065_INSTR`
+  source · FA-ENT-4797-179 + FA-1120S-M2-179; integrity gate extended, ALL PASS). Engine:
+  aggregate_dispositions EXCLUDES §179-passed-through disposals (elected **+ prior** —
+  ⚠ `sec_179_prior` is the prior-year-§179 field; the first pin run caught a 1,000 leak into
+  current-year K11/L14); `sec179_disposition_facts` single source → K-1 box 17 code K "STMT"
+  + statement page + per-shareholder `DisposOfPropWithSect179DedStmt` XML w/ refDocId;
+  `ENT179_GAIN` (seeded) → M-2 3a formula + MeF statement row; refuse-seam RETIRED; the S5
+  truck LIVE (engine emits the LAW — pro-rata 700/500/500 per K-1, gain 1,400 once; the key's
+  full-facts/2,800 = documented quirk). Flow gate 440→443. Boundaries: 1065 box-20-L print
+  rides the future partner-K-1-PDF unit; owner-side 1040 reporting = own unit.
+- [x] `[RS+APP]` **K-1 residual-offset rounding COMPLETE** — 2026-07-08 RS `05cbe72` / tts
+  `100bd71`. RS K1_1120S `R-K1-ROUND` + `FA-K1-ROUND`; `k1_issuer.allocate_whole` (half-up
+  per owner, residual to the LAST shareholder, canonical order) — **Σ K-1 == Schedule K
+  exactly** (matches S5 1,788/1,787·5,732/5,731 AND S6 odd-dollar-to-first). Pins re-pinned;
+  DB-verified. Gate 443→444. ⚠ 1065 + 1041 allocators carry the same drift class →
+  REVIEW_QUEUE (each its own spec-first unit).
+- [x] `[RS]` **load_ga501 amendments (the s31 handoff, all 3 items)** — 2026-07-08 `05cbe72`.
+  HB 1199 conformity text (D_GA501_CONFORM/DEPR) · line_map 15→27 (9c credit cap + settle
+  block 11a-20 face verbatim, NEW R-GA501-SETTLE + 6 facts + GA501-T6) · deployed export
+  verified; tts mirror refreshed + T6 pure pin (17/17).
+- [x] `[APP]` **S5 binary-attachment leg (8453-CORP + 8822-B)** — 2026-07-08. ⚠ 8453-CORP =
+  `f8453crp.pdf` on irs.gov (8453-C gone; 8453-S superseded — manifest annotated); templates
+  downloaded+hashed; field maps `f8453corp_2025`/`f8822b_2025` (PDF-validated);
+  `apps/tts_forms/attachments.py` renderers; builder `build_binary_attachment_docs`
+  (ReturnData ref 5014, LAST) + header binaryAttachmentCnt; the S5 package carries both PDFs
+  in /attachment/ (production: swap in the officer-SIGNED 8453 scan). → **S5 = complete
+  uploadable package.**
+- [x] `[APP]` **4797 full-file DB run** (the s29 pooler-in-flight stamp) — green in the final
+  s32 batch.
+- [x] `[APP]` **1120-S scenario 6/7/8 fact sheets** — agent-extracted (docs/mef/scenarios/,
+  local-only). S6 = next buildable (8824 LKE + 8941 + 8949/Sch D, PIN-signed); S7 =
+  M-3/5471/Schedule N (likely OUT of declared-forms ATS scope — Pub 1436 decision for Ken);
+  S8 = 8975 CbC + 8858 (⚠ its PDF text layer silently drops regions — rasterize when mapping).
+- [x] Drive-bys: stale manifest trip-wire re-baselined (56→80); RS FA-export drift documented
+  (FA008-012 dropped from the deployed export + previously-staged FAs now active) →
+  REVIEW_QUEUE reconciliation pass.
 
 **Session 31 wrap 3 (2026-07-08; Ken: "go ahead with the 1041 FA authoring plan"):**
 - [x] `[RS]` **1041 flow-assertion family consolidated + activated** — 2026-07-08 RS `adc4710`.
@@ -234,7 +274,7 @@ TY2025 (HB 1199 retroactive to TY≥Jan-1-2025, supersedes the Aug-2025 Form 456
 swept depreciation_engine + compute + rules + RS load_ga700/load_ga600 + CLAUDE.md/DECISIONS.md; SC/NC untouched
 (their own correct rules). ⚠ RS reseed+export still needed to refresh the cached spec mirrors. (Prior: ✅ **S-4
 1065 core COMPLETE all legs 1a–6**; ✅ **S-9 NC D-400**; SC1040/AL40/NC D-400 done.)
-## ▶ NEXT — the NOW queue above, in order (§179 unit → K-1 rounding → S5 binary attachment → load_ga501 amendments → 4797 full-file → S-17b → scenarios 6/7/8). S5 becomes a complete uploadable package at the end of it; only the IFA upload itself waits on e-help. Also teed up: **S-3 brokerage front end** (∥) ·
+## ▶ NEXT — after S-17b: **1120-S Scenario 6 build** (the next-buildable ATS scenario per the s32 fact sheets — needs entity-side 8824 + 8941 + 8949/Sch D mapper legs; PIN-signed, no binaries) · the REVIEW_QUEUE pair (1065/1041 allocator residual-offset units · RS FA-export reconciliation pass) · Ken scope call on S7 (M-3/5471/Sch N — declared-forms ATS scope, Pub 1436). Also teed up: **S-3 brokerage front end** (∥) ·
 **S-13/S-14 1120 + state C-corp** (RS DONE `9a41581`/`87b66a4`; ⚠ 1120 C-corp is NOT season-one scope per
 SEASON_PLAN) · small follow-ups (S-6 Form-461 Sch-1 add-back/NOL; 1065 compute-vs-spec M-1 4c/7b nuance; GA-700
 display-subtotal compute leg + Sch-8 spec line-numbering).

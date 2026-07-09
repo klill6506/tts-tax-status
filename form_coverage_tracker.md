@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-08 session 32 (§179 pass-through + K-1 rounding + S5 binary attachments) — the
+> 4797 (entity lane), K-1 (1120-S), and M-2 coverage DEEPENED; two NEW attachment forms.**
+> **§179 pass-through (RS `R-4797-ENTPASS`, Ken-ruled)**: the entity 4797 now EXCLUDES
+> §179-passed-through disposals (i4797 verbatim; trigger = `sec_179_elected` + `sec_179_prior`);
+> per-owner PRO-RATA facts ride K-1 box 17 code K ("STMT" face + statement page +
+> `DisposOfPropWithSect179DedStmt` XML w/ refDocId); corporate-level gain → M-2 3a via the
+> seeded `ENT179_GAIN` internal line (formula + MeF statement row); `D_4797_ENTPASS` info;
+> MeF refuse-seam retired. ⚠ Stated boundaries: the 1065 box-20-code-L PRINT side rides the
+> future partner-K-1-PDF unit (no partner K-1 renderer exists); owner-side 1040 reporting
+> from 17K facts = its own unit; casualty/installment §179 disposals unmodeled.
+> **K-1 residual-offset rounding (RS `R-K1-ROUND`, Ken-ruled)**: `k1_issuer.allocate_whole`
+> — Σ per-shareholder K-1 == Schedule K EXACTLY (residual to the last owner; matches the S5
+> and S6 keys). ⚠ 1065/1041 allocators still drift (REVIEW_QUEUE — own spec-first units).
+> **NEW attachment forms (manifest 80)**: `f8453corp` (8453-CORP, Rev. 12-2025 — REPLACES
+> 8453-S/8453-C; irs.gov filename `f8453crp.pdf`) + `f8822b` — field maps PDF-validated,
+> renderers in `apps/tts_forms/attachments.py`, ride e-filed 1120-S submissions as
+> BinaryAttachments. Flow gate 440 → 444. GA-501 spec drift CLOSED RS-side (HB 1199 text +
+> 9c/settle-block line_map; tts already computed those lines — T6 pin added).
+
 > **2026-07-08 (S-11 Form 1041 fiduciary — leg 8a: the 1041 flow-assertion gate) — ✅ THE 1041
 > FULLY TICKS (tag `1041-complete`, commit `06c8946`; full gate 422 → 440).**
 > Ken green-lit the FA authoring plan. **Root cause of the "zero 1041 FAs":** the 2026-07-05 S-11 RS
