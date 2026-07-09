@@ -705,6 +705,24 @@ system is a reason this app exists (18a); PWA desktop install à la QBO = big va
   internal — dogfood channel to help finish the app; (2) production — internal + licensee
   firms once the app sells. Sketch: in-app button → issue form → routes to CC → CC triages
   with Ken → fix/respond loop; possibly a Slack channel as the transport. Details TBD.
+- [x] **18e · Editor-header quick fixes (Ken's PWA-install feedback)** — 2026-07-09
+  `334a1d7`. Breadcrumb dedupes client/entity when identical (was "X / X"); toolbar type
+  bumped one step (breadcrumb text-base); **document.title = "Client — Form Year"** while
+  a return is open → each installed-app window is identifiable in the Windows taskbar /
+  Alt-Tab (the practical answer to "one taskbar button per open client": windows group
+  under the one app icon, but hover-previews/Alt-Tab now show the client names).
+  Live-verified via probe firm (deleted after; clean cascade); vitest 275 green.
+- [ ] **18f · Per-preparer settings (landing page + client sort)** — Ken wants HIS login
+  to land on individual clients, alphabetical. **`accounts.UserPreferences` already exists**
+  (per-user-per-firm; theme + return-list order) — extend with `landing_page` +
+  `client_sort` fields + settings UI + router default. Small unit. More landing-page
+  cosmetic items follow after Ken approves this one.
+- [ ] **18g · Multi-client visibility — open-returns tab bar (QBO-desktop feel)** — a
+  persistent in-app tab strip of the returns open in this window (click = switch, x =
+  close), so "what do I have open" is visible in ONE window instead of many. DESIGN with
+  Ken first: what counts as "open" (per-window tabs vs firm-wide presence), interplay with
+  18b presence + 18a concurrency. (Native PWA "tabbed" display mode is still
+  experimental/Chromium-flagged — build our own strip; revisit the manifest flag later.)
 
 ---
 
