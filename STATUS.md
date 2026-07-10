@@ -16,14 +16,22 @@ interleaved with the **full-suite straggler triage** + the FA-export reconciliat
   file number only (identities in `D:\tax-test-data\`).
 
 ## ▶ RESUME HERE
-1. **Full-suite straggler triage** — the first-ever complete run was STILL IN FLIGHT at
-   s45 close (~43%, 40+ failures accumulating = the expected never-run-file stale-pin
-   class, plus scattered E's). Output (if the machine wasn't restarted):
-   `C:\Users\Ken\AppData\Local\Temp\claude\D--dev-tts-tax-app\43c44282-a319-4b8e-9e32-60b8ea9990b6\tasks\b46rjemkq.output`.
-   If gone, re-run: `pytest tests/ -q --reuse-db` (local PG; ~2-3 hrs). Triage each F:
-   stale pin (fix the pin) vs real break (its own unit). ⚠ That run holds PRE-s45 modules
-   in memory — any 4562-lettering failures in it are already fixed; re-verify against
-   `4951f41` before touching anything.
+1. **Full-suite straggler triage — RUN COMPLETE (36 min): 5,147 passed / 169 failed /
+   6 errors.** Root cause #1 ALREADY FIXED (`1125252`): compute_w2g_db read
+   `tax_return.taxpayer` unguarded → RelatedObjectDoesNotExist → 500 on EVERY recompute
+   endpoint for a return with no Taxpayer row (~25 failures; test_dependents fully green;
+   the compute_1116 getattr-the-relation convention). Remaining classes, diagnosed by
+   sample: (a) **stale cents pins from the s27 whole-dollar sweep** — the dominant class
+   (test_1040 brackets `216020.25`→`216020`, schedule_j rate schedules ×12, topic5/7/8/9,
+   GA-500, 8995a…); re-pin each with a hand-check, never bend compute. (b) **mechanical
+   test rot** — test_apr01_fixes wants a deleted `seeded` fixture; test_tts_forms
+   manifest trip-wire. (c) **8835/8936/3800/2441/8911 pipeline pins** — likely engine
+   evolution since their build; verify per file. (d) ⚠ **test_flow_assertions failed ×2
+   IN-SUITE but passes standalone (447/465 green)** — test-pollution/ordering class,
+   investigate before trusting full-suite flow results. Full list:
+   `C:\Users\Ken\AppData\Local\Temp\claude\D--dev-tts-tax-app\43c44282-a319-4b8e-9e32-60b8ea9990b6\tasks\b46rjemkq.output`
+   (if gone: `pytest tests/ -q --reuse-db`, ~36 min on local PG). ⚠ That run held PRE-s45
+   modules — 4562/W2G failures in it are already fixed.
 2. **RS renumber unit #2: SCH_K_1120S** (worst drift count — fabricated 13f "FTC" row
    [face: Biofuel producer credit], missing 17c AE&P, wrong L18 formula, 12d/12e/13c
    misassigned, missing 3b/3c·8b/8c·13b/13e·14a/b·15a-f·16e/16f·17a-d). Then K1 → SCHL →
