@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-09, session 40 (S-19 batch 1 continued: items 6 · 8+14 · G-a
-shipped — the batch's mechanical lane is DONE). The 1120-S ATS lane stays Ken-gated;
-CC lane = **S-19 batch 1 — resume at item 9 (M&E four-line, RS SPEC FIRST)**.*
+*Last updated: 2026-07-09, session 41 (S-19 batch 1: item 9 — the M&E four-tier
+unit — shipped spec-first end-to-end, `d8dbeba` / RS `96931bf`). The 1120-S ATS
+lane stays Ken-gated; CC lane = **S-19 batch 1 — resume at item 12 (Sch B Q11
+auto-answer, RS-first)**.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,31 +14,22 @@ CC lane = **S-19 batch 1 — resume at item 9 (M&E four-line, RS SPEC FIRST)**.*
   file number only (identities in `D:\tax-test-data\`).
 
 ## ▶ RESUME HERE — S-19 usability batch 1 (Ken's + Whit's 1120-S list)
-**`USABILITY_QUEUE.md` is the working checklist.** Done: 1 · 2 · 3 · 4 · 5 · 6 · 7 ·
-8+14 · 11 · 13 (+ parity gate) · 13b · 15 · **G-a (global placeholder sweep)**.
-**NEXT: item 9 — Meals & Entertainment four-line unit (M&E 100% / 80% / 50% / 0%
-back in the deductions list, in-worksheet math visible).** Ken RULED: add the NEW
-100% fully-deductible-meals line — **compute change → RS 1120S spec amendment FIRST**
-(RS repo `D:\dev\sherpa-tax-rule-studio`; read its `session_log.md` at boot), then
-seed + compute + UI + flow gate + **regenerate the client parity fixture**
-(`manage.py dump_client_parity_fixture` — 1120-S compute changes require it).
-Then: 12 (Sch B Q11 auto-answer — also RS-first, derived/YELLOW/overridable only) ·
-16 (CC retrospective, LAST). Item 10 waits on Ken's Lacerte reprint (file 1018).
-Batch 2 arrives from Ken when batch 1 is done.
+**`USABILITY_QUEUE.md` is the working checklist.** Done: 1-9 · 11 · 13 (+ parity
+gate) · 13b · 14 · 15 · G-a.
+**NEXT: item 12 — Schedule B Q11 auto-answer from return context** (receipts/assets
+test). **KEN RULED: auto-answer ONLY** — derived, YELLOW, overridable; Schedule L/M-1
+behavior and diagnostics unchanged. **Spec-first**: RS 1120S Schedule-B amendment
+BEFORE any tts compute (RS repo `D:\dev\sherpa-tax-rule-studio`; read `session_log.md`
+at its boot). Then: 16 (CC retrospective, LAST). Item 10 waits on Ken's Lacerte
+reprint (file 1018). Batch 2 arrives from Ken when batch 1 is done.
 
-**Session-40 landings (detail in STATUS_ARCHIVE s40 + USABILITY_QUEUE):**
-- **6 input widths** — General-tab Entity/Return Info cards right-sized (EIN/Phone/
-  method/counts/activity code; dates paired). `1b63438`
-- **8+14 title-case labels** — 435 seed labels title-cased (agent-swept, structure
-  byte-verified) + **both seeders re-run on the shared DB** (339+290 lines updated
-  in place); client label surfaces matched. `522ea9f` + `531592e`
-- **G-a placeholder sweep** — 26 files triaged (~124): 82 deleted · 11 → `title`
-  tooltips (V-various, VIN, blank-behaviors) · 32 justified keeps (app controls;
-  unlabeled W-2/8863 grid cells where placeholder = the only id — real labels are
-  the noted follow-up). `697bf2e`
-- Three parallel subagents did the mechanical sweeps; all diffs reviewed, suites
-  re-run on the combined tree (vitest 278 · tsc baseline 148 byte-identical ·
-  MeF 1120-S 64 post-reseed).
+**Session-41 landing (detail in STATUS_ARCHIVE s41 + USABILITY_QUEUE item 9):**
+- **9 · M&E four-tier worksheet** — RS-first (1120S_PAGE1 R009/R010 + 1065_PAGE1
+  twins; NEW IRS_2025_PUB463 source; verbatim i1120s/i1065/Pub 463 2025). NEW
+  `D_MEALS_100` (§274(n)(2)/(e) exceptions only — Ken ruling) on BOTH entities;
+  worksheet folded inline into the deductions list (100/80/50/0 + computed math
+  rows); 17 free-form Other Deduction rows; seeders re-run (352/313 lines);
+  parity fixture regenerated. Live-verified end-to-end; probe deleted.
 
 ## ▶ Waiting on Ken / external (unchanged)
 1. **E-services email reply** — S7/S8 ruling · 8941 key-inversion · 1040 production
@@ -45,17 +37,23 @@ Batch 2 arrives from Ken when batch 1 is done.
 2. **IdenTrust cert** (⚠ 30-day download clock from notarization). Runbook:
    `docs/mef/A2A_ENROLLMENT.md` (not mirrored).
 3. **Ken reprints file-1018's 2024 Lacerte return** → re-import (item 10).
-4. **Ken verifies the PWA install** (S-18c) — all s39/s40 fixes ride the next deploy.
+4. **Ken verifies the PWA install** (S-18c) — s39/s40/s41 fixes ride the next deploy.
 5. TaxWise forms-usage report · client-numbering chat conclusion.
 
 ## Active gates
-- **Flow-assertion gate 447** — untouched (no compute changes s39/s40; mig 0181 =
-  validation-only; the seed reseed changed labels only).
-- Client vitest 278 — green. ⚠ tsc renderer = 148 pre-existing lines (byte-identical
-  through every s40 change) — maintenance item.
+- **Flow-assertion gate 447** — green THIS session (the D_MEALS_DED compute change
+  rode through clean; no FA pins meals).
+- **Client parity gate** — fixture REGENERATED this session (352 lines, S6 engine
+  dump); vitest 278 green. Regenerate again on any 1120-S compute change.
+- MeF 1120-S 64 green (statement mirror now D_FREE1-17).
+- ⚠ tsc project config = 0 errors; the 148-line set is the alternate renderer
+  invocation baseline — maintenance item, unchanged.
 - ⚠⚠ 1120-S upload gate unchanged: full scenario set + the e-help answers first.
-- ⚠ Item 9 will change 1120-S compute → parity fixture + flow gate + RS spec-first
-  discipline all apply.
+- ⚠ Item 12 will touch 1120-S derived values → RS spec-first + parity-fixture
+  discipline both apply (YELLOW derived, overridable — no compute of record).
+- ⚠ TY2026 WATCH (encoded in RS R009 notes): §274(o) employer-convenience meals
+  disallowance applies to amounts paid after 12/31/2025 — re-verify the meals
+  tiers at the 2026 spec cut.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.

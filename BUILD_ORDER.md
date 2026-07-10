@@ -19,7 +19,26 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **S-19 usability batch 1 — resume at item 9 (M&E four-line, RS SPEC FIRST)** (`USABILITY_QUEUE.md` in the tax-app root is the checklist; s38 shipped 1/4/7/13/13b/15 + the parity gate + L3a RS `R008`; s39 shipped 11 (focus-steal) · 2 (entity-name header) · 3 (infinite scroll) · 5 (StateSelect) + the dead "+ Add Shareholder/Partner/Officer" fix (mig 0181 prod-applied); **s40 shipped 6 (widths) · 8+14 (435 seed labels title-cased + both seeders re-run on the shared DB) · G-a (global placeholder sweep: 82 deleted / 11 → tooltips / 32 justified keeps)** — the mechanical lane is DONE. Remaining: **9 — Ken ruled add the NEW M&E 100% line, compute change → RS 1120S amendment FIRST, then seed + compute + UI + flow gate + parity-fixture regen** · 12 (Sch B Q11 auto-answer — RS-first, derived/YELLOW/overridable) · 16 (CC retrospective, last) · 10 (Ken-gated: Lacerte reprint of file 1018)). The 1120-S ATS completion lane stays Ken-gated: **e-services email OUT 2026-07-09** (S7/S8 ruling · 8941 key-inversion [Ken RATIFIED the finding — engine right, key wrong] · 1040 production flip · SOR re-request) → any S7/S8 builds → full-set bundle → the live upload loop. A2A (17g): IdenTrust packet OVERNIGHTED 2026-07-09, cert vetting ~7-14 days (⚠ 30-day download clock from notarization); AE values pre-agreed in `docs/mef/A2A_ENROLLMENT.md`. S-18: PWA CODE-COMPLETE (Ken install-verify pending) · 18f prefs DONE · 18a/18b/18g queued · 18d parked.
+## ▶ NOW WORKING ON — **S-19 usability batch 1 — resume at item 12 (Sch B Q11 auto-answer, RS-first)** (`USABILITY_QUEUE.md` in the tax-app root is the checklist; s38 shipped 1/4/7/13/13b/15 + the parity gate + L3a RS `R008`; s39 shipped 11 · 2 · 3 · 5 + the dead "+ Add" fix (mig 0181); s40 shipped 6 · 8+14 · G-a — the mechanical lane; **s41 shipped 9 — the M&E four-tier unit, spec-first end-to-end (tts `d8dbeba` / RS `96931bf`): RS 1120S_PAGE1 R009/R010 + 1065_PAGE1 MEALS twins + NEW IRS_2025_PUB463 source (Pub 463 2025 verbatim — the six 100% exception categories + DOT 80%); NEW D_MEALS_100 on BOTH entities (Ken ruling); the worksheet folded inline into the deductions list (100/80/50/0 + computed math rows); 17 free-form Other Deduction rows; seeders re-run on the shared DB (352/313); flow 447 · parity fixture REGENERATED + vitest 278 · MeF 1120-S 64 · live-verified on a torn-down probe**. Remaining: **12 (Sch B Q11 auto-answer — RS-first; Ken ruled derived/YELLOW/overridable ONLY, Schedule L/M-1 behavior unchanged)** · 16 (CC retrospective, last) · 10 (Ken-gated: Lacerte reprint of file 1018)). The 1120-S ATS completion lane stays Ken-gated: **e-services email OUT 2026-07-09** (S7/S8 ruling · 8941 key-inversion [Ken RATIFIED the finding — engine right, key wrong] · 1040 production flip · SOR re-request) → any S7/S8 builds → full-set bundle → the live upload loop. A2A (17g): IdenTrust packet OVERNIGHTED 2026-07-09, cert vetting ~7-14 days (⚠ 30-day download clock from notarization); AE values pre-agreed in `docs/mef/A2A_ENROLLMENT.md`. S-18: PWA CODE-COMPLETE (Ken install-verify pending) · 18f prefs DONE · 18a/18b/18g queued · 18d parked.
+
+**Session 41 wrap (2026-07-09; "go" — S-19 batch 1 item 9):**
+- [x] `[RS+APP]` **M&E four-tier worksheet unit (usability item 9), spec-first** — 2026-07-09
+  RS `96931bf` / tts `d8dbeba`. RS: 1120S_PAGE1 R009 (DED = 1.00·100pct + 0.80·DOT +
+  0.50·std; Line-19 component) + R010 (NONDED = 0.50/0.20/1.00 → K16c/M-1 3b/M-2 5a) +
+  D004 exception-only warning + four-tier scenario (7,800/8,200); 1065_PAGE1
+  R-1065P1-MEALS/-MEALSND twins (→ K18c/M-1 4b) + D_1065P1_MEALS100 + P1-5; **NEW source
+  IRS_2025_PUB463** (Pub 463 2025 ch. 2 VERBATIM: the six §274(n)(2)(A)/(e) 100%
+  categories + "The percentage is 80%"); i1120s/i1065 Special-Rules excerpts; IRC_274
+  secondary links; Supabase-seeded, deployed exports verified, tts mirrors cached.
+  tts: NEW `D_MEALS_100` both entity seeds · compute D_MEALS_DED gains the 100% addend
+  (1120-S + 1065) · free-form rows → D_FREE17 both entities (19/21 sums + MeF `_d19_rows`
+  mirror) · UI worksheet inline in the deductions list (100/80/50/0 + the two computed
+  YELLOW math rows; never splits columns; old sub-section removed) · print M&E statement
+  gains the 100% section · MEALS_NO_LIMITATION covers the tier · seeders re-run
+  (352/313 lines). Gates: flow 447 · parity fixture REGENERATED + vitest 278 · MeF
+  1120-S 64 · new pure pins both entities · live probe verify (19=7800/K16c=8200/
+  M1_3b=8200), probe cascade-deleted. ⚠ TY2026 WATCH in R009: §274(o) applies to
+  amounts paid after 12/31/2025.
 
 **Session 37 wrap (2026-07-09; "go" — the standing overnight work order, unit 3):**
 - [x] `[APP]` **S6 unit 3 — the Scenario-6 build `mef_build_ats_1120s_s6`** — 2026-07-09
