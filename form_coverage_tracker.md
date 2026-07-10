@@ -1,5 +1,25 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-10 session 47 — Form 4562 §168(k)(7) BONUS OPT-OUT ELECTION UNIT, spec-first
+> (RS `fdeadfb` / tts s47; the s46 stated follow-on).** Return-level per-class election
+> (`bonus_electout_classes`, mig 0183): engine forces bonus 0 for ALL qualified property
+> in the class placed in service during the year → §280F Table 2 (RP 2025-16 §2.03(2))
+> and the GA §168(k) add-back elimination follow automatically; the i4562-required
+> election statement rides the print packet ("Sec. 168(k)(7) Election Statement", after
+> the 4562) AND e-files as the DECLARED `ElectNotClaimSpclDeprecAllwnc` document
+> (ReturnData1120S ref 1921, position-pinned; 1065 MeF = future-mapper deferral). NEW
+> per-asset `bonus_eligible` (qualified-property flag). Diagnostics D_4562_ELECTBONUS
+> (bonus inside an elected-out class = error, spec D008) + D_4562_ELECTGAP (bonus zeroed
+> without the election = allowed-or-allowable warning, spec D009). UI: 7-class checkbox
+> card + Bonus-Eligible checkbox. **⚠⚠ TAX-LAW CORRECTION: the s46 AMT arm reversed —
+> a (k)(7) election-out does NOT re-engage the AMT 150DB recompute for post-2015 PIS
+> (i6251 2025 2l + i4562 2025 p.7 Note verbatim; eligibility controls); 150DB now bites
+> only for never-eligible 200DB property (bonus_eligible=false). Ken ratification
+> pending (REVIEW_QUEUE s47).** Gates: engine 63 · flow 447 · MeF 69 · render 25 ·
+> S5+S6 8/8 · tsc 0/vitest 278 · ORM + browser probes (isolated, cascade-deleted).
+> Deferrals: proforma year-shift bonus_pct zeroing · 40% transitional election ·
+> software class token (DEFERRAL_AUDIT s47).
+
 > **2026-07-10 session 46 — Form 4562 DEPRECIATION-METHODS UNIT, spec-first (tts
 > `5539168` / RS `d5e4386`; Ken's Lacerte method list).** Method dropdown = Ken's 7 codes
 > (200DB/150DB/SL + NEW SL_RES/SL_NONRES/ADS_SL/NONE; passenger auto = a CLASSIFICATION,
