@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-10, session 45 ("go"). Shipped: **RS renumber unit #1 — 4562 to
-the 2025 face** (RS `e695c1a` / tts `4951f41`, spec-first). The tts print bug it exposed
-is FIXED: the 2025 face's NEW 19h 50-year row had shifted residential rental → 19i and
-nonresidential → 19j, and the field map was printing residential in the 50-year row.
-MeF XML was already semantic (unchanged). Next CC lane = **renumber unit #2 (SCH_K_1120S)**
-interleaved with the **full-suite straggler triage** + the FA-export reconciliation pass.*
+*Last updated: 2026-07-10, session 45 (extended — Ken delivered S-Corp usability
+BATCH 2, 17 items, and directed the depreciation UI cluster). Shipped this session:
+**① RS renumber unit #1 — 4562 to the 2025 face** (RS `e695c1a` / tts `4951f41`; the
+live print bug — residential rental in the new 19h 50-year row — FIXED) · **② the W2G
+taxpayer-relation guard** (`1125252` — root cause #1 of the full-suite failures) ·
+**③ the B2 depreciation cluster** (`8445ecc` — items 4/10/11/12: activity
+sub-schedules, Calculated line 14/8825 display, denser worksheet; live-probe
+verified, probe cascade-deleted). Batch-2 intake + 4 Ken rulings: `USABILITY_QUEUE.md`.
+**Ken is pulling the Lacerte method list → the depreciation-methods RS spec session
+(10-20 methods + the §168(k)(7) bonus opt-out election) is the next big unit.***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -17,31 +21,39 @@ interleaved with the **full-suite straggler triage** + the FA-export reconciliat
 
 ## ▶ RESUME HERE
 1. **Full-suite straggler triage — RUN COMPLETE (36 min): 5,147 passed / 169 failed /
-   6 errors.** Root cause #1 ALREADY FIXED (`1125252`): compute_w2g_db read
-   `tax_return.taxpayer` unguarded → RelatedObjectDoesNotExist → 500 on EVERY recompute
-   endpoint for a return with no Taxpayer row (~25 failures; test_dependents fully green;
-   the compute_1116 getattr-the-relation convention). Remaining classes, diagnosed by
-   sample: (a) **stale cents pins from the s27 whole-dollar sweep** — the dominant class
-   (test_1040 brackets `216020.25`→`216020`, schedule_j rate schedules ×12, topic5/7/8/9,
-   GA-500, 8995a…); re-pin each with a hand-check, never bend compute. (b) **mechanical
-   test rot** — test_apr01_fixes wants a deleted `seeded` fixture; test_tts_forms
-   manifest trip-wire. (c) **8835/8936/3800/2441/8911 pipeline pins** — likely engine
-   evolution since their build; verify per file. (d) ⚠ **test_flow_assertions failed ×2
-   IN-SUITE but passes standalone (447/465 green)** — test-pollution/ordering class,
-   investigate before trusting full-suite flow results. Full list:
+   6 errors; root cause #1 FIXED (`1125252`,** the compute_w2g_db unguarded
+   `tax_return.taxpayer` → 500-on-every-recompute class, ~25 failures; test_dependents
+   fully green). Remaining classes, diagnosed by sample: (a) **stale cents pins from the
+   s27 whole-dollar sweep** — dominant (test_1040 brackets `216020.25`→`216020`,
+   schedule_j ×12, topic5/7/8/9, GA-500, 8995a…); re-pin with a hand-check, never bend
+   compute. (b) **mechanical rot** — test_apr01_fixes wants a deleted `seeded` fixture;
+   test_tts_forms manifest trip-wire. (c) **8835/8936/3800/2441/8911 pipeline pins** —
+   verify per file. (d) ⚠ **test_flow_assertions failed ×2 IN-SUITE but passes standalone
+   (447 green)** — ordering/pollution class, investigate before trusting full-suite flow
+   results. Full list:
    `C:\Users\Ken\AppData\Local\Temp\claude\D--dev-tts-tax-app\43c44282-a319-4b8e-9e32-60b8ea9990b6\tasks\b46rjemkq.output`
-   (if gone: `pytest tests/ -q --reuse-db`, ~36 min on local PG). ⚠ That run held PRE-s45
+   (if gone: `pytest tests/ -q --reuse-db`, ~36 min on local PG). ⚠ That run held pre-s45
    modules — 4562/W2G failures in it are already fixed.
-2. **RS renumber unit #2: SCH_K_1120S** (worst drift count — fabricated 13f "FTC" row
-   [face: Biofuel producer credit], missing 17c AE&P, wrong L18 formula, 12d/12e/13c
-   misassigned, missing 3b/3c·8b/8c·13b/13e·14a/b·15a-f·16e/16f·17a-d). Then K1 → SCHL →
-   6198 → M3 line_map (face template download first) → 3800 (rides the GBC unit).
-   The s45 recipe: ledger `docs/rs_handoff/2026-07-09_early_era_face_audit.md`; ⚠ the
-   4562 lesson — AcroForm row-group names follow FACE letters, so re-letters silently
-   shift print rows even when "names exist in PDF" validation passes; add position pins.
-3. **RS FA-export reconciliation pass** (queued since s32; mirror PINNED 26 vs export 30).
-4. Ken-gated: **D1 typing-feel check on GA-600S** (gates the 1120-S mirror deletion) ·
-   batch 2 · the e-services answers · item 10 Lacerte reprint.
+2. **Depreciation-methods RS spec session** (Ken-directed, gated on his Lacerte method
+   list): 10-20 methods (ADS SL, GDS SL/150DB elections, §168(f)(1) units-of-production,
+   pre-MACRS/ACRS legacy, §280F caps…) + the **§168(k)(7) bonus opt-out election**
+   (per-class, statement doc, kills the GA add-back) + sibling elections (SL/150DB/ADS/
+   de-minimis). Spec-first on the freshly renumbered 4562; then the engine leg
+   (published-table pins ONLY — never derived arithmetic); then batch-2 UI leftovers.
+3. **Batch 2 remaining** (`USABILITY_QUEUE.md`): 8825 group (7 — structured address =
+   model+MeF leg; PY column; multi other-expense lines; totals layout) · quick sweep
+   (1 yellow-dot bug · 6 footer trim · 13/14 renames [Dispositions → "Schedule D
+   (Capital Gains)" — verify all 4797 paths ride the worksheet FIRST, incl. business
+   land] · 16 hide filing fields) · bigger singles (2 nav status dots · 3 PY columns
+   [IncomeDeductionsSection already takes priorYear!] · 5 meals one-liner · 15 density
+   pass) · B2-17 form units → Spine (8283-entity/2553/2848/3115).
+4. **RS renumber unit #2: SCH_K_1120S** (fabricated 13f; missing 17c AE&P; wrong L18)
+   → K1 → SCHL → 6198 → M3 line_map → 3800. Ledger:
+   `docs/rs_handoff/2026-07-09_early_era_face_audit.md`; ⚠ the 4562 lesson — AcroForm
+   row-group names follow FACE letters; add position pins.
+5. **RS FA-export reconciliation pass** (queued since s32; mirror PINNED 26 vs export 30).
+6. Ken-gated: **D1 typing-feel check on GA-600S** (gates the 1120-S mirror deletion) ·
+   the Lacerte method list · e-services answers · item 10 Lacerte reprint.
 
 **⚠ Parallel-test recipe (new, s45):** `TEST_DB_TEST_NAME=test_postgres_s45` env +
 `--create-db` runs a second pytest session on its own scratch DB while a long run holds
