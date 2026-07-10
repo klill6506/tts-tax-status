@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-10 session 46 — Form 4562 DEPRECIATION-METHODS UNIT, spec-first (tts
+> `5539168` / RS `d5e4386`; Ken's Lacerte method list).** Method dropdown = Ken's 7 codes
+> (200DB/150DB/SL + NEW SL_RES/SL_NONRES/ADS_SL/NONE; passenger auto = a CLASSIFICATION,
+> never a method); lives += 30/31.5-legacy/40; NEW `vehicle_classification`
+> (under_6000/work_truck_6ft/over_6000 — mig 0182). **TWO LIVE ENGINE BUG CLASSES fixed
+> against the verbatim Pub 946 (2025) tables**: the entire 200DB mid-quarter dict was
+> derived-wrong (published A-2..A-5 now, all six lives; the old Q4 5-yr column summed to
+> 99.00%) and the 150DB 10-yr column switched to SL a year late (A-14 verbatim: 8.74×6
+> then 4.37). Luxury-auto caps corrected to Rev. Proc. 2025-16 T1/T2 ($19,600 yr-2 /
+> $12,200 no-bonus yr-1 — the old constants miscited "Rev. Proc. 2025-13", the §831(b)
+> proc). NEW: 150DB MQ (A-15..A-18) · SL/MM 31.5 (A-7) / ADS 30 (A-13) / ADS 40 (A-13a) ·
+> month-aware MM final year · AMT post-1998 matrix (RS R007; i6251 2l — bonus-claimed
+> 200DB = NO adjustment, §168(k)(2)(G)) · §179(b)(5)(A) SUV clamp $31,300 + the 6-ft-bed
+> exception (R008) · print Section C rows 20a-20e · MeF ADS refuse seam · diagnostics
+> D_4562_VCLASS/SUV179/METHOD (refuse-not-silent-zero). Gates: engine 55 (21 new
+> published pins) · flow 447 · render 23 · MeF 66 · S5+S6 8/8 · tsc 0/vitest 278 · live
+> ORM + browser probes. Deferrals: §168(k)(7) election unit = NEXT · ADS MeF leg ·
+> 280F on AMT/state parallels (DEFERRAL_AUDIT s46).
+
 > **2026-07-10 session 45 — Form 4562 RENUMBERED to the 2025 face (RS renumber unit #1)
 > + a LIVE print-row fix (tts `4951f41` / RS `e695c1a`).** The 2025 face inserted **19h
 > "50-year property"**, shifting residential rental → 19i and nonresidential real → 19j
