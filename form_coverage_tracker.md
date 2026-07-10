@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-10 session 48 — Form 8825 REV-12-2025 FACE UNIT + Schedule A (Form 8825),
+> spec-first (RS `c4c94bc` / tts `a4435f4`; batch-2 items B2-7a/B2-8/B2-9).** The RS 8825
+> spec was ANOTHER early-era drifted block (numbering matched NO published revision) —
+> renumbered verbatim to the Dec-2025 face: income split 2a/2b (2b NEW) → 2c; expenses
+> 3-17 with 15/16 reserved; **line 17 = the NEW Schedule A (Form 8825) fixed-category
+> other-deductions schedule** (A1-A20 + A30 Other; REQUIRED for Schedule M-3 filers per
+> i8825 verbatim); 18 = sum(3-17); 19 = 2c − 18; 23 = COMBINE 20a-22a → K2 (the old
+> R003 omitted 21/22a). tts (migs 0184+0185 RLS): `other_rental_income` (2b) ·
+> `wages_salaries` (13) · `other_info_code` (col (c) A-I, NEW 12-2025 acquisition/
+> disposition codes, M-3-only) · NEW `RentalPropertyOtherDeduction` category rows →
+> `line17_other_deductions` (the model/MeF/print single source). **FOUR live print bugs
+> fixed**: property type printed in the col-(c) A-I column (col (b) empty) ·
+> interest_other dropped from line 8 (18 didn't foot) · mgmt/supplies dropped from 17 ·
+> 21/22a never printed with 23 omitting them (print diverged from the flowed K2).
+> Official f8825sa template (manifest + AcroForm map) appends per 4 properties whenever
+> detail rows exist; MeF adds 2b/2c/13/1(c) elements + per-property
+> GeneralDependencyMedium detail statements linked from IRS8825 (no declared Schedule A
+> doc in 2025v6.2; reconcile-or-refuse; ⚠ MediumExplanationType forbids newlines).
+> Diagnostics D_8825_001-005. UI: address block (street/city/StateSelect/ZIP) · A-I
+> select · face-ordered expenses incl. wages · "+ Add" category rows · Total Expenses /
+> Net Income (Loss) Calculated rows, whole-dollar. Gates: flow 447 (FA008 healed inline)
+> · MeF live-XSD · render + the line-1 column x-order pin · S5+S6 8/8 · manifest pin 82
+> · tsc 0/vitest 278 · ORM + browser probes (isolated, 361-obj cascades). Deferrals:
+> 8825 L21/L22a input path + rental-4797 auto-split · col (c) description statement ·
+> Sch E detail-rows UI · B2-7b PY column rides B2-3 (DEFERRAL_AUDIT s48).
+
 > **2026-07-10 session 47 — Form 4562 §168(k)(7) BONUS OPT-OUT ELECTION UNIT, spec-first
 > (RS `fdeadfb` / tts s47; the s46 stated follow-on).** Return-level per-class election
 > (`bonus_electout_classes`, mig 0183): engine forces bonus 0 for ALL qualified property
