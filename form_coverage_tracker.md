@@ -1,5 +1,20 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-10 session 45 — Form 4562 RENUMBERED to the 2025 face (RS renumber unit #1)
+> + a LIVE print-row fix (tts `4951f41` / RS `e695c1a`).** The 2025 face inserted **19h
+> "50-year property"**, shifting residential rental → 19i and nonresidential real → 19j
+> (Section C adds 20e; Part IV splits 23a/23b; Part V adds the 24c aircraft question).
+> The RS spec block was rebuilt verbatim (26 → 60 line rows; the fabricated 6/7/8 Part-I
+> chain fixed; lines 10-13 mirror the Ken-approved carryover loader). **tts print was
+> LIVE-WRONG**: the field map keyed residential onto the PDF's Line19h row (= the 50-year
+> row) — AcroForm row-group names follow the FACE letters, so names-exist validation
+> stayed green while every real-property value printed one row off. Fixed across
+> f4562_derivation (27.5→i, 39→j, +50→h) + field map (+L19j) + MeF _GDS_ELEMENTS
+> (+GDS50YearPropertyGrp, required-PIS refuse seam); MeF XML for residential/nonres
+> UNCHANGED (semantic elements — S5/S6 byte-stable). NEW y-band row-placement pin guards
+> the class. Gates: MeF 66 · flow 447 · 4562 render 35 · S5+S6 8/8. Deferral: SL/MM
+> 50-year percentage table unsupported (silent 0%, pre-existing → DEFERRAL_AUDIT).
+
 > **2026-07-09 session 42 (S-19 item 12) — 1120-S Schedule B question 11 AUTO-ANSWERED,
 > spec-first (tts `94380af` / RS `b7907bc`).** RS 1120S_SCHB RENUMBERED to the verified 2025
 > face (verbatim vs f1120s.pdf pp.2-3; the old spec block was a fabricated pre-face numbering —

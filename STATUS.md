@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-09, session 44 (Ken approved the retrospective — "implement your
-proposals and I agree on D"). Shipped: **A** local pytest Postgres · **B** face audit +
-the M-3 $10M tax-law fix (RS `c374e89`) · **C** BaseModelSerializer scoped partial saves
-+ hardening · **D1** GA-600S client-mirror deletion. CC lane next = **the RS renumber
-queue (4562 first) interleaved with the FA-export reconciliation pass**.*
+*Last updated: 2026-07-10, session 45 ("go"). Shipped: **RS renumber unit #1 — 4562 to
+the 2025 face** (RS `e695c1a` / tts `4951f41`, spec-first). The tts print bug it exposed
+is FIXED: the 2025 face's NEW 19h 50-year row had shifted residential rental → 19i and
+nonresidential → 19j, and the field map was printing residential in the 50-year row.
+MeF XML was already semantic (unchanged). Next CC lane = **renumber unit #2 (SCH_K_1120S)**
+interleaved with the **full-suite straggler triage** + the FA-export reconciliation pass.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -15,40 +16,48 @@ queue (4562 first) interleaved with the FA-export reconciliation pass**.*
   file number only (identities in `D:\tax-test-data\`).
 
 ## ▶ RESUME HERE
-Retrospective implementation landed (detail: STATUS_ARCHIVE s44). Next unblocked CC work:
-1. **RS renumber queue** (from the face audit — ledger:
-   `docs/rs_handoff/2026-07-09_early_era_face_audit.md`): **4562 FIRST** (the 2025 face
-   added 19h 50-year property → 19i/19j shift; include the tts engine/field-map 19-row
-   verification) → SCH_K_1120S → K1_1120S → 1120S_SCHL → 6198 → M3 line_map (needs the
-   face template download) → 3800 (defer to the GBC unit). Each = spec-first, the
-   SCHD/SCHB recipe.
-2. **RS FA-export reconciliation pass** (queued since s32; mirror PINNED 26 vs export 30).
-3. Ken-gated: **D1 typing-feel check on GA-600S** (gates the 1120-S mirror deletion) ·
+1. **Full-suite straggler triage** — the first-ever complete run was STILL IN FLIGHT at
+   s45 close (~43%, 40+ failures accumulating = the expected never-run-file stale-pin
+   class, plus scattered E's). Output (if the machine wasn't restarted):
+   `C:\Users\Ken\AppData\Local\Temp\claude\D--dev-tts-tax-app\43c44282-a319-4b8e-9e32-60b8ea9990b6\tasks\b46rjemkq.output`.
+   If gone, re-run: `pytest tests/ -q --reuse-db` (local PG; ~2-3 hrs). Triage each F:
+   stale pin (fix the pin) vs real break (its own unit). ⚠ That run holds PRE-s45 modules
+   in memory — any 4562-lettering failures in it are already fixed; re-verify against
+   `4951f41` before touching anything.
+2. **RS renumber unit #2: SCH_K_1120S** (worst drift count — fabricated 13f "FTC" row
+   [face: Biofuel producer credit], missing 17c AE&P, wrong L18 formula, 12d/12e/13c
+   misassigned, missing 3b/3c·8b/8c·13b/13e·14a/b·15a-f·16e/16f·17a-d). Then K1 → SCHL →
+   6198 → M3 line_map (face template download first) → 3800 (rides the GBC unit).
+   The s45 recipe: ledger `docs/rs_handoff/2026-07-09_early_era_face_audit.md`; ⚠ the
+   4562 lesson — AcroForm row-group names follow FACE letters, so re-letters silently
+   shift print rows even when "names exist in PDF" validation passes; add position pins.
+3. **RS FA-export reconciliation pass** (queued since s32; mirror PINNED 26 vs export 30).
+4. Ken-gated: **D1 typing-feel check on GA-600S** (gates the 1120-S mirror deletion) ·
    batch 2 · the e-services answers · item 10 Lacerte reprint.
 
-**⚠ TESTING CHANGED (read before running tests):** pytest now uses LOCAL PostgreSQL 17
-(`config/settings/test.py` → localhost; DECISIONS.md records it). The pooler batch caps /
-teardown gotchas no longer apply to tests. Full-suite runs are feasible — the first one
-immediately caught 6 stale test_returns pins (fixed: 352/313 counts; trust→1041).
+**⚠ Parallel-test recipe (new, s45):** `TEST_DB_TEST_NAME=test_postgres_s45` env +
+`--create-db` runs a second pytest session on its own scratch DB while a long run holds
+`test_postgres` (`config/settings/test.py`).
 
 ## ▶ Waiting on Ken / external
-1. **D1 typing-feel check** — open any GA-600S, type into Sched 3/6; computed cells now
-   update on the autosave round-trip (~1s) instead of instantly. If the feel holds, the
-   1120-S client mirror (the big drift source) goes the same way.
+1. **D1 typing-feel check** — open any GA-600S, type into Sched 3/6; if the ~1s autosave
+   round-trip feel holds, the 1120-S client mirror goes the same way.
 2. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
 3. IdenTrust cert (⚠ 30-day download clock). 4. File-1018 Lacerte reprint (item 10).
 5. PWA install check. 6. TaxWise forms-usage report.
 
 ## Active gates
-- **Flow-assertion gate 447** — green this session (serializer/scoping changes rode through).
-- **Full server suite** — first-ever complete run in flight at session close (targeted
-  batches green: flow 447 · scoping 2+1 · returns 75 · MeF 64 · S5+S6 8/8 · B11 5).
-  If the background run surfaced stragglers, they're next session's first action.
-- **Client parity gate** — 1120-S fixture current; vitest 278 · tsc 0 (GA-600S formulas
-  deleted — no GA fixture existed; the 1120-S mirror + gate stay until Ken's D1 verdict).
+- **Flow-assertion gate 447** — green this session (post-re-letter).
+- **MeF 1120-S suite 66** (+2 s45 pins: GDS 2025 lettering/order · 50-yr mixed-month
+  refuse) — green. S5+S6 scenario pair 8/8 green (XML byte-stable through the re-letter).
+- **4562 render/field-map 35** — green, incl. the NEW y-band row-placement pin
+  (`test_fill_4562_line19_2025_reletter`) that catches face re-letters the
+  names-exist-in-PDF validation cannot.
+- **Full server suite** — in flight (see RESUME 1); targeted batches all green.
+- **Client parity gate** — untouched this session (no compute changes; client unchanged).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
-- ⚠ RS renumber queue: any RS amendment touching SCHL/SCH_K/K1/4562/6198/3800 BEFORE its
-  renumber inherits the fabrications — renumber first.
+- ⚠ RS renumber queue: any RS amendment touching SCHL/SCH_K/K1/6198/3800 BEFORE its
+  renumber inherits the fabrications — renumber first. (4562 ✅ s45.)
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
