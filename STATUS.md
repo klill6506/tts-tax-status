@@ -23,9 +23,10 @@ D_4562_VCLASS/SUV179/METHOD seeded.*
    (DEFERRAL_AUDIT 2026-07-10 item 1): per-class election input + election statement doc +
    GA add-back kill (why Ken seldom uses bonus) + §280F Table-2 flip + AMT 150DB
    re-engagement. RS 4562 R007/R008 already quote the interplay verbatim (RP 2025-16
-   §2.03) — spec amendment is a drop-in. Ken's original scope note also named §168(f)(1)
-   units-of-production (face line 15) and ACRS legacy — ask Ken whether they ride this
-   unit or wait.
+   §2.03) — spec amendment is a drop-in. **Ken RULED 2026-07-10: SKIP §168(f)(1)
+   units-of-production and ACRS legacy** ("It's been years since I used ACRS and I've
+   never used UOP") — the election unit ships without them; face lines 15/16 stay
+   preparer-entered pass-throughs. Do not re-ask.
 2. **Full-suite straggler triage** (s45 diagnosis stands): remaining classes = (a) s27
    stale CENTS pins — dominant (test_1040 brackets, schedule_j ×12, topic5/7/8/9, GA-500,
    8995a, + test_schedule_l K15a `-1155.95` confirmed s46); re-pin with a hand-check,
@@ -47,11 +48,10 @@ D_4562_VCLASS/SUV179/METHOD seeded.*
    reprint · PWA install check.
 
 ## ▶ Waiting on Ken / external
-1. **§168(f)(1) UOP + ACRS scope ruling** (ride the (k)(7) unit or wait? — s46 boundary).
-2. **D1 typing-feel check** (gates the 1120-S client mirror deletion).
-3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
-4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
-6. PWA install check. 7. TaxWise forms-usage report.
+1. **D1 typing-feel check** (gates the 1120-S client mirror deletion).
+2. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
+3. IdenTrust cert (⚠ 30-day download clock). 4. File-1018 Lacerte reprint (item 10).
+5. PWA install check. 6. TaxWise forms-usage report.
 
 ## Active gates
 - **Flow-assertion gate 447** — green this session (engine tables + AMT changed).
