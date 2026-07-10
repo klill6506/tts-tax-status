@@ -19,7 +19,39 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **S-19 batch 1 CLOSED (s43) → the REVIEW_QUEUE interleave: RS FA-export reconciliation pass first** (unless Ken directs: retrospective discussion · batch 2 · the e-services answers). Batch-1 ledger: s38 shipped 1/4/7/13/13b/15 + the parity gate + L3a RS `R008`; s39 shipped 11 · 2 · 3 · 5 + the dead "+ Add" fix (mig 0181); s40 shipped 6 · 8+14 · G-a; s41 shipped 9 — the M&E four-tier unit (tts `d8dbeba` / RS `96931bf`); s42 shipped 12 — the Sch B Q11 auto-answer, spec-first (tts `94380af` / RS `b7907bc`; RS 1120S_SCHB renumbered to the verified 2025 face — the old block was FABRICATED pre-face numbering — + NEW R006 derived/YELLOW/overridable; 3 REVIEW_QUEUE rulings filed); **s43 shipped 16 — the CC retrospective (`docs/RETROSPECTIVE_SCORP_2026-07.md`, analysis only): 7 keeps · 6 prioritized proposals (A local pytest-only Postgres [kills the pooler test tax] · B RS early-era face-audit sweep [SCHB = 3rd confirmed drift; do BEFORE the S-15/1120 authoring waves] · C race-class + bare-key maintenance pass · D client-formula-mirror retirement trial [the parity-gate root cause] · E FormEditor 18k-line split · F provenance color primitive) · 3 explicit rejects (FFV re-typing · compute_return restructure · grid libs) · a Part-4 decision table — awaits Ken's discussion (REVIEW_QUEUE)**. Item 10 stays Ken-gated (Lacerte reprint of file 1018); batch 2 arrives from Ken. The 1120-S ATS completion lane stays Ken-gated: **e-services email OUT 2026-07-09** (S7/S8 ruling · 8941 key-inversion [Ken RATIFIED the finding — engine right, key wrong] · 1040 production flip · SOR re-request) → any S7/S8 builds → full-set bundle → the live upload loop. A2A (17g): IdenTrust packet OVERNIGHTED 2026-07-09, cert vetting ~7-14 days (⚠ 30-day download clock from notarization); AE values pre-agreed in `docs/mef/A2A_ENROLLMENT.md`. S-18: PWA CODE-COMPLETE (Ken install-verify pending) · 18f prefs DONE · 18a/18b/18g queued · 18d parked.
+## ▶ NOW WORKING ON — **retrospective implementation (Ken approved ALL 2026-07-09) — s44 shipped A/B/C/D1; NEXT: the RS renumber queue (4562 first — live 2025 face change) interleaved with the FA-export reconciliation pass** (or Ken directs: batch 2 · e-services answers · Ken's D1 typing-feel check on GA-600S gates the 1120-S mirror deletion). Batch-1 ledger: s38 shipped 1/4/7/13/13b/15 + the parity gate + L3a RS `R008`; s39 shipped 11 · 2 · 3 · 5 + the dead "+ Add" fix (mig 0181); s40 shipped 6 · 8+14 · G-a; s41 shipped 9 — the M&E four-tier unit (tts `d8dbeba` / RS `96931bf`); s42 shipped 12 — the Sch B Q11 auto-answer, spec-first (tts `94380af` / RS `b7907bc`; RS 1120S_SCHB renumbered to the verified 2025 face — the old block was FABRICATED pre-face numbering — + NEW R006 derived/YELLOW/overridable; 3 REVIEW_QUEUE rulings filed); **s43 shipped 16 — the CC retrospective (`docs/RETROSPECTIVE_SCORP_2026-07.md`, analysis only): 7 keeps · 6 prioritized proposals (A local pytest-only Postgres [kills the pooler test tax] · B RS early-era face-audit sweep [SCHB = 3rd confirmed drift; do BEFORE the S-15/1120 authoring waves] · C race-class + bare-key maintenance pass · D client-formula-mirror retirement trial [the parity-gate root cause] · E FormEditor 18k-line split · F provenance color primitive) · 3 explicit rejects (FFV re-typing · compute_return restructure · grid libs) · a Part-4 decision table — awaits Ken's discussion (REVIEW_QUEUE)**. Item 10 stays Ken-gated (Lacerte reprint of file 1018); batch 2 arrives from Ken. The 1120-S ATS completion lane stays Ken-gated: **e-services email OUT 2026-07-09** (S7/S8 ruling · 8941 key-inversion [Ken RATIFIED the finding — engine right, key wrong] · 1040 production flip · SOR re-request) → any S7/S8 builds → full-set bundle → the live upload loop. A2A (17g): IdenTrust packet OVERNIGHTED 2026-07-09, cert vetting ~7-14 days (⚠ 30-day download clock from notarization); AE values pre-agreed in `docs/mef/A2A_ENROLLMENT.md`. S-18: PWA CODE-COMPLETE (Ken install-verify pending) · 18f prefs DONE · 18a/18b/18g queued · 18d parked.
+
+**Session 44 wrap (2026-07-09; Ken: "Let's implement your proposals and I agree on D"):**
+- [x] `[APP]` **Retrospective item A — pytest DB moved to LOCAL PostgreSQL 17** — 2026-07-09.
+  winget install + `config/settings/test.py` → localhost (dev/prod unchanged on Supabase;
+  TEST_DB_* env-overridable). Proof: the S5+S6 scenario pair 343s → 47s inside a FOUR-file
+  batch; the batch cap is dead; first-ever full-suite run kicked. Immediately caught 6
+  stale test_returns pins (seed counts 338/285 → 352/313 from s41; trust→400 from the
+  pre-1041 era → now asserts a 1041 creates) — the file had been too expensive to run.
+  DECISIONS.md records the standard.
+- [x] `[APP]` **Retrospective item C — the lost-update class killed at one point** — 2026-07-09.
+  NEW `BaseModelSerializer` (68 serializers re-parented): PARTIAL updates save only the
+  patched columns (update_fields + auto_now stamps; property-writes fall back to full save)
+  → concurrent per-field autosaves commute, no locking needed; regression test proves the
+  stale-instance clobber shape is dead. entity-boundary PATCH row-locked (the 8941 recipe).
+  Bare-key audit (subagent ledger): ZERO live hazards — all 1040-family reads scoped; two
+  latent sites hardened (interest-trend .get(); 8879-S/8453-S renderer reads).
+- [x] `[RS+APP]` **Retrospective item B — early-era face audit + the M-3 $10M tax-law fix** —
+  2026-07-09 RS `c374e89`. Two audit agents swept every Session-11-vintage 1120-S-family
+  block vs the 2025 faces (ledger: `docs/rs_handoff/2026-07-09_early_era_face_audit.md`).
+  SCHD CLEAN (s34 renumber held) · SCHL internally-contradictory · SCH_K worst (fabricated
+  13f FTC row; missing 17c AE&P; wrong L18 formula) · K1 code-tables wrong · **4562 missed
+  the 2025 face's new 19h 50-year row (19i/19j shift)** · 6198/3800 fabricated · M3
+  face-not-in-repo **+ a REAL tax-law error: M-3 threshold $50M vs the law's $10M (i1120s
+  2025 p.49 verbatim ×2) — FIXED everywhere (incl. yesterday's SCHB R003 which propagated
+  it), seeded, export-verified; tts engine was already correct at $10M.** Renumber queue
+  filed: 4562 → SCH_K → K1 → SCHL → 6198 → M3-line_map → 3800.
+- [x] `[APP]` **Retrospective item D — the D1 trial on GA-600S** — 2026-07-09. FORMULAS_GA600S
+  + the GA net-worth bracket table DELETED from the client (the only copy of that table now
+  lives in server compute.py); GA-600S rides the ?fresh_return=1 payload. Live probe: PATCH
+  → fresh payload → screen paints server values (S3_4/S3_6 = 500,000 · S3_7 = 250 to the
+  bracket table); probe cascade-deleted. **Ken's typing-feel check = the gate** before the
+  1120-S mirror (the big one) goes the same way. E/F recorded approved-for-opportunistic.
 
 **Session 43 wrap (2026-07-09; "go" — S-19 batch 1 item 16, the LAST batch-1 item):**
 - [x] `[APP]` **CC retrospective (usability item 16) — analysis only, batch 1 CLOSED** —
