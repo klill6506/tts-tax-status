@@ -22,16 +22,23 @@ B2-17 promoted to the Spine as S-20a–d → **BATCH 2 FULLY DISPOSITIONED**.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Full-suite straggler triage, continued (item 4).** A full run was IN FLIGHT at
-   s53 close (detached PID 18764, local PG; output streaming to the s53 scratchpad
-   `fullsuite_s53.txt` — that dir may be gone in a new session, so just RERUN:
-   `pytest tests/ -q --reuse-db`, ~36+ min). s53 already killed two classes:
-   apr01 fixture rot (`2cda054`) + TestRenderK1 (`cc849c3` — ⚠ the R-K1-ROUND
-   class: a SOLE sub-100% owner absorbs 100% by design; fix fixtures, never the
-   engine). REMAINING known classes: **s27 stale CENTS pins (dominant — ~227
-   `X.00`-style pin occurrences across 40+ test files; fix ONLY files the run
-   fails, with per-file write-path analysis per the s27 discipline — some pins
-   are inputs/KEEP-list and correct)** · pipeline pins · flow ×2 in-suite-only.
+1. **Full-suite straggler triage, continued (item 4).** The s53 run COMPLETED:
+   **5051 passed · 168 failed · 167 errors · 21 skipped in 46:31** (local PG,
+   post-s53-fixes tree except apr01/TestRenderK1 which were fixed mid-run and
+   verified standalone). **Inventory (by file):**
+   - **⚠ `test_sch123_render.py` = 164 of the 167 ERRORS** — one setup/fixture
+     root cause for the whole file (the apr01 shape); fix FIRST, it's ~half the
+     red count in one stroke. (The other 3 errors = apr01's stale in-memory
+     module during this run — already fixed `2cda054`, 11 pass standalone.)
+   - **168 F's across ~70 files, top:** schedule_j_compute 12 · 1040 10 ·
+     8835_pipeline 8 · topic5_compute 8 · 8936_pipeline 7 · sch123_scenarios 6 ·
+     mef_scenario12_compute 5 · 3800_pipeline 5 · ga500_compute 4 ·
+     client_import 4 · schedule_k1_diagnostics 4 · the rest ≤3 each (full list:
+     re-aggregate from a rerun, or STATUS_ARCHIVE s53). Expected dominant class
+     = s27 cents pins (~227 `X.00` pin occurrences repo-wide); fix ONLY failing
+     files, per-file write-path analysis (some pins are inputs/KEEP-list and
+     correct). Client-import/clients/entity-link failures may be a separate
+     fixture class — diagnose before touching.
    ⚠ TaskStop on a background pytest leaves the python child alive — kill the
    PID before starting a fresh run or it dies fighting over test_postgres.
    Scratch-DB recipe for parallel verification: `$env:TEST_DB_TEST_NAME="x"` +
