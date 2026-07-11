@@ -19,7 +19,37 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s52 shipped B2-15 global density pass + B2-11 remainder (tts `8c8409d`; same day as s51's B2-3/B2-7b `baed26c`) — BATCH 2 COMPLETE except the B2-17 form-unit promotions. Same day: KEN RESOLVED THE D1 GATE ("feels fine"; the 1065's always-server-compute precedent = the real feel evidence). ▶ NEXT: D2 · 1120-S client formula-mirror retirement (fresh full-context session; ~249 tuples + the parity gate retires with it) → `missing_shareholders_check` 1065 fix → B2-17 form units to the Spine (8283-entity/2553/2848/3115) → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s53 shipped THREE units (2026-07-11): D2 · 1120-S formula-mirror retirement COMPLETE (`7913796`, −2,545 lines — retrospective item D CLOSED; every form paints from ?fresh_return=1; parity gate retired) · the `missing_shareholders_check` 1065 fix + SSN-check sibling (`2e33d5f`) · straggler openers (apr01 fixture rot `2cda054` + TestRenderK1 R-K1-ROUND pin `cc849c3`) · B2-17 promoted to Spine S-20a–d → BATCH 2 FULLY DISPOSITIONED. ▶ NEXT: full-suite cents-pin triage (rerun + per-file write-path analysis; STATUS item 1) → SCH_K renumber (fresh session) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+
+**Session 53 wrap (2026-07-11; "go" — autonomous, the s48/s52 directives):**
+- [x] `[APP]` **D2 · 1120-S client formula-mirror retirement** — 2026-07-11
+  `7913796` (−2,545 lines). FORMULAS_1120S + val/sumLines + COMPUTED_LINES +
+  computeFields() deleted (setReturnWithCompute → setReturnWithOverlay);
+  every form paints computed cells from the autosave's ?fresh_return=1
+  payload — server FORMULA_REGISTRY is the single screen-math source. The
+  parity gate retired WITH the mirror (parity test + S6 fixture +
+  dump_client_parity_fixture + the collision-guard test). tsc 0 · vitest 300
+  (305 − the 5 retired) · flow untriggered (client-only). Live probe
+  (isolated firm, 400-obj cascade): typed I&D → downstream BLANK until the
+  flush (no client math), then server-exact paint (1c 45,000 / A8 6,000 /
+  21 39,000; salaries round 2 → 20/21 followed, DB ties). Retrospective
+  item D fully CLOSED.
+- [x] `[APP]` **missing_shareholders_check 1065 fix + siblings** — 2026-07-11
+  `2e33d5f`. The s50 false "No partners entered" ERROR dead (counts Partner
+  on a 1065); shareholder_ssn_check same-bug silent no-op fixed (iterates
+  Partner); shareholder_ownership_check explicitly 1120-S-only (item-J
+  three-percentage semantics → REVIEW_QUEUE recommendation for a direct
+  partner-pct WARNING). test_diagnostics 41 (+5) · live run_diagnostics
+  probe both arms (isolated firm, cascade-deleted).
+- [x] `[APP]` **Straggler triage openers (STATUS item 4, partial)** — 2026-07-11
+  `2cda054` + `cc849c3`. apr01 fixture rot (fixtures never existed → 11 pass) ·
+  TestRenderK1 (⚠ the R-K1-ROUND class: residual-to-LAST makes a SOLE
+  sub-100% owner absorb 100% by design — fixed the FIXTURE by adding the 40%
+  owner, never the engine → 4 pass). Full-suite rerun in flight at close;
+  remaining classes (dominant: ~227 cents-pin occurrences / 40+ files) =
+  STATUS item 1.
+- [x] `[docs]` **B2-17 → Spine S-20a–d** (8283-entity · 2553 · 2848 · 3115 app
+  build) — USABILITY_QUEUE batch 2 fully dispositioned.
 
 **Session 52 wrap (2026-07-11; "go" — autonomous, the s48 standing directive):**
 - [x] `[APP]` **B2-15 · Global density pass + B2-11 remainder** — 2026-07-11
@@ -1030,6 +1060,19 @@ into a proper form unit (spec-first). Interleaves freely; drops when the ATS lan
 - [ ] 19-intake · receive + triage Whit's 1040 list → USABILITY_QUEUE.md
 - [ ] 19-intake · receive + triage Whit's 1120-S list (2 pages) → USABILITY_QUEUE.md
 - [ ] 19-intake · Ken's own items (incl. the landing-page cosmetics he mentioned at 18f)
+
+**S-20 · [RS→APP] · B2-17 FORM UNITS (promoted from USABILITY_QUEUE batch 2, s53
+2026-07-11 — "new forms wanted"; form units, not usability items).** Each is its own
+spec-first unit; sequence after the SCH_K renumber queue unless Ken reorders.
+- [ ] **20a · 8283 entity leg** — the 1040 unit exists; RS amendment = entity_types +=
+  1120S/1065 (noncash contributions flow K12/K13 — verify routing verbatim) → tts entity
+  input/print/K-1 statement legs. ⚠ amend-by-lookup + face-audit-first (the pre-s34 rule).
+- [ ] **20b · Form 2553** — S-election (print-first; no annual reissue). RS greenfield spec
+  → tts print unit. Pairs with the 8832 spec (WO-22, RS-done) which routes S-elections here.
+- [ ] **20c · Form 2848** — Power of Attorney (print-first). RS greenfield spec → tts print
+  unit (per-preparer CAF autofill from the Preparer record is the value-add).
+- [ ] **20d · 3115 app build** — RS spec DONE (WO-23, validated 36/0); large — likely
+  print-only v1 (§481(a) spread engine input + Schedule E depreciation catch-up print).
 
 ---
 
