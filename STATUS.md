@@ -26,10 +26,21 @@ move on; mandatory session close before context exhausts.**
    **5051 passed · 168 failed · 167 errors · 21 skipped in 46:31** (local PG,
    post-s53-fixes tree except apr01/TestRenderK1 which were fixed mid-run and
    verified standalone). **Inventory (by file):**
-   - **⚠ `test_sch123_render.py` = 164 of the 167 ERRORS** — one setup/fixture
-     root cause for the whole file (the apr01 shape); fix FIRST, it's ~half the
-     red count in one stroke. (The other 3 errors = apr01's stale in-memory
-     module during this run — already fixed `2cda054`, 11 pass standalone.)
+   - **✅ `test_sch123_render.py` 164-error class FIXED (`b51947b`, s53b):** the
+     module fixture COMMITS Firm/user rows (blocker-unblocked) with no cleanup —
+     any `--reuse-db` rerun hit UniqueViolation on the username and errored all
+     164 at setup. Cleanup-first added; dirty-DB rerun = 169 passed / 1 failed.
+     ⚠ WATCH the class: any module fixture that commits fixed-name rows has the
+     same rerun bomb (the docstring says "same trade-off as the other render
+     suites' module fixtures" — check siblings when they misbehave in-suite).
+   - **⚠ POSSIBLY-REAL print bug, diagnose FIRST next session:**
+     `test_sch123_render::test_complete_return_includes_schedules_in_sequence`
+     fails standalone too — the complete-return packet carries Schedule 1 but
+     NOT Schedule 2/3 (packet: Letter · Invoice · 1040 ×2 · Sch 1 ×2). Either a
+     stale inclusion-predicate pin or Schedules 2/3 genuinely dropped out of
+     complete returns — if real, that's a live print bug, not a test problem.
+   (The other 3 errors = apr01's stale in-memory module during this run —
+   already fixed `2cda054`, 11 pass standalone.)
    - **168 F's across ~70 files, top:** schedule_j_compute 12 · 1040 10 ·
      8835_pipeline 8 · topic5_compute 8 · 8936_pipeline 7 · sch123_scenarios 6 ·
      mef_scenario12_compute 5 · 3800_pipeline 5 · ga500_compute 4 ·
