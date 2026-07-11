@@ -19,7 +19,37 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s48 shipped the 8825 Rev-12-2025 unit END-TO-END, spec-first (RS `c4c94bc` / tts `a4435f4`) — batch-2 items B2-7a/B2-8/B2-9 CLOSED.** The RS 8825 spec was ANOTHER early-era drifted block (its numbering matched NO published revision — found OUTSIDE the s44 audit queue; treat every pre-s34 block as suspect); renumbered verbatim to the Dec-2025 face (2a/2b income split · 15/16 reserved · 17 = the NEW **Schedule A (Form 8825)** fixed-category detail schedule, M-3-conditional · 23 = combine 20a-22a; R003 corrected — the old "K2 = sum(net_rent)" omitted 21/22a). tts: migs 0184/0185 (2b other income · line-13 wages · col (c) A-I code · RentalPropertyOtherDeduction rows → line 17 single source) · **FOUR live print bugs fixed** (type code printed in the col-(c) A-I column · interest_other dropped from line 8 · mgmt/supplies dropped from 17 · 21/22a never printed + 23 omitting them) · official f8825sa print page + MeF GeneralDependencyMedium detail statements (live-XSD; ⚠ MediumExplanationType forbids newlines) · D_8825_001-005 · UI address block + "+ Add" category rows + whole-dollar Calculated totals (B2-9 + the G-b cents fix). Gates: flow 447 · MeF/render/S5+S6 green · manifest pin re-baselined 82 · tsc 0/vitest 278 · ORM + browser probes (isolated firms, 361-obj cascades). ⚠ NEW pre-existing straggler bisected on clean main: test_tts_forms TestRenderK1 (60% share → 100%). ▶ NEXT: batch-2 remainder (quick sweep 1 · 6 · 13/14 renames · 16 → singles 2 · 3 · 5 · 15; B2-17 forms 8283-entity/2553/2848/3115 = Spine additions) · stale-pin triage (s27 cents class dominant) · SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s49 shipped the batch-2 QUICK SWEEP (B2-1 · B2-6 · B2-13 · B2-14 · B2-16, one commit tts `11d711a`, live-probe-verified). ▶ NEXT: batch-2 bigger singles (B2-2 nav status markers · B2-3 manual PY columns [+B2-7b rides it] · B2-5 meals one-line reshape · B2-15 density pass [+B2-11 remainder]) → B2-17 form units to the Spine → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10).
+
+**Session 49 wrap (2026-07-10; "go" — autonomous, the s48 standing directive):**
+- [x] `[APP]` **Batch-2 quick sweep: B2-1/6/13/14/16** — 2026-07-10 `11d711a`.
+  B2-13 nav spell-outs (Schedule K · Schedule L (Balance Sheet) · Schedule B, both
+  entity navs). **B2-14 per the Ken ruling** — Dispositions → **Schedule D (Capital
+  Gains)**; entry-path audit FIRST: the entity tab's "Form 4797" option was an
+  ORPHANED path feeding NOTHING (entity 4797 rides ONLY the depreciation worksheet
+  via aggregate_dispositions/DepreciationAsset.date_sold; compute_4797 +
+  Disposition(is_4797) is 1040-only, and NO 1040 tab renders DispositionsSection;
+  worksheet Land rows cover business land sales — classify_disposal routes
+  zero-depreciation → Part I §1231) → 4797 entry removed, legacy is_4797 rows get a
+  red banner + one-click Convert-to-Schedule-D (round-trip verified), the dead
+  Form4797ReturnFactsPanel + per-row recapture panel deleted; Like-Kind Exchange
+  (8824) rename. **B2-6** I&D footer = Total Deductions + Ordinary Income only,
+  per-entity face sets (⚠ the old shared list had the 1065 WRONG — manual lines
+  11/12/19/20 sat in the computed footer while the real totals 22/23 were
+  alphabetized into the named list; fixed); hidden rollups still flow (footer ties
+  live 14,080/35,920). **B2-16 per the Ken ruling** — filing-method trio hidden →
+  one "Paper file this return" checkbox writing BOTH method lines + letter.py
+  blank-means-e-file (default holds on existing returns). **B2-1 = retrospective
+  item F applied** (approved-for-opportunistic): `fieldProvenanceClass` — GREEN
+  typed / YELLOW system-supplied / neutral blank on every FFV input (FieldInput
+  family + M-2 grid + tax-lines card; BooleanField keeps its s42 amber chips); the
+  amber "Manual override" dot REMOVED (it rendered only in FieldRow and survived
+  value deletion = both Whit complaints). Display-only — is_overridden semantics
+  untouched (the L3a override-to-blank hold intact); the stale FLAG-on-blank class +
+  an entity is_4797 server diagnostic filed (DEFERRAL_AUDIT s49). Gates: tsc 0 ·
+  vitest 278 · flow 447 + print packages (470 passed) · live browser probe
+  (isolated firm PROBE-B2SWEEP-UI, 685-obj cascade delete; ⚠ Browser-pane
+  screenshots time out this machine — DOM-assertion proofs).
 
 **Session 48 wrap (2026-07-10; "go" — the batch-2 8825 group):**
 - [x] `[RS+APP]` **8825 Rev-12-2025 unit COMPLETE (B2-7a + B2-8 + B2-9), spec-first** —

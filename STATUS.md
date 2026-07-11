@@ -1,19 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-10, session 48 ("go" — batch-2 8825 group). The **8825
-Rev-12-2025 unit shipped END-TO-END, spec-first** (RS `c4c94bc` / tts `a4435f4`):
-the RS 8825 spec was ANOTHER early-era drifted block (its numbering matched NO
-published revision) — renumbered verbatim to the Dec-2025 face (f8825.pdf +
-i8825.pdf Rev. 12-2025, both fetched). Closes usability items **B2-7a, B2-8,
-B2-9**. tts: mig 0184/0185 (2b other income · line-13 wages · col (c) A-I code ·
-NEW RentalPropertyOtherDeduction = **Schedule A (Form 8825)** category rows →
-line 17) · **FOUR live print bugs fixed** (property type printed in the col-(c)
-A-I column · interest_other dropped from line 8 · mgmt/supplies dropped from 17 ·
-21/22a never printed + line 23 omitted them) · official f8825sa template + map ·
-MeF 2b/2c/wages/alpha-code elements + GeneralDependencyMedium detail statements
-(no declared Schedule A doc in 2025v6.2) · D_8825_001-005 seeded · UI address
-block / income 2a+2b / face-ordered expenses / "+ Add" category rows / Calculated
-totals rows (whole-dollar).*
+*Last updated: 2026-07-10, session 49 ("go" — autonomous continuation per the s48
+Ken directive). The **batch-2 QUICK SWEEP shipped: B2-1 · B2-6 · B2-13 · B2-14 ·
+B2-16 all closed in one commit** (`11d711a`). Highlights: B2-1 became the retro
+item-F provenance primitive (`fieldProvenanceClass` — GREEN typed / YELLOW
+system-supplied / neutral blank on every FFV input; the inconsistent, stale amber
+dot removed); B2-14's entry-path audit proved the entity Dispositions tab's
+"Form 4797" option was an ORPHANED path feeding nothing (entity 4797 rides only
+the depreciation worksheet) — tab is now Schedule D (Capital Gains) with a legacy
+warning + one-click convert; B2-6 also fixed the 1065 footer mislabeling (manual
+11/12/19/20 were in the computed footer, real totals 22/23 alphabetized into the
+list); B2-16 flipped letter.py to blank-means-e-file so the default holds on
+existing returns.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,28 +22,27 @@ totals rows (whole-dollar).*
   file number only (identities in `D:\tax-test-data\`).
 
 ## ▶ RESUME HERE
-**Ken directive (2026-07-10, s48 close): work AUTONOMOUSLY down this list —
-finish an item, close it properly (gates + planner updates + commit/push),
-then CONTINUE to the next unblocked item. Stop only for a Ken-gated decision
-or when context runs low (then do the full session-close protocol and stop).
-Ken is away from the computer.**
-1. **Ken ratifications pending (REVIEW_QUEUE s47):** the R007 AMT-matrix
-   correction · the 40% transitional-election mechanics (both unchanged from s47).
-2. **Batch 2 remaining** (`USABILITY_QUEUE.md`): quick sweep (1 · 6 · 13/14
-   renames · 16) · bigger singles (2 · 3 · 5 · 15) · B2-17 form units → Spine
-   (8283-entity/2553/2848/3115). The 8825 group (7/8/9) is DONE this session;
-   B2-7b PY column rides the B2-3 unit.
+**Ken directive (2026-07-10, s48; still standing): work AUTONOMOUSLY down this
+list — finish an item, close it properly, continue. Stop only for a Ken-gated
+decision or when context runs low.**
+1. **Batch-2 bigger singles** (`USABILITY_QUEUE.md`): **B2-2** form-status
+   indicators in the entity nav (port the 1040 used/error markers) · **B2-3**
+   manual-entry PY columns on I&D (Ken-ruled; B2-7b 8825 PY column rides it) ·
+   **B2-5** meals one-line reshape (Ken-ruled: one row + 100/80/50 mark, "+"
+   adds a tier; the s41 compute stands) · **B2-15** global density pass
+   (preview_resize first; Browser-pane viewport ~351px). B2-11 remainder rides
+   B2-15. Then B2-17 form units (8283-entity/2553/2848/3115) go on the Spine.
+2. **Ken ratifications pending (REVIEW_QUEUE s47):** R007 AMT-matrix correction ·
+   40% transitional-election mechanics. **+NEW s49 candidates:** the stale
+   is_overridden-on-blank flag class (DEFERRAL_AUDIT s49 item 1) · entity
+   is_4797 legacy-row diagnostic (item 2).
 3. **Full-suite straggler triage** (s45 diagnosis stands): s27 stale CENTS pins
-   dominant · mechanical rot (test_apr01_fixes `seeded` fixture; the
-   test_tts_forms manifest pin is FIXED — re-baselined 82 this session) ·
-   pipeline pins · ⚠ flow ×2 in-suite-only · **+NEW confirmed straggler:
-   test_tts_forms TestRenderK1 (Alice 60% share comes back 100%) — fails on
-   clean main, bisect-verified NOT from s48.** Rerun:
-   `pytest tests/ -q --reuse-db` (~36 min local PG).
+   dominant · test_apr01_fixes `seeded` fixture · pipeline pins · ⚠ flow ×2
+   in-suite-only · test_tts_forms TestRenderK1 (pre-s48, bisect-verified).
+   Rerun: `pytest tests/ -q --reuse-db` (~36 min local PG).
 4. **RS renumber unit #2: SCH_K_1120S** (fabricated 13f; missing 17c AE&P;
    wrong L18) → K1 → SCHL → 6198 → M3 line_map → 3800. Ledger:
-   `docs/rs_handoff/2026-07-09_early_era_face_audit.md`. (8825 ✅ s48 — found
-   OUTSIDE the audit's queue; treat every pre-s34 block as suspect.)
+   `docs/rs_handoff/2026-07-09_early_era_face_audit.md`.
 5. **RS FA-export reconciliation pass** (queued since s32).
 6. Ken-gated: **D1 typing-feel check on GA-600S** · e-services answers · item 10
    Lacerte reprint · PWA install check.
@@ -58,24 +55,20 @@ Ken is away from the computer.**
 6. PWA install check. 7. TaxWise forms-usage report.
 
 ## Active gates
-- **Flow-assertion gate 447** — green (FA008 healed honestly: the 20a sum now
-  inlines rents_received + other_rental_income; SCHE-02's pure runner guarded
-  via `_state.adding` on the new detail-rows property).
-- **MeF 1120-S suite green** incl. 3 new 8825 tests (Rev-12-2025 elements ·
-  Schedule A GeneralDependencyMedium content/link/position · live-XSD valid;
-  ⚠ XSD facet lesson: MediumExplanationType forbids newlines).
-- **8825 AcroForm/render suite green** (+f8825sa map coverage-both-ways pin +
-  the NEW line-1 column x-order pin — the wrong-column print-bug class guard).
-- S5+S6 scenario pair 8/8 (their extracts exercise the new read-model loop).
-- test_tts_forms manifest trip-wire re-baselined **82** (was stale at 80 vs 81).
-- **Client**: tsc 0 · vitest 278 (parity untouched — no formula-line changes).
-- **Live probes** (isolated firms, cascade-deleted 361 objs each): ORM — K2
-  12,800 exact · 3-page print (composed address, line 8 = 6,400 combined,
-  Schedule A page) · D_8825_002/005 fire. Browser — card paints (address block,
-  2b, wages, A-I select) · "+ Add" → POST 201 · category A13 + $1,500 →
-  Total Expenses $8,300 painted · server K2 15,700 round-trip.
+- **Flow-assertion gate 447 green** (s49 run: flow + print packages = 470 passed;
+  no compute changes this session — letter.py blank-defaults-e-file only).
+- **Client: tsc 0 · vitest 278** (parity untouched — no formula-line changes;
+  the hidden I&D rollups are display-only).
+- **Live probe (s49, isolated firm PROBE-B2SWEEP-UI, 685-obj cascade-deleted):**
+  nav labels painted (Schedule K/L/B · Schedule D (Capital Gains) · Like-Kind
+  Exchange) · I&D footer ties with hidden rollups (20=14,080 · 21=35,920; 1065
+  footer = 22/23 only) · provenance paint GREEN/YELLOW/neutral incl. the
+  blanked-stale-flag case · legacy-4797 convert round-trip · paper checkbox →
+  BOTH lines "Paper" in DB.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 - ⚠ RS renumber queue: SCH_K/K1/SCHL/6198/3800 still inherit fabrications.
+- ⚠ Browser-pane screenshots time out this machine/session (page healthy —
+  JS/read_page fine); probe proofs are DOM assertions.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
