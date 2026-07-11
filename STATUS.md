@@ -22,31 +22,38 @@ feel-check decides any further squeeze.*
 **Ken directive (2026-07-10, s48; still standing): work AUTONOMOUSLY down this
 list — finish an item, close it properly, continue. Stop only for a Ken-gated
 decision or when context runs low.**
-1. **Server fix queued (also a Cowork task chip): `missing_shareholders_check`
+1. **D2 · 1120-S client formula-mirror retirement — KEN-UNBLOCKED 2026-07-11**
+   ("feels fine"; the 1065 editor's always-server-compute precedent is the real
+   feel evidence). Delete FORMULAS_1120S from computeFields (GA-600S recipe,
+   s44 `D1`): 1120-S rides the `?fresh_return=1` payload; retire the parity
+   fixture gate (`computeFields.parity.test.ts` + fixture — its only job was
+   policing the mirror); computeFields becomes pass-through everywhere. Live
+   probe: type through I&D → downstream computed lines paint from the server.
+   Fresh full-context session — the mirror is ~249 tuples in FormEditor.tsx.
+2. **Server fix queued (also a Cowork task chip): `missing_shareholders_check`
    counts the Shareholder model on a 1065** — a 1065 WITH partners still fires
    the "No partners entered" ERROR (verified live s50). Branch on form_code →
    count Partner; add both-entity DB tests. **Batch 2 is otherwise COMPLETE**
    (B2-17 form units are the remaining promotion: 8283-entity/2553/2848/3115
    go on the Spine as form units).
-2. **Ken ratifications pending (REVIEW_QUEUE s47):** R007 AMT-matrix correction ·
+3. **Ken ratifications pending (REVIEW_QUEUE s47):** R007 AMT-matrix correction ·
    40% transitional-election mechanics. **+s49 candidates:** stale
    is_overridden-on-blank flag class · entity is_4797 legacy-row diagnostic.
-3. **Full-suite straggler triage** (s45 diagnosis stands): s27 stale CENTS pins ·
+4. **Full-suite straggler triage** (s45 diagnosis stands): s27 stale CENTS pins ·
    test_apr01_fixes `seeded` fixture · pipeline pins · flow ×2 in-suite-only ·
    TestRenderK1. Rerun: `pytest tests/ -q --reuse-db` (~36 min local PG).
-4. **RS renumber unit #2: SCH_K_1120S** → K1 → SCHL → 6198 → M3 line_map → 3800.
+5. **RS renumber unit #2: SCH_K_1120S** → K1 → SCHL → 6198 → M3 line_map → 3800.
    Ledger: `docs/rs_handoff/2026-07-09_early_era_face_audit.md`.
-5. **RS FA-export reconciliation pass** (queued since s32).
-6. Ken-gated: **D1 typing-feel check on GA-600S** · e-services answers · item 10
-   Lacerte reprint · PWA install check · **density feel-check (s52 trim + any
-   further depreciation-form squeeze)**.
+6. **RS FA-export reconciliation pass** (queued since s32).
+7. Ken-gated: e-services answers · item 10 Lacerte reprint · PWA install check ·
+   **density feel-check (s52 trim + any further depreciation-form squeeze)**.
+   *(D1 feel-check RESOLVED 2026-07-11 — see item 1.)*
 
 ## ▶ Waiting on Ken / external
 1. **R007 AMT-correction ratification + 40%-election ruling (s47).**
-2. **D1 typing-feel check** (gates the 1120-S client mirror deletion).
-3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
-4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
-6. PWA install check. 7. TaxWise forms-usage report.
+2. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
+3. IdenTrust cert (⚠ 30-day download clock). 4. File-1018 Lacerte reprint (item 10).
+5. PWA install check. 6. TaxWise forms-usage report.
 
 ## Active gates
 - **Flow-assertion gate 447 unchanged** (s51+s52 touched NO compute/render/
