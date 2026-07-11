@@ -22,6 +22,12 @@ feel-check decides any further squeeze.*
 **Ken directive (2026-07-10, s48; still standing): work AUTONOMOUSLY down this
 list — finish an item, close it properly, continue. Stop only for a Ken-gated
 decision or when context runs low.**
+**Ken directive addendum (2026-07-11, s52 close — Ken away from the computer
+today): keep going until context runs out. Finish a topic → move straight to
+the next. If a Ken decision is needed, log it to REVIEW_QUEUE with a
+recommendation and MOVE ON to the next item instead of stopping. Full gates +
+live probes on everything ("don't mess anything up"); run the MANDATORY
+session-close protocol before context exhausts — Ken can't /clear mid-day.**
 1. **D2 · 1120-S client formula-mirror retirement — KEN-UNBLOCKED 2026-07-11**
    ("feels fine"; the 1065 editor's always-server-compute precedent is the real
    feel evidence). Delete FORMULAS_1120S from computeFields (GA-600S recipe,
