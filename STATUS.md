@@ -24,6 +24,11 @@ totals rows (whole-dollar).*
   file number only (identities in `D:\tax-test-data\`).
 
 ## ▶ RESUME HERE
+**Ken directive (2026-07-10, s48 close): work AUTONOMOUSLY down this list —
+finish an item, close it properly (gates + planner updates + commit/push),
+then CONTINUE to the next unblocked item. Stop only for a Ken-gated decision
+or when context runs low (then do the full session-close protocol and stop).
+Ken is away from the computer.**
 1. **Ken ratifications pending (REVIEW_QUEUE s47):** the R007 AMT-matrix
    correction · the 40% transitional-election mechanics (both unchanged from s47).
 2. **Batch 2 remaining** (`USABILITY_QUEUE.md`): quick sweep (1 · 6 · 13/14
