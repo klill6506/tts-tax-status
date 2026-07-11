@@ -19,7 +19,37 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s49 shipped the batch-2 QUICK SWEEP (B2-1 · B2-6 · B2-13 · B2-14 · B2-16, one commit tts `11d711a`, live-probe-verified). ▶ NEXT: batch-2 bigger singles (B2-2 nav status markers · B2-3 manual PY columns [+B2-7b rides it] · B2-5 meals one-line reshape · B2-15 density pass [+B2-11 remainder]) → B2-17 form units to the Spine → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s50 shipped TWO batch-2 bigger singles: B2-2 entity nav status markers (tts `f7bb426`) + B2-5 meals one-line reshape (tts `b42e49f`), both live-probed on 1120-S AND 1065. ▶ NEXT: B2-3 manual PY columns on I&D [+B2-7b rides it; migration-bearing — take it in a fresh full-context session] → B2-15 density pass [+B2-11 remainder] → B2-17 form units to the Spine → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10). NEW s50 server-fix queue item: `missing_shareholders_check` counts the wrong model on a 1065 (fires WITH partners entered).
+
+**Session 50 wrap (2026-07-10; "go" — autonomous, the s48 standing directive):**
+- [x] `[APP]` **B2-2 · Entity nav form-status markers** — 2026-07-10 `f7bb426`.
+  The entity sidebars already called the 1040's `tabStatus`, but it was hardwired
+  to 1040 tab ids/rule codes — entity rows never marked. NEW `NavScope`
+  ("1040"/"1120S"/"1065") in IndividualNav.tsx: per-form_code rule→tab maps (the
+  s49 shared-list lesson) — legacy BUILTIN codes (MATH_*/MISSING_*/INT_*/F4797_*/
+  OWNER_*…) + entity D_* families; owner checks split shareholders vs partners;
+  entity-4797 findings → Depreciation (B2-14 semantics); 1065 D_K1_→allocations ·
+  D_SE_→partners · D_SCHK_/D_L_/D_M*_→their tabs; TB_* deliberately unmapped.
+  Entity data predicates + FFV-section fallback over the editors' own tab defs.
+  Entity Diagnostics findings became clickable jump-to-tab links (visible-tab
+  gated; were 1040-only). Warnings never downgrade a ✓ (probe: a D_8825 warning
+  left Rental ✓). vitest 305 (+27) · tsc 0 · live probes both entities
+  (isolated firm, 700-obj cascade delete). ⚠ found in passing: server
+  `missing_shareholders_check` counts Shareholder rows on a 1065 → the "No
+  partners entered" ERROR fires WITH partners present (Cowork task chip
+  spawned; queued in tax-app STATUS item 3).
+- [x] `[APP]` **B2-5 · Meals one-line reshape (per the Ken ruling)** — 2026-07-10
+  `b42e49f`. Six always-on s41 worksheet rows → ONE atomic "Meals" block at the
+  same alphabetical list position: a row per tier actually USED (default one 50%
+  row), amount = FieldInput (provenance colors) + compact tier select (100 / 80
+  DOT / 50 / 0 Ent.; seeded labels ride as tooltips), "+ Add tier", × clears+
+  removes, computed DED/NONDED collapsed to a one-line muted hint. A tier switch
+  MOVES the amount between the four FFV lines (⚠ first cut passed line NUMBERS
+  to the onChange that keys by FormLine id — silent no-op writes; caught live,
+  fixed, DB-tied). s41 compute/spec/print/MeF and client FORMULAS/parity
+  untouched. Live probe: 10,000@50% + 2,000@100% → hint 7,000/5,000; switch
+  100%→80% DOT → 6,600/5,400, DB D_MEALS_DOT=2000/D_MEALS_100='' and line 20
+  ties at 6,600; 1065 renders the same block. tsc 0 · vitest 305.
 
 **Session 49 wrap (2026-07-10; "go" — autonomous, the s48 standing directive):**
 - [x] `[APP]` **Batch-2 quick sweep: B2-1/6/13/14/16** — 2026-07-10 `11d711a`.
