@@ -19,7 +19,34 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s50 shipped TWO batch-2 bigger singles: B2-2 entity nav status markers (tts `f7bb426`) + B2-5 meals one-line reshape (tts `b42e49f`), both live-probed on 1120-S AND 1065. ▶ NEXT: B2-3 manual PY columns on I&D [+B2-7b rides it; migration-bearing — take it in a fresh full-context session] → B2-15 density pass [+B2-11 remainder] → B2-17 form units to the Spine → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10). NEW s50 server-fix queue item: `missing_shareholders_check` counts the wrong model on a 1065 (fires WITH partners entered).
+## ▶ NOW WORKING ON — **s51 shipped B2-3 manual PY columns on I&D + B2-7b 8825 PY column (tts `baed26c`, mig 0186), live-probed on 1120-S AND 1065. ▶ NEXT: B2-15 density pass [+B2-11 remainder] → B2-17 form units to the Spine → `missing_shareholders_check` 1065 fix (s50 queue item) → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10).
+
+**Session 51 wrap (2026-07-11; "go" — autonomous, the s48 standing directive):**
+- [x] `[APP]` **B2-3 · Manual PY columns on I&D + B2-7b · 8825 PY column** —
+  2026-07-11 `baed26c` (mig 0186). Editable "PY 2024" comparison column on every
+  entity I&D row (income · COGS · named deductions · meals tiers · free-form ·
+  summary) + per-property on the 8825 cards (income + 13 expense lines + legacy
+  unclassified); both entities via the shared components. Store = NEW
+  `TaxReturn.py_manual_values` (keys `L:<line>` / `R:<propId>:<field>`) —
+  deliberately NOT PriorYearReturn: its row-EXISTENCE drives compute L3a
+  defaulting (`_default_l3a_from_cogs_db`) and the four create-time
+  BOY/M-2/shareholder/officer populates, and the importer owns its
+  (entity,year,form_code) row. Writes = row-locked single-key
+  `/py-manual/` merge PATCH (per-cell autosaves commute — the s35 race shape
+  dead by construction); whole dollars server-side (G-b); no recompute
+  (reference-only data). Display: manual GREEN shadows imported YELLOW;
+  clearing a key reveals the import — the Ken ruling's "importer/proforma
+  auto-fill later, keyed stays overridable" falls out of precedence, no
+  future merge migration. PY Compare shows the merged overlay and its edits
+  now write the manual store; the old `prior-year/update-line` action
+  RETIRED (it mutated importer-owned line_values and 404'd with no import —
+  the common case). Flow 447 not triggered (no compute/render change).
+  tsc 0 · vitest 305 · NEW test_py_manual 7/7 + adjacent files green · live
+  probes both entities (isolated firm, 685-obj cascade delete; the PY-Compare
+  edit left importer line_values byte-identical). Boundaries →
+  DEFERRAL_AUDIT s51 (no adopt/reconcile UI yet · interest-trend ignores the
+  manual store · Sch L keeps its read-only display · 8825 Sch A detail rows
+  excluded — no cross-year row identity).
 
 **Session 50 wrap (2026-07-10; "go" — autonomous, the s48 standing directive):**
 - [x] `[APP]` **B2-2 · Entity nav form-status markers** — 2026-07-10 `f7bb426`.
