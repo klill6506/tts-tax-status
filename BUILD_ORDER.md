@@ -19,7 +19,21 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s51 shipped B2-3 manual PY columns on I&D + B2-7b 8825 PY column (tts `baed26c`, mig 0186), live-probed on 1120-S AND 1065. ▶ NEXT: B2-15 density pass [+B2-11 remainder] → B2-17 form units to the Spine → `missing_shareholders_check` 1065 fix (s50 queue item) → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s52 shipped B2-15 global density pass + B2-11 remainder (tts `8c8409d`; same day as s51's B2-3/B2-7b `baed26c`) — BATCH 2 COMPLETE except the B2-17 form-unit promotions. ▶ NEXT: `missing_shareholders_check` 1065 fix (s50 queue item) → B2-17 form units to the Spine (8283-entity/2553/2848/3115) → stale-pin triage → SCH_K renumber** (Ken-gated: R007 ratification · D1 feel-check · density feel-check · e-services · item 10).
+
+**Session 52 wrap (2026-07-11; "go" — autonomous, the s48 standing directive):**
+- [x] `[APP]` **B2-15 · Global density pass + B2-11 remainder** — 2026-07-11
+  `8c8409d`. Vertical: the shared FFV inputs (Currency/Text/Integer/Percentage/
+  select/PYCell) py-1→py-0.5 (30→26px) + FieldRow rows py-1.5→py-1 → seeded
+  rows 42→35px (~17% denser), both entities AND the 1040 sections (shared
+  components move together). Width offenders found by DOM survey (⚠ ONLY
+  after preview_resize 1280 — the pane's native ~351px viewport hid every
+  one): Admin cards max-w-3xl (invoice descriptions 839→320 · memo 887→448 ·
+  quarterly DATE boxes 767→128) · 1065 partner classification note 746→576.
+  Owner grids deliberately left; depreciation edit form rides the input trim,
+  further squeeze = Ken's B2-11 feel-check. Autosave+compute round-trip
+  verified post-trim (K2 → K_ANALYSIS flowed). tsc 0 · vitest 305 · probes
+  cascade-deleted (691 objs).
 
 **Session 51 wrap (2026-07-11; "go" — autonomous, the s48 standing directive):**
 - [x] `[APP]` **B2-3 · Manual PY columns on I&D + B2-7b · 8825 PY column** —
