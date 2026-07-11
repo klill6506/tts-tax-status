@@ -19,7 +19,30 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s53 shipped THREE units (2026-07-11): D2 · 1120-S formula-mirror retirement COMPLETE (`7913796`, −2,545 lines — retrospective item D CLOSED; every form paints from ?fresh_return=1; parity gate retired) · the `missing_shareholders_check` 1065 fix + SSN-check sibling (`2e33d5f`) · straggler openers (apr01 fixture rot `2cda054` + TestRenderK1 R-K1-ROUND pin `cc849c3`) · B2-17 promoted to Spine S-20a–d → BATCH 2 FULLY DISPOSITIONED. ▶ NEXT: full-suite cents-pin triage (rerun + per-file write-path analysis; STATUS item 1) → SCH_K renumber (fresh session) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s54 (2026-07-11): FULL-SUITE STRAGGLER TRIAGE COMPLETE — the whole s53 inventory (168 F + 167 E) → 0 across ten commits (`169401d`…`ca0a710`, ~45 test files); TWO LIVE RATE-LINE PRINT BUGS found+fixed in passing (Form 8880 L9 applicable decimal stored "1"/"0"; SC Sch NR L45 proration 0.60 stored "1") + the lacerte-importer FormDefinition chain bug; flow gate 447 green twice; mid-session rerun 84F/5,298P/0E (all 84 subsequently fixed per-file); confirmation run kicked at close. One stale RS scenario → REVIEW_QUEUE (RET-G5 exception-13). ▶ NEXT: read the s54 confirmation-run result (STATUS item 1) → SCH_K renumber (fresh RS session; fold in the RET-G5 amendment) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+
+**Session 54 wrap (2026-07-11; "go" — autonomous, the s48/s52 directives):**
+- [x] `[APP]` **Full-suite straggler triage (STATUS item 1) COMPLETE** — 2026-07-11
+  `169401d`…`ca0a710` (ten commits, ~45 test files). The s53 packet-sequence
+  "possibly-real print bug" = a stale test (compute-owned Sch 2/2 AMT + Sch 3/1
+  FTC seeded without override — NOT a print bug; real returns unaffected).
+  Dominant classes: whole-dollar pins (state PULL lines byte-preserve — classify
+  per line) · compute-ownership seeding · CRUD mutation-recompute semantics ·
+  registry/seed trip-wires lagging the s41-s48 units · sibling-spec drift
+  (retirement spec 18→23; LSE/MED routed to their own homes) · sidebar packet
+  tiers · R-SE-ROUND per-line ±$1 · mock rot · recompute-memo pass aliasing.
+  Full taxonomy: auto-memory `s54-fullsuite-triage-complete` + STATUS_ARCHIVE s54.
+- [x] `[APP]` **TWO live rate-line print bugs fixed (flow 447 green ×2)** —
+  2026-07-11 `ca0a710`. Form 8880 L9: the applicable decimal (.50/.20/.10)
+  through `_write_row`'s whole-dollar quantize stored/printed "1"/"0" (credit
+  math unaffected — the face lied). SC Sch NR L45: `_format`'s PERCENTAGE
+  branch was byte-identical to CURRENCY → proration 0.60 printed "1". NEW
+  watch-class: DECIMAL/RATIO face lines through whole-dollar writers. Plus
+  `import_lacerte_clients` now prefers the `--tax-year` FormDefinition
+  (latest-first chained a 2025 TaxYear to a future-year definition).
+- [x] `[docs]` REVIEW_QUEUE s54: the stale retirement-spec RET-G5 exception-13
+  scenario (13 VALID since the 5329 full unit; engine right; test routed
+  around it) → RS amendment folded into the SCH_K renumber trip.
 
 **Session 53 wrap (2026-07-11; "go" — autonomous, the s48/s52 directives):**
 - [x] `[APP]` **D2 · 1120-S client formula-mirror retirement** — 2026-07-11
