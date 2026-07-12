@@ -1,5 +1,29 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-11 session 58 — SCHEDULE L (1120-S) 2025-FACE RENUMBER (audit unit #4),
+> spec-first (RS `bfcb95a`; tts pins only — no app fix needed).** The RS 1120S_SCHL
+> block ran TWO fabricated numbering systems (facts: total assets at l14, liabilities
+> 15-21, l6="other investments"/l7="buildings" vs the face's other-current-assets/
+> loans-to-shareholders; line map: a phantom "L22 Total liabilities" shifting equity
+> +1 into an invented L28) and its source "excerpts" were fabricated paraphrases
+> carrying the same wrong numbering. Rebuilt verbatim vs f1120s.pdf 2025 p.4 +
+> i1120s p.49: 65 facts (31 face rows × BOY/EOY + 3 cross-checks) / 8 rules (R001
+> total-assets sum now includes lines 4/6/7/8 + the 2/10/11/13 contra pairs; the
+> fabricated R002 total-liabilities rule DELETED; R004 = L15==L27; R007 tied to the
+> Sch B Q11 verbatim gate; NEW R009 = L15 col (d) → page 1 item F, p.49 verbatim;
+> R005/R006/R008 substance kept) / 31 face lines / 7 diagnostics (NEW D007 item-F
+> mismatch) / 4 scenarios (NEW contra-pair-netting pin); fabricated excerpts
+> replaced with real p.49 text (labels kept — no orphans); stale self-heal deleted
+> 26 orphan facts + R002 + L11/L28 on prod. **tts verified FACE-CORRECT end-to-end**
+> (seed keys L1a-L27d with a/b/d/e columns; compute L15a/d + L27a/d match R001/R003
+> exactly; L24d ← M-2 (R005); L3a BOY populate + 1125-A default (R006/R008); the
+> $250K check reads L15d (R007); MeF SCHL_LINE_ORDER carries the full face incl.
+> derived contra nets; item F ← L15d in BOTH print header and MeF TotalAssetsAmt
+> (R009)) — the drift was RS-only; no app change. NEW `TestScheduleLRowPins` (2
+> y-band pins: asset + liability/equity zones incl. the equity-block placement the
+> spec had shifted). Gates: pins 18 + flow 447 (465 together) · test_schl_boy_
+> inventory 4/4. Export verified on deployed RS; tts mirror refreshed.
+
 > **2026-07-11 session 57 — SCHEDULE K-1 (1120-S) 2025-FACE RENUMBER (audit unit #3),
 > spec-first (RS `a0e908c` / tts `69e7e08`).** RS K1_1120S rebuilt verbatim vs
 > f1120ssk.pdf 2025 + the i1120s 2025 pp.30-48 code tables: 44 facts (Part I item D +

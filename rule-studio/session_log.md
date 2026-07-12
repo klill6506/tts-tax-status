@@ -1,4 +1,58 @@
 ﻿# Rule Studio â€” Session Log
+## 2026-07-11 — 1120S_SCHL renumbered to the 2025 face (audit unit #4) — tts verified face-correct, RS-only drift (tts s58)
+- **1120S_SCHL rebuilt verbatim** (`bfcb95a`) vs f1120s.pdf (2025) p.4 + i1120s p.49. The
+  old block ran TWO fabricated numbering systems at once: facts had total assets at l14 /
+  liabilities 15-21 / l6 "other investments" / l7 "buildings" (face: 6 = other current
+  assets, 7 = loans to shareholders), while the line map invented an "L22 Total
+  liabilities" (no such face line) shifting equity +1 into a phantom L28. Now: 65 facts
+  (31 face rows × BOY/EOY + 3 cross-checks) · 8 rules (R001 total-assets sum gains lines
+  4/6/7/8 + the 2/10/11/13 contra pairs; **fabricated R002 total-liabilities rule
+  DELETED — first use of a stale-RULE self-heal**; R004 = L15==L27; R007 tied to the
+  Sch B Q11 gate verbatim; **NEW R009 = L15 col (d) → page 1 item F**, p.49 verbatim;
+  R005/R006/R008 substance kept per the audit) · 31 face lines · 7 diagnostics (NEW D007
+  item-F mismatch) · 4 scenarios (NEW contra-pair netting pin).
+- **⚠ Fabricated-excerpt class:** the block's two AuthorityExcerpt rows were paraphrases
+  carrying the same wrong numbering — the drift had manufactured its own "authority."
+  Replaced with real p.49 verbatim text, KEEPING the excerpt labels (update_or_create
+  keys on label; a label change would orphan the old row — the rename-orphan class).
+  Audit rule going forward: verify a block's excerpts against the PDF too.
+- Prod stale-deletes fired exactly: 26 orphan facts + R002 + lines L11/L28. SQLite
+  validate first; idempotent rerun clean; deployed export verified; tts mirror refreshed.
+- **tts verified FACE-CORRECT end-to-end** (seeds L1a-L27d · compute L15/L27 sums match
+  R001/R003 exactly · L24d←M-2 · $250K check reads L15d · MeF SCHL_LINE_ORDER incl.
+  derived contra nets · item F ← L15d in both print and MeF) — no app change; the zone
+  y-band-pinned (tts TestScheduleLRowPins).
+- Renumber queue remaining: **PAGE1+M1+M2 (unit #5** — pre-7205 numbering + the
+  fabricated M-1 excerpt; the tts FFV re-key + data migration + the seven s56 deferrals
+  ride it**)** → 6198 → M3 line_map → 3800.
+
+## 2026-07-11 — K1_1120S renumbered to the 2025 face (audit unit #3) — the tts "codes mirror the tables" belief FALSIFIED (tts s57)
+- **K1_1120S rebuilt verbatim** (`a0e908c`) vs f1120ssk.pdf (2025) + i1120s (2025)
+  pp.30-48: full boxes 1-19 line map (14 = Schedule K-3 checkbox, 15 = AMT codes A-F,
+  18/19 = multi-activity checkboxes), Part I item D + Part II items E-I (F2 responsible
+  party / F3 entity type / item I loans), and the REAL 2025 code tables — the old block's
+  box 12/13 "code letter" claims mirrored the Schedule K sub-line letters (the pre-2023
+  alphabet). NEW rules R012 (box 12: cash A/B · noncash C-G · investment interest H ·
+  §59(e)(2) J · other ZZ), R013 (box 13: **13a→C, 13b→D, 13c→E, 13d→F, 13e→G, 13f→I;
+  13g own codes A/B/H/J-BC incl. 8941=BA**), R014 (K-3 checkbox), R015 (AMT A-F), R016
+  (box 16 A/B/C/F pro rata; D/E per-recipient), R021 (box 17 A/B + the C-BA/ZZ 17d list);
+  R017 gains the V*/STMT mechanics; R-K1-ROUND's "box 17 AC health insurance"
+  parenthetical corrected. Diagnostics D004 (pre-2023-alphabet error) / D005 (health
+  insurance ≠ code AC — i1120s p.17: W-2 box 14 is the channel; AC = §448(c) gross
+  receipts) / D006 (charitable code-A 60%-cash assumption). 7 verbatim i1120s excerpts
+  on IRS_2025_1120S_INSTR. In-loader fact/line/scenario self-heal guards (the s56
+  rename-orphan class, now standard). 4 new code-pin scenarios.
+- Seeded (44 facts / 17 rules / 33 lines / 6 diag / 7 scenarios; SQLite validate +
+  Supabase, idempotent rerun clean) + export verified (lookup/K1_1120S/export/
+  content-checked) + tts mirror refreshed.
+- **The audit's verify arm found FOUR live tts print/MeF code zones** (tts `69e7e08`):
+  box 13 emitted the pre-2023 letters (LIH printed "A" = zero-emission nuclear on the
+  2025 table), K12c §59(e)(2) "I" (= royalty deductions; face J), K12d "L" (= portfolio-
+  other; face ZZ), health insurance "AC"; plus K13e never allocated (the MeF builder
+  referenced a box_shares key the issuer never produced). All re-lettered print+MeF,
+  pinned. Details: tts STATUS/form_coverage_tracker s57.
+- Renumber queue remaining: **SCHL (unit #4)** → PAGE1+M1+M2 → 6198 → M3 line_map → 3800.
+
 ## 2026-07-11 — SCH_K_1120S renumbered to the 2025 face (audit unit #2, WO-25) + RET-G5 orphan fix (tts s56)
 - **SCH_K_1120S rebuilt verbatim** vs f1120s.pdf (2025) pp.3-4 + i1120s pp.40/49: the
   fabricated 13f "Foreign tax credit" → **Biofuel producer credit** (foreign taxes = 16f);
