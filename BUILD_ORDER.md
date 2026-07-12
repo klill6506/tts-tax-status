@@ -19,7 +19,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s54 (2026-07-11): FULL-SUITE STRAGGLER TRIAGE COMPLETE — the whole s53 inventory (168 F + 167 E) → 0 across ten commits (`169401d`…`ca0a710`, ~45 test files); TWO LIVE RATE-LINE PRINT BUGS found+fixed in passing (Form 8880 L9 applicable decimal stored "1"/"0"; SC Sch NR L45 proration 0.60 stored "1") + the lacerte-importer FormDefinition chain bug; flow gate 447 green twice; mid-session rerun 84F/5,298P/0E (all 84 subsequently fixed per-file); confirmation run kicked at close. One stale RS scenario → REVIEW_QUEUE (RET-G5 exception-13). ▶ NEXT: read the s54 confirmation-run result (STATUS item 1) → SCH_K renumber (fresh RS session; fold in the RET-G5 amendment) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s55 (2026-07-11): IN-APP BUG REPORTER SHIPPED (S-12 season-infrastructure item; Ken-directed break from the order) — "Report a Bug" button + auto-context capture, `bug_reports` Supabase table (RLS default-deny), firm-scoped API, `manage.py bugs` + `/bugs` session-start triage command; screenshots DEFERRED (screenshot_ref null); 10 server tests + probe-verified live. Guardrails: reports are CANDIDATES (Ken triages); computation-touching fixes re-run regression before merge. (s54 confirmation run came back GREEN `cd9b186` — 5,382 P / 21 skip / 0 F / 0 E; the suite is a usable regression gate.) ▶ NEXT: SCH_K renumber (fresh RS session; fold in the RET-G5 amendment) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
 
 **Session 54 wrap (2026-07-11; "go" — autonomous, the s48/s52 directives):**
 - [x] `[APP]` **Full-suite straggler triage (STATUS item 1) COMPLETE** — 2026-07-11
@@ -891,6 +891,13 @@ turn-on waits on the Shelf (DOR approvals).
 **S-12 · [APP]⏳ ∥ · Season infrastructure** (not spec-gated; roll whenever CC has a lane).
 - [ ] diagnostics/review layer + workflow states   - [ ] printing at volume
 - [ ] multi-preparer concurrency   - [ ] invoice/client letter for 1040 packets
+- [x] in-app bug reporter (WORK_ORDER_bug_reporting; Ken-directed off-order 2026-07-11) — 2026-07-11 `40a50fd`:
+  "Report a Bug" header button + Help menu item, auto-context capture (route/form/section/return-id/
+  versions/recent-errors ring buffer), `bug_reports` Supabase table (RLS default-deny, migs bugs
+  0001/0002), firm-scoped `/api/v1/bug-reports/` (no destroy — candidates keep history), `manage.py bugs`
+  triage command + `/bugs` session-start slash command. Screenshots DEFERRED (screenshot_ref null).
+  Guardrails encoded in /bugs: reports = candidates (Ken triages); computation-touching fixes re-run
+  regression before merge. 10 server tests + probe-verified live (201 → row → triage → close).
 
 **S-13 · [RS]✅→[APP]⬜ · 1120 C-corp module (WO-11), greenfield RS-first. RS authoring COMPLETE 2026-07-05
 `9a41581` (+ `bf58d48` GA600 jurisdiction fix). Gate-1 D-13.** The first C-corporation entity type. 3 forms
