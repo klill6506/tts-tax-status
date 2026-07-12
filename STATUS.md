@@ -1,16 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-11, session 58 ("go" — autonomous). **1120S_SCHL renumber
-unit #4 COMPLETE (RS spec-first; tts verified face-correct — pins only).** RS: the
-SCHL block's TWO fabricated numbering systems replaced with the 2025 face verbatim
-(assets 1-15 w/ contra pairs · liabilities 16-21, NO subtotal line · equity 22-26 ·
-total 27); fabricated R002 total-liabilities rule deleted; NEW R009 L15(d) → page-1
-item F (i1120s p.49 verbatim); the fabricated source "excerpts" replaced with real
-p.49 text; prod stale-deletes fired (26 orphan facts + R002 + L11/L28); export
-verified + tts mirror refreshed (RS `bfcb95a`). tts: seeds/compute/print/MeF all
-verified face-correct (item F ← L15d both sides) — the drift was RS-ONLY, no app
-fix; NEW `TestScheduleLRowPins` y-band pins lock the zone. `/bugs` sweep at boot:
-no open reports.*
+*Last updated: 2026-07-12, session 59 ("go" — autonomous). **PAGE1+M1+M2 renumber
+unit #5 — RS LEG COMPLETE (RS `bb42381`); the tts leg is NEXT.** RS: 1120S_PAGE1
+rebuilt to the 2025 face (line 19 = Form 7205 deduction — the row that shifted
+19/20/21 → 20/21/22 — plus the full Tax and Payments block 23a-28e, previously
+absent); 1120S_M1 rebuilt from a FABRICATED layout (its "3a guaranteed payments
+§707(c)" is a 1065 line — real face: 3a depreciation / 3b travel & entertainment,
+4 = 1+2+3, 7 = 5+6, line 8 ties SCHEDULE K LINE 18); 1120S_M2 rows 2/4 → page-1
+line 22, PTEP (col b) + AE&P (col c) added, and **R002's AAA distribution cap
+corrected to the §1368(e)(1)(C) without-net-negative-adjustment base** (published
+i1120s pp.50-51 example + divergence pin scenarios; **Ken ratification queued,
+REVIEW_QUEUE s59**). Fabricated/composite excerpts replaced verbatim (f1120s.pdf +
+i1120s 2025, pymupdf); in-loader stale self-heal (facts/rules/lines/diags/
+scenarios/excerpts); SQLite harness 319 checks green (twice-run self-heal proof);
+prod seeded + verified; deployed exports verified; tts mirrors refreshed
+(1120s_page1/m1/m2_spec.json). tts side untouched — flow 447 + spec-mirror 45 +
+face pins 18 all green on the refreshed mirrors. `/bugs` at boot: no open reports.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,42 +29,53 @@ no open reports.*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **RS renumber unit #5: 1120S_PAGE1 + M1 + M2 blocks** (the s56 queue insert) —
-   `load_1120s_full` runs pre-Form-7205 page-1 numbering ("Line 21 = ordinary
-   business income"; 2025 face: 19 = 7205 deduction, 20 other, 21 total, 22 OBI,
-   tax 23a-c, payments 24a+) + a fabricated M-1 excerpt line ("3a guaranteed
-   payments" is a 1065 line; the 1120-S 3a is depreciation). **The tts side of
-   this unit = the page-1/K FFV re-key + data migration + the seven s56 deferrals**
-   (DEFERRAL_AUDIT s56 block: 7205 input row · 24d elective payment · 28b refunded
-   FFV · 12a/12b charitable split · K16e/16f inputs + K18 16f term · K14a/b K-2/K-3
-   row conversion · 17c → M-2 col (c)/1099-DIV wiring).
+2. **tts leg of renumber unit #5: the page-1/K FFV semantic re-key + data
+   migration + the seven s56 deferrals.** The RS spec (mirrors refreshed s59) is
+   the target. Current internal FFV keys in `apps/returns/compute.py`
+   FORMULA_REGISTRY["1120-S"]: `"19"` = other-deductions sum → face **20**;
+   `"20"` = total deductions (sums 7-19) → face **21** (and gains the NEW 7205
+   line-19 input term); `"21"` = OBI → face **22** (K1 reads `_d(v,"21")` —
+   re-point); `"22a/22b/22c"` → **23a/23b/23c**; `"23a/23b/23c/23d"` →
+   **24a/24b/24c/24z** (+ NEW 24d elective payment input); `"25"` owed → **26**
+   (formula must also add the line-25 penalty per the face); `"26"` overpayment
+   → **27**; `"27"` credited (see `_set_field_value(tax_return, "27", ...)`
+   estimated-payments sites — check 1040 collision scoping) → **28a** + NEW
+   **28b refunded** FFV. Chain: FormLine seed re-key + FFV **data migration**
+   for existing returns + compute re-key + the s56 print re-route shim in
+   `field_maps/f1120s.py` REMOVED (map new keys directly) + MeF LINE_ORDER
+   re-key + pins updated. Then the s56 deferral tail (DEFERRAL_AUDIT s56: 7205
+   input row · 24d input · 28b · 12a/12b charitable split · K16e/16f + K18 16f
+   term · K14a/b K-2/K-3 conversion · 17c → M-2 col (c)/1099-DIV) and the s59
+   additions (M-2 NNA cap in compute — pending Ken ratification; 7205/4255
+   units stay deferred).
 3. **Then: 6198 → M3 line_map (needs the face template download) → 3800** (rides
    the 3800/GBC entity unit).
 4. **RS FA-export reconciliation pass** (queued since s32).
 5. **S-20 B2-17 form units**: 8283-entity → 2553 → 2848 → 3115 app build.
-6. **Ken ratifications pending (REVIEW_QUEUE):** R007 AMT-matrix · 40% transitional
-   election · s49 candidates · s53 partner-percentage diagnostic · s57 K-1
-   health-insurance ZZ presentation.
+6. **Ken ratifications pending (REVIEW_QUEUE):** NEW s59 M-2 NNA distribution cap ·
+   R007 AMT-matrix · 40% transitional election · s49 candidates · s53
+   partner-percentage diagnostic · s57 K-1 health-insurance ZZ presentation.
 
 ## ▶ Waiting on Ken / external
 1. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
-2. R007 AMT-correction ratification + 40%-election ruling (s47).
+2. R007 AMT-correction ratification + 40%-election ruling (s47) + M-2 NNA cap (s59).
 3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
 4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
 
 ## Active gates
-- **Flow-assertion gate GREEN s58** (447; ran with the 18 renumber pins = 465).
-- **Affected suites GREEN s58**: face-renumber pins 18 (incl. NEW
-  `TestScheduleLRowPins`) · test_schl_boy_inventory 4/4. s57 suites unchanged.
-  Last full-suite GREEN = s54 `cd9b186`.
+- **Flow-assertion gate GREEN s59** (447). Spec-mirror suite 45 · face pins 18 —
+  all green against the refreshed s59 mirrors. No tts code changed this session.
+- Last full-suite GREEN = s54 `cd9b186`.
 - ⚠ `test_k1_import_stage3.py` standalone-run fixture errors are PRE-EXISTING
   (s57-verified via stash; green in-suite — the FormDefinition-preseeded class).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
-- ⚠ RS renumber queue remaining: **PAGE1+M1+M2 → 6198 → M3 line_map → 3800.**
-- ⚠ Prod seeders run s58: RS `load_1120s_complete` (SCHL rebuild; SQLite validate
-  first, idempotent rerun verified; stale-deletes logged above; deployed export
-  verified). s57: RS `load_1120s_specs` (K1 rebuild).
+- ⚠ RS renumber queue remaining: **unit #5 tts leg → 6198 → M3 line_map → 3800.**
+- ⚠ Prod seeders run s59: RS `load_1120s_full` (PAGE1+M1+M2 rebuild; SQLite
+  harness 319-checks first; idempotent rerun verified clean; prod state
+  verified: PAGE1 40 lines/47 facts/15 rules/12 scenarios · M-1 12 lines w/
+  guaranteed-payments fact+R006+D003 gone · M-2 21 facts w/ PTEP+AE&P; deployed
+  exports verified).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.

@@ -1,5 +1,28 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 59 — 1120-S PAGE 1 + M-1 + M-2 2025-FACE RENUMBER (audit unit
+> #5), RS LEG ONLY (RS `bb42381`; tts mirrors refreshed — NO tts code; the tts FFV
+> re-key leg is the next unit).** PAGE1: rebuilt verbatim vs f1120s.pdf 2025 p.1 —
+> NEW line 19 = Form 7205 §179D deduction (the insertion that shifted the old
+> 19/20/21 to 20/21/22) + the Tax and Payments block 23a-28e the spec NEVER carried
+> (23a ENPI/LIFO · 23b Sch D BIG · 23c sum+4255 · 24a-d/z payments incl. 3800 EPE ·
+> 25 penalty/2220 · 26 owed · 27 overpaid · 28a/28b split + DD 28c/d/e); 47 facts /
+> 15 rules / 40 lines / 6 diagnostics / 12 scenarios. M-1: the old block was a
+> WHOLE-FORM FABRICATION — its "3a guaranteed payments §707(c)" is a 1065 M-1 line;
+> real 2025 face: 3a Depreciation / 3b Travel & entertainment itemize line 3,
+> 4 = 1+2+3, 5/5a, 6/6a, 7 = 5+6, and line 8 = "Income (loss) (Schedule K, line 18)"
+> — never page-1 OBI; guaranteed-payments fact/rule/diagnostic + line 5b deleted on
+> prod; R007 applicability (B-Q11 skip / $10M M-3 / 2025 partial option, p.49
+> verbatim) + R008 3b composition added. M-2: rows 2/4 → page-1 LINE 22; PTEP (col b)
+> + AE&P (col c) columns added (§1375(d) / §1371(c),(d)(3); AE&P dividends = the
+> K17c 1099-DIV tie); **R002 AAA distribution cap corrected to the §1368(e)(1)(C)
+> without-net-negative-adjustment base** — published i1120s pp.50-51 worksheet
+> example + a divergence pin are scenarios (Ken ratification → REVIEW_QUEUE s59).
+> 8 fabricated/composite excerpts deleted, 19 verbatim excerpts added (pymupdf).
+> SQLite harness 319/0 w/ twice-run self-heal proof; prod seeded + ORM-verified;
+> deployed exports verified; tts mirrors (1120s_page1/m1/m2_spec.json) refreshed.
+> tts gates on the new mirrors: flow 447 · test_1120s_spec 45 · face pins 18 — green.
+
 > **2026-07-11 session 58 — SCHEDULE L (1120-S) 2025-FACE RENUMBER (audit unit #4),
 > spec-first (RS `bfcb95a`; tts pins only — no app fix needed).** The RS 1120S_SCHL
 > block ran TWO fabricated numbering systems (facts: total assets at l14, liabilities
