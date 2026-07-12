@@ -1,5 +1,45 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 63 — SCH_K INPUT SUB-UNIT (the s56 tail items 4-7) —
+> COMPLETE (mig 0188).** The 1120-S Schedule K line-12 family re-keyed to the 2025
+> face IN PLACE (K12d→K12e, K12c→K12d, K12b→K12c; FFVs rode the FK — prod had 8
+> all-blank rows per renamed line, zero risk; MappingRule.target_line strings
+> re-pointed; py_manual/AsFiledBaseline JSON re-keyed — the mig 0187 recipe).
+> **(4) Charitable split**: K12a = cash / NEW K12b = noncash (RS SCH_K_1120S R006);
+> prints on face 12a/12b (f3_20/f3_21, widget-verified); MeF Cash/Noncash-
+> CharitableContriAmt; K-1 box 12 codes A (cash 60%) / C (noncash 50% default) —
+> NEW D_SCHK_CHARCODE warning mirrors RS K1 D006 ("verify category; 30% cash = B,
+> noncash runs C-G"), NEW D_SCHK_8283 warning (noncash > $500 needs Form 8283,
+> not built — S-20a); M1_6b gains K12b; TB "Donations/Charitable" rollup stays
+> cash→K12a (noted). **(5) K16e/K16f inputs**: 16e DERIVES bottom-up from the
+> Form 7203 ShareholderLoan rows' loan_repayments (override-respecting B11-style
+> write, NOT a registry formula — the seeder's newly-computed override-clear
+> would stomp typed values; stale derives self-clear when the last loan goes);
+> K-1 box 16 code E is PER-RECIPIENT (each owner's own repayments; pro-rata
+> fallback when no loans tracked — Σ K-1 == Schedule K either way); 16f enters
+> K18 (RS R019 face verbatim: "subtract... 11 through 12e and 16f") and M2_5a
+> (i1120s p.50 AAA adjustment 2 verbatim); K-1 code F pro-rata; MeF
+> ShareholderLoanRepaymentAmt / TotalForeignTaxesPaidOrAccrAmt; loan CRUD now
+> recomputes (chokepoint rule). **(6) K14a/14b**: the pre-K-2-era "Name of
+> Country" TEXT row converted to the face's K-2/K-3 CHECKBOXES (booleans; prod
+> values were all blank — mig clears defensively); print map c3_7[2]/c3_8[0]
+> widget-verified; MeF emits DomesticFilingExceptionInd, and a checked 14a
+> REFUSES (K-2 not built — reconcile-or-refuse); D_EB_K2K3/D_EB_DFE_OK extended
+> to the 1120-S (indicator: K16f > 0 or 14a checked). **(7) 17c → M-2**: M2_7d
+> (the AE&P column — internal letters are legacy: b=OAA/c=STPI/d=AE&P vs the
+> face's b=PTEP/c=AE&P/d=OAA, noted for the future M-2 leg) derives from K17c
+> (i1120s M-2 col (c) / RS M2 R003/R006), M2_8d follows; NEW D_SCHK_17C_DIV info
+> (1099-DIV channel; generation rides sherpa-1099, out of scope). Gates: flow
+> 447 · pins (12b/16e/16f y-bands + box 12/16 code tables + K14 checkbox
+> targets) · MeF 1120-S suite + S5/S6 byte-stable (scenario-6 fixture re-keyed
+> K12d→K12e, same XML) · test_returns 359-line pins · tsc 0 · vitest 300 ·
+> **shared DB: mig 0188 APPLIED + seed rerun (359 lines) + seed_rules; live ORM
+> probe 14/14 PASS (K18/M2_5a/M2_7d/M2_8d/K16e + per-recipient K-1 + face print
+> + diagnostics, cascade-deleted); live BROWSER probe (all 8 new rows render,
+> K12b typed → K18/M2_5a server-painted, 17c typed → M-2 grid AE&P col paints
+> 12,000, K14a renders as boolean chips)**. NEW `test_schk_input_subunit.py`
+> (13) + `rules_1120s_schk.py` (3 code-registered rules, prod-seeded).
+
 > **2026-07-12 session 62 — 1120S_M3 LINE_MAP RENUMBER (audit unit #7), RS LEG
 > (+ tts template registration) — UNIT COMPLETE; the audit queue's last standalone
 > item (3800 rides the future GBC entity unit).** The M-3 face finally entered the
