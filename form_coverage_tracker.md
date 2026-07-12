@@ -1,5 +1,32 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 62 — 1120S_M3 LINE_MAP RENUMBER (audit unit #7), RS LEG
+> (+ tts template registration) — UNIT COMPLETE; the audit queue's last standalone
+> item (3800 rides the future GBC entity unit).** The M-3 face finally entered the
+> repo: **f1120ss3.pdf Rev. December 2019** (the current revision; ⚠ filename trap —
+> irs.gov's `f1120sm3.pdf` is the C-corp **1120** M-3, "s" = "schedule") + i1120ss3
+> (Rev. 12-2019), both fetched + hash-registered (manifest 84, trip-wire bumped).
+> The old RS P1-*/P2-*/P3-* map proved FABRICATED against it (Part III ends at 32 —
+> the spec had 33-36; Part I line 1 = the 1a/1b statement questions, not net income;
+> P1-FS/P1-RS/P2-DEP/P3-DEP exist on no revision). Rebuilt verbatim: 30 face-keyed
+> facts (1a-12d incl. the 4b GAAP/IFRS/tax-basis/other choice + the 12a-d
+> asset/liability grid) · R001-R005 · 87 face lines (I-1a..I-12d · II-1..26 incl.
+> 21a-g · III-1..32 incl. 23a/b + the Reserved 22) · D001-D007 · 5 scenarios (incl.
+> the published Example 1 "$12M FS / $8M Schedule L = not required" pin + P1 L11
+> combine + the P3 L32 sign-flip). **NEW tax-law content: R005 — the $50M
+> complete-ENTIRELY tier vs the through-Part-I + M-1 option (M-1 L1 must equal P1
+> L11) — the tier the pre-s44 "$50M" error had CONFLATED with the $10M filing gate**
+> (which reads SCHEDULE L assets, verbatim). The tie chain specced: P1 L11 = P2
+> L26(a) (or M-1 L1); **P2 L26(d) = Schedule K line 18** (the same K18 anchor as
+> M-1 L8). Excerpts: 5 verbatim (i1120ss3 + face notes; the IRS's own "(Form 1065)"
+> typo flagged, not propagated); SCHB's stale "$50M" M-3 link note healed via
+> refresh-delete. Harness 165/0 (twice-run pre-polluted); prod stale-deletes exact
+> (13 facts + all 20 fabricated lines); idempotent rerun clean; deployed export
+> verified (87/5/30/7/5); NEW tts mirror `server/specs/1120s_m3_spec.json`.
+> **tts = boundary-RED by design** (no M-3 build leg season one; the three $10M
+> threshold constants verified correct, reading Sch L 15d; the "not supported —
+> prepare manually" routing unaffected). Gates: manifest 3/3 (84) · flow 447.
+
 > **2026-07-12 session 61 — FORM 6198 2025-FACE RENUMBER (audit unit #6), RS LEG
 > (+ tts manifest registration) — UNIT COMPLETE.** The RS 6198 block's line_map was
 > FABRICATED (an invented "prior year unallowed losses" line 2, deductible loss on
