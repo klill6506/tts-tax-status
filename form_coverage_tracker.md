@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-11 session 57 — SCHEDULE K-1 (1120-S) 2025-FACE RENUMBER (audit unit #3),
+> spec-first (RS `a0e908c` / tts `69e7e08`).** RS K1_1120S rebuilt verbatim vs
+> f1120ssk.pdf 2025 + the i1120s 2025 pp.30-48 code tables: 44 facts (Part I item D +
+> Part II E-I incl. F2 responsible party/F3 entity type/item I loans) / 17 rules (NEW
+> R012-R016 + R021 code-assignment rules; R017 code-V mechanics; R-K1-ROUND
+> parenthetical corrected) / 33 lines (boxes 1-19 — 14 K-3 checkbox, 15 AMT A-F, 18/19
+> multi-activity checkboxes — + ItemA-I; full code tables in notes) / 6 diagnostics
+> (D004 pre-2023-alphabet error · D005 health-insurance-never-AC · D006 charitable-
+> category warning) / 7 scenarios (code-letter pins) / 7 verbatim i1120s excerpts;
+> stale fact/line/scenario self-heal guards. **The s37 "codes mirror print tables"
+> belief was FALSE — four live tts print/MeF code zones fixed:** box 13 followed the
+> PRE-2023 alphabet (LIH §42(j)(5) printed "A" = zero-emission nuclear on the 2025
+> table; now 13a→C, 13b→D, 13c→E, 13d→F, 13f→I); K12c §59(e)(2) printed I (= royalty
+> deductions; now J); K12d other deductions printed L (= portfolio-other; now ZZ +
+> typed statement); >2%-shareholder health insurance printed/emitted code AC (= §448(c)
+> gross receipts; i1120s p.17 makes W-2 box 14 the channel — now ZZ + typed statement,
+> key K17_AC→K17_HEALTH, Ken ratification in REVIEW_QUEUE); plus **K13e (other rental
+> credits) never allocated** (issuer gap — the MeF builder referenced it but box_shares
+> never carried it; now allocates, code G both sides). 8941 = BA unchanged-correct.
+> Pins: `TestK1CodeLetters2025` (5 — print/MeF table equality + K13e + never-AC).
+> Gates: pins 49 · MeF+tts_forms 234 · flow 447 · S5+S6 8/8. Deferrals →
+> DEFERRAL_AUDIT s57 (charitable A/B-C-G split · ZZ typed breakdowns · box-10 print
+> code · K16e/16f allocation rides the SCH_K input unit · F2/F3/item-I inputs ·
+> item-D print blank). Export verified on deployed RS; tts mirror refreshed.
+
 > **2026-07-10 session 48 — Form 8825 REV-12-2025 FACE UNIT + Schedule A (Form 8825),
 > spec-first (RS `c4c94bc` / tts `a4435f4`; batch-2 items B2-7a/B2-8/B2-9).** The RS 8825
 > spec was ANOTHER early-era drifted block (numbering matched NO published revision) —

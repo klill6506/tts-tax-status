@@ -19,7 +19,25 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s56 (2026-07-11): SCH_K_1120S RENUMBER (audit unit #2) COMPLETE + FOUR 1120-S LIVE PRINT-FIX ZONES + RET-G5 RESOLVED — RS spec rebuilt verbatim to the 2025 face (13f biofuel fix · 17a-d split w/ 17c AE&P · L18 = 1-10 − 11-12e − 16f ties M-1 L8; the full-loader's "K18 = Page 1 L21" tax-law ERROR corrected), seeded + exported + mirror refreshed (WO-25). tts: page-1 rows from old-19 down printed one row off/silent (2025 face inserted line 19 Form 7205 — OBI was on the Total-deductions row, est. payments on the ENPI tax row), K13 credits one field off (8941 K13g on the biofuel row), K12b/c/d one row off, K3 never printed — print map re-routed (FFV keys unchanged), 11 y-band pins; K17c (AE&P dividends) removed from K-1 allocation/print/MeF per i1120s p.40 + relabeled in prod. Flow gate + 752 affected tests green. RET-G5 stale scenario deleted at source (rename-orphan class; loader now self-heals). ⚠ NEW audit finding queued: 1120S_PAGE1+M1+M2 blocks pre-Form-7205 numbering + fabricated M-1 excerpt. ▶ NEXT: K1_1120S renumber (unit #3: box 12/13 code tables vs i1120s; verify tts K-1 print codes) → SCHL → PAGE1+M1+M2 (+ the tts FFV re-key + s56 deferral tail) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s57 (2026-07-11): K1_1120S RENUMBER (audit unit #3) COMPLETE — RS spec rebuilt verbatim to the 2025 f1120ssk face + the i1120s 2025 code tables (boxes 1-19 incl. 14 K-3 checkbox / 15 AMT A-F / 18-19 multi-activity · Part I/II items D-I · code-assignment rules R012-R016/R021 · 7 verbatim excerpts · fact/line/scenario self-heal guards), seeded + exported + mirror refreshed (RS `a0e908c`). tts `69e7e08`: **the s37 "K-1 codes mirror the tables" belief was FALSE — box 13 print/MeF used the PRE-2023 alphabet** (LIH §42(j)(5) printed "A" = zero-emission nuclear on the 2025 table; 13a-13f re-lettered C/D/E/F/G/I), K12c §59(e)(2) I→J, K12d other L→ZZ + typed statement, >2%-shareholder health insurance AC→ZZ + statement (i1120s p.17: W-2 box 14 is the channel; box 17 AC = §448(c) gross receipts; key K17_AC→K17_HEALTH; ratification → REVIEW_QUEUE), K13e allocation gap closed (MeF referenced it, box_shares never carried it). 8941=BA unchanged-correct. 5 new code-letter pins; flow 447 · pins 49 · MeF+forms 234 · S5+S6 8/8 green. ▶ NEXT: SCHL renumber (unit #4: rebuild both fabricated numbering systems to the face — assets 1-15 / liabilities 16-21 / equity 22-26 / total 27; keep R005-R008 substance; tts Sch L print verify same unit) → PAGE1+M1+M2 (+ the tts FFV re-key + s56 deferral tail) → 6198 → M3 → 3800 → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+
+**Session 57 wrap (2026-07-11; "go" — autonomous):**
+- [x] `[RS]` **K1_1120S 2025-face renumber (audit-ledger unit #3)** — 2026-07-11 RS `a0e908c`:
+  rebuilt verbatim vs f1120ssk.pdf 2025 + i1120s pp.30-48 (44 facts / 17 rules / 33 lines /
+  6 diag / 7 scenarios / 7 verbatim code-table excerpts); boxes 14/15/18/19 + Part I/II
+  items added; the box 12/13 sub-line-letter claims replaced with the real 2025 code
+  tables; R-K1-ROUND's "box 17 AC health insurance" parenthetical corrected; in-loader
+  fact/line/scenario self-heal; SQLite-validated · Supabase-seeded · deployed export
+  verified · tts mirror refreshed.
+- [x] `[APP]` **K-1 code-letter print/MeF fixes (the audit's verify arm — s37 belief
+  falsified)** — 2026-07-11 `69e7e08`: box 13 pre-2023 alphabet → 2025 (C/D/E/F/G/I);
+  K12c I→J · K12d L→ZZ (+ typed statement); health insurance AC→ZZ (+ statement,
+  K17_AC→K17_HEALTH); K13e now allocates (code G both sides);
+  `TestK1CodeLetters2025` pins (5); flow 447 · pins 49 · MeF+forms 234 · S5+S6 8/8.
+- [x] `[docs]` REVIEW_QUEUE s57: K-1 health-insurance ZZ presentation ratification
+  (shipped + pinned; recommendation = keep the ZZ info item); DEFERRAL_AUDIT s57
+  (charitable A/B–C-G split · ZZ typed breakdowns · box-10 print code · K16e/16f
+  allocation rides the SCH_K input unit · F2/F3/item-I inputs · item-D print blank).
 
 **Session 56 wrap (2026-07-11; "go" — autonomous):**
 - [x] `[RS]` **SCH_K_1120S 2025-face renumber (audit-ledger unit #2, WO-25)** — 2026-07-11 RS `d7aaf69`:

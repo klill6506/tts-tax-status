@@ -1,20 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-11, session 56 ("go" — autonomous). **SCH_K_1120S renumber
-unit #2 COMPLETE (RS spec-first + tts print fixes) + RET-G5 amendment resolved.**
-RS: SCH_K rebuilt verbatim to the 2025 face (52 facts / 19 rules / 47 lines; 13f
-biofuel fix, 17a-d split incl. 17c AE&P, L18 = 1-10 − 11-12e − 16f ties to M-1 L8;
-the full-loader's "K18 must equal Page 1 Line 21" tax-law ERROR corrected), seeded +
-export-verified + tts mirror refreshed. tts: **FOUR live print-fix zones on the
-1120-S** — page-1 rows from old-19 down were one row off / unprinted (the 2025 face
-inserted line 19 Form 7205; OBI printed on the Total-deductions row, est. payments
-on the ENPI tax row, the 22a-23d tax/payment FFVs mostly silent), the K13 credits
-block was one field off (8941 K13g printed on the biofuel row), K12b/c/d amounts one
-row off, FFV K3 never printed. Print map re-routed to face rows (FFV keys unchanged);
-**K17c (AE&P dividends) removed from K-1 allocation/print/MeF per i1120s p.40**
-(1099-DIV only; it was printing per-share as box 17 code C = rehab expenditures) and
-relabeled in prod. 11 new y-band pins + 752 affected tests + flow gate all green.
-`/bugs` sweep at boot: no open reports.*
+*Last updated: 2026-07-11, session 57 ("go" — autonomous). **K1_1120S renumber
+unit #3 COMPLETE (RS spec-first + tts K-1 code-letter fixes).** RS: K1_1120S rebuilt
+verbatim vs the 2025 f1120ssk face + the i1120s 2025 code tables (boxes 1-19, Part
+I/II items, code-assignment rules R012-R016/R021, 7 verbatim excerpts, stale-row
+self-heal guards), seeded + export-verified + tts mirror refreshed. tts: **the s37
+"K-1 codes mirror the tables" belief was FALSE — the box 13 print/MeF codes were the
+PRE-2023 alphabet** (LIH printed "A", which means zero-emission nuclear on the 2025
+table → 13a-13f now C/D/E/F/G/I), K12c §59(e)(2) I→J, K12d other L→ZZ (+ typed
+statement), health insurance AC→ZZ (+ statement; i1120s p.17: W-2 box 14 is the
+channel; AC = §448(c) gross receipts) with key K17_AC→K17_HEALTH, and K13e (other
+rental credits) now allocates (issuer gap). 8941 = BA was already correct. 5 new
+code-letter pins. `/bugs` sweep at boot: no open reports.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -29,17 +26,21 @@ full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, 
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55) — reports are CANDIDATES; Ken decides;
    computation-touching fixes re-run regression before merge.
-2. **RS renumber unit #3: K1_1120S** (next in the audit-ledger queue) — box 12/13
-   code-letter claims vs the 2025 i1120s code tables (12 A=cash 60% / B=cash 30% /
-   C=noncash...); tts K-1 print codes verify in the same unit (s37 believed-safe,
-   NOT yet verified). **NEW queue insert after SCHL: PAGE1+M1+M2 blocks** (found s56:
-   pre-Form-7205 numbering + a fabricated M-1 excerpt line — ledger updated); the tts
-   side of that unit = the page-1/K FFV re-key + data migration + the seven s56
-   deferrals (DEFERRAL_AUDIT s56 block).
-3. **RS FA-export reconciliation pass** (queued since s32).
-4. **S-20 B2-17 form units**: 8283-entity → 2553 → 2848 → 3115 app build.
-5. **Ken ratifications pending (REVIEW_QUEUE):** R007 AMT-matrix · 40% transitional
-   election · s49 candidates · s53 partner-percentage diagnostic.
+2. **RS renumber unit #4: 1120S_SCHL** (next in the audit-ledger queue) — the s44
+   audit found it internally contradictory (fabricated "L22 Total liabilities";
+   facts on a second fabricated numbering; R001 sum omits four asset lines; face is
+   assets 1-15 / liabilities 16-21 / equity 22-26 / total 27). Keep R005-R008
+   substance (M-2 tie, BOY carry, $250K exception, L3a default). tts Sch L print
+   verify rides the same unit.
+3. **Then: PAGE1+M1+M2 blocks** (s56 queue insert — pre-Form-7205 numbering +
+   fabricated M-1 excerpt; the tts side = page-1/K FFV re-key + data migration +
+   the seven s56 deferrals) → 6198 → M3 line_map → 3800.
+4. **RS FA-export reconciliation pass** (queued since s32).
+5. **S-20 B2-17 form units**: 8283-entity → 2553 → 2848 → 3115 app build.
+6. **Ken ratifications pending (REVIEW_QUEUE):** R007 AMT-matrix · 40% transitional
+   election · s49 candidates · s53 partner-percentage diagnostic · **NEW s57: K-1
+   health-insurance ZZ-statement presentation** (shipped + pinned; recommendation
+   attached).
 
 ## ▶ Waiting on Ken / external
 1. If `WORK_ORDER_bug_reporting.md` exists somewhere with more than the s55 chat
@@ -50,19 +51,19 @@ move on; mandatory session close before context exhausts.**
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
 
 ## Active gates
-- **Flow-assertion gate GREEN s56** (447 via test_flow_assertions in the 752-test
-  affected-files run — the K-1 allocation change was gated).
-- **Full suite GREEN as of s54** (`cd9b186`); s56 touched print maps + k1_issuer +
-  MeF K-1 items + seed labels; affected files all green, full-suite rerun not run
-  this session (print-map changes are pin-covered; next full run picks them up).
-- New pin file: `tests/test_1120s_face_renumber_pins.py` (11 pins — page-1 rows,
-  K12/K13 rows, K17c page-4 row, K17c-never-on-K-1 trio).
+- **Flow-assertion gate GREEN s57** (447).
+- **Affected suites GREEN s57**: face-renumber pins 49 (incl. the NEW
+  `TestK1CodeLetters2025` 5) · test_mef_1120s + test_tts_forms 234 · S5+S6 8/8.
+  Full-suite rerun not run this session (code-letter changes are pin-covered; last
+  full-suite GREEN = s54 `cd9b186`).
+- ⚠ `test_k1_import_stage3.py` has 3 standalone-run fixture errors (FormDefinition
+  1120-S not seeded when the file runs ALONE on a fresh test DB) — **pre-existing**
+  (verified on a stashed clean tree s57); green in-suite. The
+  `test-db-formdefinition-preseeded` memory class.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
-- ⚠ RS renumber queue remaining: K1 → SCHL → **PAGE1+M1+M2 (new s56)** → 6198 →
-  M3 line_map → 3800.
-- ⚠ Prod seeders run this session: RS `load_1120s_specs` + `load_1120s_full` +
-  `load_1040_retirement` (stale-scenario delete added); tts `seed_1120s` (K17c
-  relabel). All idempotent reruns, verified.
+- ⚠ RS renumber queue remaining: **SCHL → PAGE1+M1+M2 → 6198 → M3 line_map → 3800.**
+- ⚠ Prod seeders run this session: RS `load_1120s_specs` (K1 rebuild; SQLite
+  validate + Supabase, both idempotent-rerun verified, deployed export verified).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
