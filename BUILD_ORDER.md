@@ -1168,6 +1168,14 @@ spec-first unit; sequence after the SCH_K renumber queue unless Ken reorders.
 - **TY2026 re-cut + re-test** ← **IRS publishes TY2026 schemas (~Nov).**
 - **Forms-usage-driven scope adds** ← **TaxWise forms-usage report** (any form on 20+ returns
   not yet built becomes a new Spine item).
+- **Marketing video (conference ~60s cut)** `[APP/EXT]` ← spec v2 FILED 2026-07-12 at
+  `tts-tax-app/marketing/MARKETING_VIDEO.md` (Ken delivered; no v1 was ever committed —
+  this starts the file's history). UNBLOCK (all three, per the spec): (a) **brand name
+  final** — ⚠ the script says working-name "Sherpa" but the DBA on record is **Delvio
+  Tax** (delviotax.com; the PWA already ships as "Delvio Tax") — Ken's call re-records
+  every product-naming line; (b) demo screens conference-ready; (c) the regression bed
+  backs the "to the dollar" claim (see the Regression bed Shelf item above). Natural
+  window: post-freeze December polish or post-season. *Not season-critical.*
 
 ---
 
