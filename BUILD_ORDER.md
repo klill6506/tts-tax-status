@@ -19,7 +19,23 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s55 (2026-07-11): IN-APP BUG REPORTER SHIPPED (S-12 season-infrastructure item; Ken-directed break from the order) — "Report a Bug" button + auto-context capture, `bug_reports` Supabase table (RLS default-deny), firm-scoped API, `manage.py bugs` + `/bugs` session-start triage command; screenshots DEFERRED (screenshot_ref null); 10 server tests + probe-verified live. Guardrails: reports are CANDIDATES (Ken triages); computation-touching fixes re-run regression before merge. (s54 confirmation run came back GREEN `cd9b186` — 5,382 P / 21 skip / 0 F / 0 E; the suite is a usable regression gate.) ▶ NEXT: SCH_K renumber (fresh RS session; fold in the RET-G5 amendment) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+## ▶ NOW WORKING ON — **s56 (2026-07-11): SCH_K_1120S RENUMBER (audit unit #2) COMPLETE + FOUR 1120-S LIVE PRINT-FIX ZONES + RET-G5 RESOLVED — RS spec rebuilt verbatim to the 2025 face (13f biofuel fix · 17a-d split w/ 17c AE&P · L18 = 1-10 − 11-12e − 16f ties M-1 L8; the full-loader's "K18 = Page 1 L21" tax-law ERROR corrected), seeded + exported + mirror refreshed (WO-25). tts: page-1 rows from old-19 down printed one row off/silent (2025 face inserted line 19 Form 7205 — OBI was on the Total-deductions row, est. payments on the ENPI tax row), K13 credits one field off (8941 K13g on the biofuel row), K12b/c/d one row off, K3 never printed — print map re-routed (FFV keys unchanged), 11 y-band pins; K17c (AE&P dividends) removed from K-1 allocation/print/MeF per i1120s p.40 + relabeled in prod. Flow gate + 752 affected tests green. RET-G5 stale scenario deleted at source (rename-orphan class; loader now self-heals). ⚠ NEW audit finding queued: 1120S_PAGE1+M1+M2 blocks pre-Form-7205 numbering + fabricated M-1 excerpt. ▶ NEXT: K1_1120S renumber (unit #3: box 12/13 code tables vs i1120s; verify tts K-1 print codes) → SCHL → PAGE1+M1+M2 (+ the tts FFV re-key + s56 deferral tail) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
+
+**Session 56 wrap (2026-07-11; "go" — autonomous):**
+- [x] `[RS]` **SCH_K_1120S 2025-face renumber (audit-ledger unit #2, WO-25)** — 2026-07-11:
+  rebuilt verbatim (52 facts / 19 rules / 47 lines / 6 diag / 6 scenarios); 13f biofuel,
+  17a-d split (17c AE&P → 1099-DIV), L18 → M-1 L8 tie (the R018/D012 "= Page 1 L21"
+  tax-law error corrected); stale deletes in-loader; export verified; tts mirror refreshed.
+- [x] `[APP]` **1120-S face-print fixes** — 2026-07-11: page-1 old-19-down re-route
+  (7205 insertion shift + tax/payments block), K13 one-field-off, K12 amounts, K3 unmapped;
+  K17c off the K-1 (i1120s p.40) + prod relabel; `test_1120s_face_renumber_pins.py` (11);
+  flow gate + 752 affected tests green. Deferral tail (7) → DEFERRAL_AUDIT s56.
+- [x] `[RS]` **RET-G5 stale-scenario amendment (REVIEW_QUEUE s54)** — 2026-07-11: rename-orphan
+  row deleted; `load_1040_retirement` now self-heals scenario renames; tts exclusion removed
+  (topic5 41 passed).
+- ⚠ ADDED to the renumber queue (new s56 finding): **1120S_PAGE1 + M1 + M2 blocks**
+  (pre-Form-7205 numbering; fabricated M-1 excerpt line) — after SCHL; the tts side
+  carries the page-1/K FFV re-key + data migration + the s56 deferral tail.
 
 **Session 54 wrap (2026-07-11; "go" — autonomous, the s48/s52 directives):**
 - [x] `[APP]` **Full-suite straggler triage (STATUS item 1) COMPLETE** — 2026-07-11
