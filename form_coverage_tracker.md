@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 60 — 1120-S PAGE-1 FFV SEMANTIC RE-KEY (renumber unit #5 tts
+> leg, `e4c4ac8` / mig 0187) — UNIT #5 COMPLETE.** Internal keys now equal the 2025
+> face (19=7205 NEW input · 20 other · 21 total · 22 OBI · 23a-c tax · 24a-d/z
+> payments w/ NEW 24d EPE · 25 penalty · 26/27 owed/overpaid · 28a + NEW computed
+> 28b refunded). Mig 0187 renamed FormLine keys in place on the shared DB (278
+> FFVs/key verified carried; seed rerun 355 lines, zero stale deletes); py_manual/
+> baseline JSON keys re-keyed; imported PY line_values needed no migration (the
+> 2024 print already used this numbering — the re-key fixed the live CY-vs-PY
+> compare misalignment). **LIVE FIX: owed/overpayment formulas gained the line-25
+> penalty term (RS R014).** Print shim retired (map = face 1:1; f1_37/f1_47/f1_53
+> widget-verified); MeF + GA-600S pull + 8879-S/8453-S + diagnostics + client lists
+> re-keyed; K3c duplicate-widget alias removed. s56-tail 1-3 delivered (7205 input ·
+> 24d · 28b); 4-7 = the SCH_K input sub-unit (DEFERRAL_AUDIT s60). Gates: flow 447 ·
+> consolidated 583 · S5+S6 8/8 · affected 208+106+36 · tsc 0 · vitest 300 · live ORM
+> probe PASS.
+
 > **2026-07-12 session 59 — 1120-S PAGE 1 + M-1 + M-2 2025-FACE RENUMBER (audit unit
 > #5), RS LEG ONLY (RS `bb42381`; tts mirrors refreshed — NO tts code; the tts FFV
 > re-key leg is the next unit).** PAGE1: rebuilt verbatim vs f1120s.pdf 2025 p.1 —
