@@ -22,11 +22,11 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 ## ▶ NOW WORKING ON — **s56 (2026-07-11): SCH_K_1120S RENUMBER (audit unit #2) COMPLETE + FOUR 1120-S LIVE PRINT-FIX ZONES + RET-G5 RESOLVED — RS spec rebuilt verbatim to the 2025 face (13f biofuel fix · 17a-d split w/ 17c AE&P · L18 = 1-10 − 11-12e − 16f ties M-1 L8; the full-loader's "K18 = Page 1 L21" tax-law ERROR corrected), seeded + exported + mirror refreshed (WO-25). tts: page-1 rows from old-19 down printed one row off/silent (2025 face inserted line 19 Form 7205 — OBI was on the Total-deductions row, est. payments on the ENPI tax row), K13 credits one field off (8941 K13g on the biofuel row), K12b/c/d one row off, K3 never printed — print map re-routed (FFV keys unchanged), 11 y-band pins; K17c (AE&P dividends) removed from K-1 allocation/print/MeF per i1120s p.40 + relabeled in prod. Flow gate + 752 affected tests green. RET-G5 stale scenario deleted at source (rename-orphan class; loader now self-heals). ⚠ NEW audit finding queued: 1120S_PAGE1+M1+M2 blocks pre-Form-7205 numbering + fabricated M-1 excerpt. ▶ NEXT: K1_1120S renumber (unit #3: box 12/13 code tables vs i1120s; verify tts K-1 print codes) → SCHL → PAGE1+M1+M2 (+ the tts FFV re-key + s56 deferral tail) → FA-export reconciliation → S-20 form units** (Ken-gated: R007 ratification · density feel-check · e-services · item 10).
 
 **Session 56 wrap (2026-07-11; "go" — autonomous):**
-- [x] `[RS]` **SCH_K_1120S 2025-face renumber (audit-ledger unit #2, WO-25)** — 2026-07-11:
+- [x] `[RS]` **SCH_K_1120S 2025-face renumber (audit-ledger unit #2, WO-25)** — 2026-07-11 RS `d7aaf69`:
   rebuilt verbatim (52 facts / 19 rules / 47 lines / 6 diag / 6 scenarios); 13f biofuel,
   17a-d split (17c AE&P → 1099-DIV), L18 → M-1 L8 tie (the R018/D012 "= Page 1 L21"
   tax-law error corrected); stale deletes in-loader; export verified; tts mirror refreshed.
-- [x] `[APP]` **1120-S face-print fixes** — 2026-07-11: page-1 old-19-down re-route
+- [x] `[APP]` **1120-S face-print fixes** — 2026-07-11 `f2d4e89`: page-1 old-19-down re-route
   (7205 insertion shift + tax/payments block), K13 one-field-off, K12 amounts, K3 unmapped;
   K17c off the K-1 (i1120s p.40) + prod relabel; `test_1120s_face_renumber_pins.py` (11);
   flow gate + 752 affected tests green. Deferral tail (7) → DEFERRAL_AUDIT s56.
