@@ -24,14 +24,11 @@ verified per-file).*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Read the s54 confirmation-run result FIRST.** A post-fix full-suite run was
-   kicked at session close (`--create-db`, default local test DB; tail written to
-   the session scratchpad, which does NOT survive — rerun if lost:
-   `pytest tests/ -q --tb=no` from `server/`, ~36 min). Expected: ~0 F. Any
-   residue = new drift since the per-file verifications — triage with the s54
-   taxonomy (auto-memory `s54-fullsuite-triage-complete`): whole-dollar pins ·
-   compute-ownership seeding needs `is_overridden` · CRUD-recompute semantics ·
-   registry/seed-count lag · sibling-spec drift · sidebar packet tiers · mock rot.
+1. ✅ **CONFIRMED: the full suite is GREEN — 5,382 passed · 21 skipped · 0 F ·
+   0 E in 33:41** (post-fix `--create-db` run, recorded 2026-07-11 at close —
+   the FIRST fully-green full-suite run in the project's history). The suite is
+   now a usable regression gate; future drift triages with the s54 taxonomy
+   (auto-memory `s54-fullsuite-triage-complete`).
 2. **RS renumber unit #2: SCH_K_1120S** (fresh session; fabricated 13f · missing
    17c AE&P · wrong L18 formula) → K1 → SCHL → 6198 → M3 line_map → 3800.
    Ledger: `docs/rs_handoff/2026-07-09_early_era_face_audit.md`.
