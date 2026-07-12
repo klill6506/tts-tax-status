@@ -355,10 +355,12 @@
 > entity packet block. **MeF**: IRS8941 document (XSD lineNumber-verified), ReturnData ref
 > 1697, K13g `OtherCreditsAmt` refDocId link, extract reconcile-or-refuse; live-XSD valid.
 > **Diagnostics** D_8941_001–006 seeded (§280C = warning-only per Ken ruling). **FAs**:
-> FA-8941-01/02 ACTIVATED (RS `ab3b0ab`) + runners — flow gate **444→446**. ⚠ Mirror note:
+> FA-8941-01/02 ACTIVATED (RS `ab3b0ab`) + runners — flow gate **444→446**. ~~⚠ Mirror note:
 > the deployed 1120S FA export now carries the s32-drift actives (FA008-012/RC001-variant/
 > ENT-BND/4562-179) with no tts runners; the mirror is PINNED to the prior set + 8941 until
-> the queued reconciliation pass. Boundaries → DEFERRAL_AUDIT: 1065 K15 / 1040-3800-4h 8941
+> the queued reconciliation pass.~~ **HEALED s64 (2026-07-12): the reconciliation pass ran —
+> every drift id has an id-routed runner, both mirrors re-adopted from the deployed export
+> (1120S verbatim 30; 1065 = 32 + 4 staged-pending), flow gate 447→460.** Boundaries → DEFERRAL_AUDIT: 1065 K15 / 1040-3800-4h 8941
 > lanes; manual-other-credit + 8941 K13g coexistence; lines 17-20 (coop/exempt) never emit.
 > tts `9e65aff`. Suites: 14 pure · 10 DB · MeF 59 (live-XSD) · S5 scenario + acroform-K1 16 ·
 > tsc 0 / vitest 275.

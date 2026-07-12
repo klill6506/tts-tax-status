@@ -1,26 +1,28 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-12, session 63 ("go" — autonomous). **SCH_K INPUT
-SUB-UNIT COMPLETE (the s56 tail items 4-7; mig 0188).** The 1120-S Schedule K
-line-12 family re-keyed to the 2025 face (K12a cash / NEW K12b noncash / K12c
-inv-interest / K12d 59(e)(2) / K12e other — FFVs rode the FK, prod renamed rows
-were all blank; MappingRule targets + JSON stores re-keyed). NEW inputs: K16e
-(derives bottom-up from ShareholderLoan.loan_repayments, override-respecting;
-K-1 box 16 code E is PER-RECIPIENT with pro-rata fallback), K16f (enters K18
-per the face formula "11 through 12e and 16f" AND M2_5a per i1120s p.50
-adjustment 2; K-1 code F), K14a/14b (the K-2/K-3 CHECKBOXES — the old "Name of
-Country" text row converted; MeF emits 14b, REFUSES on checked 14a — K-2 not
-built), and M2_7d ← K17c (the AE&P column line-7 derive; M2_8d follows).
-K-1 box 12 codes now A/C/H/J/ZZ; box 16 A-F. NEW diagnostics (prod-seeded):
-D_SCHK_CHARCODE (D006 mirror) · D_SCHK_8283 (noncash>$500, form not built) ·
-D_SCHK_17C_DIV (1099-DIV channel info) · D_EB_K2K3/DFE_OK extended to 1120-S.
-Gates: flow 447 · MeF+pins+spec suites green · test_returns 359 · tsc 0 ·
-vitest 300 · shared DB mig 0188 + seed rerun + seed_rules DONE · live ORM
-probe 14/14 + live browser probe (type→autosave→server-paint verified; K14a
-renders as boolean chips). Boundaries → DEFERRAL_AUDIT s63 (charitable
-category input · entity 8283 = S-20a · 1099-DIV = sherpa-1099 lane · K-2
-refuse · ⚠ M-2 grid column letters OFF-FACE b/c/d — fold into the M-2 NNA
-leg). `/bugs` at boot: no open reports.*
+*Last updated: 2026-07-12, session 64 (account-switch boot, "pick up the queue").
+**RS FA-EXPORT RECONCILIATION PASS COMPLETE (queued since s32).** The deployed
+RS flow-assertion exports are re-adopted as the tts gate mirrors: **1120S =
+export VERBATIM (30 actives)** — the s35 hand-splice pin era is over; **1065 =
+export minus 4 staged-pending build-gaps (32 actives)**. Every s32-drift id now
+has an id-routed runner: FA008-012 (the Mar-30 8825/Sch-L regression set, RS's
+declarative definitions adopted as-is) → NEW `_run_8825_schl_assertion`
+(source pins on the shared `aggregate_rental_income` + the renderer SCHED_L_4COL
+contra translation; FA012 re-derives L15a/L15d from BOTH FORMULAS_1120S and
+FORMULAS_1065); FA-ENT-BND-01/02/03 → NEW `_run_entbnd_assertion` (the S-5
+`rules_entity_boundary` module is built — threshold/severity/registry pins;
+ACTIVATED on both entity gates); FA-4562-179-02/03 (runners pre-existed, now
+loaded); RC001's export variant (no `expected_value`, inputs key `K1`) rides a
+NEW `formula_equals` fallback that evaluates `expected_formula` over the
+resolved values (probe: L24d 40,000 == ΣM2_8a-d 40,000 — non-vacuous). Still
+staged in `flow_assertions_1065_pending.json` (test-pinned set): GATE-8990-163J
+(no §163(j)/$31M logic) · GATE-704C-706D-DEFER (no Partner item-M fields) ·
+RECON-M2-CAPITAL (item L data-entry) · **FA-ENT-8824-01's 1065 arm** (capital-
+character 8824 refuses to manual via D_8824_011 until the Schedule D (1065)
+unit — s36 ruling). **Flow gate 447 → 460, all green**; adjacent pin suites 493
+total. Gate files written ensure_ascii (the FA-JSON cp1252 rule). REVIEW_QUEUE:
+s35 item RESOLVED; 2 new notes ($300 DFE proxy recommendation = keep; RC001
+variant shape = leave RS as-is). `/bugs` at boot: no open reports.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -34,16 +36,19 @@ leg). `/bugs` at boot: no open reports.*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **RS FA-export reconciliation pass** (queued since s32).
-3. **S-20 B2-17 form units**: 8283-entity → 2553 → 2848 → 3115 app build.
-   (8283-entity now has a live D_SCHK_8283 warning pointing at it — s63.)
-4. **Ken ratifications pending (REVIEW_QUEUE):** s59 M-2 NNA distribution cap
+2. **S-20 B2-17 form units**: 8283-entity → 2553 → 2848 → 3115 app build.
+   (8283-entity has a live D_SCHK_8283 warning pointing at it — s63. Spec-first:
+   fetch/author the RS 8283-entity spec before building.)
+3. **Ken ratifications pending (REVIEW_QUEUE):** s59 M-2 NNA distribution cap
    (the tts M-2 compute leg implements it once ratified — fold the M-2 grid
    column-letter re-key in with it, DEFERRAL_AUDIT s63 item 5) · R007
    AMT-matrix · 40% transitional election · s49 candidates · s53
-   partner-percentage diagnostic · s57 K-1 health-insurance ZZ presentation.
-5. *(Renumber queue: CLEARED except **3800** — rides the future GBC entity
-   unit. The 6198 + M-3 tts build units stay unblocked-but-unscheduled.)*
+   partner-percentage diagnostic · s57 K-1 health-insurance ZZ presentation ·
+   NEW s64 pair ($300 DFE proxy · RC001 variant — both "leave as-is"
+   recommendations, no build blocked).
+4. *(Renumber queue: CLEARED except **3800** — rides the future GBC entity
+   unit. The 6198 + M-3 tts build units stay unblocked-but-unscheduled.
+   FA-export reconciliation: DONE s64.)*
 
 ## ▶ Waiting on Ken / external
 1. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
@@ -53,15 +58,16 @@ move on; mandatory session close before context exhausts.**
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
 
 ## Active gates
-- **Flow-assertion gate GREEN s63** (447 within the 530-test consolidated run).
-- s63 suites: 1120-S spec+pins 80 · MeF+scenarios+flow 530 · returns/diag/K-1
-  batch 347 (the 3 `test_k1_import_stage3` fixture errors are PRE-EXISTING,
-  reconfirmed standalone) · tsc 0 · vitest 300.
-- Last full-suite GREEN = s54 `cd9b186`; the s63 sweep of affected suites
-  surfaced only the expected seed-count pins (355→359, updated).
-- ⚠ Shared-DB deploy state: **mig 0188 APPLIED + seed_1120s rerun (359 lines) +
-  seed_rules DONE (s63)**; mig 0187 state stands. Render deploy just needs the
-  code push.
+- **Flow-assertion gate GREEN s64 at 460** (was 447; +13 = the reconciled
+  activations: FA-4562-179-02/03 + FA-ENT-BND-01/03 on 1120S; FA008-012 +
+  FA-8941-01 + FA-ENT-BND-01/02/03 on 1065). Both mirrors now refresh straight
+  from `/api/flow-assertions/export/` — no hand-splicing.
+- s64 suites: flow 460 + 1120s face-renumber pins + schk input sub-unit = 493
+  green. No compute/render/client code touched (test runners + spec mirrors +
+  docs only) — the wider s63 suite state stands.
+- Last full-suite GREEN = s54 `cd9b186`.
+- ⚠ Shared-DB deploy state: mig 0188 APPLIED + seed rerun (359) + seed_rules
+  DONE (s63). No DB work this session. Render deploy just needs the code push.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
