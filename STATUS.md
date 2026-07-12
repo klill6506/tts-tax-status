@@ -1,23 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-12, session 66 ("go" — autonomous). **S-20a ENTITY FORM
-8283 — UNIT COMPLETE, BOTH LEGS** (RS leg s65 `8b6faca`; tts leg s66). The
-worksheet (shared NoncashContribution model/compute) mounts on the entity
-Schedule K tab; **1120-S K12b defaults from the rows total** (the override-
-respecting `_derive_schk_inputs_db` pre-pass — typed GREEN wins, stale derives
-self-clear, conservation withholds excluded); **1065 = print+diagnose only**
-(combined 13a face line — D_8283_016 coverage warning, J-E2). render_8283
-serves entity name/EIN headers and joins the entity packet; MeF: IRS8283 doc
-in ReturnData1120S (declared, ref 1228) + K12b refDocId; Section B refuses
-(the J7 wet-ink seam). Row-level D_8283_002-013 now sweep entity rows;
-**D_SCHK_8283 RETIRED** → D_8283_014 error; D_8283_015 copy-to-members info.
-FA-ENT-8283-01/02 ACTIVATED with runners + both export-verbatim mirrors
-refreshed together — **flow gate 460 → 463**. Gates: 570 batch · MeF 83 ·
-tsc 0 · vitest 300 · NEW test_8283_entity 11 · live ORM probe 15/15 · live
-browser probe (typed 3,000 → K12b server-painted YELLOW). Shared-DB:
-seed_rules run (D_SCHK_8283 inactive, D_8283_014/015/016 active). Boundaries
-→ DEFERRAL_AUDIT s66 (5). Earlier this conversation: s64 FA-export
-reconciliation (447→460) + s65 RS leg. `/bugs` at boot ×2: clean.*
+*Last updated: 2026-07-12, session 67 ("go" — autonomous). **S-20b Form 2553 —
+RS DRAFT COMPLETE, ⏳ AWAITING KEN'S GATE-1. No tts code this session.** The RS
+2553 spec is authored + SQLite-validated (harness 82/0) but deliberately NOT
+seeded: `load_2553.py` ships `READY_TO_SEED = False` and the WORK_ORDERS
+two-human-gates rule holds — a greenfield draft never crosses Gate-1 unattended,
+and the tts print unit doesn't start until the spec is APPROVED + exported.
+Research verbatim (f2553_source_brief.md in the RS repo): Form 2553 Rev. 12-2017
++ i2553 Rev. 12-2020 both current; **the printed Q1 user fee $6,200 is
+superseded → $5,750 (Rev. Proc. 2026-1 App. A, quoted from the IRB 2026-1 PDF;
+year-keyed)**; §1362(b)(5) PLR fallback $14,500; KC/Ogden addresses
+live-verified. Draft: 28 facts / 8 rules / 45 face lines / 19 diagnostics / 10
+scenarios (the three published i2553 window examples pinned) / 3 FAs staged
+DRAFT. Gate-1 walk W1-W4 → REVIEW_QUEUE s67 (recommend approve-all) + the RS
+WORK_ORDERS WO-26 entry. 2848 (S-20c) gap-confirmed 404 — same draft-to-gate
+recipe next. `/bugs` at boot: clean.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -31,37 +28,42 @@ reconciliation (447→460) + s65 RS leg. `/bugs` at boot ×2: clean.*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **S-20b: Form 2553 app build** (spec-first — fetch/check the RS 2553 spec;
-   404 → STOP per the RS rule) → then 2848 (S-20c) → 3115 (S-20d).
-3. **Ken ratifications pending (REVIEW_QUEUE):** s65 J-E1/E2/E3 (8283 entity
-   conventions — SHIPPED to the recommendations, a different ruling is a
-   small re-cut) · s59 M-2 NNA cap (fold the M-2 grid column-letter re-key
-   in, DEFERRAL_AUDIT s63 item 5) · R007 AMT-matrix · 40% transitional
-   election · s49 candidates · s53 partner-percentage diagnostic · s57 K-1
-   health-insurance ZZ · s64 pair ($300 DFE proxy · RC001 shape).
-4. *(Renumber queue: CLEARED except 3800 — rides GBC. FA-export
-   reconciliation: DONE s64. Entity 8283: DONE s65/s66.)*
+2. **⟨GATE 1⟩ 2553 spec awaits Ken (REVIEW_QUEUE s67).** On "approve W1-W4": in
+   the RS repo flip `READY_TO_SEED = True` in `load_2553.py` → `manage.py
+   load_2553` on prod → verify `lookup/2553/export/` → cache the tts mirror
+   `server/specs/2553_spec.json` → build the tts print unit (render leg +
+   diagnostics; FA-2553 runners + activate + mirror refresh in one motion).
+3. **S-20c: Form 2848 RS draft-to-gate** (same recipe as 2553: research verbatim
+   f2848/i2848 → source brief → gated loader → harness → AWAITING KEN; gap
+   confirmed 404 this session). Per-preparer CAF autofill is the app-side
+   value-add to spec for.
+4. **S-20d: 3115 tts app build** — RS spec DONE + exported (WO-23); buildable
+   NOW without any gate; likely print-only v1 (§481(a) spread engine input +
+   Schedule E depreciation catch-up print). Can run ahead of the 2553/2848
+   approvals if Ken hasn't answered.
+5. **Ken ratifications pending (REVIEW_QUEUE):** s67 2553 Gate-1 (HARD gate) ·
+   s65 J-E1/E2/E3 (8283 entity, shipped-to-recommendations) · s59 M-2 NNA cap ·
+   R007 AMT-matrix · 40% transitional election · s49 candidates · s53
+   partner-percentage diagnostic · s57 K-1 health-insurance ZZ · s64 pair.
 
 ## ▶ Waiting on Ken / external
-1. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
-2. Ratifications: 8283 J-E1/E2/E3 (s65) · M-2 NNA cap (s59) · R007 AMT + 40% election (s47).
-3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
-4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
-6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
+1. **⟨GATE 1⟩ 2553 spec approval (s67)** — blocks the whole S-20b tts leg.
+2. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
+3. Ratifications: 8283 J-E1/E2/E3 (s65) · M-2 NNA cap (s59) · R007 AMT + 40% election (s47).
+4. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
+5. IdenTrust cert (⚠ 30-day download clock). 6. File-1018 Lacerte reprint (item 10).
+7. PWA install check. 8. TaxWise forms-usage report. 9. Density feel-check (s52).
 
 ## Active gates
-- **Flow-assertion gate GREEN at 463** (s64 reconciled 460; +3 = the
-  FA-ENT-8283 activations). Both mirrors refresh straight from
-  `/api/flow-assertions/export/` — the 1065 pending file stages
-  GATE-8990-163J · GATE-704C-706D-DEFER · RECON-M2-CAPITAL · FA-ENT-8824-01
-  (test-pinned set).
-- s66 suites: flow+8283+schk+pins+diagnostics 570 · MeF 1120-S + S5/S6 83 ·
-  tsc 0 · vitest 300. Two s63 fixture updates (typed K12b now carries
-  is_overridden — the derived-write convention; D_SCHK_8283 pin → D_8283_014).
-- Last full-suite GREEN = s54 `cd9b186`.
-- ⚠ Shared-DB deploy state: mig 0188 + seeds current (s63); **seed_rules
-  rerun s66** (D_SCHK_8283 → inactive; D_8283_014/015/016 seeded). No new
-  migrations. Render deploy just needs the code push.
+- **Flow-assertion gate GREEN at 463** (unchanged — no tts code this session).
+  Both mirrors current from `/api/flow-assertions/export/`; the 1065 pending
+  file stages GATE-8990-163J · GATE-704C-706D-DEFER · RECON-M2-CAPITAL ·
+  FA-ENT-8824-01 (test-pinned set). FA-2553-01/02/03 exist only as DRAFT rows
+  in the un-seeded loader — nothing reaches the export until Gate-1.
+- Last full-suite GREEN = s54 `cd9b186`. s66 suites unchanged (570 batch · MeF
+  83 · tsc 0 · vitest 300).
+- ⚠ Shared-DB deploy state: mig 0188 + seeds + seed_rules current (s63/s66).
+  No new migrations. Render deploy just needs the code push.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
