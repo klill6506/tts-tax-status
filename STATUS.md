@@ -1,22 +1,23 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-12, session 65 ("go" — autonomous). **S-20a 8283-ENTITY
-RS LEG COMPLETE (RS `8b6faca`, prod-seeded, export verified, tts mirror
-refreshed).** The shared 8283 spec gained the entity arm verbatim from i8283
-Rev. 12-2025: R-8283-ENTFILE (PTE noncash > $500 files Section A/B WITH the
-1065/1120-S) · **R-8283-ENTSECB (the $5,000 Section-B test reads the ENTITY
-item/group amount — NEVER the per-member allocation)** · R-8283-ENTFEED
-(1120-S: rows → K12b YELLOW default / typed GREEN override; **1065: NO FEED —
-the 2025 face 13a is one combined cash+noncash line; print+diagnose**) ·
-R-8283-ENTCOPY (completed copy to each allocated member). D_8283_010 re-scoped
-in place to the member side; NEW D_8283_014 (entity > $500 with no rows —
-replaces D_SCHK_8283) / D_8283_015 (copy-to-members info) / D_8283_016 (1065
-13a coverage). Scenarios T14-T16 with oracles. **FA-ENT-8283-01/02 staged
-DRAFT** — the export-verbatim s64 mirrors stay intact (1120S FA export still
-exactly 30); the tts leg activates them + refreshes mirrors together. J-E1/E2/
-E3 queued (REVIEW_QUEUE s65, recommendations attached). Harness 45 green;
-flow 460 + test_compute_8283 green against the refreshed mirror. Earlier this
-session (s64 block): the FA-export reconciliation pass closed (flow 447→460).*
+*Last updated: 2026-07-12, session 66 ("go" — autonomous). **S-20a ENTITY FORM
+8283 — UNIT COMPLETE, BOTH LEGS** (RS leg s65 `8b6faca`; tts leg s66). The
+worksheet (shared NoncashContribution model/compute) mounts on the entity
+Schedule K tab; **1120-S K12b defaults from the rows total** (the override-
+respecting `_derive_schk_inputs_db` pre-pass — typed GREEN wins, stale derives
+self-clear, conservation withholds excluded); **1065 = print+diagnose only**
+(combined 13a face line — D_8283_016 coverage warning, J-E2). render_8283
+serves entity name/EIN headers and joins the entity packet; MeF: IRS8283 doc
+in ReturnData1120S (declared, ref 1228) + K12b refDocId; Section B refuses
+(the J7 wet-ink seam). Row-level D_8283_002-013 now sweep entity rows;
+**D_SCHK_8283 RETIRED** → D_8283_014 error; D_8283_015 copy-to-members info.
+FA-ENT-8283-01/02 ACTIVATED with runners + both export-verbatim mirrors
+refreshed together — **flow gate 460 → 463**. Gates: 570 batch · MeF 83 ·
+tsc 0 · vitest 300 · NEW test_8283_entity 11 · live ORM probe 15/15 · live
+browser probe (typed 3,000 → K12b server-painted YELLOW). Shared-DB:
+seed_rules run (D_SCHK_8283 inactive, D_8283_014/015/016 active). Boundaries
+→ DEFERRAL_AUDIT s66 (5). Earlier this conversation: s64 FA-export
+reconciliation (447→460) + s65 RS leg. `/bugs` at boot ×2: clean.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,42 +31,16 @@ session (s64 block): the FA-export reconciliation pass closed (flow 447→460).*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **S-20a tts leg — the entity 8283 build** (the RS spec is ready; audit notes
-   from s65, all verified in code):
-   - `NoncashContribution` FKs `TaxReturn` generically; `compute_8283`
-     helpers (`row_analysis`/`noncash_rows`/`noncash_summary`) are
-     return-generic — REUSE, don't fork.
-   - `render_8283` (renderer.py ~8604) is 1040-gated (`form_definition.code
-     != "1040"` → None) and reads Taxpayer for the name/SSN header → open to
-     1120-S/1065 with entity name/EIN; add to the ENTITY packet order.
-   - Feeder: `_default_k12b_from_8283` pre-formula pass, 1120-S only — the
-     B11/K16e override-respecting `_set_field_value` recipe (⚠⚠ NEVER a
-     registry formula — the derived-write class). 1065: no feed (J-E2).
-   - NoncashContribution CRUD (views.py ~5532) must ride the
-     mutation-recompute chokepoint for entity returns too.
-   - MeF: **IRS8283 is a DECLARED ReturnData1120S document (2025v6.2:
-     include line 86, element ref line ~1228, maxOccurs unbounded)** —
-     build in builder_1120s (Section A rows; Section B → the wet-ink
-     PDF-attachment refuse seam, mirror the 1040 lane's UnmappableValue at
-     read_model ~1694). 1065 MeF = future-mapper deferral.
-   - Diagnostics: code-register D_8283_014/015/016 (entity arms in
-     rules_8283.py or a sibling); **RETIRE D_SCHK_8283** (rules_1120s_schk.py
-     ~100 — the runner-deactivation precedent: rules_1065_l.D_L_M3).
-   - UI: `NoncashContributionsSection.tsx` exists (1040) — mount on the
-     entity navs (Deductions-adjacent tab); s50 NavScope maps D_8283_* →
-     the tab.
-   - FAs: write runners for FA-ENT-8283-01/02, ACTIVATE them in RS
-     (draft→active), THEN refresh both gate mirrors from the export (they're
-     export-verbatim since s64 — activate + refresh + runners land TOGETHER).
-   - Tests: entity engagement/feeder/override DB tests + T14-T16 oracles;
-     live ORM probe + browser probe (isolated firm, cascade-delete).
-3. **S-20 remainder**: 2553 → 2848 → 3115 app build.
-4. **Ken ratifications pending (REVIEW_QUEUE):** NEW s65 J-E1/E2/E3 (8283
-   entity conventions — build proceeds on the recommendations) · s59 M-2 NNA
-   cap · R007 AMT-matrix · 40% transitional election · s49 candidates · s53
-   partner-percentage diagnostic · s57 K-1 health-insurance ZZ · s64 pair.
-5. *(Renumber queue: CLEARED except 3800 — rides GBC. FA-export
-   reconciliation: DONE s64.)*
+2. **S-20b: Form 2553 app build** (spec-first — fetch/check the RS 2553 spec;
+   404 → STOP per the RS rule) → then 2848 (S-20c) → 3115 (S-20d).
+3. **Ken ratifications pending (REVIEW_QUEUE):** s65 J-E1/E2/E3 (8283 entity
+   conventions — SHIPPED to the recommendations, a different ruling is a
+   small re-cut) · s59 M-2 NNA cap (fold the M-2 grid column-letter re-key
+   in, DEFERRAL_AUDIT s63 item 5) · R007 AMT-matrix · 40% transitional
+   election · s49 candidates · s53 partner-percentage diagnostic · s57 K-1
+   health-insurance ZZ · s64 pair ($300 DFE proxy · RC001 shape).
+4. *(Renumber queue: CLEARED except 3800 — rides GBC. FA-export
+   reconciliation: DONE s64. Entity 8283: DONE s65/s66.)*
 
 ## ▶ Waiting on Ken / external
 1. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
@@ -75,15 +50,18 @@ move on; mandatory session close before context exhausts.**
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
 
 ## Active gates
-- **Flow-assertion gate GREEN at 460** (s64 reconciliation; s65 confirmed
-  against the refreshed 8283 mirror + test_compute_8283).
-- ⚠ FA-ENT-8283-01/02 are DRAFT in RS — the deployed FA exports still serve
-  exactly 30 (1120S) / 36 (1065); the tts leg activates + writes runners +
-  refreshes mirrors in ONE motion.
+- **Flow-assertion gate GREEN at 463** (s64 reconciled 460; +3 = the
+  FA-ENT-8283 activations). Both mirrors refresh straight from
+  `/api/flow-assertions/export/` — the 1065 pending file stages
+  GATE-8990-163J · GATE-704C-706D-DEFER · RECON-M2-CAPITAL · FA-ENT-8824-01
+  (test-pinned set).
+- s66 suites: flow+8283+schk+pins+diagnostics 570 · MeF 1120-S + S5/S6 83 ·
+  tsc 0 · vitest 300. Two s63 fixture updates (typed K12b now carries
+  is_overridden — the derived-write convention; D_SCHK_8283 pin → D_8283_014).
 - Last full-suite GREEN = s54 `cd9b186`.
-- ⚠ Shared-DB deploy state: mig 0188 + seeds current (s63); no tts DB work
-  s64/s65. RS prod: the 8283 amendment SEEDED (s65). Render deploy just needs
-  the code push.
+- ⚠ Shared-DB deploy state: mig 0188 + seeds current (s63); **seed_rules
+  rerun s66** (D_SCHK_8283 → inactive; D_8283_014/015/016 seeded). No new
+  migrations. Render deploy just needs the code push.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026

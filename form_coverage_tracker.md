@@ -1,5 +1,39 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 sessions 65-66 — ENTITY FORM 8283 (Spine S-20a) — ★★ UNIT
+> COMPLETE, BOTH LEGS — SPEC-FIRST RS round-trip (RS `8b6faca`).** The shared
+> 8283 spec's PTE stated-boundary (D_8283_010) closed with an additive
+> entity-arm amendment, i8283 Rev. 12-2025 verbatim (R-8283-ENTFILE/ENTSECB/
+> ENTFEED/ENTCOPY; **the $5,000 Section-B test reads the ENTITY item amount,
+> never per-member** — T15 pins the division-first regression; scenarios
+> T14-T16; D_8283_014/015/016). **INPUT**: the NoncashContribution worksheet
+> (shared model/compute — return-generic since the 1040 unit) mounts on the
+> entity Schedule K tab (both entities; entity-aware feed blurb/hint); CRUD
+> already rides the form-agnostic recompute chokepoint. **COMPUTE**: 1120-S
+> K12b defaults from the non-withheld rows total (`_derive_schk_inputs_db` —
+> the override-respecting B11/K16e pre-pass; typed K12b GREEN wins; stale
+> derives self-clear; conservation withholds never leak); **1065 = NO FEED**
+> (single combined 13a face line — D_8283_016 coverage warning instead,
+> J-E2). **RENDER**: render_8283 opened to 1120-S/1065 (entity legal name +
+> EIN header); joins the ENTITY packet block (engagement > $500 self-gated).
+> **MeF**: IRS8283 = a DECLARED ReturnData1120S 2025v6.2 document (ref 1228,
+> 4797 < 8283 < 8824) — the SHARED build_irs8283 (corporate DonatedProperty-
+> Type ≡ IMF's) + K12b refDocId link; Section B rows REFUSE (the J7 wet-ink
+> seam); 1065 MeF rides the future mapper. **DIAGNOSTICS**: the row-level
+> substantiation checks (D_8283_002-013) now sweep entity rows via
+> `_row_returns`; D_SCHK_8283 RETIRED (is_active=False, seeded) → D_8283_014
+> error; D_8283_015 copy-to-members info; prod seed_rules run. **FAs**:
+> FA-ENT-8283-01/02 staged DRAFT at the RS leg, then ACTIVATED with runners
+> (`_run_ent8283_assertion`) + both export-verbatim mirrors refreshed in one
+> motion — flow gate 460→463. **GATES**: flow 463 · 8283+schk+pins+diag batch
+> 570 · MeF 1120-S + S5/S6 83 · tsc 0 · vitest 300 · NEW test_8283_entity 11
+> (T14/T15/T16 oracles) · live ORM probe 15/15 (feed/override/re-derive/
+> print/packet/MeF/diagnostics, both entities, cascade-deleted) · live
+> browser probe (worksheet on the entity Schedule K tab; typed 3,000 →
+> autosave → **K12b server-painted 3,000 YELLOW**). Boundaries →
+> DEFERRAL_AUDIT s66 (5 items); J-E1/E2/E3 ratifications queued (built to
+> the recommendations).
+
 > **2026-07-12 session 63 — SCH_K INPUT SUB-UNIT (the s56 tail items 4-7) —
 > COMPLETE (mig 0188).** The 1120-S Schedule K line-12 family re-keyed to the 2025
 > face IN PLACE (K12d→K12e, K12c→K12d, K12b→K12c; FFVs rode the FK — prod had 8
