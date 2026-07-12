@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 61 — FORM 6198 2025-FACE RENUMBER (audit unit #6), RS LEG
+> (+ tts manifest registration) — UNIT COMPLETE.** The RS 6198 block's line_map was
+> FABRICATED (an invented "prior year unallowed losses" line 2, deductible loss on
+> 20 vs the face's 21, 13 of 21 face lines missing — matched no published revision).
+> Rebuilt verbatim vs f6198.pdf **Rev. November 2025** (a NEW revision, Created
+> 9/9/25) + i6198 (Rev. 11-2025, fetched): 21 face-keyed facts (incl. the three
+> 15/16/18 a/b checkbox choice facts) · R001-R009 (§465 substance KEPT, re-keyed:
+> Part I combine 1-4 · Part II 6-10b · Part III 11-19b w/ the 15b prior-year-19b-
+> never-10b caution · L20 larger-of · L21 smaller-of w/ pro-rata carryover · QNF ·
+> §465(e) recapture · basis→at-risk→passive ordering · prior-year nondeductible
+> amounts ride Part I) · 25 face lines · D001-D006 · 7 scenarios incl. the THREE
+> published i6198 L21 examples + the p.3 L5 income-offset example. The paraphrase
+> "At-risk computation" excerpt replaced VERBATIM under the same label (fabricated-
+> excerpt class) + 5 new verbatim excerpts, mirrored in forms_supporting.py.
+> In-loader stale self-heal (9 facts / lines 2+10 / 2 scenarios deleted on prod,
+> exact); RuleAuthorityLink refresh-delete (s59 rule). SQLite harness 144/0
+> (twice-run, pre-polluted); prod seeded + idempotent rerun clean; deployed export
+> verified (25 lines / 9 rules / 21 facts / 6 diag / 7 tests); NEW tts mirror
+> `server/specs/form_6198_spec.json`. **tts side: NO drift possible — no 6198
+> render/compute/MeF leg exists** (field map is an unmapped stub; 4835's at-risk
+> cap matches R005 substance). Housekeeping: f6198.pdf was an UNREGISTERED template
+> — hash-verified vs a fresh irs.gov download (SHA match) and registered in
+> forms_manifest.json (83 forms; trip-wire bumped). Gates: manifest tests 3/3 ·
+> flow 447. The 6198 tts build unit (input/compute/render legs) remains future
+> work — the spec is now face-true for it.
+
 > **2026-07-12 session 60 — 1120-S PAGE-1 FFV SEMANTIC RE-KEY (renumber unit #5 tts
 > leg, `e4c4ac8` / mig 0187) — UNIT #5 COMPLETE.** Internal keys now equal the 2025
 > face (19=7205 NEW input · 20 other · 21 total · 22 OBI · 23a-c tax · 24a-d/z
