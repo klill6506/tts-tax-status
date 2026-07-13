@@ -66,9 +66,10 @@ move on; mandatory session close before context exhausts.**
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).
 9. s69 (no blocker): enter the firm's real CAF number + fax on the Preparer
    records (Admin → Preparers) so the 2848 L2 autofill carries them.
-10. s71: finish the demo Render service in the dashboard — `tts-tax-demo` is
-    in render.yaml (`ae618dc`); Ken creates/syncs it and sets DB_USER
-    (postgres.gujcgvxnzwsaytpobdar), DB_PASSWORD, GEMINI_API_KEY.
+10. ~~s71 demo Render service~~ — DONE by Ken same-day: **LIVE at
+    https://tts-tax-demo.onrender.com (verified environment=demo)**.
+    Remaining nit: GEMINI_API_KEY blank on the demo service (AI help dark
+    in demos until Ken sets it). Demo login: demo / delvio-demo.
 
 ## Active gates
 - **Flow-assertion gate GREEN at 500** (s71: 1040 mirror rebased
