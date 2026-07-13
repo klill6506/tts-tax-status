@@ -1400,10 +1400,15 @@ position + pure/DB tests — the s72 Schedule B/8867 recipe).
   Already e-filable (no work): 1040 · Sch 1/2/3 · A/B/C/D(agg)/EIC/F/SE(×2)/8812 ·
   2441 · 3800 · 4835 · 6251 · 7206 · 7217 · 8283 · 8835 · 8862 · 8863 · 8867 ·
   8911(+A) · 8936(+A) · 8995/8995-A(+D) · W-2 · 1099-R/INT/DIV(→Sch B).
-  **Open Ken clarifications: "4547" (no such IRS form — 4972 lump-sum? 5405?) ·
-  "Min Wks" (which worksheet set?) · "8879 Att".** Recommended ADDITIONS Ken should
-  confirm: 6252 (installment sales — print already built) · 1040-ES/1040-V vouchers ·
-  9325 · W-2G was implied by "W2 family" (input models exist).
+  Clarifications RESOLVED (Ken, s72): **4547 = Form 4547 "Trump Account
+  Election(s)" — VERIFIED real, IRS4547 document present in the 2025v5.3/5.4 +
+  2026v1.0 XSD trees** (→ Wave 3); "Min Wks" = TaxWise minister worksheets,
+  SKIPPED (retained worksheets, not filed); "8879 Att" SKIPPED. Rule of thumb
+  recorded: **a form e-files iff an IRS<form> document schema exists in the XSD
+  tree — worksheets without one are always retain-only.** Recommended ADDITIONS
+  Ken should confirm: 6252 (installment sales — print already built) ·
+  1040-ES/1040-V vouchers · 9325 · W-2G was implied by "W2 family" (input
+  models exist).
   - [ ] **Wave 1 — season-critical XML units (print/compute exist or near):**
     Sch E Parts I-IV + duplicates (the XML today REFUSES rentals — farm-rental-only
     v1 boundary) · 8949-detail + full Sch D path · 7203 basis attach (S-corp-heavy
@@ -1418,7 +1423,9 @@ position + pure/DB tests — the s72 Schedule B/8867 recipe).
     carryover) · 5695 · 8615 + 8814 · 8829-as-document · Sch J · 6252 · 4562-1040 ·
     4797-1040 · 8824 · 8582 doc (8582-AMT = print worksheet only, never transmitted) ·
     4136/6198/8941 1040-side legs (entity print exists).
-  - [ ] **Wave 3 — net-new builds (no compute yet):** Sch H · Sch R · **172 + 1045
+  - [ ] **Wave 3 — net-new builds (no compute yet):** **4547 Trump Account
+    Election(s) (OBBBA; IRS4547 doc in the 2025 XSDs — spec-verify the face at
+    build, it's post-cutoff law)** · Sch H · Sch R · **172 + 1045
     NOL pair (172 is the new Dec-2024 NOL form; 1045 is a PAPER application)** ·
     1310 · 2106 (reservist/performing-artist/fee-basis only post-TCJA) · 3903
     (military-only) · 4137 · 4952 · 6781 · 8801 · 8815 (also clears the s72 Sch B

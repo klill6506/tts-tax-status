@@ -33,8 +33,10 @@ move on; mandatory session close before context exhausts.**
    (2210/8959/8960/8962/8889/8880/8606/5329), EFW payment + 8888 + 9465,
    4868 (separate MeF family + e-services checkbox), 8915-F, W-2G, and the
    8879/8878 print pair. Each unit = the s72 Schedule B/8867 recipe.
-   **Ken to clarify: "4547" · "Min Wks" · "8879 Att"; confirm the suggested
-   additions (6252 · 1040-ES/V · 9325).**
+   Clarifications resolved: 4547 = the Trump Account Election(s) form
+   (IRS4547 doc VERIFIED in the 2025 XSDs → Wave 3); "Min Wks" + "8879 Att"
+   skipped per Ken. Still open: confirm the suggested additions
+   (6252 · 1040-ES/V · 9325).
 3. Otherwise the s71 queue stands: **bootstrap_demo 1065+1041 demo returns**
    (two-partner LLC w/ 8825 + GPs + K-1s; a trust w/ DNI + beneficiary K-1;
    demo DB + browser-verify) → **S-21b 1065 partner-percentage diagnostic** →
