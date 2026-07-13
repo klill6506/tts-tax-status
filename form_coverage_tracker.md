@@ -1,5 +1,55 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 70 — FORM 3115 PRINT UNIT (Spine S-20d) — ★★ UNIT
+> COMPLETE (the tts leg; RS spec WO-23 Gate-1-approved + seeded 2026-07-06;
+> mirror cached fresh from the deployed export at kickoff — the s64 rule).**
+> Print-only — NO MeF leg by design (the automatic-change original attaches
+> to the paper return package + duplicate copy to Ogden; non-automatic =
+> National Office + fee) and no tax-line feeds; CRUD skips the recompute
+> chokepoint (the s69 print-only recipe, third clone). **INPUT**: Form3115
+> (OneToOne singleton per the 19 spec facts + the Gate-1 Q2 direct-entry
+> Sch E 7a-7g present/proposed descriptors + Sch A L1 method boxes/2g
+> description as print-only fields) — migs 0191 + 0192 (RLS default-deny)
+> + 0193; Form3115Serializer (BaseModelSerializer) + the form-3115
+> PATCH-creates-lazily singleton endpoint returning rows + the re-derived
+> `analysis` (no stored computed columns). **COMPUTE (helpers)**:
+> compute_3115 — the DCN-7 depreciation catch-up (taken − allowable at BOY,
+> Rev. Proc. 2025-23 §6.01(5)), the Schedule A 2a-2h cash↔accrual netting,
+> the §7.03 adjustment-period router (1 neg / 4 pos / de minimis 1 /
+> under-exam 2, de-minimis precedence), ratable installments, DCN routing;
+> derived-vs-typed: blank dcn/L26 = YELLOW derives, typed wins GREEN;
+> cut-off suppresses the whole §481(a) block. **RENDER**: f3115.pdf Rev.
+> 12-2022 downloaded fresh + manifest-registered (87, trip-wire bumped) +
+> f3115_2025 AcroForm map (294 fields; Yes/No checkbox PAIRS kid[0]=Yes/
+> kid[1]=No; c4_3 on-states are the odd '90'/'120'; page-1 header grid +
+> applicant-type + change-type boxes + DCN(1) + L6a/L11a/L13 + Part IV
+> L25-L29 + Schedule A + the five Sch E face questions) + render_3115
+> (1040 taxpayer / entity header routing; **the Rev. 12-2022 face has NO
+> fill fields for Sch E L4a/L7 — they print as Statement pages, which also
+> satisfies L26's attach-a-computation-summary**; the spread schedule on
+> the statement; overall_method checks the page-1 Other box + specify text
+> since the face has no overall-method box); standalone render-3115
+> endpoint; joins ANY built module's packet when attach_to_return
+> (defaults TRUE — the automatic-change original belongs in the filing
+> package, unlike the 2553 default). **DIAGNOSTICS**: rules_3115 (8)
+> code-registered verbatim + prod seed_rules (D_3115_* 8 live); the
+> §481(a)-sign conditions read the EFFECTIVE net (the RS scenarios pin the
+> derived path). **UI**: Form3115Section self-managing card + monotonic
+> seq guard; mounts on the entity "Elections & POA (2553/2848/3115)" tab
+> (both entities) + the NEW 1040 "Method Change (3115)" tab; D_3115_
+> nav-mapped in all three scopes. **FAs**: FA-3115-CATCHUP/SPREAD/SCHA
+> ACTIVATED on RS prod (status-only reseed) with _run_3115_assertion in
+> BOTH dispatch chains (the s69 reconciliation lesson) + all three gate
+> mirrors refreshed from the deployed export (1120S 41 verbatim / 1065
+> 39 = 43−4 staged / 1040 +3 additive → 382) — **flow gate 475→484**.
+> **GATES**: flow 484 · NEW test_3115 39 (the 7 spec oracles pinned) ·
+> manifest/acroform 201 · pair 36 · combined sweep 760 · tsc 0 · vitest
+> 300 · live ORM probe 14/14 (3115-A end-to-end, diagnostics on live
+> rules, packet attach/detach, typed-wins, cut-off; cascade-deleted) ·
+> live browser probe (card mounts; real-key 8,000/72,000 → server-painted
+> "−64,000 · 1-year period" + derived DCN 7; console clean). Boundaries →
+> DEFERRAL_AUDIT s70 (7). OMB-citation nit → REVIEW_QUEUE s70.
+
 > **2026-07-12 session 69 — FORM 2553 + FORM 2848 PRINT-UNIT PAIR (Spine
 > S-20b/c) — ★★ BOTH UNITS COMPLETE (the tts legs; RS specs Gate-1-approved
 > + seeded s68).** Print-only forms — NO MeF legs by design (2553 =
