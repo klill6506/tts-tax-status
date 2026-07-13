@@ -1396,11 +1396,39 @@ position + pure/DB tests — the s72 Schedule B/8867 recipe).
   (bridge-gates: schedule_b_required / the render_8867 claim derivations); boundaries →
   DEFERRAL_AUDIT s72 (IRS8815 refuses; 8867 sub-question rows + K-1 listing-row nit →
   REVIEW_QUEUE).
-- [ ] **22b · Ken's TaxWise-derived forms list → prioritized MeF-document units** —
-  ⏳ WAITING ON KEN's pasted list. Known print-only-today candidates: 8959 · 8960 ·
-  8962 · 2210 · 8582 · 8880 · 8889 · 8606 · 5695 · 5329 · 1116 · 8615 · Sch J · 6252 ·
-  4797 · 8949-detail · 8815 (new). When the list lands: rank by firm volume, cut into
-  units, add each here.
+- [ ] **22b · KEN'S 1040 FORMS LIST — LANDED 2026-07-13 (s72), triaged into waves.**
+  Already e-filable (no work): 1040 · Sch 1/2/3 · A/B/C/D(agg)/EIC/F/SE(×2)/8812 ·
+  2441 · 3800 · 4835 · 6251 · 7206 · 7217 · 8283 · 8835 · 8862 · 8863 · 8867 ·
+  8911(+A) · 8936(+A) · 8995/8995-A(+D) · W-2 · 1099-R/INT/DIV(→Sch B).
+  **Open Ken clarifications: "4547" (no such IRS form — 4972 lump-sum? 5405?) ·
+  "Min Wks" (which worksheet set?) · "8879 Att".** Recommended ADDITIONS Ken should
+  confirm: 6252 (installment sales — print already built) · 1040-ES/1040-V vouchers ·
+  9325 · W-2G was implied by "W2 family" (input models exist).
+  - [ ] **Wave 1 — season-critical XML units (print/compute exist or near):**
+    Sch E Parts I-IV + duplicates (the XML today REFUSES rentals — farm-rental-only
+    v1 boundary) · 8949-detail + full Sch D path · 7203 basis attach (S-corp-heavy
+    practice; required with losses/distributions/sales) · 2210 · 8959 · 8960 · 8962 ·
+    8889 · 8880 · 8606 · 5329 · **ACH/EFW balance-due payment record** + 8888 split
+    refund + 9465 · **4868 e-file (SEPARATE MeF extension family + its own e-services
+    forms checkbox — needed in bulk by April)** · 8915-F (Helene) · W-2G doc ·
+    **8879 + 8878 print units (Practitioner-PIN signature workflow — retained, not
+    transmitted)**.
+  - [ ] **Wave 2 — common, mostly print-done → XML:** 1040-X e-file (MeF amended
+    family) · 1116 (+the AMT copy — verify the MeF AMT-1116 channel at build; +Sch B
+    carryover) · 5695 · 8615 + 8814 · 8829-as-document · Sch J · 6252 · 4562-1040 ·
+    4797-1040 · 8824 · 8582 doc (8582-AMT = print worksheet only, never transmitted) ·
+    4136/6198/8941 1040-side legs (entity print exists).
+  - [ ] **Wave 3 — net-new builds (no compute yet):** Sch H · Sch R · **172 + 1045
+    NOL pair (172 is the new Dec-2024 NOL form; 1045 is a PAPER application)** ·
+    1310 · 2106 (reservist/performing-artist/fee-basis only post-TCJA) · 3903
+    (military-only) · 4137 · 4952 · 6781 · 8801 · 8815 (also clears the s72 Sch B
+    line-3 refusal) · 8839 · 8379 · 8332 (binary-attach channel) · 8594 · 2120 ·
+    4852 · 8948 · 8958 (GA non-community — rare) · 8834 (legacy carryforwards —
+    confirm need) · GBC members 3468/5884/6765/8908 (3800 Part III + K-1 codes).
+  - [ ] **Wave 4 — practice/workflow docs (print-only):** 8453-1040 transmittal
+    (paper attachments: 1098-C, appraisals, 8332) · W-4 · **W-7 (PAPER-ONLY to
+    Austin w/ originals — an attached W-7 means the return itself cannot e-file;
+    needs a workflow diagnostic)** · 1040-ES/1040-V · 9325.
 
 ---
 
