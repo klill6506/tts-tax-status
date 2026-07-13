@@ -1,7 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-13, session 71 ("go" — autonomous, then Ken live,
-then "go"). THREE acts: (1) **the 1040 FA-mirror export-verbatim rebase
+*Last updated: 2026-07-13, session 71. FOUR acts (act four, Ken-directed):
+**THE DEMO/TEST ENVIRONMENT EXISTS** — Supabase project `gujcgvxnzwsaytpobdar`
+(`tts-tax-demo`), selected by `TTS_ENV=demo` → `server/.env.demo` (DB_* only,
+gitignored; `.env` still supplies secrets). Fully built: all migrations
+(0001→0194) + `seed_all` + per-firm print packages + **`bootstrap_demo`**
+(NEW guard-refused-outside-demo command): Delvio Demo Firm · login `demo` /
+`delvio-demo` · NINE synthetic returns through the real engine (1040 ATS
+S2/S3/S4/S5/S8/S12/S13 + 1120-S S5/S6). `GET /version` now reports
+`environment`; `run_demo.ps1` + launch.json `django-demo` start it.
+Browser-verified: demo login → nine clients → Jones 1040 opens computing
+(AGI $35,492). **Multi-tenant-as-product + three-environment architecture
+recorded in DECISIONS.md. Dev-session probes should now PREFER the demo DB.**
+Ken-next: his Render-demo-service call (phase 2, optional). Earlier acts:* (1) **the 1040 FA-mirror export-verbatim rebase
 SHIPPED** (`9594462`; flow 484 → 500; FA-1040-4835-06 staged — no 4562→4835
 feeder). (2) **Ken's RATIFICATION SWEEP emptied REVIEW_QUEUE** (12/12,
 recommendations adopted; Spine S-21a/b/c authorized). (3) **S-21a SHIPPED —

@@ -36,6 +36,19 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 *(s66 below)*
 **s66 (2026-07-12): S-20a ENTITY FORM 8283 — UNIT COMPLETE, BOTH LEGS (RS s65 `8b6faca` + tts s66).** The tts build leg: **1120-S K12b feeder** (a `_derive_schk_inputs_db` arm — reads the noncash_summary bridge-gate, writes the non-withheld total via the override-respecting pre-pass; typed GREEN wins; stale derives self-clear; feed flows below the $500 FORM gate) · **1065 print+diagnose only** (J-E2 — combined 13a face line; D_8283_016 coverage warning) · render_8283 opened to entities (legal name/EIN header) + the entity packet block · **MeF IRS8283 document** (DECLARED ReturnData1120S 2025v6.2 ref 1228; the SHARED build_irs8283/_extract_f8283 — corporate DonatedPropertyType ≡ IMF; K12b refDocId; Section B REFUSES, the J7 wet-ink seam; 1065 MeF = future mapper) · row-level D_8283_002-013 sweep entity rows (`_row_returns`) · NEW D_8283_014/015/016 code-registered + prod-seeded · **D_SCHK_8283 RETIRED** (is_active=False, the D_1040_001 precedent) · UI: the worksheet mounts on the entity Schedule K tab (entity-aware blurb/hint; NavScope D_8283_→sched_k) · **FA-ENT-8283-01/02 ACTIVATED with runners + both export-verbatim mirrors refreshed in one motion — flow 460→463**. Gates: 570 batch · MeF 83 (S5/S6 byte-stable) · tsc 0 · vitest 300 · NEW test_8283_entity 11 (T14-T16 oracles) · live ORM probe 15/15 · live browser probe (typed 3,000 → autosave → K12b server-painted YELLOW). Two s63 fixtures updated (typed K12b carries is_overridden — the derived-write convention). Boundaries → DEFERRAL_AUDIT s66 (5); J-E1/E2/E3 ratifications queued (shipped to the recommendations). ▶ NEXT: **S-20b Form 2553 app build (spec-first — RS 2553 spec check; 404 → STOP)** → 2848 → 3115 (Ken-gated items unchanged).
 
+**Session 71 wrap, act four (2026-07-13; Ken-directed — "separate demo/test DB"):**
+- [x] `[APP]` **DEMO/TEST ENVIRONMENT — BUILT + VERIFIED (not on the Spine —
+  ADDED per the never-silent rule)** — 2026-07-13: multi-tenant-as-product +
+  three-environment architecture ruled + recorded (DECISIONS.md); new Supabase
+  project `tts-tax-demo`; `TTS_ENV=demo` switch in settings (+`.env.demo`,
+  gitignored, DB_*-only overlay); migrations 0001→0194 + seed_all + print
+  packages run; NEW `bootstrap_demo` command (demo-guard; Delvio Demo Firm +
+  `demo` login + 9 ATS synthetic returns through the real engine; `--reset`
+  refresh); `/version` environment field; run_demo.ps1 + launch.json
+  django-demo; browser-verified login→returns→computed 1040. Dev probes now
+  prefer demo; prod untouched by experiments. Phase 2 (Ken call): a demo
+  Render service.
+
 **Session 71 wrap, act three (2026-07-13; "go"):**
 - [x] `[APP]` **S-21a · 1120-S M-2 NNA-cap compute leg + face column rotation —
   UNIT COMPLETE** — 2026-07-13 (mig 0194): the ratified R002 cap in the formula
