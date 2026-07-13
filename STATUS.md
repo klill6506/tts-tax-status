@@ -1,17 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-13, session 71 ("go" — autonomous). **The s69/s70 1040
-FA-mirror rebase SHIPPED** (the one non-Ken-gated candidate in BUILD_ORDER's
-NOW line; DEFERRAL_AUDIT s69 item 1 CLOSED). The 1040 gate mirror is now
-EXPORT-VERBATIM from the deployed RS endpoint (the s64 recipe): 397 active +
-1 staged-pending (FA-1040-4835-06 — no 4562-engine → 4835 line-12 feeder
-exists). 16 new ids id-routed to runners (NEW _run_461_assertion +
-_run_4835_assertion; SCHE-03 + 8582-08 id-first arms; FA-8941-01 rode the
-existing prefix chains); 130 drifted shared definitions adopted as-is — one
-runner fix (FA-1040-8911-04 re-kinded gating_check → flow_check by the RS
-Form-3800 amendment; 6a landing pin added). **Flow gate 484 → 500 GREEN.**
-No app/compute code touched — tests + spec mirrors only. `/bugs` at boot:
-clean.*
+*Last updated: 2026-07-13, session 71 ("go" — autonomous, then Ken live).
+TWO things happened: (1) **the 1040 FA-mirror export-verbatim rebase SHIPPED**
+(`9594462`; flow gate 484 → 500 GREEN; 397 active + FA-1040-4835-06
+staged-pending — no 4562→4835 line-12 feeder; tests + spec mirrors only).
+(2) **Ken ran the RATIFICATION SWEEP live — all 12 open REVIEW_QUEUE calls
+answered, every recommendation adopted; the queue is EMPTY.** Three build
+units authorized → **NEW Spine S-21**: a) the 1120-S M-2 NNA-cap compute leg
+(+ the s63 off-face grid-column re-key folded in), b) the 1065
+partner-percentage diagnostic, c) the 1065 Sch B Q4 auto-answer (Q11 recipe
+clone, (c) presumed true). `/bugs` at boot: clean.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -25,19 +23,25 @@ clean.*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **BUILD_ORDER's next unblocked Spine item** — S-20 fully done AND the 1040
-   FA-mirror rebase done (s71); the 1120/709 authoring waves and the 1120-S
-   ATS completion lane stay Ken-gated. **Nothing is unblocked: idle — Ken
-   directs.**
-3. **Ken ratifications pending (REVIEW_QUEUE):** s65 J-E1/E2/E3 (8283 entity) ·
-   s59 M-2 NNA cap · R007 AMT-matrix · 40% transitional election · s49
-   candidates · s53 partner-percentage diagnostic · s57 K-1 health-insurance
-   ZZ · s64 pair · s70 RS-3115 OMB-citation nit (fold into the next RS
-   3115 amendment).
+2. **BUILD_ORDER's next unblocked Spine item = S-21a: the 1120-S M-2 NNA-cap
+   compute leg** (spec-first — RS 1120S_M2, mirror current since s59; the
+   ratified R002 cap = AAA without regard to the NNA, §1368(e)(1)(C); pin the
+   i1120s pp.50-51 worksheet example + divergence scenarios; FOLD IN the s63
+   off-face M-2 grid column re-key b/c/d). Then **S-21b** (1065 partner-pct
+   WARNING) → **S-21c** (1065 Sch B Q4 auto-answer, Q11 clone, (c) presumed
+   true, (d) from the M-3 flag). The 1120/709 authoring waves + the 1120-S
+   ATS lane stay Ken-gated.
+3. **Ken ratifications pending: NONE — the queue is EMPTY** (the s71 live
+   sweep answered all 12; dispositions recorded in REVIEW_QUEUE's sweep
+   block). Standing non-decisions only: the 3115 OMB nit rides the next RS
+   3115 amendment; the 8824 RS amendment note rides the next 8824 touch.
+   *(Note: STATUS previously listed "s49 candidates" — no such open item
+   exists in REVIEW_QUEUE; if there's an s49 list elsewhere Ken wants
+   triaged, say so.)*
 
 ## ▶ Waiting on Ken / external
 1. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
-2. Ratifications: 8283 J-E1/E2/E3 (s65) · M-2 NNA cap (s59) · R007 AMT + 40% election (s47).
+2. ~~Ratifications~~ — CLEARED by the s71 live sweep (queue empty).
 3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
 4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
 6. PWA install check. 7. TaxWise forms-usage report. 8. Density feel-check (s52).

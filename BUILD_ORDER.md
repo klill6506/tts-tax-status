@@ -19,7 +19,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s71 (2026-07-13): the 1040 FA-MIRROR EXPORT-VERBATIM REBASE SHIPPED (DEFERRAL_AUDIT s69 item 1 CLOSED — the one non-Ken-gated candidate). Flow gate 484 → 500.** The s64 recipe re-run on the 1040 gate: mirror re-adopted from the deployed export (**397 active — the additive-append era over on ALL THREE mirrors**) · 15 new ids id-routed to real runners (NEW `_run_461_assertion` §461(l) quartet + `_run_4835_assertion` Form-4835 eight · SCHE-03/8582-08 id-first arms · FA-8941-01's 1040 arm rode the existing prefix chains) · **FA-1040-4835-06 STAGED pending (the green-lie guard: no 4562-engine → 4835 line-12 feeder exists; `flow_assertions_1040_pending.json` + the staged-pin test)** · 130 drifted shared definitions adopted as-is; one runner re-kind (FA-1040-8911-04 gating_check → flow_check per the RS Form-3800 amendment, + the Sch-3 6a landing pin). Tests + spec mirrors only — no app/compute code. `/bugs` at boot: clean. ▶ NEXT: **no unblocked Spine build item — the 1120/709 authoring waves + the 1120-S ATS completion lane are Ken-gated; idle — Ken directs** (candidates when unblocked: e-services reply → S7/S8 + upload loop · TaxWise forms-usage report → net-new RS scope).
+## ▶ NOW WORKING ON — **s71 (2026-07-13): the 1040 FA-MIRROR EXPORT-VERBATIM REBASE SHIPPED (DEFERRAL_AUDIT s69 item 1 CLOSED — the one non-Ken-gated candidate). Flow gate 484 → 500.** The s64 recipe re-run on the 1040 gate: mirror re-adopted from the deployed export (**397 active — the additive-append era over on ALL THREE mirrors**) · 15 new ids id-routed to real runners (NEW `_run_461_assertion` §461(l) quartet + `_run_4835_assertion` Form-4835 eight · SCHE-03/8582-08 id-first arms · FA-8941-01's 1040 arm rode the existing prefix chains) · **FA-1040-4835-06 STAGED pending (the green-lie guard: no 4562-engine → 4835 line-12 feeder exists; `flow_assertions_1040_pending.json` + the staged-pin test)** · 130 drifted shared definitions adopted as-is; one runner re-kind (FA-1040-8911-04 gating_check → flow_check per the RS Form-3800 amendment, + the Sch-3 6a landing pin). Tests + spec mirrors only — no app/compute code. `/bugs` at boot: clean. **THEN (same session, Ken live): the RATIFICATION SWEEP — all 12 open REVIEW_QUEUE calls answered via AskUserQuestion, every filed recommendation adopted; the queue is EMPTY. Three build units authorized → NEW Spine S-21** (a: M-2 NNA-cap compute leg + the off-face grid re-key · b: 1065 partner-pct diagnostic · c: 1065 Sch B Q4 auto-answer). ▶ NEXT: **S-21a — the 1120-S M-2 NNA-cap compute leg (spec-first; mission-lane)** → S-21b → S-21c (the 1120/709 authoring waves + the 1120-S ATS lane remain Ken-gated).
 
 *(s70 below)*
 **s70 (2026-07-12): S-20d COMPLETE — the Form 3115 tts print unit SHIPPED. Flow gate 475 → 484. THE S-20 ADMIN-FORMS BLOCK (a/b/c/d) IS FULLY DONE.** Print-only recipe third clone: Form3115 singleton (migs 0191/0192/0193) · §481(a) helpers pinned to the 7 spec oracles (DCN-7 catch-up / Sch-A 2a-2h netting / the §7.03 period router with de-minimis precedence / ratable spread) · D_3115_* ×8 code-registered + prod-seeded · f3115 Rev. 12-2022 AcroForm render (**Sch E L4a/L7 have NO face fields — Statement pages carry them AND satisfy L26's attach-a-summary**; overall_method = the Other box + specify text, no face box exists) · packet-on-attach (defaults ON — automatic changes attach) · entity Elections tab + NEW 1040 "Method Change (3115)" tab (self-managing card + seq guard) · FA-3115-CATCHUP/SPREAD/SCHA ACTIVATED + runners in both chains + all three mirrors refreshed (1120S 41 / 1065 39 / 1040 382 additive). Gates: flow 484 · test_3115 39 · manifest/acroform 201 (trip-wire 87) · combined 760 · tsc 0 · vitest 300 · ORM 14/14 · browser probe green. Boundaries → DEFERRAL_AUDIT s70 (7); RS-3115 OMB-citation nit → REVIEW_QUEUE. ▶ NEXT: **no unblocked Spine build item — the 1120/709 authoring waves + the 1120-S ATS completion lane are Ken-gated; idle — Ken directs** (candidates when unblocked: e-services reply → S7/S8 + upload loop · TaxWise forms-usage report → net-new RS scope · the s69/s70 1040 FA-mirror rebase is available as a maintenance pass).
@@ -35,6 +35,15 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 *(s66 below)*
 **s66 (2026-07-12): S-20a ENTITY FORM 8283 — UNIT COMPLETE, BOTH LEGS (RS s65 `8b6faca` + tts s66).** The tts build leg: **1120-S K12b feeder** (a `_derive_schk_inputs_db` arm — reads the noncash_summary bridge-gate, writes the non-withheld total via the override-respecting pre-pass; typed GREEN wins; stale derives self-clear; feed flows below the $500 FORM gate) · **1065 print+diagnose only** (J-E2 — combined 13a face line; D_8283_016 coverage warning) · render_8283 opened to entities (legal name/EIN header) + the entity packet block · **MeF IRS8283 document** (DECLARED ReturnData1120S 2025v6.2 ref 1228; the SHARED build_irs8283/_extract_f8283 — corporate DonatedPropertyType ≡ IMF; K12b refDocId; Section B REFUSES, the J7 wet-ink seam; 1065 MeF = future mapper) · row-level D_8283_002-013 sweep entity rows (`_row_returns`) · NEW D_8283_014/015/016 code-registered + prod-seeded · **D_SCHK_8283 RETIRED** (is_active=False, the D_1040_001 precedent) · UI: the worksheet mounts on the entity Schedule K tab (entity-aware blurb/hint; NavScope D_8283_→sched_k) · **FA-ENT-8283-01/02 ACTIVATED with runners + both export-verbatim mirrors refreshed in one motion — flow 460→463**. Gates: 570 batch · MeF 83 (S5/S6 byte-stable) · tsc 0 · vitest 300 · NEW test_8283_entity 11 (T14-T16 oracles) · live ORM probe 15/15 · live browser probe (typed 3,000 → autosave → K12b server-painted YELLOW). Two s63 fixtures updated (typed K12b carries is_overridden — the derived-write convention). Boundaries → DEFERRAL_AUDIT s66 (5); J-E1/E2/E3 ratifications queued (shipped to the recommendations). ▶ NEXT: **S-20b Form 2553 app build (spec-first — RS 2553 spec check; 404 → STOP)** → 2848 → 3115 (Ken-gated items unchanged).
+
+**Session 71 wrap, continued (2026-07-13; Ken live — "ask me the yes/no calls"):**
+- [x] `[docs]` **⟨RATIFICATION SWEEP⟩ ALL 12 open REVIEW_QUEUE calls ANSWERED** —
+  2026-07-13, the house AskUserQuestion format, every recommendation adopted:
+  M-2 NNA cap · R007 AMT · 8283 J-E1/E2/E3 · K-1 ZZ keep · 40% election
+  leave-unimplemented · partner-pct BUILD · $300 DFE proxy keep · RC001
+  as-is · Sch B Q4 auto-answer APPROVED · SCHB+Q11 ratified · 8824 both ·
+  3115 OMB fold-in. REVIEW_QUEUE now EMPTY; Spine S-21a/b/c added
+  (M-2 NNA compute leg first — mission-lane); NOW/NEXT re-cut.
 
 **Session 71 wrap (2026-07-13; "go" — autonomous):**
 - [x] `[APP]` **1040 FA-mirror export-verbatim rebase (DEFERRAL_AUDIT s69
@@ -1329,6 +1338,26 @@ spec-first unit; sequence after the SCH_K renumber queue unless Ken reorders.
   D_3115_* ×8 + f3115 Rev. 12-2022 AcroForm render (Sch E L4a/L7 = Statement pages — no
   face fields) + packet-on-attach (defaults ON) + entity/1040 mounts +
   FA-3115-CATCHUP/SPREAD/SCHA activated with runners (flow 484). **S-20 fully DONE.**
+
+**S-21 · [APP] · RATIFICATION-SWEEP UNITS (unblocked by Ken's s71 live sweep, 2026-07-13 —
+all 12 REVIEW_QUEUE calls answered; the queue is EMPTY).** Three build units authorized:
+- [ ] **21a · 1120-S M-2 NNA-cap compute leg** — implement the ratified R002 correction
+  in tts M-2 compute (line-7 AAA distribution charge capped at the AAA WITHOUT regard to
+  the net negative adjustment, floor zero, NNA after distributions — §1368(e)(1)(C) /
+  Reg. 1.1368-2(a)(5); the published i1120s pp.50-51 worksheet example + the divergence
+  pin are RS scenarios to pin against). FOLD IN the s63 deferral: the M-2 grid's
+  OFF-FACE internal column letters (b=OAA/c=STPI/d=AE&P vs face b=PTEP/c=AE&P/d=OAA) —
+  re-key to the face in the same leg. Spec-first (RS 1120S_M2 mirror is current, s59).
+  Mission-lane (1120-S) — FIRST of the three.
+- [ ] **21b · 1065 partner-percentage diagnostic** — small code-registered unit: WARNING
+  when profit_pct or loss_pct over ACTIVE partners doesn't sum to 100 (capital_pct stays
+  informational — D_K1_CAPPCT covers it). Own unit with DB tests (the s53 recommendation,
+  ratified verbatim).
+- [ ] **21c · 1065 Schedule B Q4 auto-answer** — the approved Q11 recipe clone:
+  derived-YELLOW/overridable; (a) receipts < $250K + (b) assets < $1M from return data,
+  (c) K-1s-filed-timely PRESUMED TRUE at prep time (Ken-ratified presumption), (d) from
+  the M-3 flag. Yes waives Sch L/M-1/M-2/item L — same waiver wiring as the 1120-S
+  sibling. Spec-first (RS 1065 SCH_B block).
 
 ---
 
