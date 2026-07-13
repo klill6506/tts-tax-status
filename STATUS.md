@@ -26,19 +26,21 @@ software-package screens need the supported-forms lists (delivered in-chat:
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55; s72 sweep: clean).
-2. **NEXT UNIT (Ken-directed 2026-07-13): S-17g A2A channel — the IdenTrust
-   cert is ISSUED + INSTALLED.** Prereqs on Ken (checklist in
-   `docs/mef/A2A_ENROLLMENT.md`, updated s72): (a) AE Step 2/3 — Create A2A
-   Client System ID (public Signing .cer upload; ASID 61135801; six services;
-   ETINs 14191+14192) then ACTIVATE; (b) export the cert+key as a
+2. **NEXT UNIT (Ken-directed 2026-07-13): S-17g A2A channel — cert INSTALLED
+   AND ✅ ASID 61135801 ENROLLED in AE (live, end of s72; "successfully
+   processed") **and CONFIRMED `active` — AE enrollment 100% DONE.**
+   Remaining prereqs on Ken (checklist in
+   `docs/mef/A2A_ENROLLMENT.md`): (b) export the cert+key as a
    password-protected .p12 OUTSIDE the repo → `MEF_A2A_CERT_PATH`/
-   `MEF_A2A_CERT_PASSWORD` in `server/.env`; (c) download the gated MeF A2A
-   WSDL toolkit → `docs/mef/wsdl/`. CC then builds `A2ATransmitter` (SOAP +
-   WS-Security X.509 signing, Login/SendSubmissions/GetNewAcks against the
-   REAL WSDLs — nothing from memory) behind the Transmitter ABC → **A2A comms
-   test in ATS under ETIN 14192** (precedes the Nov-1 A2A-healthy gate).
-   The SOAP-client skeleton CAN start against a scratch key if the WSDLs
-   arrive before the cert export.
+   `MEF_A2A_CERT_PASSWORD` in `server/.env` (the public Signing .cer already
+   exported: `C:\Users\Ken\Documents\mef_a2a_signing.cer`, thumbprint
+   FA27333…ADA9 — the DigitalSignature one of the IGC pair); (c) download the
+   gated MeF A2A WSDL toolkit → `docs/mef/wsdl/`. CC then builds
+   `A2ATransmitter` (SOAP + WS-Security X.509 signing, Login/SendSubmissions/
+   GetNewAcks against the REAL WSDLs — nothing from memory) behind the
+   Transmitter ABC → **A2A comms test in ATS under ETIN 14192** (precedes the
+   Nov-1 A2A-healthy gate). The SOAP-client skeleton CAN start against a
+   scratch key if the WSDLs arrive before the .p12.
 3. **THEN: KEN'S 1040 FORMS LIST (s72) — triaged into Spine S-22b Waves 1-4
    (BUILD_ORDER has the full cut).** Next build = **Wave 1**, biggest first:
    Sch E Parts I-IV XML (rentals REFUSE today — the v1 farm-rental boundary),
