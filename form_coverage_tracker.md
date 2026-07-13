@@ -1,5 +1,56 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-12 session 69 — FORM 2553 + FORM 2848 PRINT-UNIT PAIR (Spine
+> S-20b/c) — ★★ BOTH UNITS COMPLETE (the tts legs; RS specs Gate-1-approved
+> + seeded s68).** Print-only forms — NO MeF legs by design (2553 =
+> paper/fax to KC/Ogden; 2848 = online/fax/mail to the CAF) and no tax-line
+> feeds, so CRUD deliberately skips the recompute chokepoint (the
+> bulk-assign precedent). **INPUT**: Form2553 (OneToOne + Form2553Consent
+> J-N rows + Form2553Qsst Part-III rows) and Form2848 (OneToOne +
+> Form2848Representative ×4 + Form2848Matter ×3) — migs 0189 + 0190 (RLS
+> default-deny ×6) + firms 0005 (**Preparer gains caf_number + fax**;
+> Preparer Manager UI + serializer expose them); all serializers
+> BaseModelSerializer; singleton PATCH-creates-lazily endpoints return the
+> full serialization + the re-derived `analysis` dict (no stored computed
+> columns — the 8283 convention). **COMPUTE (helpers)**: compute_2553 —
+> the §1362(b) 2mo15d corresponding-day deadline (the three published
+> i2553 examples + Dec-31 + leap-year pinned), timeliness incl.
+> invalid-early/preceding-year, min(raw,agg) shareholder gate + item-G,
+> the Rev. Proc. 2013-30 relief router (corp/6a-c-alt/entity/PLR $14,500),
+> consent scope, part2_basis derived from the face boxes; compute_2848 —
+> the receipt-year+3 CAF future-clock, the 45/60-day countersign window,
+> modified-CAF (the 08-Jul-2026 Rec. Dev.), filing route, the URP
+> four-condition gate, the CAF 9-digit-or-'None' shape. **RENDER**: both
+> templates manifest-registered (85/86, hash-verified vs irs.gov — the s61
+> unregistered-template class again) + AcroForm field maps (f2553 100
+> fields incl. the 7-row consent grid + Part II/III; f2848 92 human-named
+> fields incl. the Table_Line3/Table_PartII nesting) + render_2553
+> (overflow page-2/page-4 copies; the 2013-30 margin legend as an abs_pos
+> literal; wet-ink seams blank) + render_2848 (SSN/EIN TIN-box routing;
+> the §1.6012-1(a)(5) prescribed statement at 7pt; e-sign/wet-ink seams);
+> standalone render-2553/render-2848 endpoints; 2553 joins the 1120-S
+> packet ONLY when attach_to_return (late-election-with-return); 2848 is
+> NEVER packeted. **THE APPROVED VALUE-ADD**: form-2848-autofill-rep fills
+> an L2 block from the Preparer record (name/firm address/CAF-or-'None'/
+> PTIN/phone/fax) marked YELLOW; any manual PATCH clears to GREEN.
+> **DIAGNOSTICS**: rules_2553 (19) + rules_2848 (17) code-registered
+> verbatim from the specs + prod seed_rules (D_2553_* 19 / D_2848_* 17
+> live). **UI**: entity "Elections & POA (2553/2848)" tab (1120-S both
+> cards / 1065 2848-only) + the 1040 "Power of Atty (2848)" tab; cards
+> self-manage from the singleton endpoints under a monotonic seq guard
+> (an out-of-order paint was caught LIVE in the browser probe and fixed);
+> D_2553_/D_2848_ nav-mapped in all three scopes. **FAs**: FA-2553-WINDOW/
+> COUNT/8832 + FA-2848-FUTURE/SIGN45/CAFFILL ACTIVATED on RS prod with
+> runners (_run_2553_assertion/_run_2848_assertion) + all three gate
+> mirrors refreshed in one motion (1120S 38 verbatim / 1065 36 = 40−4
+> staged / 1040 +3 additive) — **flow gate 463→475**. **GATES**: flow 475 ·
+> NEW test_2553_2848_pair 36 · manifest/acroform/packet 206 · tsc 0 ·
+> vitest 300 · live ORM probe 21/21 (endpoints, window math, autofill,
+> diagnostics, the 1040 refuse; cascade-deleted) · live browser probe
+> (cards mount on the entity tab; item-E date → server-painted deadline
+> 2026-03-15 → LATE + relief + legend under concurrent saves; autofill
+> painted the 9-digit CAF YELLOW). Boundaries → DEFERRAL_AUDIT s69 (7).
+
 > **2026-07-12 sessions 65-66 — ENTITY FORM 8283 (Spine S-20a) — ★★ UNIT
 > COMPLETE, BOTH LEGS — SPEC-FIRST RS round-trip (RS `8b6faca`).** The shared
 > 8283 spec's PTE stated-boundary (D_8283_010) closed with an additive

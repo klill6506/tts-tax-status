@@ -19,7 +19,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s68 continued (2026-07-12): ⟨GATE-1⟩ ×2 APPROVED LIVE — 2553 (WO-26) + 2848 (WO-27) SEEDED to RS prod, exports verified 200, tts mirrors cached. The S-20b/c RS lane is CLEAR; the tts print units are DISPATCHED as the next build pair** (per unit: template/manifest + AcroForm check · inputs + UI card · computed helpers · diagnostics code-registered + prod seed · render + packet · **the 2848 L2 preparer autofill** · FA runners + activate + mirror refresh in one motion · probes + gates; NO MeF legs — both paper/fax/online-upload only). Ken's approval came via the plain-English re-present + AskUserQuestion ("Approve" ×2) — recorded as the house Gate-1 format for autonomous-drafted specs. FA export verified clean (the 6 new FAs stay DRAFT; 1120-S serves 32). ▶ NEXT: **the 2553+2848 tts print-unit pair** → S-20d 3115 tts app build (no gate).
+## ▶ NOW WORKING ON — **s69 (2026-07-12): S-20b/c COMPLETE — the Form 2553 + Form 2848 tts print-unit pair SHIPPED (both units, one session). Flow gate 463 → 475.** Print-only recipe: models+rows (migs 0189/0190 + firms 0005 — Preparer gains caf_number/fax, exposed in Preparer Manager) · pure window/clock helpers pinned to the published oracles · 19+17 diagnostics code-registered verbatim + prod-seeded · AcroForm renders (2553 overflow copies + the 2013-30 margin legend; 2848 TIN routing + the §1.6012-1(a)(5) statement) · the approved 2848 L2 preparer autofill (YELLOW→GREEN) · entity Elections tab + 1040 POA tab (self-managing cards + the seq-guard fix caught live) · FA-2553-*/FA-2848-* ACTIVATED (RS `0e71f68`) + runners + all three mirrors in one motion. Gates: flow 475 · pair 36 · manifest/acroform/packet 206 · tsc 0 · vitest 300 · ORM 21/21 · browser probe green. Boundaries → DEFERRAL_AUDIT s69 (7 incl. the 1040-mirror rebase). ▶ NEXT: **S-20d Form 3115 tts app build (WO-23 spec DONE — no gate)**; Ken-gated items unchanged; Ken-next: enter the firm's CAF/fax on the Preparer records.
 
 *(s68 draft leg below)*
 **s68 (2026-07-12): S-20c FORM 2848 — RS DRAFT COMPLETE (WO-27). Superseded same-day: APPROVED + SEEDED (above).** The s67 draft-to-gate recipe re-run: gap 404 → research verbatim (f2848 Rev. 1-2021 + i2848 Rev. 9-2021, current; **⚠⚠ a Recent Development posted 08-Jul-2026 — FOUR DAYS before the draft — 5a-other/any-5b entries record the POA as "MODIFIED" on the CAF (the rep loses TDS + Tax Pro Account installment agreements); "never check line 4 unless truly specific-use"; encoded D_2848_MODCAF/D_2848_L4CAF**) → `f2848_source_brief.md` → gated `load_2848.py` (34 facts / 9 rules — the 45/60-day rep-signature window · the future-period CAF clock (receipt-year+3) · the "All years" RETURN-the-POA error · the URP four-condition gate · 4-rep/2-notice-copy limits · L6 attach-to-retain — / 30 lines / 17 diag / 9 scenarios / 3 draft FAs; **the L2 preparer-autofill value-add specced, FA-2848-CAFFILL**; entity_types all six; print-first, no MeF) → harness `validate_2848.py` **73/0** → WO-27 `⏳ AWAITING KEN` (+ tts REVIEW_QUEUE s68, approve-all recommendations). ▶ NEXT: **S-20d 3115 tts app build (WO-23 spec exported — buildable NOW, no gate)**; the 2553+2848 tts print units dispatch as a pair when the Gate-1s clear.
@@ -29,6 +29,24 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 *(s66 below)*
 **s66 (2026-07-12): S-20a ENTITY FORM 8283 — UNIT COMPLETE, BOTH LEGS (RS s65 `8b6faca` + tts s66).** The tts build leg: **1120-S K12b feeder** (a `_derive_schk_inputs_db` arm — reads the noncash_summary bridge-gate, writes the non-withheld total via the override-respecting pre-pass; typed GREEN wins; stale derives self-clear; feed flows below the $500 FORM gate) · **1065 print+diagnose only** (J-E2 — combined 13a face line; D_8283_016 coverage warning) · render_8283 opened to entities (legal name/EIN header) + the entity packet block · **MeF IRS8283 document** (DECLARED ReturnData1120S 2025v6.2 ref 1228; the SHARED build_irs8283/_extract_f8283 — corporate DonatedPropertyType ≡ IMF; K12b refDocId; Section B REFUSES, the J7 wet-ink seam; 1065 MeF = future mapper) · row-level D_8283_002-013 sweep entity rows (`_row_returns`) · NEW D_8283_014/015/016 code-registered + prod-seeded · **D_SCHK_8283 RETIRED** (is_active=False, the D_1040_001 precedent) · UI: the worksheet mounts on the entity Schedule K tab (entity-aware blurb/hint; NavScope D_8283_→sched_k) · **FA-ENT-8283-01/02 ACTIVATED with runners + both export-verbatim mirrors refreshed in one motion — flow 460→463**. Gates: 570 batch · MeF 83 (S5/S6 byte-stable) · tsc 0 · vitest 300 · NEW test_8283_entity 11 (T14-T16 oracles) · live ORM probe 15/15 · live browser probe (typed 3,000 → autosave → K12b server-painted YELLOW). Two s63 fixtures updated (typed K12b carries is_overridden — the derived-write convention). Boundaries → DEFERRAL_AUDIT s66 (5); J-E1/E2/E3 ratifications queued (shipped to the recommendations). ▶ NEXT: **S-20b Form 2553 app build (spec-first — RS 2553 spec check; 404 → STOP)** → 2848 → 3115 (Ken-gated items unchanged).
+
+**Session 69 wrap (2026-07-12; "go" — autonomous):**
+- [x] `[APP]` **S-20b Form 2553 tts print unit — UNIT COMPLETE** — 2026-07-12:
+  Form2553 + consent/QSST rows (migs 0189/0190) · the §1362(b) 2mo15d
+  corresponding-day calculator (published i2553 Examples 1-3 + Dec-31 +
+  leap-year pinned) + the 2013-30 relief router · D_2553_* ×19 code-registered
+  + prod-seeded · AcroForm render (consent overflow page-2 copies · QSST
+  page-4 copies · the margin legend abs_pos literal) · packet on
+  attach_to_return only · entity Elections tab · FA-2553-WINDOW/COUNT/8832
+  activated + runners.
+- [x] `[APP]` **S-20c Form 2848 tts print unit — UNIT COMPLETE** — 2026-07-12:
+  Form2848 + rep×4/matter×3 rows · firms 0005 (Preparer + caf_number/fax +
+  Manager UI) · **the approved L2 preparer autofill (CAF-or-'None', YELLOW →
+  manual-PATCH GREEN)** · future-clock/sign-window/modified-CAF/URP helpers ·
+  D_2848_* ×17 code-registered + prod-seeded · AcroForm render (Table_Line3/
+  Table_PartII nesting; the §1.6012-1(a)(5) statement) · 1040 + entity mounts ·
+  FA-2848-FUTURE/SIGN45/CAFFILL activated + runners; all three tts gate
+  mirrors refreshed (flow 475).
 
 **Session 68 wrap, continued (2026-07-12; Ken live — "Can you give me those questions more clearly?"):**
 - [x] `[RS]` **⟨GATE-1⟩ ×2 APPROVED + SEEDED — 2553 (WO-26) + 2848 (WO-27)** —
@@ -1265,16 +1283,20 @@ spec-first unit; sequence after the SCH_K renumber queue unless Ken reorders.
 - [ ] **20a · 8283 entity leg** — the 1040 unit exists; RS amendment = entity_types +=
   1120S/1065 (noncash contributions flow K12/K13 — verify routing verbatim) → tts entity
   input/print/K-1 statement legs. ⚠ amend-by-lookup + face-audit-first (the pre-s34 rule).
-- [~] **20b · Form 2553** — S-election (print-first; no annual reissue). RS greenfield spec
-  → tts print unit. Pairs with the 8832 spec (WO-22, RS-done) which routes S-elections here.
-  **RS leg ✅ COMPLETE 2026-07-12: drafted (WO-26, harness 82/0) → Ken Gate-1 APPROVED live
-  → seeded + export verified + tts mirror cached. ▶ tts print unit DISPATCHED (build with 20c's).**
-- [~] **20c · Form 2848** — Power of Attorney (print-first). RS greenfield spec → tts print
-  unit (per-preparer CAF autofill from the Preparer record is the value-add). **RS leg ✅
-  COMPLETE 2026-07-12: drafted (WO-27, harness 73/0) → Ken Gate-1 APPROVED live → seeded +
-  export verified + tts mirror cached. ▶ tts print unit DISPATCHED (build with 20b's).**
-- [ ] **20d · 3115 app build** — RS spec DONE (WO-23, validated 36/0); large — likely
-  print-only v1 (§481(a) spread engine input + Schedule E depreciation catch-up print).
+- [x] **20b · Form 2553** — 2026-07-12 (s67 RS + s69 tts). RS: WO-26 drafted → Ken Gate-1
+  APPROVED live → seeded + export verified + mirror cached. tts: the print unit COMPLETE —
+  input model + consent/QSST rows + the §1362(b) window calculator + D_2553_* ×19 +
+  AcroForm render (overflow copies + the 2013-30 margin legend) + packet-on-attach +
+  FA-2553-WINDOW/COUNT/8832 activated with runners (flow 475).
+- [x] **20c · Form 2848** — 2026-07-12 (s68 RS + s69 tts). RS: WO-27 drafted → Ken Gate-1
+  APPROVED live → seeded + export verified + mirror cached. tts: the print unit COMPLETE —
+  input model + rep×4/matter×3 rows + **the L2 preparer autofill value-add (Preparer +
+  caf_number/fax)** + future-clock/sign-window/modified-CAF helpers + D_2848_* ×17 +
+  AcroForm render + 1040+entity mounts + FA-2848-FUTURE/SIGN45/CAFFILL activated with
+  runners (flow 475).
+- [ ] **20d · 3115 app build — ▶ NEXT (dispatched s69)** — RS spec DONE (WO-23, validated
+  36/0); large — likely print-only v1 (§481(a) spread engine input + Schedule E depreciation
+  catch-up print). Spec-first: audit the cached mirror vs the deployed export at kickoff.
 
 ---
 
