@@ -26,7 +26,20 @@ software-package screens need the supported-forms lists (delivered in-chat:
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55; s72 sweep: clean).
-2. **KEN'S 1040 FORMS LIST LANDED (s72) — triaged into Spine S-22b Waves 1-4
+2. **NEXT UNIT (Ken-directed 2026-07-13): S-17g A2A channel — the IdenTrust
+   cert is ISSUED + INSTALLED.** Prereqs on Ken (checklist in
+   `docs/mef/A2A_ENROLLMENT.md`, updated s72): (a) AE Step 2/3 — Create A2A
+   Client System ID (public Signing .cer upload; ASID 61135801; six services;
+   ETINs 14191+14192) then ACTIVATE; (b) export the cert+key as a
+   password-protected .p12 OUTSIDE the repo → `MEF_A2A_CERT_PATH`/
+   `MEF_A2A_CERT_PASSWORD` in `server/.env`; (c) download the gated MeF A2A
+   WSDL toolkit → `docs/mef/wsdl/`. CC then builds `A2ATransmitter` (SOAP +
+   WS-Security X.509 signing, Login/SendSubmissions/GetNewAcks against the
+   REAL WSDLs — nothing from memory) behind the Transmitter ABC → **A2A comms
+   test in ATS under ETIN 14192** (precedes the Nov-1 A2A-healthy gate).
+   The SOAP-client skeleton CAN start against a scratch key if the WSDLs
+   arrive before the cert export.
+3. **THEN: KEN'S 1040 FORMS LIST (s72) — triaged into Spine S-22b Waves 1-4
    (BUILD_ORDER has the full cut).** Next build = **Wave 1**, biggest first:
    Sch E Parts I-IV XML (rentals REFUSE today — the v1 farm-rental boundary),
    8949-detail/Sch D full path, 7203 attach, then the compute-done XML row
@@ -37,12 +50,12 @@ move on; mandatory session close before context exhausts.**
    (IRS4547 doc VERIFIED in the 2025 XSDs → Wave 3); "Min Wks" + "8879 Att"
    skipped per Ken. Still open: confirm the suggested additions
    (6252 · 1040-ES/V · 9325).
-3. Otherwise the s71 queue stands: **bootstrap_demo 1065+1041 demo returns**
+4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns**
    (two-partner LLC w/ 8825 + GPs + K-1s; a trust w/ DNI + beneficiary K-1;
    demo DB + browser-verify) → **S-21b 1065 partner-percentage diagnostic** →
    **S-21c Sch B Q4 auto-answer** (spec-first). The 1120/709 authoring waves +
    the 1120-S ATS lane stay Ken-gated.
-4. **Ken ratifications pending: 2 NEW (s72, non-blocking, recommendations
+5. **Ken ratifications pending: 2 NEW (s72, non-blocking, recommendations
    filed)** — (a) 8867 face-fidelity leg (seed the Schedule-C row + the
    sub-question rows, extend the cascade); (b) the Schedule B "From
    Schedule(s) K-1" listing row so the payer rows foot to lines 2/6 in print
@@ -58,7 +71,9 @@ move on; mandatory session close before context exhausts.**
    4797/8824/8825/8941/8949).
 2. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
 3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
-4. IdenTrust cert (⚠ 30-day download clock). 5. File-1018 Lacerte reprint (item 10).
+4. ~~IdenTrust cert~~ — **ISSUED + INSTALLED 2026-07-13**; now waiting on the
+   A2A prereqs instead (AE enrollment · .p12 export + .env keys · WSDL toolkit
+   — see RESUME item 2). 5. File-1018 Lacerte reprint (item 10).
 6. PWA install check. 7. Density feel-check (s52).
 8. s69 (no blocker): enter the firm's real CAF number + fax on the Preparer
    records (Admin → Preparers) so the 2848 L2 autofill carries them.
