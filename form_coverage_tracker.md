@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-13 session 73 — SCHEDULE E PARTS I-III + FORM 8582 MeF DOCUMENTS
+> (Spine S-22b Wave 1, `a2cbab0`) — ★★ the 1040 rentals e-file gap CLOSED.**
+> Serialization-only (no model changes; the one compute touch = the 23c/23d
+> zero→sum fix, REVIEW_QUEUE s73): **IRS1040ScheduleE** now emits the FULL
+> schedule — Part I PropertyRealEstAndRoyaltyGroup per RentalProperty
+> (PropertyDesc enum from the type code, partial OtherUSAddress, expense
+> lines 5-18 in schema order, line-19 Desc+Amt detail rows, the aggregate
+> line-22 magnitude on the FIRST group = the print's column-A parity),
+> Part II/III groups via the SAME `schedule_e_p2_rows` face mirror the print
+> renders (bridge-gate; 28(g)/33(c) carry referenceDocumentId=IRS8582),
+> totals from the computed rows with 25/31/36 as Pos-type magnitudes;
+> Part IV REMIC refuses (no model). **IRS8582** (1581-slot) NEW: Part I-III
+> face lines from the FORM_8582 rows (attach gate = rows exist) + Parts
+> IV-VIII worksheets recombined through the SAME pure
+> `per_activity_allocation` the print uses, including the print's line-C≤0
+> gate on Parts VI-VIII; the XSD's stale Part VII(c)/VIII(b) element names
+> map by face position. Suites: MeF 1040 pure 56→59 (live-XSD 2025v5.3
+> validation of the full Sch E + 8582 return) · NEW
+> test_efile_sche_8582_extract 7 · schedule_e/8582 band 127 · flow 500.
+> Fix-forward: the s72 8867 refusal had silently broken Scenario 2's IFA
+> artifact test (paid-preparer ODC, checklist unanswered) — the scenario now
+> attests due diligence, IRS8867 joins its expected document sequence
+> (scenario2 suite 29 green). Boundaries → DEFERRAL_AUDIT s73 (8); line-27 +
+> print-overflow + 23c/23d nits → REVIEW_QUEUE s73.
+
 > **2026-07-12 session 70 — FORM 3115 PRINT UNIT (Spine S-20d) — ★★ UNIT
 > COMPLETE (the tts leg; RS spec WO-23 Gate-1-approved + seeded 2026-07-06;
 > mirror cached fresh from the deployed export at kickoff — the s64 rule).**
