@@ -1,18 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-13, session 73. **S-22b Wave 1 item 1 SHIPPED
-(`a2cbab0`) — Schedule E Parts I-III + Form 8582 are now real 1040 MeF
-documents** (the biggest live e-file gap from Ken's TaxWise list: any 1040
-with rentals/royalties/K-1 pass-through REFUSED until today; now the full
-schedule e-files, with the IRS8582 passive-loss document attached and
-28(g)/33(c) reference-linked). Both mirror the print via bridge-gates
-(`schedule_e_p2_rows` for the K-1 face rows; `per_activity_allocation` +
-the line-C≤0 gate for the 8582 worksheets). REMIC (Part IV) refuses — no
-model. Fix-forward: the s72 8867 refusal had silently broken Scenario 2's
-IFA artifact test — the scenario now attests due diligence and IRS8867
-joins its document sequence. Also fixed live: Schedule E 23c/23d printed
-blank (hard-coded ZERO) — now the line-12/18 sums per spec (ratification
-queued).*
+*Last updated: 2026-07-13, session 73 (two units). **S-22b Wave 1 items 1+2
+SHIPPED — Schedule E Parts I-III + Form 8582 (`a2cbab0`) AND Form 8949
+detail + the Schedule D full path (`3b90188`) are now real 1040 MeF
+documents.** Rentals/royalties/K-1 pass-through e-file with the IRS8582
+attached; per-lot capital transactions e-file with the IRS8949 detail
+document (box groups A-L, VARIOUS/INHERITED codes, Exception-2 summary
+rows) and the Schedule D 1b/2/3/8b/9/10 box-total groups reference-linked.
+Everything bridge-gates through the print/compute derivations
+(`schedule_e_p2_rows` · `per_activity_allocation` + the line-C≤0 gate ·
+`aggregate_box_totals` + the 7217 merge). Fix-forwards this session: the
+s72 8867 refusal had silently broken Scenario 2's artifact test (now
+attests due diligence); Schedule E 23c/23d printed blank (hard-coded
+ZERO) — now the line-12/18 sums per spec (ratification queued).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -40,15 +40,16 @@ move on; mandatory session close before context exhausts.**
    gate). The SOAP skeleton CAN start against a scratch key if the WSDLs
    arrive before the .p12.
 3. **S-22b WAVE 1 (in progress — work down unless S-17g unblocks):**
-   ✅ **Sch E Parts I-IV XML + IRS8582 (s73, `a2cbab0`)**. Next biggest:
-   **8949-detail/Sch D full path** → 7203 attach (+ the Sch E 28(e)/28(f)
-   checkboxes that ride it) → the compute-done XML row (2210/8959/8960/
-   8962/8889/8880/8606/5329) → EFW payment + 8888 + 9465 → 4868 (separate
-   MeF family + e-services checkbox) → 8915-F → W-2G → the 8879/8878 print
-   pair. Each unit = the s72 Schedule B/8867 recipe (mirror print via
-   bridge-gates; refusal beats fabrication; XSD-parsed enums). Still open
-   from the list triage: confirm the suggested additions (6252 · 1040-ES/V
-   · 9325).
+   ✅ Sch E Parts I-IV XML + IRS8582 (s73, `a2cbab0`) · ✅ **8949-detail/
+   Sch D full path (s73b, `3b90188`)**. Next biggest: **7203 basis attach**
+   (+ the Sch E 28(e)/28(f) checkboxes that ride it) → the compute-done XML
+   row (2210/8959/8960/8962/8889/8880/8606/5329) → EFW payment + 8888 +
+   9465 → 4868 (separate MeF family + e-services checkbox) → 8915-F → W-2G
+   → the 8879/8878 print pair. Each unit = the s72 Schedule B/8867 recipe
+   (mirror print via bridge-gates; refusal beats fabrication; XSD-parsed
+   enums; **run the FULL efile/mef band after any new refusal**). Still
+   open from the list triage: confirm the suggested additions (6252 ·
+   1040-ES/V · 9325).
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4
    auto-answer** (spec-first). The 1120/709 authoring waves + the 1120-S
@@ -78,14 +79,16 @@ move on; mandatory session close before context exhausts.**
   nothing in the mirror; verified). Mirrors: 1120S 41 · 1065 39 (+4 s64
   staged) · 1040 397 export-verbatim (+1 staged: FA-1040-4835-06 pending
   the 4562→4835 feeder).
-- **s73 suites: MeF 1040 pure 59 (56 + Sch E/8582 structural + live-XSD
-  2025v5.3 full-return validation) · NEW test_efile_sche_8582_extract 7 ·
-  schedule_e/8582 band 127 · scenario2 29 (8867 fix-forward) · full
-  efile/mef band 350.** s72/s70 suites otherwise unchanged (test_3115 39 ·
-  manifest/acroform 201 · pair 36 · tsc 0 · vitest 300). Last full-suite
-  GREEN = s54 `cd9b186`.
+- **s73 suites: MeF 1040 pure 62 (56 + Sch E/8582 + 8949/Sch D structural
+  + live-XSD 2025v5.3 full-return validations) · NEW
+  test_efile_sche_8582_extract 7 · NEW test_efile_8949_schd_extract 7 ·
+  schedule_e/8582 band 127 · schedule_d/8949 band 89 · scenario2 29 (8867
+  fix-forward) · full efile/mef band 360.** s72/s70 suites otherwise
+  unchanged (test_3115 39 · manifest/acroform 201 · pair 36 · tsc 0 ·
+  vitest 300). Last full-suite GREEN = s54 `cd9b186`.
 - Shared-DB deploy state: mig 0194 applied + seed 359 clean (s71); s73 adds
-  NO migrations — **push-deploy carries `a2cbab0` with no DB step**.
+  NO migrations — **push-deploy carries `a2cbab0` + `3b90188` with no DB
+  step**.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026

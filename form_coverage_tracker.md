@@ -1,5 +1,28 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-13 session 73, second act — FORM 8949 DETAIL + SCHEDULE D FULL
+> PATH (Spine S-22b Wave 1 item 2, `3b90188`) — ★★ per-lot capital
+> transactions now e-file.** NEW **IRS8949** document (2133-slot): one
+> document holding every box group (ShortTerm A/B/C/G/H/I ·
+> LongTerm D/E/F/J/K/L, the six-flavor checkbox choice per group); rows
+> mirror render_8949_1040 (CapitalTransaction box/order + the
+> form_7217_8949_rows §731(a)(1) virtual rows; dates as elements or the
+> VARIOUS/INHERITED/INH-2010 codes; Exception-2 code-M summary rows keep
+> both date columns blank); per-box line-2 totals recombine through the
+> SAME aggregate_box_totals + 7217 merge the compute ran — group totals ≡
+> the Sch D box columns by construction. **IRS1040ScheduleD** gains the
+> 1b/2/3/8b/9/10 CapitalGainAndLossType groups (d/e/h always, g
+> nonzero-only) + root referenceDocumentId → IRS8949; the aggregate-only
+> refusal is RETIRED, replaced by a stale-box-totals consistency guard.
+> Refusals: unparseable date columns · negative basis (NN type) ·
+> adjustment codes beyond [A-Z]{0,7}. Suites: MeF 1040 pure 59→62 (live-XSD
+> validation of the detail return) · NEW test_efile_8949_schd_extract 7 ·
+> schedule_d/8949 band 89 · flow 500 · full efile/mef band 360. Boundaries
+> → DEFERRAL_AUDIT s73b (5: word-code columns unmodeled · code-M summaries
+> e-file without the broker statement, the 8453 workflow = Wave 4 · 1(a)
+> EIN choice + statement refdocs unemitted · 100-char descriptions ·
+> the stale guard).
+
 > **2026-07-13 session 73 — SCHEDULE E PARTS I-III + FORM 8582 MeF DOCUMENTS
 > (Spine S-22b Wave 1, `a2cbab0`) — ★★ the 1040 rentals e-file gap CLOSED.**
 > Serialization-only (no model changes; the one compute touch = the 23c/23d
