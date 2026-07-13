@@ -1,15 +1,23 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-13, session 71 ("go" — autonomous, then Ken live).
-TWO things happened: (1) **the 1040 FA-mirror export-verbatim rebase SHIPPED**
-(`9594462`; flow gate 484 → 500 GREEN; 397 active + FA-1040-4835-06
-staged-pending — no 4562→4835 line-12 feeder; tests + spec mirrors only).
-(2) **Ken ran the RATIFICATION SWEEP live — all 12 open REVIEW_QUEUE calls
-answered, every recommendation adopted; the queue is EMPTY.** Three build
-units authorized → **NEW Spine S-21**: a) the 1120-S M-2 NNA-cap compute leg
-(+ the s63 off-face grid-column re-key folded in), b) the 1065
-partner-percentage diagnostic, c) the 1065 Sch B Q4 auto-answer (Q11 recipe
-clone, (c) presumed true). `/bugs` at boot: clean.*
+*Last updated: 2026-07-13, session 71 ("go" — autonomous, then Ken live,
+then "go"). THREE acts: (1) **the 1040 FA-mirror export-verbatim rebase
+SHIPPED** (`9594462`; flow 484 → 500; FA-1040-4835-06 staged — no 4562→4835
+feeder). (2) **Ken's RATIFICATION SWEEP emptied REVIEW_QUEUE** (12/12,
+recommendations adopted; Spine S-21a/b/c authorized). (3) **S-21a SHIPPED —
+the 1120-S M-2 NNA-cap compute leg + the face column rotation (mig 0194)**:
+line 7(a) now computes under the ratified R002 cap (§1368(e)(1)(C) — AAA
+without the net negative adjustment, floor 0; the published i1120s pp.50-51
+example + the divergence pin are test oracles), AND the M-2 grid keys
+rotated to the 2025 face (b=PTEP, c=AE&P, d=OAA — **the legacy letters had
+every b/c/d value PRINTING ONE COLUMN OFF; face-verified via pymupdf widget
+headers**). K17c derive re-targeted M2_7d→M2_7c; MeF builder re-keyed
+(semantics unchanged); client grid headers = face. Shared DB: mig 0194 +
+seed 359 clean. Gates: affected suites 636 + 137 · tsc 0 · vitest 300 ·
+live ORM probe 11/11 · browser probe (rotated grid + divergence paint) ·
+PRINT probe GREEN (text-band assert on the rendered packet). Boundaries →
+DEFERRAL_AUDIT s71 third-act note (cascade auto-split · Lacerte col-a ·
+R005/R006 manual).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -23,14 +31,14 @@ clone, (c) presumed true). `/bugs` at boot: clean.*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **BUILD_ORDER's next unblocked Spine item = S-21a: the 1120-S M-2 NNA-cap
-   compute leg** (spec-first — RS 1120S_M2, mirror current since s59; the
-   ratified R002 cap = AAA without regard to the NNA, §1368(e)(1)(C); pin the
-   i1120s pp.50-51 worksheet example + divergence scenarios; FOLD IN the s63
-   off-face M-2 grid column re-key b/c/d). Then **S-21b** (1065 partner-pct
-   WARNING) → **S-21c** (1065 Sch B Q4 auto-answer, Q11 clone, (c) presumed
-   true, (d) from the M-3 flag). The 1120/709 authoring waves + the 1120-S
-   ATS lane stay Ken-gated.
+2. **BUILD_ORDER's next unblocked Spine item = S-21b: the 1065
+   partner-percentage diagnostic** (small code-registered unit: WARNING when
+   profit_pct or loss_pct over ACTIVE partners doesn't sum to 100;
+   capital_pct informational — D_K1_CAPPCT covers it; own unit with DB
+   tests). Then **S-21c** (1065 Sch B Q4 auto-answer, Q11 clone, (c)
+   presumed true, (d) from the M-3 flag; spec-first — RS 1065 SCH_B).
+   S-21a DONE this session. The 1120/709 authoring waves + the 1120-S ATS
+   lane stay Ken-gated.
 3. **Ken ratifications pending: NONE — the queue is EMPTY** (the s71 live
    sweep answered all 12; dispositions recorded in REVIEW_QUEUE's sweep
    block). Standing non-decisions only: the 3115 OMB nit rides the next RS
@@ -58,8 +66,10 @@ move on; mandatory session close before context exhausts.**
   over on all three mirrors.
 - s70 suites unchanged: test_3115 39 · manifest/acroform 201 (trip-wire 87) ·
   pair 36 · tsc 0 · vitest 300. Last full-suite GREEN = s54 `cd9b186`.
-- ⚠ Shared-DB deploy state: migs 0191/0192/0193 applied; seed_rules run
-  (s70). s71 touched no app code — Render deploy still just needs the push.
+- ⚠ Shared-DB deploy state: **mig 0194 (M-2 column rotation) APPLIED +
+  seed_1120s rerun (359, zero stale)**. ⚠ The deployed Render code still
+  carries the pre-rotation formula registry until the s71 push deploys —
+  push promptly (the mismatch window mirrors the s60/s63 recipe).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
