@@ -1413,8 +1413,11 @@ position + pure/DB tests — the s72 Schedule B/8867 recipe).
     Sch E Parts I-IV + duplicates (the XML today REFUSES rentals — farm-rental-only
     v1 boundary) · 8949-detail + full Sch D path · 7203 basis attach (S-corp-heavy
     practice; required with losses/distributions/sales) · 2210 · 8959 · 8960 · 8962 ·
-    8889 · 8880 · 8606 · 5329 · **ACH/EFW balance-due payment record** + 8888 split
-    refund + 9465 · **4868 e-file (SEPARATE MeF extension family + its own e-services
+    8889 · 8880 · 8606 · 5329 · **the PAYMENT cluster (s72-verified in the XSDs):
+    EFW balance-due debit (`IRSPayment`, ReturnData1040 5661) + scheduled quarterly
+    estimate debits (`IRSESPayment`) + the print-only 1040-V and 1040-ES vouchers
+    for check-payers (Ken-confirmed s72)** + 8888 split refund + 9465 ·
+    **4868 e-file (SEPARATE MeF extension family + its own e-services
     forms checkbox — needed in bulk by April)** · 8915-F (Helene) · W-2G doc ·
     **8879 + 8878 print units (Practitioner-PIN signature workflow — retained, not
     transmitted)**.
