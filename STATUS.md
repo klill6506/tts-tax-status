@@ -42,8 +42,13 @@ R005/R006 manual).*
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
 1. **Start every session with `/bugs`** (s55).
-2. **BUILD_ORDER's next unblocked Spine item = S-21b: the 1065
-   partner-percentage diagnostic** (small code-registered unit: WARNING when
+2. **FIRST (Ken-directed s71): extend `bootstrap_demo` with a synthetic
+   1065 partnership + 1041 trust demo return** (hand-authored through the
+   real engine — two-partner LLC w/ 8825 + guaranteed payments + K-1s; a
+   trust w/ interest/dividends + fiduciary fees + beneficiary K-1/DNI;
+   reuse the test-fixture shapes for correct line keys; run against the
+   demo DB + verify in the browser; 1120 C-corp WAITS for the module
+   build). THEN **S-21b: the 1065 partner-percentage diagnostic** (small code-registered unit: WARNING when
    profit_pct or loss_pct over ACTIVE partners doesn't sum to 100;
    capital_pct informational — D_K1_CAPPCT covers it; own unit with DB
    tests). Then **S-21c** (1065 Sch B Q4 auto-answer, Q11 clone, (c)
