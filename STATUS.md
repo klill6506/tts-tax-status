@@ -11,7 +11,10 @@ end-to-end on demo (request → link from log → redeem → signed in → repla
 ORM-verified token burn + audit rows). **Ken-external remainder: provider account +
 Cloudflare SPF/DKIM + Render env vars + `set_user_email` per preparer —
 `docs/AUTH_EMAIL_SETUP.md` (recommendation: Resend; REVIEW_QUEUE s83).**
-`/bugs` s83: clean. WSDLs still absent. Ken still holds FIVE Gate-1 walks (WO-28..32).*
+`/bugs` s83: clean. WSDLs still absent. **Act six: Ken APPROVE-ALL on the five Gate-1
+walks — WO-28..32 seeded to RS prod (exports 200 ×6, mirrors cached, FA export clean,
+harnesses 85/0·53/0·63/0·97/0·87/0, RS `9d5fcd2`); the SIX tts legs are DISPATCHED
+(Ken-sequenced: SEC-1 authz audit first).***
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -33,14 +36,15 @@ move on; mandatory session close before context exhausts.**
    WSDLs) behind the Transmitter ABC → A2A comms test in ATS under ETIN 14192.
 3. **S-22b:** Wave-1 built row ✅ Sch E + 8582 (s73) · ✅ 8949/Sch D (s73b) ·
    ✅ 7203 (s74) · ✅ compute-done XML row (s75) · ✅ EFW payment records (s76) ·
-   ✅ W-2G MeF document (s80). RS-gated at Gate-1: the payment-cluster batch
-   (s77) + 4868 (s78) + 8915-F (s79). On Ken's approve-all (FIVE walks): flip
-   sentinels → seed → verify exports → cache tts mirrors → **dispatch the six
-   tts legs as a set** (9465 · 8888 · voucher pair · 4868 print + extension
-   submission builder · 8915-F full unit). **AUTH-1 is DONE (s83).** Next NEW
-   autonomous item while the gates hold (re-cut s83 act three): **SEC-1 authz
-   audit** (Principle #0 — see below) → **the 8879/8878 print pair** →
-   SEC-2..6. Still open from the list triage: confirm 6252 · 9325 additions.
+   ✅ W-2G MeF document (s80). **Gate-1 CLEARED (s83 approve-all): WO-28..32
+   seeded, exports 200 ×6, mirrors cached (9465/8888/1040v/1040es/4868/8915f
+   _spec.json), FA export clean. The SIX tts legs are DISPATCHED as a set:
+   9465 print+IRS9465 · 8888 print+IRS8888+35a · 1040-V/ES vouchers
+   (print-only, suppression ties) · 4868 print + NEW extension submission
+   builder + Sch3-L10 tie · 8915-F full unit (inputs + per-disaster compute +
+   render + IRS8915F + the 5329 suppression seam).** **AUTH-1 is DONE (s83).**
+   Order (Ken-sequenced): **SEC-1 authz audit → the six legs → 8879/8878 →
+   SEC-2..6 → S-24.** Still open from the list triage: confirm 6252 · 9325.
 3b. **NEW (s83): Principle #0 — "PII protection outranks the Prime Directive"
    (Ken, verbatim, DECISIONS.md top) + Spine S-23 pre-beta security block**
    (SEC-1 authz/RBAC audit · SEC-2 PII plumbing sweep · SEC-3 view-access
@@ -59,10 +63,10 @@ move on; mandatory session close before context exhausts.**
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
-5. **Ken ratifications pending: the FIVE Gate-1 walks (s77 ×3 + s78 4868 + s79
-   8915-F)** — REVIEW_QUEUE; recommendations = approve all. **NEW s83: email
-   provider pick (Resend recommended) + the Ken-external email setup steps —
-   `docs/AUTH_EMAIL_SETUP.md`.** Plus the s76 pair, s75 (2210 · 8962 QSEHRA ·
+5. **Ken ratifications pending** (the five Gate-1 walks are RESOLVED — s83
+   approve-all): **s83 email provider pick (Resend recommended) + the
+   Ken-external email setup steps — `docs/AUTH_EMAIL_SETUP.md`.** Plus the
+   s76 pair (minus the executed draft-to-gate plan), s75 (2210 · 8962 QSEHRA ·
    8889 multi-account), s74 (7203 line-1 fold · loss-without-7203 refusal ·
    partnership 28(e)), s73 (23c/23d · Sch E line 27 · print truncation), s72
    (8867 face-fidelity · Sch B K-1 listing row). Standing non-decisions: 3115
@@ -75,8 +79,7 @@ move on; mandatory session close before context exhausts.**
 
 ## ▶ Waiting on Ken / external
 1. **A2A: ONLY the WSDL toolkit remains** (the .p12 is DONE; RESUME item 2).
-2. **The FIVE Gate-1 walks** — WO-28 9465 · WO-29 8888 · WO-30 1040-V/ES ·
-   WO-31 4868 · WO-32 8915-F.
+2. ~~The FIVE Gate-1 walks~~ — **CLEARED s83 (approve-all; seeded + dispatched).**
 3. **NEW (s83): email provider setup** — Resend (or equal) account, verify
    delviotax.com (SPF/DKIM in Cloudflare), Render env vars, then
    `manage.py set_user_email <username> <email>` per preparer account.
@@ -104,8 +107,10 @@ move on; mandatory session close before context exhausts.**
   session → single-use replay rejected; ORM token-burn + audit rows verified).**
 - s82 suites stand: test_returns 76/76 · s80: MeF 1040 pure 81 · extract 13 ·
   bands 205+161.
-- s79 RS-lane gates stand: validate_8915f 87/0 · s78 97/0 · s77 85/0·53/0·63/0.
-  All five loaders gated; `seed_all` soft-fails them; RS prod untouched.
+- **s83 Gate-1 execution: the five harnesses re-run POST-FLIP (post-approval
+  guard pattern) — 85/0 · 53/0 · 63/0 · 97/0 · 87/0; RS prod SEEDED (six
+  TaxForms); deployed exports 200 ×6; 1040 FA export clean (398 = 397 mirror
+  + the known staged FA-1040-4835-06); tts flow gate 500 re-verified.**
 - Last full-suite GREEN = s54 `cd9b186`.
 - **Shared-DB deploy state: accounts 0004/0005 + audit 0003 applied to BOTH
   prod AND demo DBs (s83; on top of mig 0196 s80).**
