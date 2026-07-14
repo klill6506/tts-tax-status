@@ -1,5 +1,35 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-14 session 80 — W-2G MeF DOCUMENT LEG (Spine S-22b) — ★ the
+> gambling-winnings W-2G now e-files as IRSW2G (mig 0196); the F1040-034-08
+> withholding-reconciliation gap is CLOSED.** The form unit (spec FORM_W2G,
+> Ken-approved 2026-06-20 · input · compute → Sch 1 8b + the 25c roster ·
+> diagnostics) was complete EXCEPT e-file: line 25c transmitted W-2G box-4
+> withholding with NO backing document — F1040-034-08 arm (4) sums all
+> Forms W-2G 'FederalIncomeTaxWithheldAmt' into 'WithholdingTaxAmt' (a
+> Math-Error reject). This unit adds the missing leg per the s72 recipe:
+> **NEW FormW2G e-file identity fields** (payer EIN + US address, the
+> 1099-R payer-block naming; boxes 13 state/payer-state-ID + 14 state
+> winnings joining the existing 15 — mig 0196, BOTH DBs migrated) ·
+> serializer + the Misc-Income card gains payer-identity and boxes-13-15
+> rows · **`_extract_w2gs`** (recipient identity = the doc's owner,
+> FW2G-010 by construction; CalendarYr = TaxYr, FW2G-011; REFUSALS:
+> missing payer EIN/name/US-address · box 4 ≥ box 1 FW2G-001-01 · a
+> nonzero box 14 without both box-13 halves FW2G-009-01 · all-zero doc ·
+> the stale-8b guard re-running the SAME `aggregate_w2g` derivation
+> compute uses, FW2G-008-03) · **`build_irsw2g`** (IRSW2GType sequence;
+> the W2GStateLocalTaxGrp state row; ReturnData1040 ref 2308, directly
+> after IRSW2 2301). EIN-only payer TIN is rule-driven: FW2G-002 rejects
+> PayerSSN for individual e-file. Suites: MeF 1040 pure 79→81 (live-XSD
+> full-return w/ two IRSW2G docs incl. the state group) · NEW
+> test_efile_w2g_extract 13 · efile band 205 + scenario band 161 · flow
+> 500 · tsc 0 · vitest 300 · live demo browser+ORM probe (payer EIN typed
+> → autosave → ORM-verified; 8b recompute follows box 1; probe row
+> deleted, 8b disengaged clean). Boundaries → DEFERRAL_AUDIT s80 (8 —
+> boxes 2/3/5-8/10-12 · local 16-18 · corrected-box · foreign addresses ·
+> the in-app-diagnostic mirror candidate). No new ratifications — every
+> refusal is a published Active reject rule.
+
 > **2026-07-13 session 76 — EFW PAYMENT RECORDS (Spine S-22b Wave 1, the
 > payment cluster's buildable half) — ★ balance-due direct debit +
 > scheduled quarterly estimate debits now e-file (mig 0195).** The
