@@ -37,9 +37,18 @@ move on; mandatory session close before context exhausts.**
    (s77) + 4868 (s78) + 8915-F (s79). On Ken's approve-all (FIVE walks): flip
    sentinels → seed → verify exports → cache tts mirrors → **dispatch the six
    tts legs as a set** (9465 · 8888 · voucher pair · 4868 print + extension
-   submission builder · 8915-F full unit). **AUTH-1 is DONE (s83)** — next NEW
-   autonomous item while the gates hold: **the 8879/8878 print pair**. Still
-   open from the list triage: confirm 6252 · 9325 additions.
+   submission builder · 8915-F full unit). **AUTH-1 is DONE (s83).** Next NEW
+   autonomous item while the gates hold (re-cut s83 act three): **SEC-1 authz
+   audit** (Principle #0 — see below) → **the 8879/8878 print pair** →
+   SEC-2..6. Still open from the list triage: confirm 6252 · 9325 additions.
+3b. **NEW (s83): Principle #0 — "PII protection outranks the Prime Directive"
+   (Ken, verbatim, DECISIONS.md top) + Spine S-23 pre-beta security block**
+   (SEC-1 authz/RBAC audit · SEC-2 PII plumbing sweep · SEC-3 view-access
+   audit logging · SEC-4 session hardening · SEC-5 encryption/backups
+   verify+document+restore drill · SEC-6 Delvio WISP; MFA already decided =
+   passkeys at go-live). Also s83 act two: **clients_client RATIFIED as the
+   canonical suite clients table** (plain-UUID refs for non-tax-app apps;
+   client_number deferred; `3d208ad`) — sherpa-scheduler Phase 2 unblocked.
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.

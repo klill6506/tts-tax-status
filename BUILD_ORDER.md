@@ -19,7 +19,7 @@ external. **Tick:** `- [x] … — YYYY-MM-DD `SHA``. Parallel-safe items `∥`.
 
 ## ⚡ MISSION (Ken, 2026-07-09): finish **1040 · 1120-S · 1120 · 1065 · 1041 · 709 by end of 2026**. 1120 + 709 are Ken-directed scope ADDITIONS (see the SEASON_PLAN scope-change note; 709 verified MeF-e-fileable — IRS opened the 709 family on MeF 7/14/2025). **No piecemeal ATS testing** — complete ALL work for the full 1120-S scenario set FIRST, then run the upload loop (the S5-only upload is OFF; e-services business-family approvals Ken-verified 2026-07-09).
 
-## ▶ NOW WORKING ON — **s83 (2026-07-14): AUTH-1 MAGIC-LINK LOGIN UNIT SHIPPED (the s82 sequencing call executed).** All three scope legs in one session: **(a) transactional email infra** — provider-agnostic SMTP via env vars (`EMAIL_HOST` set → send; unset → console backend, links print to server logs — dev/demo safe), `DEFAULT_FROM_EMAIL` auth@delviotax.com, the Ken-external provider/DNS checklist = `docs/AUTH_EMAIL_SETUP.md` (recommendation Resend — REVIEW_QUEUE s83); **(b) the magic-link flow** — `accounts.MagicLinkToken` (SHA-256 hash only, 15-min TTL, redeem burns ALL outstanding; migs accounts 0004/0005+RLS, audit 0003, BOTH DBs) · `POST /auth/magic-link/request/` (enumeration-safe generic 200, IP throttle 10/hr + 3-outstanding per-account cap) + `/redeem/` (30/hr, atomic single-use claim) · `AuditAction.LOGIN` + `log_auth` rows on every sign-in AND link request · login screen "Email me a sign-in link" + `#/magic-login` redeem route (StrictMode double-mount guarded) · password login KEPT + gains email-as-username (unique-active match) — **deliberately unthrottled: the office shares one NAT IP**; **(c)** `manage.py set_user_email` (unique-email guard) for giving accounts real addresses. Gates: NEW test_auth_magic_link **19/19** · user-prefs 14 · tsc 0 · vitest 300 · **live demo browser probe end-to-end** (request → link from server log → redeem → Return Manager; replay → rejected error card; ORM: token burned + both audit rows). Ken-external remainder: provider account + Cloudflare SPF/DKIM + Render env vars + per-preparer set_user_email. 2FA plan unchanged: passkeys at go-live (DECISIONS s83). ▶ NEXT: **S-17g A2ATransmitter STILL jumps the queue the moment the WSDLs land**; on the Gate-1 approve-all → the six tts legs as a set; otherwise the next NEW autonomous item is **the 8879/8878 print pair** → then the s71 queue (bootstrap_demo 1065+1041 → S-21b → S-21c).
+## ▶ NOW WORKING ON — **s83 (2026-07-14): AUTH-1 MAGIC-LINK LOGIN UNIT SHIPPED (the s82 sequencing call executed).** All three scope legs in one session: **(a) transactional email infra** — provider-agnostic SMTP via env vars (`EMAIL_HOST` set → send; unset → console backend, links print to server logs — dev/demo safe), `DEFAULT_FROM_EMAIL` auth@delviotax.com, the Ken-external provider/DNS checklist = `docs/AUTH_EMAIL_SETUP.md` (recommendation Resend — REVIEW_QUEUE s83); **(b) the magic-link flow** — `accounts.MagicLinkToken` (SHA-256 hash only, 15-min TTL, redeem burns ALL outstanding; migs accounts 0004/0005+RLS, audit 0003, BOTH DBs) · `POST /auth/magic-link/request/` (enumeration-safe generic 200, IP throttle 10/hr + 3-outstanding per-account cap) + `/redeem/` (30/hr, atomic single-use claim) · `AuditAction.LOGIN` + `log_auth` rows on every sign-in AND link request · login screen "Email me a sign-in link" + `#/magic-login` redeem route (StrictMode double-mount guarded) · password login KEPT + gains email-as-username (unique-active match) — **deliberately unthrottled: the office shares one NAT IP**; **(c)** `manage.py set_user_email` (unique-email guard) for giving accounts real addresses. Gates: NEW test_auth_magic_link **19/19** · user-prefs 14 · tsc 0 · vitest 300 · **live demo browser probe end-to-end** (request → link from server log → redeem → Return Manager; replay → rejected error card; ORM: token burned + both audit rows). Ken-external remainder: provider account + Cloudflare SPF/DKIM + Render env vars + per-preparer set_user_email. 2FA plan unchanged: passkeys at go-live (DECISIONS s83). **SAME SESSION, act two: the clients_client canonicity ruling RATIFIED (`3d208ad` — scheduler unblocked; DECISIONS + SUITE_CONTRACT §1/§2). Act three: Ken's PRINCIPLE #0 recorded verbatim ("PII protection outranks the Prime Directive" — DECISIONS.md top) + Chat's 12-item security checklist triaged into NEW Spine block S-23 (SEC-1..6; several controls already exist, MFA already decided).** ▶ NEXT: **S-17g A2ATransmitter STILL jumps the queue the moment the WSDLs land**; on the Gate-1 approve-all → the six tts legs as a set; otherwise the next NEW autonomous item is **SEC-1 (authz audit — principle #0 puts it ahead of new forms; roles are stored but nothing enforces them)** → the 8879/8878 print pair → SEC-2..6 interleaved → then the s71 queue (bootstrap_demo 1065+1041 → S-21b → S-21c).
 
 *(s82 below)*
 **s82 (2026-07-14, same conversation as s81): LEDGER TWEAKS + THE CROSS-APP DESIGN DIRECTIVE.** Ken ratified the design ("I really like it") and directed: **apply Ledger across the other Sherpa apps at a later date — the portable spec is `Design/LEDGER_DESIGN_SYSTEM.md` (committed in tts-tax-app: palette/type/components/token map/per-stack porting notes).** Three tweaks shipped: (1) favicon → gold `#a8842c` serif **DTS** (PWA PNGs still old — raster regen deferred); (2) "+ New Client" → gold-bright CTA via a NEW `--cta`/`--cta-hover`/`--cta-text` token trio (:root chains to `var(--success)` so non-Ledger themes are pixel-identical; Ledger = `#f5c542`/ink); (3) **return-list Name sort = the DISPLAYED name** — business rows were sorted by the OWNER's client record ("Phil Aaron Insurance" filed under A); fix = Case/When (individual→client name, else entity name) + Lower() in `apps/returns/views.py`, regression test `TestReturnListNameOrdering` (⚠ class: a conditional display column needs the SAME conditional as its sort key). Demo login password → Ken's own (⚠ `bootstrap_demo --reset` reverts unless `--password`). Gates: test_returns 76/76 · tsc 0 · vitest 300 · live probe. **Ken sequencing call (s82): the next NEW autonomous item is now AUTH-1 — the magic-link login unit** (driver: more preparers testing soon; don't make them learn a login twice; Ken will message "2FA at go-live"). AUTH-1 scope: (a) transactional email infra (provider + auth@delviotax.com sender + SPF/DKIM in Cloudflare — reusable for password reset/portal/notifications); (b) magic-link flow (hashed single-use token ~15-min expiry, request+redeem endpoints w/ rate limiting + audit, login-screen "email me a link", password login KEPT alongside — the demo site's printed creds depend on it); (c) accounts get real emails (Ken's prod login is now his email address). **2FA = passkeys layered at go-live (NOT email-channel codes on top of email links — same-channel isn't two factors; FTC Safeguards MFA is ALREADY mandatory for tax pros, IR-2024-201/Pub 4557 — see REVIEW_QUEUE s82).** ▶ NEXT: **S-17g A2ATransmitter STILL jumps the queue the moment the WSDLs land** (Ken re-confirmed s82); on the Gate-1 approve-all → the six tts legs as a set; otherwise **AUTH-1** → the 8879/8878 print pair → then the s71 queue.
@@ -1540,6 +1540,45 @@ position + pure/DB tests — the s72 Schedule B/8867 recipe).
     (paper attachments: 1098-C, appraisals, 8332) · W-4 · **W-7 (PAPER-ONLY to
     Austin w/ originals — an attached W-7 means the return itself cannot e-file;
     needs a workflow diagnostic)** · 1040-ES/1040-V · 9325.
+
+---
+
+**S-23 · [APP]+[docs] ∥ · PRE-BETA SECURITY / PII BLOCK (Principle #0 — Ken, 2026-07-14 s83).**
+*Driver: Ken's s83 ruling — **"PII protection outranks the Prime Directive"** (DECISIONS.md
+Principle #0). Chat's 12-item checklist triaged: several controls already exist (secrets in
+gitignored .env · write/print/LOGIN audit rows w/ PII redaction · SSN masked-by-default UI ·
+RLS default-deny on every table · the mirror PII guard · demo env for probes · MFA decided =
+passkeys at go-live). The block below is what's MISSING, in build order. All ∥ parallel-safe
+vs the form lanes; none waits past beta onboarding.*
+- [ ] **SEC-1 · AuthZ audit — firm-scoping + role enforcement on EVERY endpoint** `[APP]`:
+  verify every viewset/action filters by `request.firm` (a cross-firm leak is the worst-case
+  PII event); THEN enforce the stored-but-unenforced FirmMembership roles (verified s83: only
+  `IsFirmMember` exists — ADMIN/PREPARER/REVIEWER gate nothing; front-desk role TBD w/ Ken).
+  Admin surfaces (Preparers, Print Packages, seeding endpoints) get role permissions + tests.
+- [ ] **SEC-2 · PII plumbing sweep** `[APP]`: no SSN/EIN in server logs, error messages,
+  Sentry-style payloads, analytics, or URLs (PII-in-URL grep + response-error audit); UI
+  masking verify (full SSN only where needed); free-text field scan (notes fields; flag
+  `checkin.checkin_events` cross-app); WRITE THE EXPLICIT RULE: no real client data in
+  dev/test — synthetic only, imports sanitized, probes on demo (the dev-shares-prod reality
+  is the standing tension this rule bounds).
+- [ ] **SEC-3 · View-access audit logging** `[APP]`: extend AuditEntry (who VIEWED which
+  client/return, when) — read events on client record + return open; both a Safeguards
+  control and a selling point. Volume-bound the write (per-session dedupe).
+- [ ] **SEC-4 · Session hardening** `[APP]`: idle timeout suited to shared front-desk
+  machines (rolling expiry), verify is-active-off revokes live sessions (ModelBackend does —
+  pin with a test), "sign out everywhere" per user (offboarding), document session policy.
+- [ ] **SEC-5 · Encryption + backups — verify AND document** `[APP]+[EXT]`: confirm+record
+  Supabase at-rest/TLS posture and Render TLS; **Ken pulls Supabase SOC 2 attestation** for
+  the WISP file; backup posture per plan + **a TESTED restore drill** (an untested backup is
+  a hope, not a control) + written retention/deletion policy.
+- [ ] **SEC-6 · Delvio WISP (distinct from The Tax Shelter's)** `[docs]→Ken ratifies`: CC
+  drafts from the FTC Safeguards template — custodianship of OTHER firms' client data, the
+  breach-response chain (Delvio notifies offices → offices notify taxpayers; belongs in the
+  beta agreement too), secrets-rotation policy, vendor attestations, the SEC-1..5 controls
+  as its evidence. LAST deliberately — it documents what the block hardens.
+- [x] ~~SEC-7~~ **MFA/passkeys — already decided** (s82/s83: passkeys at go-live, email-code
+  fallback; FTC Safeguards makes MFA mandatory, not optional — beta offices may ask for
+  attestation). Rides the AUTH lane, not this block.
 
 ---
 
