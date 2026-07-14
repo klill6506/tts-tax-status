@@ -1,15 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-14, session 81. **LEDGER DESIGN SYSTEM SHIPPED (Ken-directed
-design detour, off the build list by request)** — the Claude-Design "Ledger" house style
-(`Design/delvio-design-spec.md`: paper/ink/gold, serif headings, 4px radii, light paper
-nav, serif DELVIO TAX wordmark) is now the app's DEFAULT theme preset. Implemented as a
-preset on the existing token architecture (new `client/src/renderer/lib/themePresets.ts`
-+ `.theme-ledger` CSS; boot-time restore themes the login screen). Old themes stay in the
-picker = one-click rollback; hard rollback = git tag `pre-ledger-design`. The
-RED/YELLOW/GREEN data-entry convention is UNTOUCHED (hardcoded in FieldGrid, verified
-live). Commits `4a1f728` + `c53d3da`. `/bugs` s81: clean. WSDLs still absent. Ken still
-holds FIVE Gate-1 walks (WO-28..32).*
+*Last updated: 2026-07-14, sessions 81–82. **LEDGER DESIGN SYSTEM SHIPPED + s82 tweaks
+(same conversation)** — s81: the Claude-Design "Ledger" house style is the app's DEFAULT
+theme preset (new `client/src/renderer/lib/themePresets.ts` + `.theme-ledger` CSS;
+boot-restore themes login; rollbacks = old presets in picker + tag `pre-ledger-design`;
+RED/YELLOW/GREEN entry convention untouched). s82 (Ken feedback): favicon → gold DTS ·
+"+ New Client" → gold-bright CTA (new `--cta` token trio, var-chains to success in other
+themes) · **return-list Name sort fixed to the DISPLAYED name** (business rows sorted by
+the OWNER's client record before — Case/When+Lower in `apps/returns/views.py`, regression
+test `TestReturnListNameOrdering`). **Ken ratified the design ("I really like it") and
+issued the STANDING cross-app directive: apply Ledger to the other Sherpa apps later —
+portable spec = `Design/LEDGER_DESIGN_SYSTEM.md`.** Demo login password changed to Ken's
+own (⚠ `bootstrap_demo --reset` reverts it unless `--password`). `/bugs` s81: clean.
+WSDLs still absent. Ken still holds FIVE Gate-1 walks (WO-28..32).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -47,10 +50,11 @@ move on; mandatory session close before context exhausts.**
    fold · loss-without-7203 refusal · partnership 28(e)), s73 (23c/23d · Sch E
    line 27 · print truncation), s72 (8867 face-fidelity · Sch B K-1 listing
    row). Standing non-decisions: 3115 OMB nit · the 8824 RS note.
-6. **Design (s81): Ledger is live.** Optional follow-ups if Ken wants more:
-   mockup-style refund BANNER in the editor (ink block, serif amount — the
-   current Refund Monitor panel stays), gold-bright CTA treatment for a
-   high-emphasis action, dark-Ledger variant. None scheduled — Ken directs.
+6. **Design (s81–s82): Ledger is live and Ken-ratified.** Remaining optional
+   follow-ups: mockup-style refund BANNER in the editor · PWA PNG icons still
+   carry old branding (raster regen) · dark-Ledger variant. None scheduled.
+   **STANDING: apply Ledger across the other Sherpa apps later (Ken directs
+   when) — start from `Design/LEDGER_DESIGN_SYSTEM.md`.**
 
 ## ▶ Waiting on Ken / external
 1. **A2A: ONLY the WSDL toolkit remains** (the .p12 is DONE; RESUME item 2).
@@ -77,6 +81,8 @@ move on; mandatory session close before context exhausts.**
 - **s81 suites: tsc 0 · vitest 300/300 (both legs) · live demo browser probe
   green (login/Return Manager/editor INPUT+FORMS+DIAGNOSTICS/theme roundtrip
   Ledger↔Charcoal; red/yellow/green entry fields verified intact).**
+- **s82 suites: test_returns.py 76/76 (incl. new TestReturnListNameOrdering) ·
+  tsc 0 · vitest 300 · live probe (gold CTA + favicon + new demo login).**
 - s80 suites stand: MeF 1040 pure 81 · extract 13 · bands 205+161.
 - s79 RS-lane gates stand: validate_8915f 87/0 · s78 97/0 · s77 85/0·53/0·63/0.
   All five loaders gated; `seed_all` soft-fails them; RS prod untouched.
