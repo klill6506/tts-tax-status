@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-13 session 76 — EFW PAYMENT RECORDS (Spine S-22b Wave 1, the
+> payment cluster's buildable half) — ★ balance-due direct debit +
+> scheduled quarterly estimate debits now e-file (mig 0195).** The
+> S-17b direct-deposit precedent applied to the debit side — payment
+> mechanics, no form face, no RS gate: **IRSPayment** (ReturnData1040
+> tail slot 5661; all six elements schema-required — the TaxReturn
+> bank_* triplet shared with the refund DD, PaymentAmt = the full line-37
+> balance due, the preparer-entered requested date, and the NEW
+> `Taxpayer.daytime_phone`) + **IRSESPayment** (5668, max 4 — one record
+> per nonzero `es_debit_q1-4` amount at the fixed FPYMT-088-11 due dates
+> 4/15 · 6/15 · 9/15 · 1/15). NEW INPUTS (mig 0195, both DBs migrated):
+> `efw_elected` / `efw_payment_date` / `es_debit_q1-4` on TaxReturn +
+> `daytime_phone` on Taxpayer; serializers + the `/info/` allowlist +
+> the Payments-tab EFW card (election checkbox · date · phone · four ES
+> amounts, riding the existing debounced bank PATCH). REFUSALS: missing/
+> invalid bank triplet · missing date · missing/short phone · requested
+> date past the due date (FPYMT-072-01 on-time arm; the received-date
+> FPYMT arms = transmit-time, DEFERRAL s76). Gates: MeF 1040 pure 79
+> (75 + 4, live-XSD w/ IRSPayment + all four ES quarters) · NEW
+> test_efile_payment_extract 9 · FULL efile/mef band 408 · flow 500 ·
+> tsc 0 · vitest 300 · info-endpoint suites 86 · live browser probe
+> (demo: election/date/phone/Q1 typed → autosave → ORM-verified, probe
+> data cleared). **The REST of the cluster is RS-gated (404): 8888 ·
+> 9465 · the 1040-V/1040-ES vouchers — draft-to-gate plan filed,
+> REVIEW_QUEUE s76.**
+
 > **2026-07-13 session 75 — THE COMPUTE-DONE XML ROW (Spine S-22b Wave 1
 > item 4) — ★★ SEVEN compute-done 1040 forms now e-file: 5329 · 8606 ·
 > 8880 · 8889 · 8959 · 8960 · 8962 (+ the Form 2210 e-file gate).** Each
