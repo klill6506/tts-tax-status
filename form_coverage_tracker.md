@@ -1,5 +1,37 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-13 session 75 — THE COMPUTE-DONE XML ROW (Spine S-22b Wave 1
+> item 4) — ★★ SEVEN compute-done 1040 forms now e-file: 5329 · 8606 ·
+> 8880 · 8889 · 8959 · 8960 · 8962 (+ the Form 2210 e-file gate).** Each
+> form already had input + compute + print; this unit adds the MeF
+> document leg per the s72 recipe — extract bridge-gated on the SAME
+> derivation the print uses, builder against the XSD sequence, wired at
+> the cited ReturnData1040.xsd slot: **IRS5329** (1298, max 2 — per-owner
+> `compute_5329_form_lines` + the R-5329-03 `form_5329_generated_for_owner`
+> gate; the line-2 exception emits as the zero-padded ReasonCd + amount
+> pair) · **IRS8606** (1609 — per-Form8606 `owner_lines` +
+> `form_8606_engaged`; name line + SSN schema-required) · **IRS8880**
+> (1923 — FORM_8880 rows; line 9 '0.50' normalized to the XSD enum
+> '0.5') · **IRS8889** (1965, max 2 — per-owner `compute_8889.owner_lines`;
+> REFUSES >1 account per owner, i8889 = one form per individual) ·
+> **IRS8959** (2147 — "8959" rows; the face 5/9/15 thresholds collapse to
+> FilingStatusThresholdCd; 9/10/20 = XSD-omitted cross-refs; RRTA rows
+> REFUSE — RED-deferred compute) · **IRS8960** (2154 — the render_8960 put
+> set value-for-value incl. the `schedule_e_non_1411_income` 4b back-out) ·
+> **IRS8962** (2161 — FORM_8962 rows + the 1095-A monthly/annual choice via
+> the SAME `_aggregate_1095a`/`monthly_ptc` helpers; QSEHRAInd
+> required→false, the default-No class; poverty-table cd A/B/C). **Form
+> 2210 deliberately has NO document**: F2210-002-02 requires a Part II box
+> on any transmitted 2210 and i2210 says don't file when no box applies —
+> the penalty rides the 1040's EsPenaltyAmt; the modeled box C
+> (t2210_use_annualized) REFUSES pending a Schedule AI compute leg.
+> Suites: MeF 1040 pure 64→75 (live-XSD full-return carrying ALL SEVEN
+> documents) · NEW test_efile_computedone_extract 15 · FULL efile/mef band
+> 395 (was 369; zero scenario blast radius) · flow 500. No compute/render/
+> client code touched — extract + builder + tests only; no migrations.
+> Boundaries → DEFERRAL_AUDIT s75 (8); 3 ratifications → REVIEW_QUEUE s75
+> (2210 policy · 8962 QSEHRA default-No · 8889 multi-account refusal).
+
 > **2026-07-13 session 74 — FORM 7203 BASIS ATTACHMENT (Spine S-22b Wave 1) —
 > ★★ the S-corp K-1 basis-limitation form now PRINTS in the 1040 packet AND
 > e-files, and Schedule E 28(e) checks — three surfaces, ONE derivation.**
