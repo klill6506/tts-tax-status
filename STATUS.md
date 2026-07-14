@@ -39,8 +39,10 @@ move on; mandatory session close before context exhausts.**
    approve-all (FIVE walks): flip sentinels → seed → verify exports → cache tts
    mirrors → **dispatch the six tts legs as a set** (9465 · 8888 · voucher pair ·
    4868 print + extension submission builder · 8915-F full unit). Next NEW
-   autonomous item while the gates hold: **the 8879/8878 print pair**. Still
-   open from the list triage: confirm 6252 · 9325 additions.
+   autonomous item while the gates hold (Ken re-sequenced, s82): **AUTH-1
+   magic-link login unit** (email infra → magic-link; passkey 2FA at go-live;
+   scope in BUILD_ORDER s82 + REVIEW_QUEUE s82) → then **the 8879/8878 print
+   pair**. Still open from the list triage: confirm 6252 · 9325 additions.
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
