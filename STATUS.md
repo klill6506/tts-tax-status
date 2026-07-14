@@ -49,6 +49,13 @@ move on; mandatory session close before context exhausts.**
    passkeys at go-live). Also s83 act two: **clients_client RATIFIED as the
    canonical suite clients table** (plain-UUID refs for non-tax-app apps;
    client_number deferred; `3d208ad`) — sherpa-scheduler Phase 2 unblocked.
+   **Acts four/five: demo login screen no longer prints credentials** (Ken:
+   premature for third parties; note kept, live-verified) **+ the TWO SSN
+   rulings ratified** — full SSN never crosses the tax-app boundary
+   (email/phone/name matching permanent for other apps; `ssn_last4` the only
+   derivative), and canonical taxpayer identity = NEW Spine **S-24
+   `clients_tax_identity`** (encrypted tax-app-owned table, never the shared
+   hub; plain-hash match tokens pre-refused — keyed HMAC only).
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
