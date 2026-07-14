@@ -1,5 +1,46 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-14 session 85 — FORM 9465 FULL UNIT (Spine S-22b; the first of
+> the six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input · compute ·
+> render · MeF document · FAs, all legs green.** RS spec `9465` (WO-28,
+> approved+seeded s83; mirror verified verbatim-current at boot).
+> **INPUT**: NEW `Form9465` singleton (mig 0197, BOTH DBs) — header +
+> lines 1b-14 + Part II 15-27 + the router attestations; Form9465Serializer
+> carries the read-only re-derived `analysis`; `form-9465` GET/PATCH/DELETE
+> (1040-only); self-managing Payments-tab card (seq guard) with the
+> computed L7/L9/L10/fee/tier banner + live blocker readout; D_9465_ →
+> payments NavScope. **COMPUTE**: NEW `compute_9465` pinned to all 10 RS
+> scenario oracles (L10 = whole-dollar CEILING of L9/72 — the Gate-1-
+> approved convention; guaranteed/streamlined router; the July-2024
+> year-keyed fee ladder incl. low-income DDIA-waived/$43; Part II
+> three-condition gate; `efile_blockers` = the published Active F9465-*
+> set read verbatim from the TY2025v5.3 CSV — the $50k cap and the
+> $25k-50k DD band key on 'TotalTaxDueAmt' = LINE 9, the element the
+> rules name). 17 D_9465_* diagnostics code-registered + seeded BOTH DBs.
+> **RENDER**: f9465.pdf Rev. 9-2020 (manifest 88, downloaded fresh);
+> f9465_2025 AcroForm map — 66 fields ALL label-verified in the widget
+> y-bands (16a/16b/19/21/25/26 are multi-kid checkbox choices mapped per
+> on-state); packet **FRONT tier** (i9465: attach to the FRONT — sorts
+> before the 1040; new "front" tier in _packet_sort_key) + standalone
+> render-9465 endpoint. **MEF**: NEW IRS9465 document (IRS9465.xsd
+> 2025v5.3, InstallmentAgreement family; ReturnData1040 slot between
+> IRS9000 and IRSRRB1042S); `_extract_f9465` bridge-gates on the SAME
+> analyze derivation the card/print use, refuses on every blocker with
+> the paper path named (433-F/2159), F9465-019-02 ties line 8 to the
+> ACTUAL IRSPayment record; builder emits the full XSD sequence
+> (CheckboxType "X"/BooleanType true-false; the paper-only indicators
+> have NO code path). **FAs**: FA-9465-MIN/EFILE/EFW ACTIVATED in RS
+> (`7bc1e79`, reseeded, export verified 401 = 400 + the s71-staged
+> 4835-06), 1040 mirror refreshed export-verbatim, `_run_9465_assertion`
+> in BOTH dispatch chains — **flow gate 500 → 503**. Suites: NEW
+> test_9465 36 (10 oracles · FA pins · builder order · extract gate ·
+> endpoint · diagnostics · field-map/PDF agreement · live-XSD full-return
+> w/ IRS9465) · MeF+payment band 90 · acroform/manifest 200+162 · tsc 0 ·
+> vitest 300 · live demo probe (card render + typed-100 blocker
+> round-trip + print value landing 8,400×3/117/300 + packet order
+> Letter/Invoice/9465/1040 — probe rows torn down). Boundaries →
+> DEFERRAL_AUDIT s85; two RS-amendment nits → REVIEW_QUEUE s85.
+
 > **2026-07-14 session 80 — W-2G MeF DOCUMENT LEG (Spine S-22b) — ★ the
 > gambling-winnings W-2G now e-files as IRSW2G (mig 0196); the F1040-034-08
 > withholding-reconciliation gap is CLOSED.** The form unit (spec FORM_W2G,
