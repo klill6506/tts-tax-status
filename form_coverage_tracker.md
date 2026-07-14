@@ -1,5 +1,33 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-13 session 74 — FORM 7203 BASIS ATTACHMENT (Spine S-22b Wave 1) —
+> ★★ the S-corp K-1 basis-limitation form now PRINTS in the 1040 packet AND
+> e-files, and Schedule E 28(e) checks — three surfaces, ONE derivation.**
+> The 1040-side `IndividualForm7203` (input + compute existed since the K-1
+> flow-through unit; the loss cap already fed `k1_sche_net`) gains its
+> missing RENDER + MeF legs: NEW `render_7203_1040` (one f7203 face per
+> confirmed row whose attach derivation fires; Part I lines 1-15 now
+> computed, Part II TOTAL column only, Part III columns (a)-(e); packet
+> tier-4 slot) · NEW **IRS7203** document (1004-slot, between Schedule SE
+> and IRS1099R; person-name header choice, nested SCorporationName,
+> XSD-omitted 11/12/22/30/32/33 cross-refs respected) · Schedule E
+> **28(e) BasisComputationRequiredInd** in print (NEW `28{A-D}_e` checkbox
+> map entries, position-verified) and XML. Everything bridge-gates through
+> NEW `k1_basis_computation` → `basis_attach_required` (Sch E instructions
+> Part II verbatim: loss / distribution / disposal / repayment — the first
+> two derivable, the last two stated boundaries). COMPUTE FIX (ratification
+> queued): the outside stock-basis adjustment folds into Part I line 1
+> (§1368 ordering — the old post-line-10 fold overstated basis when
+> distributions exceeded line 5; divergence pin in the new suite). NEW
+> REFUSAL: S-corp K-1 loss/deduction items without a confirmed 7203 refuse
+> at extract (refusal beats fabrication; zero scenario blast radius — no
+> ATS 1040 scenario carries recipient K-1s). Suites: MeF 1040 pure 62→64
+> (live-XSD full-return w/ IRS7203) · NEW test_efile_7203_extract 7 ·
+> render leg 12→14 · 7203 compute suites 32 (all pre-fix pins survived) ·
+> flow 500 · FULL efile/mef band 369 · Sch E/K-1/8582/7203 band 274.
+> Boundaries → DEFERRAL_AUDIT s74 (7); 3 ratifications → REVIEW_QUEUE s74
+> (line-1 fold · the new refusal policy · the partnership-28(e) boundary).
+
 > **2026-07-13 session 73, second act — FORM 8949 DETAIL + SCHEDULE D FULL
 > PATH (Spine S-22b Wave 1 item 2, `3b90188`) — ★★ per-lot capital
 > transactions now e-file.** NEW **IRS8949** document (2133-slot): one

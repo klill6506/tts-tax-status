@@ -1,18 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-13, session 73 (two units). **S-22b Wave 1 items 1+2
-SHIPPED — Schedule E Parts I-III + Form 8582 (`a2cbab0`) AND Form 8949
-detail + the Schedule D full path (`3b90188`) are now real 1040 MeF
-documents.** Rentals/royalties/K-1 pass-through e-file with the IRS8582
-attached; per-lot capital transactions e-file with the IRS8949 detail
-document (box groups A-L, VARIOUS/INHERITED codes, Exception-2 summary
-rows) and the Schedule D 1b/2/3/8b/9/10 box-total groups reference-linked.
-Everything bridge-gates through the print/compute derivations
-(`schedule_e_p2_rows` · `per_activity_allocation` + the line-C≤0 gate ·
-`aggregate_box_totals` + the 7217 merge). Fix-forwards this session: the
-s72 8867 refusal had silently broken Scenario 2's artifact test (now
-attests due diligence); Schedule E 23c/23d printed blank (hard-coded
-ZERO) — now the line-12/18 sums per spec (ratification queued).*
+*Last updated: 2026-07-13, session 74. **S-22b Wave 1 third item SHIPPED —
+the Form 7203 basis attachment.** The 1040-side S-corp shareholder basis
+form (`IndividualForm7203`, compute existed since the K-1 flow-through
+unit) gained its missing render + MeF legs in one motion: Form 7203 pages
+print in the 1040 packet, the IRS7203 XML document e-files (1004-slot),
+and Schedule E 28(e) checks — all three surfaces off the ONE
+`k1_basis_computation` derivation. Compute fix riding it (ratification
+queued): the outside stock-basis adjustment folds into Part I line 1
+(§1368 ordering). NEW e-file refusal: an S-corp K-1 claiming
+loss/deduction items without a confirmed 7203 refuses at extract.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -25,46 +22,43 @@ ZERO) — now the line-12/18 sums per spec (ratification queued).*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s73 sweep: clean).
-2. **NEXT UNIT (Ken-directed 2026-07-13): S-17g A2A channel — cert INSTALLED,
-   ASID 61135801 ENROLLED + ACTIVE (AE 100% done).** Remaining prereqs on Ken
-   (checklist in `docs/mef/A2A_ENROLLMENT.md`): (b) export the cert+key as a
-   password-protected .p12 OUTSIDE the repo → `MEF_A2A_CERT_PATH`/
-   `MEF_A2A_CERT_PASSWORD` in `server/.env` (public Signing .cer already at
-   `C:\Users\Ken\Documents\mef_a2a_signing.cer`, thumbprint FA27333…ADA9);
-   (c) the gated MeF A2A WSDL toolkit → `docs/mef/wsdl/` (not in SOR end of
-   s72 — Ken checks the morning of 07-14, then e-help). CC then builds
-   `A2ATransmitter` (SOAP + WS-Security X.509, Login/SendSubmissions/
-   GetNewAcks against the REAL WSDLs) behind the Transmitter ABC → **A2A
-   comms test in ATS under ETIN 14192** (precedes the Nov-1 A2A-healthy
-   gate). The SOAP skeleton CAN start against a scratch key if the WSDLs
-   arrive before the .p12.
+1. **Start every session with `/bugs`** (s55; s74 sweep: clean).
+2. **NEXT UNIT (Ken-directed): S-17g A2A channel — ⚡ the .p12 LANDED (s74
+   verified: `MEF_A2A_CERT_PATH`/`MEF_A2A_CERT_PASSWORD` set in
+   `server/.env`, file exists, 7,276 bytes).** The ONLY remaining prereq is
+   (c) the gated MeF A2A WSDL toolkit → `docs/mef/wsdl/` (absent end of
+   s74 — Ken checks SOR the morning of 07-14, then e-help; checklist in
+   `docs/mef/A2A_ENROLLMENT.md`; ASID 61135801 ENROLLED + ACTIVE). The
+   moment the WSDLs land, CC builds `A2ATransmitter` (SOAP + WS-Security
+   X.509, Login/SendSubmissions/GetNewAcks against the REAL WSDLs) behind
+   the Transmitter ABC → A2A comms test in ATS under ETIN 14192.
 3. **S-22b WAVE 1 (in progress — work down unless S-17g unblocks):**
-   ✅ Sch E Parts I-IV XML + IRS8582 (s73, `a2cbab0`) · ✅ **8949-detail/
-   Sch D full path (s73b, `3b90188`)**. Next biggest: **7203 basis attach**
-   (+ the Sch E 28(e)/28(f) checkboxes that ride it) → the compute-done XML
-   row (2210/8959/8960/8962/8889/8880/8606/5329) → EFW payment + 8888 +
-   9465 → 4868 (separate MeF family + e-services checkbox) → 8915-F → W-2G
-   → the 8879/8878 print pair. Each unit = the s72 Schedule B/8867 recipe
-   (mirror print via bridge-gates; refusal beats fabrication; XSD-parsed
-   enums; **run the FULL efile/mef band after any new refusal**). Still
-   open from the list triage: confirm the suggested additions (6252 ·
-   1040-ES/V · 9325).
+   ✅ Sch E Parts I-IV XML + IRS8582 (s73, `a2cbab0`) · ✅ 8949-detail/
+   Sch D full path (s73b, `3b90188`) · ✅ **7203 basis attach + Sch E
+   28(e) (s74)**. Next biggest: **the compute-done XML row**
+   (2210/8959/8960/8962/8889/8880/8606/5329) → EFW payment + 8888 + 9465
+   → 4868 (separate MeF family + e-services checkbox) → 8915-F → W-2G →
+   the 8879/8878 print pair. Each unit = the s72 recipe (mirror print via
+   bridge-gates; refusal beats fabrication; XSD-parsed enums; **run the
+   FULL efile/mef band after any new refusal** — s74's refusal had zero
+   scenario blast radius, verified 369 green). Still open from the list
+   triage: confirm the suggested additions (6252 · 1040-ES/V · 9325).
 4. Then the s71 queue stands: **bootstrap_demo 1065+1041 demo returns** →
    **S-21b 1065 partner-percentage diagnostic** → **S-21c Sch B Q4
    auto-answer** (spec-first). The 1120/709 authoring waves + the 1120-S
    ATS lane stay Ken-gated.
-5. **Ken ratifications pending: 3 OPEN s73 items (non-blocking,
-   recommendations filed)** — (a) the Schedule E 23c/23d zero→sum compute
-   fix; (b) the never-answered Sch E line 27 question (derived-No leg
-   candidate); (c) the print 3-property truncation vs full-XML emission
-   (print continuation-page leg candidate). Plus the 2 s72 items (8867
-   face-fidelity leg · Sch B K-1 listing row). Standing non-decisions: 3115
-   OMB nit rides the next RS 3115 amendment; the 8824 RS note rides the
-   next 8824 touch.
+5. **Ken ratifications pending: 3 NEW s74 items (non-blocking,
+   recommendations filed)** — (a) the 7203 outside-adjustment line-1 fold
+   (§1368 ordering; divergence pin); (b) the new S-corp-loss-without-7203
+   e-file refusal policy; (c) the partnership 28(e) boundary. Plus the 3
+   s73 items (23c/23d zero→sum · Sch E line 27 · print 3-property
+   truncation) and the 2 s72 items (8867 face-fidelity · Sch B K-1
+   listing row). Standing non-decisions: 3115 OMB nit rides the next RS
+   3115 amendment; the 8824 RS note rides the next 8824 touch.
 
 ## ▶ Waiting on Ken / external
-1. **A2A prereqs** (.p12 export + WSDL toolkit — see RESUME item 2).
+1. **A2A: ONLY the WSDL toolkit remains** (the .p12 is DONE — s74 verified;
+   see RESUME item 2).
 2. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
 3. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
 4. File-1018 Lacerte reprint (item 10). 5. PWA install check.
@@ -75,20 +69,24 @@ move on; mandatory session close before context exhausts.**
 9. S-22b triage confirmations (6252 · 1040-ES/V · 9325 — add or skip).
 
 ## Active gates
-- **Flow-assertion gate GREEN at 500** (unchanged — s73's 23c/23d fix pins
-  nothing in the mirror; verified). Mirrors: 1120S 41 · 1065 39 (+4 s64
-  staged) · 1040 397 export-verbatim (+1 staged: FA-1040-4835-06 pending
-  the 4562→4835 feeder).
-- **s73 suites: MeF 1040 pure 62 (56 + Sch E/8582 + 8949/Sch D structural
-  + live-XSD 2025v5.3 full-return validations) · NEW
-  test_efile_sche_8582_extract 7 · NEW test_efile_8949_schd_extract 7 ·
-  schedule_e/8582 band 127 · schedule_d/8949 band 89 · scenario2 29 (8867
-  fix-forward) · full efile/mef band 360.** s72/s70 suites otherwise
-  unchanged (test_3115 39 · manifest/acroform 201 · pair 36 · tsc 0 ·
-  vitest 300). Last full-suite GREEN = s54 `cd9b186`.
-- Shared-DB deploy state: mig 0194 applied + seed 359 clean (s71); s73 adds
-  NO migrations — **push-deploy carries `a2cbab0` + `3b90188` with no DB
-  step**.
+- **Flow-assertion gate GREEN at 500** (s74 touches compute_7203_individual —
+  no mirror pins on it; verified green post-change). Mirrors: 1120S 41 ·
+  1065 39 (+4 s64 staged) · 1040 397 export-verbatim (+1 staged:
+  FA-1040-4835-06 pending the 4562→4835 feeder).
+- **s74 suites: MeF 1040 pure 64 (62 + IRS7203 structural + live-XSD
+  2025v5.3 full-return w/ 7203 + the 28(e) checkbox pins) · NEW
+  test_efile_7203_extract 7 · Sch E render leg 14 (28(e) checked/unchecked
+  + packet + shape) · 7203 compute suites 32 (every pre-fix pin survived
+  the line-1 fold) · FULL efile/mef band 369 · Sch E/K-1/8582/7203 band
+  274 (4 pre-existing skips).** tsc/vitest untouched (no client code).
+  Last full-suite GREEN = s54 `cd9b186`.
+- Shared-DB deploy state: mig 0194 applied + seed 359 clean (s71); s74 adds
+  **NO migrations — push-deploy only, no DB step**. The 7203 spec mirror
+  refreshed from the deployed RS export (format-only drift; content
+  identical — 7 rules / 4 diags / 4 tests unchanged).
+- ⚠ Local test-DB note: a stale `test_postgres` blocked DB-backed tests at
+  boot — dropped + the one fixture that relied on ambient seeding now
+  requests `credit_forms` (test_compute_7203_individual).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
