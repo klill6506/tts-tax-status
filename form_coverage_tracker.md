@@ -1,5 +1,67 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-15 session 87 — the 1040-V / 1040-ES VOUCHER PAIR (Spine
+> S-22b; the third of the six Gate-1-dispatched tts legs) — ★★ UNIT
+> COMPLETE: input · compute · render · FAs, all legs green. PRINT-ONLY
+> BY DESIGN (no MeF documents — the s76 EFW/ES-debit records are the
+> electronic siblings; SUPPRESSION is the interlock).** RS specs `1040V`
+> + `1040ES` (WO-30, ONE loader/TWO TaxForms, approved+seeded s83;
+> mirrors verified verbatim-current at boot). **INPUT**: NEW
+> `PaymentVouchers` singleton (mig 0200 + RLS mig 0201, BOTH DBs — the
+> model+RLS pair rule) — V section (pay-by-check flag + check amount,
+> blank = the line-37 balance; foreign-routing flag) + ES section (4
+> paper-check quarter amounts DISTINCT from es_debit_q1-4 + the RAP
+> facts + joint bars + Q4-skip plan flags); PaymentVouchersSerializer
+> carries the read-only re-derived `analysis`; `payment-vouchers`
+> GET/PATCH/DELETE (1040-only, **PATCH row-locked from birth** — the
+> s86 lost-update lesson); Payments-tab card (seq guard; V banner +
+> RAP/emission banner; debited quarters disable their check inputs);
+> D_V_/D_ES_ → payments NavScope. **COMPUTE**: NEW `compute_vouchers`
+> pinned to all 10 RS scenario oracles — R-V-USE (balance>0 AND check
+> AND NOT efw_elected; suppression reasons efw/online/no_balance) ·
+> the $100M check-split (100M exactly → 2) · R-ES-RAP = min(90%
+> (66⅔% farmer) expected, 100%/110% prior — 110% iff prior AGI > $150k
+> ($75k next-year MFS) and never for farmers; $150k-exactly stays 100%)
+> · the $1,000 general-rule gate + the no-prior-liability exception ·
+> per-quarter emission (check amount AND not debited) at the fixed
+> FPYMT-088-11 calendar · the joint bars (NRA/decree/different-years/
+> RDP) · BOTH mailing charts as full partition-pinned rosters (V:
+> 9 Charlotte-1214 states + rest Louisville-931000; ES: 29
+> Charlotte-1300 + 22 Louisville-931100; foreign → 1303 on both; the
+> GA three-way trap pinned by name). Derived defaults (typed wins):
+> V amount ← line 37 · expected withholding ← line 25d · prior tax ←
+> THIS return's §6654 tax shown (L22+L23−27/28/29, the compute_2210
+> chain) · prior AGI ← line 11 · overpayment-credited reads line 36
+> (never enters a voucher box). 15 D_V_*/D_ES_* diagnostics
+> code-registered + seeded BOTH DBs. **RENDER**: f1040v.pdf (2025) +
+> f1040es.pdf (2026 package, 16 pages) downloaded fresh (manifest 89 →
+> 91); f1040v_2025 map (15 widgets label-verified; the IRS skipped
+> f1_4 — their gap) + f1040es_2025 map (56 widgets = 4 voucher blocks ×
+> 14, generated from the verified block layout: V4 alone on PDF p13,
+> V3/V2/V1 top-to-bottom on p14); render_1040v = face page only,
+> **v_needed is the render gate** (a suppressed voucher cannot reach
+> paper — the bridge-gate convention applied to print); render_1040es
+> emits ONLY the sheets carrying an emitted quarter (debit-suppressed;
+> joint-barred prints taxpayer-only); packet **"voucher" tier sorts
+> LAST** (after state returns — tear-off remittances mail separately);
+> standalone render-1040v/render-1040es endpoints (suppressed → the
+> explanation, not paper). **MEF**: none by design. **FAs**:
+> FA-1040V-EFW / FA-ES-RAP / FA-ES-QDEBIT ACTIVATED in RS (reseeded,
+> export verified 407 active), 1040 mirror refreshed export-verbatim
+> (406 + the s71-staged 4835-06), `_run_1040ves_assertion` in BOTH
+> dispatch chains — **flow gate 506 → 509**. Suites: NEW test_1040v_es
+> 41 (10 spec oracles · chart partitions · derived defaults · endpoint
+> · 15-rule registry + diagnostics · field-map/PDF agreement ×2 ·
+> render gates + page selection · packet tier) · flow 509 ·
+> tts_forms+acroform+returns 277 (manifest trip-wire re-pinned 91) ·
+> tsc 0 · vitest 300 · live demo probe (card banners: KY V→931000 /
+> ES→931100 live; 6-PATCH concurrent volley → all fields landed (the
+> row lock) + farmer RAP re-derived 16,667; both render endpoints 200
+> %PDF; page-map …, 1040-V, 1040-ES(p.1), 1040-ES(p.2) at the very
+> back; diagnostics run fired exactly D_V_ADDR/PREP +
+> D_ES_ADDR/FARMER/POSTMARK/REQUIRED — probes torn down). Boundaries →
+> DEFERRAL_AUDIT s87 (9). WO-30 → ✅ DONE in RS.
+
 > **2026-07-14 session 86 — FORM 8888 FULL UNIT (Spine S-22b; the second
 > of the six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input ·
 > compute · render · MeF document · FAs, all legs green.** RS spec `8888`
