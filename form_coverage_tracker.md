@@ -1,5 +1,54 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-14 session 86 — FORM 8888 FULL UNIT (Spine S-22b; the second
+> of the six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input ·
+> compute · render · MeF document · FAs, all legs green.** RS spec `8888`
+> (WO-29, approved+seeded s83; mirror refreshed post-reseed). **INPUT**:
+> NEW `Form8888` singleton (mig 0198 + RLS mig 0199, BOTH DBs — 0199 also
+> back-fills the s85-missed returns_form9465 RLS) — 3 account rows
+> (amount/routing/type/number) + the 8379 and legacy-bond flags;
+> Form8888Serializer carries the read-only re-derived `analysis`;
+> `form-8888` GET/PATCH/DELETE (1040-only, **PATCH row-locked** — the
+> probe caught the 8941 lost-update class LIVE on concurrent autosaves;
+> form-9465 PATCH gained the same lock); Payments-tab card w/ seq guard +
+> computed L5/refund-tie banner + live blocker/row-problem readout;
+> D_8888_ → payments NavScope. **COMPUTE**: NEW `compute_8888` pinned to
+> the RS scenarios — L5 = the account sum (the F8888-001-04 half of the
+> two-way tie holds BY CONSTRUCTION), F8888-002-03 refund tie, RTN
+> prefix 01-12/21-32, ≤17-char accounts, unique/non-zero numbers
+> (015/016), the amended cap (020), the 8379 bar, whole-dollar-only rows;
+> `efile_blockers` reads the Active F8888-* set verbatim from the
+> TY2025v5.3 CSV. 12 D_8888_* code-registered + seeded BOTH DBs.
+> **RENDER**: f8888.pdf Rev. 12-2025 CONTINUOUS USE (manifest 89,
+> downloaded fresh); f8888_2025 AcroForm map — 20 widgets ALL
+> label-verified (c1_N pairs: on=1 Checking / on=2 Savings = the XSD
+> enum); **face page only** (pages 2-3 are the included instructions);
+> line 4 'Reserved for future use' deliberately unmapped
+> (R-8888-RETIRED); packet tier 4 (sorts after 8867) + standalone
+> render-8888 endpoint. **The 1040 face 35-block closed in passing**:
+> 35a "Form 8888 attached" checkbox + the never-mapped 35b/c/d DD
+> widgets now fill (blank when 8888 rides — IND-084 print parity).
+> **MEF**: NEW IRS8888 document (IRS8888.xsd 2025v5.3, Common family;
+> ReturnData1040 directly before IRS8889, max 1); `_extract_f8888`
+> bridge-gates on the SAME analyze derivation the card/print use —
+> refuses on bond asks (program DISCONTINUED), single-account, row gaps,
+> and every Active blocker; `build_irs8888` emits DirectDepositInfoGroup
+> ×2-3 + TotalAllocationOfRefundAmt, NEVER RefundByCheckAmt (F8888-023);
+> the 1040 emits Form8888Ind "X" w/ referenceDocumentId (IND-091/092)
+> and suppresses its 35b-d values (IND-084); the ReturnHeader
+> RefundDisbursementGrp fans out per account (maxOccurs=3 = the 8888
+> limit; R0000-250/251 per group). **FAs**: FA-8888-TIE/SPLIT/NOBOND
+> ACTIVATED in RS (`a3fb215`, reseeded, export verified 404 active),
+> 1040 mirror refreshed export-verbatim (403 + the s71-staged 4835-06),
+> `_run_8888_assertion` in BOTH dispatch chains — **flow gate 503 →
+> 506**. Suites: NEW test_8888 37 (oracles · builder order · live-XSD
+> full-return w/ IRS8888 + the Form8888Ind/IND-084/header-fan-out pins ·
+> extract gate · endpoint · diagnostics · field-map/PDF) · MeF+payment+
+> 9465 126 · FULL efile/mef/scenario band 964 · tts_forms+acroform 201 ·
+> returns 76 · tsc 0 · vitest 300 · live demo probe (blocker repaint +
+> the concurrent-volley lock verification + print/packet/35a-X landing —
+> probe rows torn down). Boundaries → DEFERRAL_AUDIT s86 (7 + 2 riders).
+
 > **2026-07-14 session 85 — FORM 9465 FULL UNIT (Spine S-22b; the first of
 > the six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input · compute ·
 > render · MeF document · FAs, all legs green.** RS spec `9465` (WO-28,
