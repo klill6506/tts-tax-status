@@ -1,27 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-15, session 91. **SEC-2 PII PLUMBING SWEEP SHIPPED
-(the second item of the S-23 pre-beta security block; zero compute/render
-code — flow gate 515 stands, no migrations).** Evidence ledger:
-`docs/audits/2026-07-15_sec2_pii_plumbing_sweep.md` (WISP input). Sweep
-verdicts: server logs/settings/DRF errors CLEAN (UUIDs+amounts only; no
-telemetry deps anywhere); UI masking verified (mask-by-default, full SSN
-only in entry inputs). THREE findings fixed: (1) audit redaction was
-exact-name-only — `spouse_ssn`/`payer_ein`/`bank_account_number`-class
-fields wrote full values into audit `changes`; now token-based
-(`PII_NAME_TOKENS`, apps/audit/service.py). (2) redact-inside-snapshot
-silently DROPPED PII change events (old==new) — snapshots now stay raw
-in-memory, diff raw, redact at write → "who changed the SSN" is auditable
-as `{old/new: ***REDACTED***}`. (3) AI Help questions left the boundary
-un-scrubbed → `scrub_tins()` removes dashed SSN/EIN shapes before Gemini
-AND persistence + a visible panel hint. THE RULE (no real client data in
-dev/test — synthetic only, sanitized imports, probes on demo, mirror PII
-guard) recorded in DECISIONS.md. Gates: test_audit 16 · test_ai_help 17 ·
-blast band 112 · tsc 0 · vitest 300 · live demo probe 2/2 + DOM-verified
-panel hint. Boundaries → DEFERRAL_AUDIT s91 (7: SSN-in-list-API→S-24 ·
-checkin_events cross-app · bare-9-digit residual · employer-EIN URL
-documented · HelpQuery retention→SEC-5 · infra logs→SEC-5 ·
-over-redaction accepted). `/bugs`: clean. A2A WSDLs still absent at s91.
+*Last updated: 2026-07-15, session 92. **SEC-3 VIEW-ACCESS AUDIT LOGGING
+SHIPPED (the third S-23 security-block item; audit mig 0004 BOTH DBs —
+choices-only, no schema change; zero compute code — flow gate 515
+stands).** Ledger: `docs/audits/2026-07-15_sec3_view_audit.md` (WISP
+input). NEW `AuditAction.VIEW` + `log_view()` (apps/audit/service.py):
+who VIEWED which record, when — actor/firm/model/UUID, `changes` always
+empty. Volume-bound: deduped per login session (session key list, FIFO
+cap 500; re-view after eviction re-logs — over-logging is the safe
+direction). Hooked surfaces per the Spine: client-record retrieve +
+return open (the editor load); `/audit-log/?action=view` serves the
+rows. Deliberately unlogged: lists (volume), PDF renders (PRINT gate
+rows exist), in-return sub-GETs (the open row covers them) — DEFERRAL
+s92. This was the S-24 prerequisite (identity reads land in an existing
+trail). Gates: test_audit 22 (6 new) · test_ai_help 17 · returns+authz+
+auth band 113 (incl. the new return-open pin) · live demo probe GREEN
+(2 deduped rows + new-session re-log, cleaned). s91 SEC-2 stands (ledger
++ THE RULE in DECISIONS). `/bugs`: clean. A2A WSDLs still absent at s92.
 WO-33 still ⏳ AWAITING KEN.*
 
 ## How this file works (read before editing)
@@ -35,9 +30,9 @@ WO-33 still ⏳ AWAITING KEN.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s91 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s92 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
-   (`docs/mef/wsdl/` still absent at s91; .p12 DONE; checklist
+   (`docs/mef/wsdl/` still absent at s92; .p12 DONE; checklist
    `docs/mef/A2A_ENROLLMENT.md`; ASID 61135801 ENROLLED + ACTIVE).
 3. **⟨GATE-1⟩ WO-33 (8879/8878 pair) ⏳ AWAITING KEN** — the walk is in RS
    WORK_ORDERS + REVIEW_QUEUE s90 (recommend approve-all; four seams w/
@@ -45,14 +40,15 @@ move on; mandatory session close before context exhausts.**
    `lookup/{8879,8878}/export/` → cache the tts mirrors → **dispatch the
    tts print-pair leg** (signature-input surface + two AcroForm prints +
    header-tie diagnostics + extract gating — the s87 print-only recipe).
-4. While WO-33 is gated, the next NEW autonomous items: **SEC-3
-   view-access audit logging** (s91 note: extend AuditEntry with read
-   events — client record + return open; per-session dedupe; natural
-   prerequisite for S-24's audited identity reads) → **SEC-4 session
-   hardening** → **SEC-5 encryption/backups verify+document** ([EXT]:
-   Ken pulls the Supabase SOC 2 attestation) → **SEC-6 Delvio WISP
-   draft** (cites the sec1+sec2 ledgers) → **S-24
-   `clients_tax_identity`**. Still open from the S-22b triage: confirm
+4. While WO-33 is gated, the next NEW autonomous items: **SEC-4 session
+   hardening** (idle timeout for shared front-desk machines / rolling
+   expiry · pin is-active-off-revokes-live-sessions with a test ·
+   "sign out everywhere" per user · document the session policy) →
+   **SEC-5 encryption/backups verify+document** ([EXT]: Ken pulls the
+   Supabase SOC 2 attestation; TESTED restore drill; written
+   retention/deletion policy) → **SEC-6 Delvio WISP draft** (cites the
+   sec1+sec2+sec3 ledgers) → **S-24 `clients_tax_identity`** (reads
+   reuse the s92 `log_view`). Still open from the S-22b triage: confirm
    6252 · 9325 (9325 also pairs with the 8879 SID association).
 5. Then the s71 queue: **bootstrap_demo 1065+1041 demo returns** → **S-21b
    1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
@@ -97,17 +93,17 @@ move on; mandatory session close before context exhausts.**
 - **RS state: WO-33 ⏳ AWAITING KEN (`49c82b1`)** — `load_8879_8878.py`
   gated (READY_TO_SEED=False), harness `validate_8879_8878.py` 77/0,
   brief + walk filed. The WO-28..32 lane remains EMPTY (all ✅ DONE).
-- **s91 suites:** test_audit 16 (4 new) · test_ai_help 17 (5 new) ·
-  blast band test_authz_sec1+test_returns+test_auth_magic_link 112 ·
-  tsc 0 · vitest 300. s89 suites stand: test_8915f 49 · flow 515 ·
-  seam band 150 · FULL efile band 966 · tts_forms band 355 (trip-wire
-  93). s88: test_4868 44 · s87: test_1040v_es 41 · s86: test_8888 37 ·
+- **s92 suites:** test_audit 22 (6 new VIEW tests) · test_ai_help 17 ·
+  returns+authz+auth band 113 (incl. the return-open VIEW pin). s89
+  suites stand: test_8915f 49 · flow 515 · seam band 150 · FULL efile
+  band 966 · tts_forms band 355 (trip-wire 93) · tsc 0 · vitest 300.
+  s88: test_4868 44 · s87: test_1040v_es 41 · s86: test_8888 37 ·
   s84: test_authz_sec1 17 · s83: auth 19 · prefs 14.
 - Last full-suite GREEN = s54 `cd9b186`.
-- **Shared-DB deploy state unchanged: migs through 0205 applied BOTH
-  DBs** (0204/0205 s89 · 0202/0203 s88 · 0200/0201 s87 · 0198/0199
-  s86 · 0197 s85); seed_rules current BOTH DBs. **s91 shipped NO
-  migrations** (audit/ai_help behavior only — deploys with code).
+- **Shared-DB deploy state: returns migs through 0205 + audit 0004
+  applied BOTH DBs** (audit 0004 s92 — choices-only AlterField ·
+  0204/0205 s89 · 0202/0203 s88 · 0200/0201 s87 · 0198/0199 s86 ·
+  0197 s85); seed_rules current BOTH DBs.
 - ⚠ Local test-DB note: after a new migration run the s86 recipe once —
   standalone `django.test.utils.setup_databases(keepdb=True)` **under
   `config.settings.test`** (it migrates the LOCAL test_postgres
