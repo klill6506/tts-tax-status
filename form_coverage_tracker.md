@@ -1,5 +1,68 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-15 session 89 — FORM 8915-F (Spine S-22b; the LAST of the
+> six Gate-1-dispatched tts legs — THE SET IS COMPLETE) — ★★ UNIT
+> COMPLETE: input · compute · render · MeF document · FAs, all legs
+> green.** RS spec `8915F` (WO-32, approved+seeded s83; mirror
+> verbatim-current). **INPUT**: NEW `Form8915F` (mig 0204 + RLS mig
+> 0205, BOTH DBs — the model+RLS pair rule) — one row per OWNER per
+> item-B DISASTER YEAR (married = a separate form per spouse; unique
+> constraint); items B/D + the full Part I-IV face inputs (the lines
+> 2-4(b) allocations + line 20 blank = derived, typed wins — the L5
+> house rule) + NEW `Form8915FDisaster` child rows (item C FEMA
+> number + declaration/begin/END dates + repeat/Part-IV flags; nested
+> REPLACE-ALL writes); Form8915FSerializer carries the read-only
+> re-derived `analysis`; `forms-8915f` list/create + detail
+> PATCH/DELETE (1040-only; PATCH row-locked; every mutation
+> recomputes — this card FEEDS compute); "Disaster Dist. (8915-F)"
+> Income-group tab; D_8915F_ → form_8915f NavScope. **COMPUTE**: NEW
+> `compute_8915f` pinned to all 10 RS scenario oracles — **the
+> 179/180-day ONE-day asymmetry pinned BOTH directions against every
+> published date example incl. the 12/29/2022 SECURE-floor arm (the
+> IRS's own Appendix-D off-by-one class)** · the 1a-1e ladder + the
+> single-new-disaster shortcut · the Rev-12-2025 5a/5b redesign
+> (5b(b) = min(sum(2-4(a))−5a, 1e)) · sequential-fill (b)-column
+> allocation · line 6 waiver / line 7 excess (Part IV overlap reduces
+> 7) · the ÷3.0 spread (whole-dollar ROUND_HALF_UP — the flagged
+> convention, REVIEW_QUEUE s89) + the 11↔22 matched opt-out boxes ·
+> the $22k/$100k per-disaster cap (F8915F-003 by construction) · the
+> Part IV [-180d, end+30d] receipt window. **THE LANDING MOVES**: 5b
+> −= line 10 += line 15 · 4b −= line 20 += line 26 · line 30/32 route
+> by plan type — runs AFTER compute_8606_db; **the 8606 face SPLITS
+> 15a/15b/15c + 25a/25b/25c off the 8915-F lines 18/19
+> (owner_lines gained the QDD ties — print/XML/compute agree)**;
+> **the 5329 line-6 waiver: owner_inputs suppresses the early-tax
+> base (line 6 NEVER generates a 5329; line 7 + Part IV 32 keep
+> their exposure)**. 15 D_8915F_* code-registered + seeded BOTH DBs.
+> **RENDER**: f8915f Rev-12-2025 AcroForm (manifest 92→93,
+> hash-verified; **the lines-1-5 two-column table SHADING-PROBED —
+> 1a-1e fill column (b), 5a fills column (a), the s71 positional-map
+> class**; all widgets label-verified; line-8 No-first vs lines-16/17
+> Yes-first checkbox order caught); one 4-page copy per row w/ the
+> owner's own name/SSN; >2 disasters check the face box + ride a
+> Statement page; joins the packet (seq 915) + `render-8915f`
+> endpoint. **MEF**: NEW IRS8915F document (ReturnData1040 slot 2014
+> between IRS8912 and IRS8917 — emitted between IRS8911 and its
+> ScheduleA loop, maxOccurs=6, per-document PersonNm/SSN); item A/B
+> XSD choices (2020/2021 ride the checkbox+attribute forms); the Part
+> I FEMA groups (max 20) + Part IV groups (max 10, +end date) fan out
+> from the SAME disaster rows; extract bridge-gates on the SAME
+> form_lines derivation — refusals name the paper path (EM/pattern/
+> missing dates/year enums/opt-out mismatch/>6 forms/Part-I-needs-a-
+> dated-disaster); live-XSD valid with TWO documents (the
+> separate-spouse shape). **FAs**: FA-8915F-CAP/SPRD/LAND activated
+> (RS reseeded, export 413 verified, mirror 412 export-verbatim
+> ASCII, `_run_8915f_assertion` in BOTH chains) — **flow gate 512 →
+> 515**. Suites: NEW test_8915f **49/49** · flow 515 · 8606/5329/
+> retirement seam band 150 · FULL efile/mef/scenario band 966 ·
+> tts_forms band 355 (trip-wire re-pinned 92→93) · tsc 0 · vitest
+> 300 · live demo probe green (the card CRUD + the banner painting
+> 1e/6/7/15 + the per-disaster 179/180 dates live · ORM: 5b 10,300 →
+> 3,433 → delete-restores 10,300 · diagnostics fired exactly
+> LANDINGS+WAIVER · render 200 %PDF; demo return restored).
+> Boundaries → DEFERRAL_AUDIT s89 (10); the rounding ratification →
+> REVIEW_QUEUE s89. WO-32 → ✅ DONE in RS.
+
 > **2026-07-15 session 88 — FORM 4868 (Spine S-22b; the FOURTH of the
 > six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input · compute ·
 > render · MeF (a NEW SUBMISSION FAMILY) · FAs, all legs green.** RS

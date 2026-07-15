@@ -1,43 +1,36 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-15, session 88. **FORM 4868 SHIPPED** — the fourth
-of the six Gate-1-dispatched tts legs (RS spec WO-31). Print + its OWN
-MeF SUBMISSION FAMILY: ReturnTypeCd "4868" (Return4868/ReturnHeader4868/
-ReturnData4868, Extensions package 2026v1.0 — extracted from the
-already-local zip; NEW builder_4868 + read_model_4868 + Mapper4868TY2025
-registered (2025, "2026v1.0", "4868"); schema_locator gained
-family_version_root for the 3-deep standalone family packages, existing
-families regression-pinned identical). NEW Form4868 singleton (mig 0202
-+ RLS mig 0203, BOTH DBs) + compute_4868 pinned to all 10 RS oracles
-(the L6 floor · F4868-001/-002 windows · Oct-15 / DERIVED Dec-15 · the
-90% two-prong harbor · the payment-triggered signature/jurat ladder —
-a no-payment e-filed 4868 carries NO signature at all (R0000-098) · the
-FPYMT-052-02 EFW tie · BOTH where-to-file columns partition-pinned —
-**the GA Charlotte trap is FOUR-way: V 1214 / ES 1300 / 4868 1302 /
-foreign 1303**) + 16 D_4868_* seeded BOTH DBs + f4868 (2025) AcroForm
-print (manifest 91→92; suppression IS the render gate — a recorded
-e-payment confirmation means the extension already processed, IND-900;
-**STANDALONE ONLY, never in the packet** — 'Don't attach the 4868 to
-the return', pinned by test) + the form-4868 endpoint (row-locked PATCH
-from birth, **recompute on PATCH/DELETE — this card FEEDS compute**) +
-the Payments-tab card. **The R-4868-CREDIT tie is live: line 7 → Sch 3
-line 10 YELLOW feeder in compute_sch_3 (relation-guarded; override
-survives; DELETE clears the stale derive — the s66 class caught on the
-live probe; fetched FRESH, never via the reverse-cache — the singleton
-DELETE class caught by test). The L5 derive sums components
-(25d+26+27..31 − Sch3 L10), never line 33 itself — the
-subtract-from-33 form DIVERGES one L10 per recompute when 33 is
-overridden (caught by the endpoint test).**
-**FA-4868-L6/EFW/CREDIT activated in RS (export 410 verified), 1040
-mirror 409 export-verbatim (ASCII — the cp1252 loader), runners in both
-chains — flow gate 512.** Suites: NEW test_4868 44 (incl. live-XSD ×2
-on the Extensions tree) · flow 512 · forms/returns/payment band 391
-(trip-wire 92) · FULL efile/mef/scenario band 966 · tsc 0 · vitest 300
-· live demo probe (TX return: Austin no-pay → typed L4 → Charlotte 1302
-flip · Sch3 L10→L31→L33 chain ORM-verified · 6-PATCH volley · render
-200 %PDF · diagnostics fired exactly ADDR/CREDIT/EPAY · delete-clears
-re-probed clean; one transient pooler drop mid-recompute, not code).
-WO-31 → ✅ DONE in RS.*
+*Last updated: 2026-07-15, session 89. **FORM 8915-F SHIPPED — the LAST
+of the six Gate-1-dispatched tts legs; THE SET (9465 · 8888 · V/ES ·
+4868 · 8915-F) IS COMPLETE.** The full unit in one session: NEW
+Form8915F + Form8915FDisaster (migs 0204 + RLS 0205, BOTH DBs) — one
+row per OWNER per item-B disaster year (married = a separate form per
+spouse) with nested item-C FEMA rows; compute_8915f pinned to all 10
+RS oracles (**the 179/180-day ONE-day asymmetry pinned both directions
+against every published date example incl. the SECURE-floor arm** ·
+the 1a-1e ladder + single-new-disaster shortcut · the Rev-12-2025
+5a/5b redesign · the ÷3.0 spread — whole-dollar ROUND_HALF_UP adopted
+for the flagged convention, REVIEW_QUEUE s89 · the 11↔22 matched
+opt-out boxes · the $22k/$100k cap); **the landing MOVES: 1040 5b −=
+line 10 += line 15 · 4b −= line 20 += line 26 · Part IV 30/32 route by
+plan type; the 8606 face now SPLITS 15a/15b/15c + 25a/25b/25c off the
+8915-F lines 18/19 (owner_lines gained the QDD ties — print/XML/
+compute agree); the 5329 line-6 waiver suppresses the early-tax base
+(line 6 NEVER generates a 5329 — line 7 + Part IV 32 keep their
+exposure)**. 15 D_8915F_* seeded BOTH DBs. f8915f Rev-12-2025 AcroForm
+print (manifest 93; the lines-1-5 table SHADING-PROBED — 1a-1e fill
+column (b), 5a column (a)); per-owner copies; packet seq 915 +
+render-8915f endpoint. NEW IRS8915F MeF document (ReturnData1040 slot
+2014, maxOccurs=6, per-document name/SSN; item A/B XSD choices;
+refusals name the paper path; live-XSD valid with TWO documents).
+**FA-8915F-CAP/SPRD/LAND activated (RS export 413 verified, mirror 412
+export-verbatim ASCII, runners in both chains) — flow gate 515.**
+Suites: NEW test_8915f 49 · flow 515 · seam band 150 · FULL efile band
+966 · tts_forms band 355 (trip-wire 93) · tsc 0 · vitest 300 · live
+demo probe green (banner painted 1e/6/7/15 + the per-disaster 179/180
+dates live; ORM 5b 10,300 → 3,433 → delete-restores; diagnostics fired
+exactly LANDINGS+WAIVER; render 200 %PDF; demo restored). WO-32 → ✅
+DONE in RS — the RS dispatch lane is EMPTY.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -50,22 +43,20 @@ WO-31 → ✅ DONE in RS.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s88 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s89 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
-   (`docs/mef/wsdl/` still absent at s88; .p12 DONE; checklist
+   (`docs/mef/wsdl/` still absent at s89; .p12 DONE; checklist
    `docs/mef/A2A_ENROLLMENT.md`; ASID 61135801 ENROLLED + ACTIVE).
-3. **The six dispatched tts legs: 9465 ✅ (s85) · 8888 ✅ (s86) · V/ES ✅
-   (s87) · 4868 ✅ (s88). ONE remains:** **8915-F full unit** (next NEW
-   autonomous item — inputs + per-disaster compute + render + IRS8915F
-   MeF document + the 5329 suppression seam; ⚠⚠ the 179/180-day
-   asymmetry; item A/B naming; married = a SEPARATE form per spouse;
-   maxOccurs=6; mirror `server/specs/8915f_spec.json` cached s83).
-   **Then 8879/8878 → SEC-2..6 → S-24.** Still open from the S-22b
-   triage: confirm 6252 · 9325.
+3. **The six dispatched tts legs are ALL BUILT (9465 s85 · 8888 s86 ·
+   V/ES s87 · 4868 s88 · 8915-F s89).** Next NEW autonomous item:
+   **the 8879/8878 print pair** (e-file signature authorizations —
+   spec-first gap check per the house rule) → **SEC-2..6** → **S-24**.
+   Still open from the S-22b triage: confirm 6252 · 9325.
 4. Then the s71 queue: **bootstrap_demo 1065+1041 demo returns** → **S-21b
    1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
-5. **Ken ratifications pending:** s85 pair (RS 9465 condition-wording nit ·
+5. **Ken ratifications pending:** s89 (the 8915-F ÷3.0 ROUND_HALF_UP
+   convention — recommend keep) · s85 pair (RS 9465 condition-wording nit ·
    the F9465-027-01 effective-payment seam — re-check at ATS) · s84 pair
    (front-desk role · ADMIN-only destructive deletes) · s83 email provider
    pick (Resend recommended; `docs/AUTH_EMAIL_SETUP.md`) · the s76 EFW
@@ -92,36 +83,39 @@ move on; mandatory session close before context exhausts.**
 12. s81 design check: eyeball Ledger (instant rollback in the picker).
 
 ## Active gates
-- **Flow-assertion gate GREEN at 512 (was 509)** — FA-4868-L6/EFW/CREDIT
-  activated + `_run_4868_assertion` live in both chains; 1040 mirror =
-  409 active export-verbatim (410 export − the s71-staged
+- **Flow-assertion gate GREEN at 515 (was 512)** — FA-8915F-CAP/SPRD/LAND
+  activated + `_run_8915f_assertion` live in both chains; 1040 mirror =
+  412 active export-verbatim (413 export − the s71-staged
   FA-1040-4835-06). Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) · 1040
-  409 (+1 staged).
-- **s88 suites: NEW test_4868 44/44 (incl. live-XSD ×2 vs the 2026v1.0
-  Extensions tree) · flow 512 · tts_forms+acroform+returns+payment band
-  391 (manifest trip-wire re-pinned 91 → 92 with f4868) · FULL
-  efile/mef/scenario band 966 · tsc 0 · vitest 300 · live demo browser
-  probe green** (magic-link sign-in → TX return Payments tab → Start
-  card → derived L4/L5 painted → typed L4 5000 → the with-payment
-  Charlotte-1302 flip painted live → Sch3 L10 4391 → 1040 L31 4391 →
-  L33 5000 ORM-verified → 6 concurrent PATCHes all landed (the birth
-  row lock) → render-4868 200 %PDF (1 face page) → the diagnostics run
-  fired exactly D_4868_ADDR/CREDIT/EPAY → delete → the stale-derive +
-  reverse-cache classes caught live → BOTH fixed + tested → re-probed
-  clean; demo return restored; one transient pooler connection drop
-  mid-recompute logged, not code).
-- s87 suites stand: test_1040v_es 41 · s86: test_8888 37 · s84:
-  test_authz_sec1 17 · s83: auth 19 · prefs 14.
+  412 (+1 staged).
+- **s89 suites: NEW test_8915f 49/49 (incl. live-XSD full-return ×1 w/
+  TWO IRS8915F documents + the 4b/5b landing chain + the 5329 waiver +
+  the 8606 split) · flow 515 · 8606/5329/retirement seam band 150 ·
+  FULL efile/mef/scenario band 966 · tts_forms/acroform/manifest band
+  355 (trip-wire re-pinned 92 → 93 with f8915f) · tsc 0 · vitest 300 ·
+  live demo browser probe green** (Income tab → card CRUD → typed L2(a)
+  10,300 + a dated DR disaster → the banner painted 1e 22,000 / line 6
+  10,300 / line 15 3,433 + the per-disaster 179/180-day pair LIVE →
+  ORM: 5b 10,300 → 3,433 → diagnostics fired exactly D_8915F_LANDINGS +
+  D_8915F_WAIVER → render-8915f 200 %PDF (138KB, 4 filled pages) →
+  DELETE 204 → 5b self-healed to 10,300; demo return restored).
+  ⚠ Probe note: the Browser pane's synthetic keys/screenshots were
+  flaky (environmental) — blur events driven via DOM dispatch; all
+  server behavior verified by network + ORM (the s49 DOM-assert lesson).
+- s88 suites stand: test_4868 44 · s87: test_1040v_es 41 · s86:
+  test_8888 37 · s84: test_authz_sec1 17 · s83: auth 19 · prefs 14.
 - Last full-suite GREEN = s54 `cd9b186`.
-- **Shared-DB deploy state: migs returns 0202 (Form4868) + 0203 (RLS)
-  applied BOTH DBs + seed_rules run BOTH DBs (16 D_4868_* live)** — on
-  top of 0200/0201 (s87), 0198/0199 (s86), 0197 (s85), accounts
-  0004/0005 + audit 0003 (s83), returns 0196 (s80).
-- **RS state: WO-31 → ✅ DONE** — FA export 410 active verified; the
-  4868 spec mirror verbatim-current.
+- **Shared-DB deploy state: migs returns 0204 (Form8915F +
+  Form8915FDisaster) + 0205 (RLS pair) applied BOTH DBs + seed_rules
+  run BOTH DBs (15 D_8915F_* live)** — on top of 0202/0203 (s88),
+  0200/0201 (s87), 0198/0199 (s86), 0197 (s85).
+- **RS state: WO-32 → ✅ DONE (RS `6082314`)** — FA export 413 active
+  verified; the 8915F spec mirror verbatim-current. **The WO-28..32
+  dispatch lane is EMPTY.**
 - ⚠ Local test-DB note: after a new migration run the s86 recipe once —
-  standalone `django.test.utils.setup_databases(keepdb=True)` (it
-  migrates test_postgres forward), then pytest `--reuse-db` works.
+  standalone `django.test.utils.setup_databases(keepdb=True)` **under
+  `config.settings.test`** (it migrates the LOCAL test_postgres
+  forward), then pytest `--reuse-db` works.
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 - Design rollback points: tag `pre-ledger-design` · old presets in the picker.
 
