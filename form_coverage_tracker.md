@@ -1,5 +1,82 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-15 session 88 — FORM 4868 (Spine S-22b; the FOURTH of the
+> six Gate-1-dispatched tts legs) — ★★ UNIT COMPLETE: input · compute ·
+> render · MeF (a NEW SUBMISSION FAMILY) · FAs, all legs green.** RS
+> spec `4868` (WO-31, approved+seeded s83; mirror verbatim-current).
+> **INPUT**: NEW `Form4868` singleton (mig 0202 + RLS mig 0203, BOTH
+> DBs — the model+RLS pair rule) — face L4/L5/L7 (blank = derived,
+> typed wins) + L8/L9 boxes + fiscal-year dates (paper-only bar) +
+> filed date + e-payment confirmation (the no-form path) + the
+> extension's OWN EFW election (amount/date, distinct from the s76
+> return-side efw_elected) + ride-the-ES-debits flag;
+> Form4868Serializer carries the read-only re-derived `analysis`;
+> `form-4868` GET/PATCH/DELETE (1040-only, PATCH row-locked from
+> birth); Payments-tab card (seq guard); D_4868_ → payments NavScope.
+> **UNLIKE the print-only payment trio this card FEEDS COMPUTE** —
+> R-4868-CREDIT: line 7 lands on Schedule 3 line 10 as a YELLOW
+> feeder in compute_sch_3 (relation-guarded: no Form4868 row → line 10
+> stays direct entry; override survives; DELETE clears the
+> non-overridden derive — the s66 stale-derive class caught live) →
+> L15 → 1040 line 31 → 33. **The L5 derive sums the COMPONENTS
+> (25d+26+27..31 − Sch3 L10), never line 33 itself** — subtracting L10
+> from a stale/overridden 33 diverges one L10 per recompute (caught by
+> the endpoint test). **COMPUTE**: NEW `compute_4868` pinned to all 10
+> RS scenario oracles — L6 = max(0, L4−L5) (the face floor) · the
+> F4868-001/-002 windows (Apr-15 / Jun-15 with a box; on-or-before at
+> equality; after the period end) · extended due Oct-15 / the DERIVED
+> line-9 Dec-15 · the 90% two-prong safe harbor (met at equality) ·
+> the payment-triggered signature/jurat ladder (R0000-098; the
+> two-value enum by PIN type) · the FPYMT-052-02 EFW tie · the
+> where-to-file chart BOTH columns as partition-pinned rosters (WITH
+> payment: 9 → Charlotte 1302 + 42 → Louisville 931300; WITHOUT:
+> 13 Austin / 21 KC / 17 Ogden; foreign 1303/0215) — **the GA
+> Charlotte trap is FOUR-way and cross-module-pinned (V 1214 / ES 1300
+> / 4868 1302 / foreign 1303)** · efile_blockers = the bridge gate
+> (late/fiscal/EFW-mismatch/duplicate-confirmation/EFW prereqs). 16
+> D_4868_* code-registered + seeded BOTH DBs (NOATTACH = a structural
+> no-op; R0000-195 holds by construction). **RENDER**: f4868.pdf
+> (2025, self-contained 4pp) downloaded fresh (manifest 91 → 92);
+> f4868_2025 map (17 widgets label-verified — 6 face lines incl. both
+> checkboxes on-state "1" + 10 header slots; the page-3 e-pay
+> worksheet field deliberately unmapped); render_4868 = face page
+> only; **suppression IS the render gate** (a recorded e-payment
+> confirmation = the extension already processed; printing would
+> duplicate, IND-900); **STANDALONE ONLY — the 4868 NEVER joins the
+> return packet** ('Don't attach the 4868 to the return' — the face's
+> own instruction; pinned by test); render-4868 endpoint (suppressed →
+> the explanation). **MEF — a NEW SUBMISSION FAMILY, not a 1040
+> document**: ReturnTypeCd "4868" (Return4868/ReturnHeader4868/
+> ReturnData4868, Extensions family, package 2026v1.0 extracted from
+> the already-local zip); NEW builder_4868 + read_model_4868 +
+> Mapper4868TY2025 registered (2025, "2026v1.0", "4868");
+> schema_locator gains family_version_root (the standalone family
+> packages nest 3 levels deep; existing families resolve identically —
+> regression-pinned); the header emits NO signature elements without a
+> payment record and the full PIN + the 4868's own jurat enum with one;
+> ReturnData = IRS4868 (6 optional face elements) + ≤1 IRSPayment +
+> ≤4 IRSESPayment (the s76 builders reused verbatim); extract
+> bridge-gates on the SAME analyze_4868 derivation (refusals name the
+> paper path); live-XSD valid BOTH shapes (no-payment / EFW+2 ES).
+> **FAs**: FA-4868-L6 / FA-4868-EFW / FA-4868-CREDIT ACTIVATED in RS
+> (reseeded, export verified 410 active), 1040 mirror refreshed
+> export-verbatim (409 = 410 − the s71-staged 4835-06; ASCII-encoded —
+> the cp1252 loader), `_run_4868_assertion` in BOTH dispatch chains —
+> **flow gate 509 → 512**. Suites: NEW test_4868 44 (10 spec oracles ·
+> chart partitions + the four-way trap · derived defaults · endpoint
+> incl. delete-clears · Sch3-L10 feeder ×3 · diagnostics · field-map/
+> PDF agreement · render gates + never-in-packet · builder XML shape
+> ×3 · live-XSD ×2 · extract refusals + happy path · mapper registry ·
+> FA runner pins) · flow 512 · tts_forms+acroform+returns+payment band
+> 391 (trip-wire re-pinned 92) · FULL efile/mef/scenario band 966 ·
+> tsc 0 · vitest 300 · live demo probe (TX return: no-pay Austin →
+> typed L4 5000 → Charlotte 1302 flip painted live; Sch3 L10 4391 →
+> L31 4391 → L33 5000 ORM-verified; 6-PATCH concurrent volley all
+> landed; render 200 %PDF 1 page; diagnostics fired exactly
+> D_4868_ADDR/CREDIT/EPAY; delete → stale-derive caught live → fixed
+> (fresh-fetch + DELETE clear) → re-probed clean; one transient pooler
+> connection drop mid-recompute, not code). WO-31 → ✅ DONE in RS.
+
 > **2026-07-15 session 87 — the 1040-V / 1040-ES VOUCHER PAIR (Spine
 > S-22b; the third of the six Gate-1-dispatched tts legs) — ★★ UNIT
 > COMPLETE: input · compute · render · FAs, all legs green. PRINT-ONLY
