@@ -1,28 +1,28 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-15, session 90. **WO-33: THE 8879/8878 SIGNATURE-
-AUTHORIZATION PAIR DRAFTED TO GATE-1 — ⏳ AWAITING KEN (harness 77/0,
-RS `49c82b1`). NOTHING seeded, NO tts code touched — flow gate 515
-stands.** The s67 draft-to-gate recipe on the next NEW autonomous item
-after the six-leg set completed (s85-s89). Gap 404 ×4 confirmed →
-verbatim research (f8879 Rev. 01-2021 continuous-use + f8878 2025
-YEAR-DATED + Pub 1345 signature chapter + the 2025v5.3 header XSDs +
-47 signature-family business rules) → `f8879_8878_source_brief.md` →
-gated `load_8879_8878.py` (one loader, TWO TaxForms: 22+14 facts /
-8+4 rules / 16+13 lines / 9+7 diag / 8+6 scenarios / 3 FAs staged
-DRAFT). **Structural headline: NEITHER form transmits** — ERO-retained
-print pair; the Return Header PIN block tts already e-files IS the
-electronic signature (no MeF document BY DESIGN). Headline pins: the
-8879 need-gate collapses to PP-method-OR-ERO-entered (PP + own-PIN
-STILL requires the full form incl. Part III — Pub 1345 always-sign);
-the 8878 no-EFW-never negative (the s88 R0000-098 print mirror); the
-2350 arm never reaches Part III; the Pub-1345 $50/$14 re-sign
-tolerance (needs a signed-at Part I snapshot); the 3-day stockpiling
-clock; the under-16 + duplicate-SSN self-select bars. Four walk seams
-flagged w/ recommendations (8879 L3 = 25d · 1040-X column-C arm ·
-extract-refusal gating · the signed-at snapshot) — REVIEW_QUEUE s90 +
-RS WORK_ORDERS WO-33 (W1-W4, recommend approve-all). `/bugs`: clean.
-A2A WSDLs still absent at s90.*
+*Last updated: 2026-07-15, session 91. **SEC-2 PII PLUMBING SWEEP SHIPPED
+(the second item of the S-23 pre-beta security block; zero compute/render
+code — flow gate 515 stands, no migrations).** Evidence ledger:
+`docs/audits/2026-07-15_sec2_pii_plumbing_sweep.md` (WISP input). Sweep
+verdicts: server logs/settings/DRF errors CLEAN (UUIDs+amounts only; no
+telemetry deps anywhere); UI masking verified (mask-by-default, full SSN
+only in entry inputs). THREE findings fixed: (1) audit redaction was
+exact-name-only — `spouse_ssn`/`payer_ein`/`bank_account_number`-class
+fields wrote full values into audit `changes`; now token-based
+(`PII_NAME_TOKENS`, apps/audit/service.py). (2) redact-inside-snapshot
+silently DROPPED PII change events (old==new) — snapshots now stay raw
+in-memory, diff raw, redact at write → "who changed the SSN" is auditable
+as `{old/new: ***REDACTED***}`. (3) AI Help questions left the boundary
+un-scrubbed → `scrub_tins()` removes dashed SSN/EIN shapes before Gemini
+AND persistence + a visible panel hint. THE RULE (no real client data in
+dev/test — synthetic only, sanitized imports, probes on demo, mirror PII
+guard) recorded in DECISIONS.md. Gates: test_audit 16 · test_ai_help 17 ·
+blast band 112 · tsc 0 · vitest 300 · live demo probe 2/2 + DOM-verified
+panel hint. Boundaries → DEFERRAL_AUDIT s91 (7: SSN-in-list-API→S-24 ·
+checkin_events cross-app · bare-9-digit residual · employer-EIN URL
+documented · HelpQuery retention→SEC-5 · infra logs→SEC-5 ·
+over-redaction accepted). `/bugs`: clean. A2A WSDLs still absent at s91.
+WO-33 still ⏳ AWAITING KEN.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -35,9 +35,9 @@ A2A WSDLs still absent at s90.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s90 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s91 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
-   (`docs/mef/wsdl/` still absent at s90; .p12 DONE; checklist
+   (`docs/mef/wsdl/` still absent at s91; .p12 DONE; checklist
    `docs/mef/A2A_ENROLLMENT.md`; ASID 61135801 ENROLLED + ACTIVE).
 3. **⟨GATE-1⟩ WO-33 (8879/8878 pair) ⏳ AWAITING KEN** — the walk is in RS
    WORK_ORDERS + REVIEW_QUEUE s90 (recommend approve-all; four seams w/
@@ -45,10 +45,15 @@ move on; mandatory session close before context exhausts.**
    `lookup/{8879,8878}/export/` → cache the tts mirrors → **dispatch the
    tts print-pair leg** (signature-input surface + two AcroForm prints +
    header-tie diagnostics + extract gating — the s87 print-only recipe).
-4. While WO-33 is gated, the next NEW autonomous items: **SEC-2..6** →
-   **S-24 `clients_tax_identity`**. Still open from the S-22b triage:
-   confirm 6252 · 9325 (9325 is now also the 8879's SID-association
-   alternative — a natural pairing when triaged).
+4. While WO-33 is gated, the next NEW autonomous items: **SEC-3
+   view-access audit logging** (s91 note: extend AuditEntry with read
+   events — client record + return open; per-session dedupe; natural
+   prerequisite for S-24's audited identity reads) → **SEC-4 session
+   hardening** → **SEC-5 encryption/backups verify+document** ([EXT]:
+   Ken pulls the Supabase SOC 2 attestation) → **SEC-6 Delvio WISP
+   draft** (cites the sec1+sec2 ledgers) → **S-24
+   `clients_tax_identity`**. Still open from the S-22b triage: confirm
+   6252 · 9325 (9325 also pairs with the 8879 SID association).
 5. Then the s71 queue: **bootstrap_demo 1065+1041 demo returns** → **S-21b
    1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
    (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
@@ -80,23 +85,29 @@ move on; mandatory session close before context exhausts.**
 11. Demo Render service (env=demo; GEMINI_API_KEY blank there).
 12. S-22b triage confirmations (6252 · 9325 — add or skip).
 13. s81 design check: eyeball Ledger (instant rollback in the picker).
+14. **SEC-5 external legs (heads-up, not yet due):** Supabase SOC 2
+    attestation pull + backup/restore drill scheduling — CC will flag
+    when SEC-5 starts.
 
 ## Active gates
-- **Flow-assertion gate GREEN at 515 (unchanged — no tts code this
-  session).** Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) · 1040 412
-  (+1 staged). The three WO-33 FAs are staged DRAFT in RS — they join
-  the gate only with the tts build leg (the activation motion).
+- **Flow-assertion gate GREEN at 515 (unchanged — zero compute/render
+  code this session).** Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) ·
+  1040 412 (+1 staged). The three WO-33 FAs are staged DRAFT in RS —
+  they join the gate only with the tts build leg.
 - **RS state: WO-33 ⏳ AWAITING KEN (`49c82b1`)** — `load_8879_8878.py`
   gated (READY_TO_SEED=False), harness `validate_8879_8878.py` 77/0,
   brief + walk filed. The WO-28..32 lane remains EMPTY (all ✅ DONE).
-- s89 suites stand: test_8915f 49 · flow 515 · seam band 150 · FULL
-  efile band 966 · tts_forms band 355 (trip-wire 93) · tsc 0 ·
-  vitest 300. s88: test_4868 44 · s87: test_1040v_es 41 · s86:
-  test_8888 37 · s84: test_authz_sec1 17 · s83: auth 19 · prefs 14.
+- **s91 suites:** test_audit 16 (4 new) · test_ai_help 17 (5 new) ·
+  blast band test_authz_sec1+test_returns+test_auth_magic_link 112 ·
+  tsc 0 · vitest 300. s89 suites stand: test_8915f 49 · flow 515 ·
+  seam band 150 · FULL efile band 966 · tts_forms band 355 (trip-wire
+  93). s88: test_4868 44 · s87: test_1040v_es 41 · s86: test_8888 37 ·
+  s84: test_authz_sec1 17 · s83: auth 19 · prefs 14.
 - Last full-suite GREEN = s54 `cd9b186`.
 - **Shared-DB deploy state unchanged: migs through 0205 applied BOTH
   DBs** (0204/0205 s89 · 0202/0203 s88 · 0200/0201 s87 · 0198/0199
-  s86 · 0197 s85); seed_rules current BOTH DBs.
+  s86 · 0197 s85); seed_rules current BOTH DBs. **s91 shipped NO
+  migrations** (audit/ai_help behavior only — deploys with code).
 - ⚠ Local test-DB note: after a new migration run the s86 recipe once —
   standalone `django.test.utils.setup_databases(keepdb=True)` **under
   `config.settings.test`** (it migrates the LOCAL test_postgres
