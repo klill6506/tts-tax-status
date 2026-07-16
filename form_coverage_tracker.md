@@ -1,5 +1,49 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-15 session 94 — FORM 8879 + 8878 (the e-file signature-
+> authorization PRINT PAIR; WO-33, the next NEW autonomous item after the
+> six-leg set) — ★★ UNIT COMPLETE: input · compute · render · diagnostics ·
+> extract-gate · FAs, all legs green. NO MeF document BY DESIGN.** RS specs
+> `8879` + `8878` (WO-33 — Ken approved in-session "approve WO-33", four
+> seams adopted as recommended; RS seeded `ea28aff`, FAs activated `0d724cb`;
+> mirrors 8879_spec.json/8878_spec.json verbatim). **STRUCTURAL HEADLINE:
+> NEITHER FORM TRANSMITS** — ERO-retained print artifacts; the Return Header
+> PIN block the app already e-files IS the electronic signature. The two NEW
+> models (Form8879 + Form8878, migs 0206/0207 + RLS BOTH DBs) are the DB home
+> for what was a passed-in `SignatureInfo` dataclass (the SIGNATURE_GAP).
+> **INPUT**: Form8879 (method/PIN-entered-by/PINs/ERO EFIN+PIN/firm/signed
+> dates/authorizing-return/the signed-at Part I snapshot/SID/prior-year auth/
+> the 3 self-select bars) + Form8878 (extension_form/PINs/ERO/the line-7
+> snapshot); serializers w/ read-only re-derived `analysis`; form-8879 /
+> form-8878 GET/PATCH/DELETE (1040-only; row-locked; NO recompute — print-
+> only); Form8879Card + Form8878Card on the Payments tab (the 8879 card has a
+> "Snapshot Part I at signing" button); D_8879_/D_8878_ → payments NavScope.
+> **COMPUTE**: compute_8879_8878 pinned to RS scenarios 8879-A..H + 8878-A..F
+> — the 4-row need chart (**the PP-own-PIN row 4 STILL prints w/ Part III;
+> the only skip = self-select + taxpayer's own PIN**), the 5-row 8878 chart
+> (**no EFW = no 8878 ever; 2350 stops at Part II**), PIN hygiene (5-digit
+> non-zero; EFIN 6 + PIN 5), **seam a: Part I L3 = 1040 line 25d**, **seam d:
+> the $50/$14 re-sign tolerance vs the signed-at snapshot**, **seam b: the
+> 1040-X arm reads amended col-C (1C/11C/12C/22/20) [verify @ ATS]**, the
+> 8878 line-1 = the season Form4868's line 7 (derived FRESH, s88 reverse-
+> cache class), the self-select bars. rules_8879 (9) + rules_8878 (7)
+> registered in the runner. **RENDER**: f8879 (Rev. 01-2021, continuous-use)
+> + f8878 (2025, year-dated) AcroForms — manifest 93→95, hash-verified; ALL
+> field-map names probed vs the PDFs (comb PINs=5, EFIN/PIN=11; the shared-
+> leaf checkbox pairs keyed by FULL name — s69); **positional render verified
+> — every value in its correct box incl. seam-a 25d**; the need-gate IS the
+> render gate; NEW "signature" packet tier (the 8879 rides WITH the return at
+> (1,2); the 8878 is standalone); render-8879/render-8878 endpoints.
+> **EXTRACT GATE (seam c)**: extract_return REFUSES an unsigned or re-sign-
+> required 8879 (UnmappableValue; only bites when a card exists — revisit @
+> S-17g). **FAs**: FA-8879-NEED/RESIGN + FA-8878-EFW activated + runner
+> `_run_8879_8878_assertion` (both ladders); tts mirror 415. Gates: NEW
+> test_8879_8878 **33/33** · flow **518** · test_4868 + test_1040v_es green ·
+> returns 110 · core 1040 MeF/extract 105 · tsc 0 · vitest 300 · **live demo
+> probe** (Jones 1040: both cards render; the 8879 banner painted "required ·
+> Parts I,II,III · Part I: AGI 35,492…" from the live return + the unsigned-
+> transmit gate w/ MFJ wording; probe row cleaned). WO-33 → ✅ built.
+
 > **2026-07-15 session 89 — FORM 8915-F (Spine S-22b; the LAST of the
 > six Gate-1-dispatched tts legs — THE SET IS COMPLETE) — ★★ UNIT
 > COMPLETE: input · compute · render · MeF document · FAs, all legs
