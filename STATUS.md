@@ -1,24 +1,29 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-15, session 93. **SEC-4 SESSION HARDENING SHIPPED
-(the fourth S-23 security-block item; zero compute code, no migrations —
-flow gate 515 stands).** Ledger + the WRITTEN SESSION POLICY:
-`docs/audits/2026-07-15_sec4_session_hardening.md` (WISP input).
-(1) **Rolling idle expiry** — NEW `SessionIdleRefreshMiddleware` (base
-MIDDLEWARE, below SessionMiddleware; refresh throttled 1/5min); prod
-`SESSION_COOKIE_AGE` fixed-8h → **4h IDLE window** (active preparers
-roll all day; abandoned front-desk sessions die 4h after last touch;
-the number → REVIEW_QUEUE s93, recommend keep). (2) **is_active=False
-revokes live sessions** — ModelBackend behavior now PINNED by test.
-(3) NEW **`manage.py sign_out_everywhere <username>`** — offboarding /
-lost-laptop lever; bystander sessions untouched (test-pinned); the
-offboarding chain documented (demote → deactivate → sign-out-everywhere).
-Boundaries → DEFERRAL s93 (no absolute cap · no self-service UI · idle
-window prod-only · +5min throttle worst case). Gates: NEW
-test_session_hardening 6/6 · blast band 152/152 (middleware rides every
-request) · live demo probe 3/3 (throwaway user, cleaned) · SPA smoke OK.
-s92 SEC-3 + s91 SEC-2 stand. `/bugs`: clean. A2A WSDLs still absent at
-s93. WO-33 still ⏳ AWAITING KEN.*
+*Last updated: 2026-07-15, session 94 (Cowork). **SUITE AUTH DAY** — zero
+compute code, no migrations, flow gate 515 stands. (1) **Repo renamed:**
+GitHub = `delviotax/delvio-tax` (local folder unchanged; remote updated).
+(2) **Five suite-auth rulings RECORDED + sequencing RATIFIED**
+(DECISIONS.md "Suite auth architecture"; SUITE_CONTRACT §6; plan
+`docs/auth/implementation_sequencing.md`): identity home = shared prod
+Supabase project (GoTrue live there via delvio-1099); domain migration
+gates ONLY the Phase 4 cookie cutover (Ken narrowed same-day).
+(3) **`prep.delviotax.com` LIVE** (Phase 0 slice done; CUSTOM_DOMAIN set).
+(4) **DB-password incident resolved** — a Supabase DB-password reset broke
+every direct-PG app (prod 500s on login + local dev); fixed in Render +
+`server/.env`; portal/checkin also updated (memory: signature = site
+serves but all DB ops 500). (5) **P2a/P3a SHIPPED: Supabase-first login**
+— `/auth/login/` verifies GoTrue first when `SUPABASE_URL`+
+`SUPABASE_ANON_KEY` set (map-by-email → Django session; Django pw =
+fallback; outage falls through; audit `supabase_login`) + NEW
+`manage.py supabase_users --list|--invite|--recovery` (service key;
+invite/recovery links only — no admin-set passwords, ruling 5).
+`apps/accounts/supabase_auth.py` stdlib-only (no new deps, lock
+untouched). Gates: NEW test_supabase_login 8/8 + magic-link band 19/19.
+**⏳ KEN NEXT: set SUPABASE_URL/ANON_KEY (+SERVICE_ROLE) on Render
+tts-tax-app + local .env, then `supabase_users --list`** — GoTrue email
+must equal the Django email (ken@thetaxshelter.com) to map. s93 SEC-4 ·
+s92 SEC-3 · s91 SEC-2 stand. WO-33 still ⏳ AWAITING KEN.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
