@@ -1,5 +1,36 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-19 session 99 — 1065 SCHEDULE B Q4 AUTO-ANSWER (S-21c, the
+> s71-ratified queue item) — SPEC-FIRST unit complete; no migrations;
+> flow 518 stands.** RS `1065_B` amended IN ITS OWNING LOADER
+> (`load_1065_l_b.py`, RS `7a55f57`): NEW **R-B4-AUTO** — the app derives
+> Q4 (app row **B6**) as a derived-YELLOW, preparer-overridable answer:
+> **4a** = total receipts < $250,000 STRICT per the i1065 (2025) Q4
+> VERBATIM sum (p1 1a; p1 4-7; K 3a/5/6a/7; income-or-net-gain K
+> 8/9a/10/11; 8825 lines 2/21/22a — positive-only, the R006 interpretive
+> mirror) · **4b** = L15d (the item F amount) < $1,000,000 STRICT ·
+> **4c** = PRESUMED TRUE (Ken-ratified) · **4d** = derived TRUE under
+> 4a·4b (no M-3 support; item-J thresholds unreachable; the
+> reportable-entity-partner edge → preparer override — REVIEW_QUEUE s99a).
+> B-6/B-7 boundary scenarios seeded; stale "build-gap #3" notes closed
+> across R-B4-SMALL / D_B4_SMALL / GATE-SMALL-PTNR-B; FA mirror
+> refreshed export-minus-pending (39). tts (`b7f77b6`):
+> `_auto_answer_b6_1065_db` after the 1065 formula pass (the B11 clone;
+> override-respecting `_set_field_value`); the WAIVER WIRING was already
+> live (D_L_EXEMPT/D_M1_EXEMPT/D_M2_EXEMPT suppression, GATE-SMALL-PTNR
+> pinned); B6 label re-cut FACE-VERBATIM (four conditions + the waiver
+> sentence; ≤500-char column) + seed_1065 reseeded BOTH DBs; the client
+> Auto pill generalized to (1120-S, B11) ∪ (1065, B6) by form_code.
+> Gates: NEW test_1065_schb_q4 **7/7** (boundaries at exactly
+> $250K/$1M, loss exclusion, 8825 rents, override wins) · flow **518** ·
+> 1065+SchB band **153** (L/M tie fixtures now answer Q4 'No' by
+> override — the auto-answer had made the small fixtures legitimately
+> exempt) · tsc 0 · vitest 300 · live demo probe (Blue Ridge 1065:
+> B6 auto-'false' off 1a=485,000; amber Auto pill + amber No chip
+> DOM-verified on vite+django-demo; probe user cleaned). The tts
+> sched_b FACE-RENUMBER (stale paraphrase block) queued → REVIEW_QUEUE
+> s99b.
+
 > **2026-07-15 session 94 — FORM 8879 + 8878 (the e-file signature-
 > authorization PRINT PAIR; WO-33, the next NEW autonomous item after the
 > six-leg set) — ★★ UNIT COMPLETE: input · compute · render · diagnostics ·

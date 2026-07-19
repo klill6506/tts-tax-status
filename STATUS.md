@@ -1,24 +1,24 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-19, session 98 (autonomous — Ken out of office).
-**TWO UNITS SHIPPED: (1) bootstrap_demo 1065+1041 demo returns · (2)
-S-21b D_K1_PCT100 partner-percentage diagnostic.** Plus a REAL BUG found
-and fixed building the 1065: **the 2025 renumber left the other-deductions
-rollup key stale (`1065_L20` matched NO FormLine after other-deductions
-moved 20→21) — every 1065's OtherDeduction rows silently never reached
-the face.** Fix: seed_1065 keys line 21 as `1065_L21` + OTHER_DED_LINE_KEY
-updated + the 12 TB-mapping rules retargeted; 1065 reseeded BOTH DBs;
-regression pin test_1065_other_deductions 2/2 (incl. the key-resolves
-drift guard). Demo now carries 11 returns across FOUR form families:
-Blue Ridge Landscaping 1065 (2 partners 60/40, GP, other-ded statement,
-K-1s persisted; every number ties: 23=275,600=K1, K-1s 165,360/110,240,
-K14a=230,360) + Whitcomb Family Trust 1041 (complex trust; DNI 18,000 →
-IDD 15,000 → TI 17,900, 2 beneficiaries 60/40). bootstrap_demo is now
-TRULY idempotent (per-builder client-name guards — a re-run used to
-duplicate every ATS client; the s98 dupes were cleaned, originals kept).
-D_K1_PCT100 (ratified verbatim s71): WARNING when profit/loss %s over
-ACTIVE partners ≠ 100; seeded BOTH DBs; 4 new DB tests; live demo probe
-fires/restores clean. `/bugs`: clean. WSDLs absent.*
+*Last updated: 2026-07-19, session 99 (autonomous — Ken out of office).
+**S-21c SHIPPED: the 1065 Schedule B Q4 auto-answer, spec-first**
+(RS `7a55f57` · tts `b7f77b6`; no migrations; flow 518 stands).
+RS 1065_B gained R-B4-AUTO (amended in its owning loader by lookup):
+Q4 (app row B6) derives as a YELLOW/overridable answer — 4a receipts
+< $250K strict per the i1065 verbatim sum (positive-only), 4b L15d
+< $1M strict, 4c presumed TRUE (Ken-ratified), 4d derived under 4a·4b
+(no M-3 support; RE-partner edge → override, ratification s99a).
+tts: `_auto_answer_b6_1065_db` after the 1065 formula pass (the B11
+clone); waiver wiring was ALREADY live (D_L_EXEMPT/D_M1/M2_EXEMPT +
+GATE-SMALL-PTNR pins); B6 label re-cut face-verbatim + reseeded BOTH
+DBs; client Auto pill now covers (1120-S,B11) ∪ (1065,B6). NEW
+test_1065_schb_q4 7/7; the L/M tie fixtures now answer Q4 'No' by
+override (the auto-answer had made those small fixtures legitimately
+exempt). Live demo probe: Blue Ridge B6 auto-'false' (1a=485,000),
+amber pill DOM-verified. TWO Ken calls filed (REVIEW_QUEUE s99): the
+4d deviation + the queued tts sched_b FACE-RENUMBER (stale paraphrase
+block: has non-face B2/B5, misses Q24/Q30/Q33). `/bugs`: clean (start
+of session). WSDLs absent.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -31,26 +31,27 @@ fires/restores clean. `/bugs`: clean. WSDLs absent.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s98 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s99 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
    (`docs/mef/wsdl/` still absent; .p12 DONE; ASID 61135801 ENROLLED).
-3. **The next NEW autonomous item is S-21c — the 1065 Schedule B Q4
-   auto-answer (SPEC-FIRST: amend the RS 1065 SCH_B block first — the
-   rs-amend-shared-form recipe — then the tts leg).** The approved Q11
-   recipe clone: derived-YELLOW/overridable; (a) receipts < $250K +
-   (b) assets < $1M from return data, (c) K-1s-timely PRESUMED TRUE
-   (Ken-ratified), (d) from the M-3 flag; Yes waives Sch L/M-1/M-2/
-   item L (the 1120-S sibling wiring). After that: the 1120/709
-   authoring waves + the 1120-S ATS lane stay Ken-gated.
+3. **The s71 ratified queue is now COMPLETE** (bootstrap_demo 1065+1041 →
+   S-21b → S-21c all shipped). The next NEW autonomous item is **the
+   repo-wide RENUMBER-STALE ROLLUP KEY sweep** (the s98 open chip:
+   every OTHER_DED_LINE_KEY / SUBSCHEDULE_CONFIG / MappingRule target
+   must resolve against its form — closes the s98 bug class), then
+   Ken-direction is needed: the 1120/709 authoring waves and the
+   1120-S ATS upload lane are Ken-gated; the tts sched_b face-renumber
+   awaits the s99b call.
 4. **Ken-gated follow-ups:** S-24 prod backfill on the key hand-off →
    hub-ein blanking (s97) · SEC-5 plumbing on the s95 ratification ·
-   S-22b triage confirmations (6252 · 9325).
+   S-22b triage confirmations (6252 · 9325) · sched_b renumber (s99b).
 5. **Auth lane (s94):** Ken's env vars → `supabase_users --list` +
    live `supabase_login` verify → P1 identity model.
-6. **Ken ratifications pending:** s97 (S-24 trio) · s96 (WISP 4 calls) ·
-   s95 (retention · PITR · HSTS preload) · s94 (8879 col-C @ ATS +
-   stockpiling proxy) · s93 (4h idle) · s89 (8915-F rounding) ·
-   s85/s84 pairs · s83 Resend · s76..s72 notes.
+6. **Ken ratifications pending:** s99 (Q4 4d + sched_b renumber) ·
+   s97 (S-24 trio) · s96 (WISP 4 calls) · s95 (retention · PITR · HSTS
+   preload) · s94 (8879 col-C @ ATS + stockpiling proxy) · s93 (4h
+   idle) · s89 (8915-F rounding) · s85/s84 pairs · s83 Resend ·
+   s76..s72 notes.
 7. **Design: Ledger live; cross-app application on Ken's go.**
 
 ## ▶ Waiting on Ken / external
@@ -75,24 +76,28 @@ move on; mandatory session close before context exhausts.**
 17. **Beta-agreement security clauses (s96):** with counsel.
 
 ## Active gates
-- **Flow-assertion gate GREEN at 518** (s94 level; s98 re-ran green
-  after the rollup-key fix — no compute formulas changed). Mirrors:
+- **Flow-assertion gate GREEN at 518** (s94 level; s99 re-ran green —
+  no formula changes; the 1065 FA mirror refreshed export-minus-pending
+  at 39 with the GATE-SMALL-PTNR-B build-gap text closed). Mirrors:
   1120S 41 · 1065 39 (+4 s64 staged) · 1040 415.
-- NEW s98: test_1065_other_deductions 2 (the key drift guard) ·
-  test_1065_k1_diagnostics_leg 11 (4 new PCT100) · 1065 band 42 green.
-- s97: test_tax_identity 24 · blast band 122. s94 suites stand:
-  test_8879_8878 33 · returns 110 · MeF/extract 105 · tsc 0 ·
-  vitest 300. s89: test_8915f 49 · FULL efile band 966 · tts_forms 355.
+- NEW s99: test_1065_schb_q4 7 (boundaries/loss-exclusion/8825/override)
+  · 1065+SchB band 153 (L/M tie fixtures _b6_no'd — see the file
+  docstrings). s98: test_1065_other_deductions 2 ·
+  test_1065_k1_diagnostics_leg 11. s97: test_tax_identity 24 · blast
+  band 122. s94 suites stand: test_8879_8878 33 · returns 110 ·
+  MeF/extract 105 · tsc 0 · vitest 300. s89: test_8915f 49 · FULL
+  efile band 966 · tts_forms 355.
 - Last full-suite GREEN = s54 `cd9b186`.
 - **Shared-DB deploy state: migs through returns 0207 + audit 0004 +
-  core 0004 + clients 0010 BOTH DBs (s98 shipped NO migrations);
-  seed_1065 + seed_1065_mapping + seed_rules re-run BOTH DBs (s98).**
+  core 0004 + clients 0010 BOTH DBs (s99 shipped NO migrations);
+  seed_1065 re-run BOTH DBs (s99 — the face-verbatim B6 label).**
 - ⚠ **Render prod still has NO identity keys** (s97 Waiting §1).
 - ⚠ HSTS lands on the next tts Render deploy (s95).
 - ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
   recipe, then `--reuse-db`.
 - ⚠ Restart django-demo after server edits (--noreload) AND hard-reload
-  the SPA tab afterwards (vite keep-alive; s97).
+  the SPA tab afterwards (vite keep-alive; s97). The demo server is
+  API-only — SPA probes ride the `vite` launch config at 5173 (s99).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help first).
 - Design rollback points: tag `pre-ledger-design` · old presets.
 
