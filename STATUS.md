@@ -1,23 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-19, session 96 (autonomous — Ken out of office).
-**SEC-6 DELVIO WISP v0.1 DRAFTED** (`docs/security/DELVIO_WISP.md`,
-docs-only — zero code, zero migrations; flow gate 518 stands untouched).
-Drafted on the LIVE-VERIFIED 16 CFR 314.4 elements (eCFR current through
-7/16/2026, fetched this session) with the SEC-1..5 ledgers as Appendix-A
-evidence. Load-bearing anchor verified live: Treas. Reg.
-§301.7216-1(b)(2)(i)(B) — a tax-software developer / e-file provider IS
-a §7216 "tax return preparer" directly (own criminal/§6713 civil
-exposure), and §314.1(b) reaches custodial data of other firms' clients
-expressly. §314.6 <5,000-consumer exception noted, deliberately NOT
-relied on. MFA documented as an honest OPEN GAP (§4.5) with written
-interim QI approval that EXPIRES at beta onboarding. The two s95 SEC-6
-hand-offs resolved in-WISP: advisor cadence = §5.1 (every schema session
-+ quarterly), infra-log retention = §5.4 (platform defaults until beta).
-**Ken ratification → REVIEW_QUEUE s96** (4 calls: ratify · 72h office-
-notice window · pre-beta pen test · log stance). The S-23 security block
-is now FULLY DRAFTED/SHIPPED (SEC-1..5 shipped, SEC-6 awaiting
-ratification). `/bugs`: clean. WSDLs still absent.*
+*Last updated: 2026-07-19, session 97 (autonomous — Ken out of office).
+**S-24 CLIENTS_TAX_IDENTITY SHIPPED** — the encrypted canonical SSN home
+(SUITE_CONTRACT §3 gap CLOSED; clients migs 0009 + 0010 RLS applied BOTH
+DBs). NEW `clients_tax_identity` (one row per taxpayer per role, Fernet
+ciphertext + keyed-HMAC match token + last-4, firm+client FKs) · NEW
+`apps/clients/identity.py` (the ONLY encrypt/decrypt module; env-keyed,
+inert without keys — the s94 pattern) · identity is MASTER: return
+creation populates the snapshot FROM it, taxpayer-card edits write BACK ·
+`backfill_tax_identities` command (demo: 10 rows; prod dry-run: 590/0
+conflicts) · **SEC-2 deferral CLOSED: the return list ships last-4 only**
+(identity-annotated subquery) + audited per-record reveal endpoint
+(`log_view` → `clients.TaxIdentity` VIEW rows) + per-row Show/Hide in
+Return Manager (replaces the global toggle — ratification s97). Gates:
+NEW test_tax_identity **24/24** · flow **518** · blast band 122 · tsc 0 ·
+vitest 300 · live demo probe green (masked list → reveal → audit row →
+cleaned). s96 WISP + s95 SEC-5 stand. `/bugs`: clean. WSDLs absent.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,79 +28,77 @@ ratification). `/bugs`: clean. WSDLs still absent.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s96 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s97 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
-   (`docs/mef/wsdl/` still absent; .p12 DONE; checklist
-   `docs/mef/A2A_ENROLLMENT.md`; ASID 61135801 ENROLLED + ACTIVE). The
-   s94 8879 extract gate + SID capture are the S-17g transmit hooks.
-3. **The next NEW autonomous item is S-24 `clients_tax_identity`**
-   (shape Ken-ratified s83; SUITE_CONTRACT §3; reads reuse the s92
-   `log_view`; hard constraints: encrypted column-level SSN, HMAC-only
-   match tokens, no ssn column on hub tables, full SSN never crosses
-   the tax-app boundary). The SEC-5 plumbing leg (purge jobs +
-   `clearsessions` cron) fires once Ken ratifies the s95 numbers.
-   Still open from the S-22b triage: confirm 6252 · 9325.
-4. Then the s71 queue: **bootstrap_demo 1065+1041 demo returns** → **S-21b
-   1065 partner-percentage diagnostic** → **S-21c Sch B Q4 auto-answer**
-   (spec-first). The 1120/709 authoring waves + the 1120-S ATS lane stay Ken-gated.
-5. **Auth lane (s94):** once Ken sets the env vars (Waiting §1) → CC runs
-   `supabase_users --list` + verifies live `supabase_login` → then **P1
-   identity model in the identity home**. P1 also scopes the
-   `handle_new_user` SECURITY DEFINER grants (s95 flag).
-6. **Ken ratifications pending:** **s96 (WISP v0.1: ratify · 72h notice ·
-   pen test · log stance — REVIEW_QUEUE s96)** · s95 (SEC-5: retention
-   numbers · enable-PITR-on-prod · HSTS preload at go-live) · s94 (8879
-   1040-X col-C arm [verify @ ATS] + stockpiling proxy) · s93 (4h idle
-   window) · s89 (8915-F ROUND_HALF_UP) · s85 pair · s84 pair · s83
-   email provider (Resend) · s76/s75/s74/s73/s72 notes.
-7. **Design: Ledger live + Ken-ratified; cross-app application on Ken's
-   go (`Design/LEDGER_DESIGN_SYSTEM.md`).**
+   (`docs/mef/wsdl/` still absent; .p12 DONE; ASID 61135801 ENROLLED).
+3. **The next NEW autonomous item is the s71 queue: bootstrap_demo
+   1065+1041 demo returns → S-21b 1065 partner-percentage diagnostic →
+   S-21c Sch B Q4 auto-answer (spec-first).** The 1120/709 authoring
+   waves + the 1120-S ATS lane stay Ken-gated. Ken-gated S-24 follow-ups:
+   prod backfill on key hand-off → hub-ein blanking leg (REVIEW_QUEUE
+   s97). SEC-5 plumbing (purge jobs + clearsessions cron) fires on the
+   s95 ratification. S-22b triage: confirm 6252 · 9325.
+4. **Auth lane (s94):** once Ken sets the Supabase env vars → CC runs
+   `supabase_users --list` + verifies live `supabase_login` → then P1
+   identity model in the identity home (also scopes `handle_new_user`).
+5. **Ken ratifications pending:** **s97 (S-24: per-row reveal UX ·
+   hub-ein blanking leg · key hand-off)** · s96 (WISP v0.1: ratify ·
+   72h notice · pen test · log stance) · s95 (retention numbers · PITR ·
+   HSTS preload) · s94 (8879 1040-X col-C [verify @ ATS] + stockpiling
+   proxy) · s93 (4h idle) · s89 (8915-F ROUND_HALF_UP) · s85/s84 pairs ·
+   s83 email provider (Resend) · s76..s72 notes.
+6. **Design: Ledger live; cross-app application on Ken's go.**
 
 ## ▶ Waiting on Ken / external
-1. **WISP v0.1 ratification (s96)** — 4 calls in REVIEW_QUEUE s96;
-   signature line in the WISP's Appendix C.
+1. **S-24 identity keys (s97):** copy TAX_IDENTITY_ENCRYPTION_KEY +
+   TAX_IDENTITY_HMAC_KEY from local `server/.env` to Render
+   `tts-tax-app` (SAME values — a different pair splits the store!);
+   then CC runs `backfill_tax_identities` on prod (590 staged, dry-run
+   verified) → then the hub-ein blanking leg on your go.
 2. **Auth env vars (s94):** SUPABASE_URL + ANON_KEY (+ SERVICE_ROLE) on
-   Render `tts-tax-app` AND local `server/.env` → CC verifies live.
+   Render AND local `server/.env` → CC verifies live.
 3. **A2A: ONLY the WSDL toolkit remains.**
-4. **SEC-5 [EXT] legs (s95):** Supabase SOC 2 attestation pull · the
-   TESTED restore drill · the **enable-PITR-on-prod** decision.
-5. **Email provider setup (s83)** — Resend, SPF/DKIM, Render env vars,
-   `set_user_email` per preparer.
-6. **Role assignments (s84):** `manage.py set_user_role`.
-7. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
-8. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
-9. File-1018 Lacerte reprint. 10. PWA install check. 11. Density feel-check (s52).
-12. s69: firm's real CAF number + fax on the Preparer records.
-13. Demo Render service (env=demo; GEMINI_API_KEY blank there).
-14. S-22b triage confirmations (6252 · 9325 — add or skip).
-15. **ERO EFIN/PIN source (s94):** wire the 8879/8878 cards from the
+4. **WISP v0.1 ratification (s96)** — 4 calls in REVIEW_QUEUE s96.
+5. **SEC-5 [EXT] legs (s95):** SOC 2 pull · restore drill · PITR call.
+6. **Email provider setup (s83)** — Resend, SPF/DKIM, Render env vars.
+7. **Role assignments (s84):** `manage.py set_user_role`.
+8. `WORK_ORDER_bug_reporting.md` reconciliation flag (s55).
+9. E-services email reply (S7/S8 · 8941 key-inversion · 1040 production flip · SOR).
+10. File-1018 Lacerte reprint. 11. PWA install check. 12. Density feel-check (s52).
+13. s69: firm's real CAF number + fax on the Preparer records.
+14. Demo Render service (env=demo; if it exists, it also needs the
+    DEMO key pair from local `server/.env.demo`).
+15. S-22b triage confirmations (6252 · 9325 — add or skip).
+16. **ERO EFIN/PIN source (s94):** wire the 8879/8878 cards from the
     Preparer record (future nicety).
-16. **Cross-app flag (s95):** delvio-1099 lane — recreate
-    `filing_dashboard` as security_invoker on its next touch.
-17. **Beta-agreement security clauses (s96):** Delvio-as-service-provider
-    contract language, the 72h notice chain, MFA attestation — Ken +
-    counsel with the beta agreement (WISP Appendix B).
+17. **Cross-app flag (s95):** delvio-1099 — `filing_dashboard` →
+    security_invoker on its next touch.
+18. **Beta-agreement security clauses (s96):** with counsel.
 
 ## Active gates
-- **Flow-assertion gate GREEN at 518** (s94 level; s95/s96 touched no
-  compute). Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) · 1040 415.
-- **Supabase security advisors: ZERO `rls_disabled_in_public` on BOTH
-  projects** (s95). Standing cadence now WISP §5.1: re-run after every
-  schema-touching session + quarterly.
-- s94 suites stand: test_8879_8878 33 · returns 110 · core 1040
-  MeF/extract 105 · tsc 0 · vitest 300. s93: test_session_hardening 6 ·
-  blast band 152. s89: test_8915f 49 · FULL efile band 966 · tts_forms
-  band 355 (trip-wire 95).
+- **Flow-assertion gate GREEN at 518** (s94 level; s95-s97 touched no
+  compute formulas; s97 re-ran the gate green after the create-return
+  hook). Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) · 1040 415.
+- NEW **test_tax_identity 24/24** · blast band (returns+authz+audit+
+  session) 122 · tsc 0 · vitest 300. s94 suites stand: test_8879_8878
+  33 · returns 110 · core 1040 MeF/extract 105. s89: test_8915f 49 ·
+  FULL efile band 966 · tts_forms band 355 (trip-wire 95).
+- **Supabase advisors: ZERO rls_disabled BOTH projects** (s95 level;
+  s97 added clients_tax_identity WITH its RLS pair — advisor-clean by
+  construction; next sweep per WISP §5.1 cadence).
 - Last full-suite GREEN = s54 `cd9b186`.
 - **Shared-DB deploy state: returns migs through 0207 + audit 0004 +
-  core 0004 applied BOTH DBs**; scheduler mig 0010 applied prod;
-  seed_rules current BOTH DBs. (s96 shipped no migrations.)
-- ⚠ HSTS lands on the next tts Render deploy (prod.py change, s95).
-- ⚠ Local test-DB note: after a new migration run the s86 recipe once —
-  standalone `setup_databases(keepdb=True)` under `config.settings.test`,
-  then pytest `--reuse-db` works.
+  core 0004 + clients 0010 applied BOTH DBs**; seed_rules current.
+- ⚠ **Render prod has NO identity keys yet** — identity features inert
+  there by design until Ken's hand-off (Waiting §1). Local dev + demo
+  fully keyed (`server/.env` / `.env.demo`, s97).
+- ⚠ HSTS lands on the next tts Render deploy (s95 prod.py change).
+- ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
+  recipe (run for clients 0009/0010), then `--reuse-db`.
 - ⚠ Restart the running django-demo server after adding `@action`
-  endpoints (DRF registers routes at startup — the s94 catch).
+  endpoints AND after server-side edits (--noreload; the s94/s97 catch);
+  after restarting, force a FULL reload in the SPA tab — vite keep-alive
+  + hash-navs can leave stale payloads painted (s97).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help answers first).
 - Design rollback points: tag `pre-ledger-design` · old presets in the picker.
 
