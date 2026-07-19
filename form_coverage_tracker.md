@@ -1,5 +1,33 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-19 session 100 — RENUMBER-STALE-KEY SWEEP (the s98 chip) —
+> plumbing unit, no migrations, flow 518 stands; ONE LIVE BUG FIXED.**
+> **THE BUG (the label-pin catch): `OTHER_DED_LINE_KEY["1120-S"]` stayed
+> "1120S_L19" after the 2025 face inserted line 19 (Form 7205 §179D) —
+> the other-deductions rollup wrote its total into the
+> ENERGY-EFFICIENT-BUILDINGS box** (MeF face-correct itself, so an
+> e-filed TB return would have emitted the total as
+> EnergyEffcntCmrclBldgDedAmt; print likewise). Fixed → `1120S_L20`;
+> the four test_returns pins that had baked the bug in retargeted; BOTH
+> DBs audited — ZERO live returns carried a stale line-19 value.
+> **Plus:** 6 DEAD TB-mapping targets (incl. 1065 Guaranteed Payments —
+> silently dropped on every TB import) and **14 RESOLVES-WRONG
+> balance-sheet targets** (the shifted-by-one class: 1065 land →
+> depletable assets, partners' capital → other liabilities; 1120-S
+> capital stock → other liabilities, shareholder loans → tax-exempt
+> securities) re-keyed to the verified 2025 labels; COGS → the 1125-A
+> purchases key (1120-S precedent); GP → face line 10 (mapping key
+> added; partner rollup supersedes); 1120-S "Retained Earnings" rule
+> DROPPED (engine-owned L24d). SUBSCHEDULE_CONFIG gained per-entry
+> `form_codes` gating (bare-key collision class: 1065 line 5 = net farm
+> profit). NEW **tests/test_line_key_registry_sweep.py 13/13** — resolves
+> + LABEL PINS across other-ded keys, all three TB seeders, sub-schedule
+> targets, GA pull maps, and formula-pass targets. Gates: flow 518 ·
+> returns/mappings/imports/other-ded 645 · S5/S6 parity + B11 13 · live
+> MappingRule audit 166/166 resolvable on BOTH DBs · reseeded BOTH DBs
+> (seed_1065 + both mapping seeders) · no client code (tsc/vitest
+> untouched). Four convention calls → REVIEW_QUEUE s100.
+
 > **2026-07-19 session 99 — 1065 SCHEDULE B Q4 AUTO-ANSWER (S-21c, the
 > s71-ratified queue item) — SPEC-FIRST unit complete; no migrations;
 > flow 518 stands.** RS `1065_B` amended IN ITS OWNING LOADER

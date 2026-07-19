@@ -1,24 +1,26 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-19, session 99 (autonomous — Ken out of office).
-**S-21c SHIPPED: the 1065 Schedule B Q4 auto-answer, spec-first**
-(RS `7a55f57` · tts `b7f77b6`; no migrations; flow 518 stands).
-RS 1065_B gained R-B4-AUTO (amended in its owning loader by lookup):
-Q4 (app row B6) derives as a YELLOW/overridable answer — 4a receipts
-< $250K strict per the i1065 verbatim sum (positive-only), 4b L15d
-< $1M strict, 4c presumed TRUE (Ken-ratified), 4d derived under 4a·4b
-(no M-3 support; RE-partner edge → override, ratification s99a).
-tts: `_auto_answer_b6_1065_db` after the 1065 formula pass (the B11
-clone); waiver wiring was ALREADY live (D_L_EXEMPT/D_M1/M2_EXEMPT +
-GATE-SMALL-PTNR pins); B6 label re-cut face-verbatim + reseeded BOTH
-DBs; client Auto pill now covers (1120-S,B11) ∪ (1065,B6). NEW
-test_1065_schb_q4 7/7; the L/M tie fixtures now answer Q4 'No' by
-override (the auto-answer had made those small fixtures legitimately
-exempt). Live demo probe: Blue Ridge B6 auto-'false' (1a=485,000),
-amber pill DOM-verified. TWO Ken calls filed (REVIEW_QUEUE s99): the
-4d deviation + the queued tts sched_b FACE-RENUMBER (stale paraphrase
-block: has non-face B2/B5, misses Q24/Q30/Q33). `/bugs`: clean (start
-of session). WSDLs absent.*
+*Last updated: 2026-07-19, session 100 (autonomous — Ken out of office).
+**THE RENUMBER-STALE-KEY SWEEP SHIPPED (the s98 chip; no migrations;
+flow 518 stands) — and it caught a LIVE BUG: the 1120-S other-deductions
+rollup was writing the Form 7205 §179D energy-efficient-buildings box**
+(`OTHER_DED_LINE_KEY` stayed "1120S_L19" after the 2025 face inserted
+line 19; MeF would have e-filed TB other-ded totals as the energy
+deduction). Fixed → L20; the four test pins that baked the bug in
+retargeted; BOTH DBs audited — zero live returns damaged. Also fixed:
+6 DEAD TB-mapping targets (1065 Guaranteed Payments silently dropped
+on every TB import) + 14 RESOLVES-WRONG balance-sheet targets (the
+shifted-by-one class: 1065 partners' capital landed on Other
+Liabilities, 1120-S shareholder loans on Tax-Exempt Securities, …) —
+all re-keyed to verified 2025 labels; COGS → 1125-A purchases; GP →
+face line 10 (key added; partner rollup supersedes); 1120-S RE rule
+dropped (engine-owned); SUBSCHEDULE_CONFIG form-gated (bare-key
+collision class). NEW drift guard: tests/test_line_key_registry_sweep.py
+13/13 — resolution + LABEL PINS across every enumerable registry, so
+the next renumber fails loudly instead of misrouting dollars. Gates:
+flow 518 · returns/mappings/imports 645 · S5/S6 parity + B11 13 · live
+MappingRule audit 166/166 both DBs · reseeded BOTH DBs. Four
+convention calls → REVIEW_QUEUE s100. `/bugs`: clean. WSDLs absent.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -31,27 +33,26 @@ of session). WSDLs absent.*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
-1. **Start every session with `/bugs`** (s55; s99 sweep: clean).
+1. **Start every session with `/bugs`** (s55; s100 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
    (`docs/mef/wsdl/` still absent; .p12 DONE; ASID 61135801 ENROLLED).
-3. **The s71 ratified queue is now COMPLETE** (bootstrap_demo 1065+1041 →
-   S-21b → S-21c all shipped). The next NEW autonomous item is **the
-   repo-wide RENUMBER-STALE ROLLUP KEY sweep** (the s98 open chip:
-   every OTHER_DED_LINE_KEY / SUBSCHEDULE_CONFIG / MappingRule target
-   must resolve against its form — closes the s98 bug class), then
-   Ken-direction is needed: the 1120/709 authoring waves and the
-   1120-S ATS upload lane are Ken-gated; the tts sched_b face-renumber
-   awaits the s99b call.
+3. **The autonomous queue is EMPTY** — the s71 ratified queue completed
+   s99; the s98 chip (stale-key sweep) completed s100. Next candidates
+   are ALL Ken-gated or Ken-directed: the 1120/709 authoring waves ·
+   the 1120-S ATS upload lane (full scenario set + e-help) · the tts
+   sched_b face-renumber (s99b call) · the SEC-5 plumbing (s95
+   ratification) · S-24 prod backfill (key hand-off). **Idle — Ken
+   directs**, unless the WSDLs land first.
 4. **Ken-gated follow-ups:** S-24 prod backfill on the key hand-off →
    hub-ein blanking (s97) · SEC-5 plumbing on the s95 ratification ·
    S-22b triage confirmations (6252 · 9325) · sched_b renumber (s99b).
 5. **Auth lane (s94):** Ken's env vars → `supabase_users --list` +
    live `supabase_login` verify → P1 identity model.
-6. **Ken ratifications pending:** s99 (Q4 4d + sched_b renumber) ·
-   s97 (S-24 trio) · s96 (WISP 4 calls) · s95 (retention · PITR · HSTS
-   preload) · s94 (8879 col-C @ ATS + stockpiling proxy) · s93 (4h
-   idle) · s89 (8915-F rounding) · s85/s84 pairs · s83 Resend ·
-   s76..s72 notes.
+6. **Ken ratifications pending:** s100 (other-ded fix FYI + 3 mapping
+   conventions) · s99 (Q4 4d + sched_b renumber) · s97 (S-24 trio) ·
+   s96 (WISP 4 calls) · s95 (retention · PITR · HSTS preload) · s94
+   (8879 col-C @ ATS + stockpiling proxy) · s93 (4h idle) · s89
+   (8915-F rounding) · s85/s84 pairs · s83 Resend · s76..s72 notes.
 7. **Design: Ledger live; cross-app application on Ken's go.**
 
 ## ▶ Waiting on Ken / external
@@ -76,21 +77,21 @@ move on; mandatory session close before context exhausts.**
 17. **Beta-agreement security clauses (s96):** with counsel.
 
 ## Active gates
-- **Flow-assertion gate GREEN at 518** (s94 level; s99 re-ran green —
-  no formula changes; the 1065 FA mirror refreshed export-minus-pending
-  at 39 with the GATE-SMALL-PTNR-B build-gap text closed). Mirrors:
-  1120S 41 · 1065 39 (+4 s64 staged) · 1040 415.
-- NEW s99: test_1065_schb_q4 7 (boundaries/loss-exclusion/8825/override)
-  · 1065+SchB band 153 (L/M tie fixtures _b6_no'd — see the file
-  docstrings). s98: test_1065_other_deductions 2 ·
-  test_1065_k1_diagnostics_leg 11. s97: test_tax_identity 24 · blast
-  band 122. s94 suites stand: test_8879_8878 33 · returns 110 ·
-  MeF/extract 105 · tsc 0 · vitest 300. s89: test_8915f 49 · FULL
-  efile band 966 · tts_forms 355.
+- **Flow-assertion gate GREEN at 518** (s94 level; s100 re-ran green —
+  no formulas changed). Mirrors: 1120S 41 · 1065 39 (+4 s64 staged) ·
+  1040 415.
+- NEW s100: test_line_key_registry_sweep 13 (resolution + label pins —
+  **when a pin fails: verify the new face, re-key the registry, update
+  the pin; never delete it**). s99: test_1065_schb_q4 7 · 1065+SchB
+  band 153. s97: test_tax_identity 24. s94 suites stand:
+  test_8879_8878 33 · returns 110 · MeF/extract 105 · tsc 0 ·
+  vitest 300. s89: test_8915f 49 · FULL efile band 966.
 - Last full-suite GREEN = s54 `cd9b186`.
 - **Shared-DB deploy state: migs through returns 0207 + audit 0004 +
-  core 0004 + clients 0010 BOTH DBs (s99 shipped NO migrations);
-  seed_1065 re-run BOTH DBs (s99 — the face-verbatim B6 label).**
+  core 0004 + clients 0010 BOTH DBs (s100 shipped NO migrations);
+  s100 reseeded BOTH DBs: seed_1065 (line-10 mapping key) +
+  seed_default_mapping + seed_1065_mapping (the re-keyed TB rules);
+  live MappingRule audit 166/166 resolvable on BOTH DBs.**
 - ⚠ **Render prod still has NO identity keys** (s97 Waiting §1).
 - ⚠ HSTS lands on the next tts Render deploy (s95).
 - ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
