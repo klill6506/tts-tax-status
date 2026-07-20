@@ -1,5 +1,32 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-19 session 101 — 1065 SCHED_B 2025-FACE RENUMBER (the s99b
+> call, Ken's go) — mig returns.0208; flow 518 stands.** The tts 1065
+> Schedule B block was a stale pre-face paraphrase (own numbering; face
+> Q4 lived on app B6; carried dead questions old-B2 disregarded-entity +
+> old-B5 Form 8893/TEFRA; MISSED face Q12, 13a, 14, 15, 17-22, 24-29,
+> 30 digital assets, 32, 33 BBA/PR). Now FACE-TRUE: 67 rows = questions
+> 1-33 verbatim (f1065.pdf pp. 2-4 + RS 1065_B line map; 10e/13b/31
+> reserved, not seeded) + inline detail fields (underscore keys:
+> B8_COUNTRY, 10b/10c/10d amounts, B22/B25 amounts, B28 vote/value %,
+> B33 B-2 total, the PR designation block; B33_PR_TIN = app-boundary,
+> not on the face, kept for MeF). Mig 0208: collision-safe in-place
+> renames (FFVs ride the FK; B6→B4 the headline), dead-key deletes,
+> the B12b §743(b)/§734(b) one-to-two split ('No' propagates to both,
+> 'Yes' to neither — none existed). Re-keyed in lockstep: the Q4
+> auto-answer (`_auto_answer_b4_1065_db`), D_L/M1/M2_EXEMPT waiver
+> gates, the GATE-SMALL-PTNR FA runner pins, client Auto pill
+> (1065,B6)→(1065,B4) + 1099-pair conditional B16a/B16b + the 1120-S-
+> only header gate. NEW seed pins: test_schedule_b_face_keys +
+> test_schedule_b_face_labels (the s100 label-pin discipline). Gates:
+> flow **518** · seed/Q4/L/M suites 31 · 1065 band + registry sweep 110
+> · returns 77 · 1120-S schb 27 · tsc 0 · vitest 300 · BOTH DBs
+> migrated+reseeded+audited (every carried answer landed face-true) ·
+> live demo probe green (face numbering 1-33 DOM-verified; B4 amber
+> Auto 'No' on Blue Ridge; 1120-S panel regression clean). Print of
+> Sch B answers remains a pre-existing gap (no AcroForm map — DEFERRAL
+> s101); the renumber makes the future map's keys equal the face.
+
 > **2026-07-19 session 100 — RENUMBER-STALE-KEY SWEEP (the s98 chip) —
 > plumbing unit, no migrations, flow 518 stands; ONE LIVE BUG FIXED.**
 > **THE BUG (the label-pin catch): `OTHER_DED_LINE_KEY["1120-S"]` stayed
