@@ -1,6 +1,37 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-23, session 104 (Ken addendum to S-25). **THE
+*Last updated: 2026-07-23, session 105 (Ken-directed PRIORITY — the live
+back-entry pilot's QA queue). **THE SEVEN ENTRY-LAYER BUGS FROM THE 1017
+PILOT ARE CLOSED (`166e6ef`; mig returns.0209 state-only; flow 518
+stands — ZERO compute code touched).** The pilot's headline finding was
+that the COMPUTATION ENGINE IS RIGHT: every line matched TaxWise to the
+dollar (SS taxability worksheet, the 2025 senior deduction w/ MAGI
+phaseout, age-65 standard deduction, brackets, withholding). Everything
+found was INPUT-layer, and all of it is fleet-scale. Fixed: **(1)** the
+10x amount-mask bug → NEW `lib/selectOnFocus.ts`, ONE delegated focusin
+handler at boot, select-all on every amount box (TaxWise/Lacerte) +
+15-char cap — one place, not an onFocus prop on ~280 raw inputs;
+**(2)** card lists re-sorting mid-entry → the cause was
+`Meta.ordering = ["order", <editable name>]` with every card at order=0
+(so: sort alphabetically by payer, re-sorted per keystroke; "New Payer"
+jumped above "Teachers Retirement System" and the next keystrokes landed
+on the WRONG card → box 2a 4362511485, $1.68B refund). Tie-break is now
+immutable `created_at` on ALL EIGHT document-card models; **(3)** numeric
+overflow 500 → NEW `MoneyBoundedSerializer` 400s at ≥$1B with a per-field
+message (the columns are wide enough to STORE the garbage, so DRF's own
+max_digits never fired); **(4)** the filing-status wipe → `useTaxpayerFacts`
+keeps dirty fields across a server re-seed AND flushes them with whatever
+commits; **(5)** DOB commits when COMPLETE (not only on blur) + NEW
+`D_1040_018` warning (blank DOBs silently ate $15,200 of deductions on the
+pilot); **(6)** `D_EIC_007` → INFO when auto-resolved from the DOB,
+`LATE_FILING` suppressed for `backfill-2025`; **(7)** the seeded-shell
+banner now says "Seeded for 2025 back-entry". PLUS the NEW DEFAULT
+**"Tax Shelter" forest theme** (Ken: "more forest green, less cream") —
+forest #1e362a structure, pale-green canvas, gold #a9884f garnish;
+**Ledger stays as the one-click rollback**; RED/YELLOW/GREEN untouched.
+**The fleet can now run.***
+
+*s104 (2026-07-23, Ken addendum to S-25). **THE
 2025 BACK-ENTRY SHELLS ARE SEEDED** — `seed_backfill_returns`
 (`920a940`): roster-driven from all six client-master exports (D-24
 matching reused verbatim; never creates clients/entities — asserted in
@@ -97,6 +128,15 @@ amounts). Sch B print = pre-existing gap, unchanged (DEFERRAL s101).*
 **Ken directives standing (s48 + s52 addendum): work AUTONOMOUSLY down this list;
 full gates + live probes; Ken-decisions → REVIEW_QUEUE with a recommendation, then
 move on; mandatory session close before context exhausts.**
+0. **s105 leftovers from the 1017 pilot QA that were NOT in Ken's list —
+   both still open:** (a) **the PREPARER ROSTER is incomplete** — only
+   Georgianna Lill, Ken Lill, Whit exist; **Gail Daniels (PTIN P00141816)
+   actually prepared 1017** and is missing. Seed the full preparer list
+   WITH PTINs before the fleet runs (Ken supplies the roster). (b) **GA
+   Form 500 was never attempted on the pilot** — that is the next pilot
+   step (TaxWise answer key: GA w/h 1,503 · GA refund 1,503 · GA tax 0
+   after the retirement exclusion). Also noted by the pilot: no obvious
+   8879 PIN / third-party-designee entry section was found in the UI.
 1. **Start every session with `/bugs`** (s55; s101 sweep: clean).
 2. **S-17g A2A channel still jumps the queue the moment the WSDLs land**
    (`docs/mef/wsdl/` still absent; .p12 DONE; ASID 61135801 ENROLLED).
@@ -141,9 +181,18 @@ move on; mandatory session close before context exhausts.**
 17. **Beta-agreement security clauses (s96):** with counsel.
 
 ## Active gates
-- **Flow-assertion gate GREEN at 518** (s94 level; s101 re-ran green —
-  the GATE-SMALL-PTNR runner pins moved to B4). Mirrors: 1120S 41 ·
-  1065 39 (+4 s64 staged) · 1040 415.
+- **Flow-assertion gate GREEN at 518** (s94 level; s105 re-ran green —
+  no compute code was touched). Mirrors: 1120S 41 · 1065 39 (+4 s64
+  staged) · 1040 415.
+- NEW s105: `test_entry_layer_s105` **10** (stable card order + the
+  no-editable-name-in-Meta.ordering DRIFT GUARD across W-2 / 1099-INT /
+  1099-DIV / 1099-R; overflow 400-not-500) · `test_entry_layer_diagnostics_s105`
+  **11** (D_EIC_007 severity both ways · LATE_FILING suppressed only for
+  backfill-2025 · D_1040_018). Client: `selectOnFocus.test.ts` 17 ·
+  `useTaxpayerFacts.test.tsx` 4 · `apiErrors.test.ts` 4 → **vitest 325**
+  (was 300) · tsc 0. **`test_1040_spine_diagnostics` rule-count pin re-cut
+  17 → 18** (D_1040_018) — when it fails: verify the new rule, update the
+  count, never delete the pin.
 - NEW s101: test_seed_1065 face pins (test_schedule_b_face_keys +
   test_schedule_b_face_labels — **when a pin fails: verify the new
   face, re-key, update the pin; never delete it**). s100:
@@ -152,10 +201,15 @@ move on; mandatory session close before context exhausts.**
   33 · returns 77 (355-line 1065 pins) · MeF/extract 105 · tsc 0 ·
   vitest 300. s89: test_8915f 49 · FULL efile band 966.
 - Last full-suite GREEN = s54 `cd9b186`.
-- **Shared-DB deploy state: migs through returns 0208 + audit 0004 +
-  core 0004 + clients 0010 BOTH DBs (s101 shipped returns.0208 —
-  applied BOTH DBs); s101 reseeded seed_1065 BOTH DBs (355 lines;
-  sched_b 67 face-true rows); post-migration audit clean on BOTH.**
+- **Shared-DB deploy state: migs through returns 0209 + audit 0004 +
+  core 0004 + clients 0010 BOTH DBs (s105 shipped returns.0209, a
+  state-only AlterModelOptions — applied BOTH DBs); s105 re-ran
+  `seed_rules` on BOTH DBs (registers D_1040_018); s101 reseeded
+  seed_1065 BOTH DBs (355 lines; sched_b 67 face-true rows);
+  post-migration audit clean on BOTH.**
+- ⚠ **Render prod needs the `166e6ef` deploy** before Ken re-tests on
+  prep.delviotax.com — every s105 fix is server+client and is only live
+  locally until then.
 - ⚠ **Render prod still has NO identity keys** (s97 Waiting §1).
 - ⚠ HSTS lands on the next tts Render deploy (s95).
 - ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
