@@ -62,7 +62,7 @@ also the New Return action). "+ New Client" now has a did-you-mean
 typeahead against existing clients in both RM and Client Manager.
 Returns menu gained Individual/Trust lists (dead ?form= links fixed).
 Gates: test_start_return 8/8 · returns regression · tsc 0 · vitest
-300 · demo probe · **PROD ACCEPTANCE LIVE: "1017" → AARON, STANLEY →
+300 · demo probe · **PROD ACCEPTANCE LIVE: "1017" → the pilot client →
 folder → Start Return → 2025 → blank 1040; zero new client/entity
 rows (3675/3979 unchanged); probe artifacts fully removed.** Render
 deploys `7b1312b` → Ken can repeat on prep.delviotax.com. (The RM
