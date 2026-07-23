@@ -1,6 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-23, session 103 (Ken-directed PRIORITY, Spine
+*Last updated: 2026-07-23, session 104 (Ken addendum to S-25). **THE
+2025 BACK-ENTRY SHELLS ARE SEEDED** — `seed_backfill_returns`
+(`920a940`): roster-driven from all six client-master exports (D-24
+matching reused verbatim; never creates clients/entities — asserted in
+code + tests 6/6; idempotent/resumable; dry-run default). Ken approved
+the counts (3,287/149/86) → trial 25 → full chunked run: **3,279 draft
+2025 shells on prod (2,809×1040 · 300×1120-S · 70×1065 · 26×1120 ·
+74×1041), all stamped rolled_from_source='backfill-2025' (the cull
+key), clients 3,675 / entities 3,979 unchanged, post-run dry-run
+to-create 0.** 86 review rows await Ken in
+D:\dev\client-master-exports\backfill_review.csv (41 name-variant ·
+37 contact-conflict · 3 multi-candidate · 3 no-entity-of-type · 2
+merge-email). `build_federal_return` is now a module service — one
+build path for API + seeder. **The back-entry project is UNBLOCKED
+end-to-end: shells exist; Start Return covers strays.***
+
+*s103 (2026-07-23, Ken-directed PRIORITY, Spine
 S-25). **THE START RETURN FLOW SHIPPED (`7b1312b`) — the 2025
 back-entry blocker is CLEARED.** There is now a correct way to attach
 a return to an EXISTING hub client: POST `/tax-returns/start/`
