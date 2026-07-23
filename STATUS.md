@@ -1,6 +1,37 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-19, session 101 (Ken directing — back from OOO).
+*Last updated: 2026-07-23, session 102 (Ken-directed UI unit). **CLIENT
+NUMBER SURFACED IN THE RETURN MANAGER** — sortable `#` column (narrow ·
+muted · tabular-nums · blank when un-numbered, matching Ledger's desk-
+search presentation), server-side sort (`ordering=client_number`,
+un-numbered last both directions), and digits-only search now hits
+client_number exactly (the clients-endpoint convention; tab counts stay
+in lockstep). Enablers were read-only (list-serializer field + ordering
+map + search OR — no migrations, no compute); the Clients page already
+had its column since Phase 8. NEW test: list payload/sort/search pinned
+in test_returns (78 green) · tsc 0 · vitest 300 · live demo probe green
+(sort click + "1001"→Blue Ridge DOM-verified). **Demo DB clients are now
+NUMBERED 1001–1011** (`assign_client_numbers --apply`, was never run on
+demo). **Dev-port coexistence shipped** (the ledger parallel-session
+conflict): django-demo honors PORT + `autoPort: true` in launch.json,
+and writes `client/.api-port` (gitignored, 12h-fresh) that the vite
+proxy follows — the demo pair now coexists with another app's server
+on 8000. ClientFolders (documents list) still lacks the number —
+follow-up candidate, deliberately out of scope.*
+
+*2026-07-22 (delvio-ledger phase 5, cross-repo unit): **apps.ledgerlink
+added** — on a return's …→approved transition in update_info, the keyed
+INV_* fees auto-post to Delvio Ledger as a posted invoice (outbox +
+service token + inline delivery, `manage.py flush_ledger_outbox` retries;
+INV_TOTAL empty = soft-skip). Env-gated: `LEDGER_API_URL`/
+`LEDGER_SERVICE_TOKEN` unset = fully inert (currently unset — goes live at
+Ledger's Render deploy). Migration ledgerlink.0001 applied to the shared
+DB. 13 new tests (tests/test_ledgerlink.py). Governance: this unit belongs
+to delvio-ledger's build (its SPEC §Cross-repo work units) — the Ledger
+repo's STATUS/DECISIONS carry the details; nothing new in this repo's
+queue.*
+
+*s101 (2026-07-19, Ken directing — back from OOO).
 **THE 1065 SCHED_B 2025-FACE RENUMBER SHIPPED (the s99b call, Ken's go;
 mig returns.0208; flow 518 stands).** The stale pre-face Schedule B
 block (25 rows, own numbering, face Q4 on app B6) is now FACE-TRUE:

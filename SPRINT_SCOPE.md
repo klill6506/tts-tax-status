@@ -1,5 +1,5 @@
 # 1040 SPRINT SCOPE v2 — Fable 5 Window
-*Paste into tts-tax-app root as `SPRINT_SCOPE.md`, replacing any prior version. CC: read this at every session start, immediately after STATUS.md. This file defines what is in and out of scope. Do not build anything outside it without asking Ken.*
+*Paste into delvio-tax root as `SPRINT_SCOPE.md`, replacing any prior version. CC: read this at every session start, immediately after STATUS.md. This file defines what is in and out of scope. Do not build anything outside it without asking Ken.*
 
 ---
 
@@ -144,6 +144,16 @@ DoD:
 - ~~Schedule F~~ **PROMOTED 2026-06-21 → built** — Ken directed Schedule F (1040 farm) as the
   next unit after the Effort #5 K-1 router (cash-method v1). Schedule J farm income averaging
   rode as its fast-follow (built).
+
+---
+
+## CROSS-REPO POINTER (not a queue item here)
+
+- **delvio-ledger build units executed in this repo** (auto-post
+  `apps/ledgerlink` DONE 2026-07-22; repo rename → delvio-tax and hub
+  `client_number` unit pending Ken's timing): scoped, sequenced, and
+  tracked in `D:\dev\delvio-ledger\docs\SPEC.md` §Cross-repo work units +
+  that repo's STATUS.md. Nothing to schedule from this file.
 
 ---
 
