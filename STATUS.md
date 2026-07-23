@@ -223,10 +223,16 @@ move on; mandatory session close before context exhausts.**
   deploy — it must be idempotent, runnable with NO arguments, and
   dependent on nothing outside the repo + DB. If not, `deploy_safe =
   False` and run it by hand.**
-- ⚠ **Verify the next Render deploy actually SUCCEEDS**, then confirm
-  prod is on s105 (the bundle must contain `theme-forest`). Nothing
-  from s104/s105 is live until then. The 3,279 shells DO exist — the
-  seeder was run locally against the prod DB, not via a deploy.
+- ✅ **DEPLOY VERIFIED GREEN 2026-07-23** — prod bundle
+  `/assets/index-vIpvftZV.js` (byte-identical hash to the local
+  `vite build`) carries `theme-forest`, `data-select-on-focus`, and the
+  seeded-shell banner; `/api/v1/version/` 200. Since Django+WhiteNoise
+  serves the SPA from the same container, a new bundle means the SERVER
+  code is s105 too. **s104 + s105 are finally live on
+  prep.delviotax.com.** ⚠ When probing a bundle, do NOT grep
+  JSX-interpolated UI text (`Seeded for {year} back-entry` is split into
+  two literals — it false-negatives); use a class name, a `data-*`
+  attribute, or an uninterrupted sentence.
 - ⚠ **Render prod still has NO identity keys** (s97 Waiting §1).
 - ⚠ HSTS lands on the next tts Render deploy (s95).
 - ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
