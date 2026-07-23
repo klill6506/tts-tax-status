@@ -1,6 +1,27 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-23, session 102 (Ken-directed UI unit). **CLIENT
+*Last updated: 2026-07-23, session 103 (Ken-directed PRIORITY, Spine
+S-25). **THE START RETURN FLOW SHIPPED (`7b1312b`) — the 2025
+back-entry blocker is CLEARED.** There is now a correct way to attach
+a return to an EXISTING hub client: POST `/tax-returns/start/`
+{entity, year} find-or-creates the clients_taxyear and builds the
+right form for the entity type, NEVER creating client/entity rows
+(invariant test-pinned; existing return → "open existing"; row-locked
+against concurrent fleet double-create). Reachable from the entity
+folder page (Start Return button, year defaults to the shared
+ACTIVE_TAX_YEAR=2025) and the NEW Ctrl+K Client Search palette
+(digits = exact client_number; replaces the disabled menu placeholder;
+also the New Return action). "+ New Client" now has a did-you-mean
+typeahead against existing clients in both RM and Client Manager.
+Returns menu gained Individual/Trust lists (dead ?form= links fixed).
+Gates: test_start_return 8/8 · returns regression · tsc 0 · vitest
+300 · demo probe · **PROD ACCEPTANCE LIVE: "1017" → AARON, STANLEY →
+folder → Start Return → 2025 → blank 1040; zero new client/entity
+rows (3675/3979 unchanged); probe artifacts fully removed.** Render
+deploys `7b1312b` → Ken can repeat on prep.delviotax.com. (The RM
+client_number column half of the ask was already live from s102.)*
+
+*s102 (2026-07-23, Ken-directed UI unit). **CLIENT
 NUMBER SURFACED IN THE RETURN MANAGER** — sortable `#` column (narrow ·
 muted · tabular-nums · blank when un-numbered, matching Ledger's desk-
 search presentation), server-side sort (`ordering=client_number`,
