@@ -207,9 +207,26 @@ move on; mandatory session close before context exhausts.**
   `seed_rules` on BOTH DBs (registers D_1040_018); s101 reseeded
   seed_1065 BOTH DBs (355 lines; sched_b 67 face-true rows);
   post-migration audit clean on BOTH.**
-- ⚠ **Render prod needs the `166e6ef` deploy** before Ken re-tests on
-  prep.delviotax.com — every s105 fix is server+client and is only live
-  locally until then.
+- 🔴 **THE RENDER DEPLOY WAS BROKEN SINCE s104 — FIXED s105 (`e86a718`+).**
+  `build.sh` runs `manage.py seed_all`, which DISCOVERS every `seed_*`
+  command by name and runs it with NO arguments against prod. s104's
+  `seed_backfill_returns` is not a form seeder — it takes a required
+  `folder` positional pointing at roster CSVs that exist only on Ken's
+  machine — so it raised, `set -o errexit` stopped the build, and the
+  deploy died. **THREE deploys were silently blocked (s104, s105, the
+  s105 follow-up); prod bundle verification confirmed it was still
+  serving s103 code** (`Start Return` present, `Seeded for 2025
+  back-entry` and `theme-forest` absent). Fix: commands opt out with
+  `deploy_safe = False`; `seed_all` skips + warns; NEW
+  `tests/test_seed_all_deploy_safety.py` **5** fails CI instead of the
+  deploy. **THE CONTRACT: a `seed_*` command runs on every production
+  deploy — it must be idempotent, runnable with NO arguments, and
+  dependent on nothing outside the repo + DB. If not, `deploy_safe =
+  False` and run it by hand.**
+- ⚠ **Verify the next Render deploy actually SUCCEEDS**, then confirm
+  prod is on s105 (the bundle must contain `theme-forest`). Nothing
+  from s104/s105 is live until then. The 3,279 shells DO exist — the
+  seeder was run locally against the prod DB, not via a deploy.
 - ⚠ **Render prod still has NO identity keys** (s97 Waiting §1).
 - ⚠ HSTS lands on the next tts Render deploy (s95).
 - ⚠ Local test-DB after new migrations: the s86 setup_databases(keepdb)
