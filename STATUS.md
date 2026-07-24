@@ -85,19 +85,19 @@ published — the 7/23 triage was WRONG: nearly everything COMPUTES incl. the
 S-corp K-1/7203 path (refuted); only K-1 PASSIVE losses (8582), Simplified
 Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.***
 
-**What remains:**
-1. **The P1 "forms build order" is MOSTLY MOOT** — see SUPPORTED_FORMS.md.
-   Real build gaps, in likely value order: **GA-500 retirement-exclusion
-   verification vs the GA instructions (the 1017 mismatch — every retiree)** ·
-   K-1 passive-loss 8582 wiring · Simplified Method · lump-sum SS election ·
-   digital-asset question input · 8814/8839/8919 · Sch A 4684. **Ken directs
-   the order** (asked via the s106b question set).
-2. **Deferred s106 items (Ken decisions):** ack-with-note + 8867 consolidation ·
-   the 3 businesses' scorp entities · LATE_FILING born-late ratify · date
-   year-segment + AGI-lag (need repro).
-3. **Re-triage the 26-return batch against SUPPORTED_FORMS.md** — most of the
-   ~20 "blocked" returns are enterable now.
-4. Standing queue (s105-era): S-17g A2A on WSDLs landing · 1120/709 waves ·
+**What remains (Ken's s106b rulings applied):**
+1. **KEN'S CALL: re-triage the 26-return batch against SUPPORTED_FORMS.md
+   FIRST** (entry agents, before any engine build) — most of the ~20
+   "blocked" returns are enterable now. Real build gaps queue behind the
+   re-triage: GA-500 retirement-exclusion verification (the 1017 mismatch —
+   every retiree) · K-1 passive-loss 8582 · Simplified Method · lump-sum SS ·
+   digital-asset question · 8814/8839/8919 · Sch A 4684.
+2. **s106b rulings EXECUTED:** the 3 businesses resolved on prod (JC & Sons
+   #2667 + Mash Dynamo #3090 DELETED — no longer clients; Lil Junk Shop
+   #2925 swapped to S-corp w/ 1120-S shell) · LATE_FILING born-late
+   RATIFIED → DECISIONS.md. **Still pending Ken:** ack-with-note (elaboration
+   given s106b) · 8867 consolidation · date year-segment + AGI-lag (need repro).
+3. Standing queue (s105-era): S-17g A2A on WSDLs landing · 1120/709 waves ·
    1120-S ATS lane · SEC-5 plumbing · ratification backlog.
 
 ## ▶ Waiting on Ken / external
