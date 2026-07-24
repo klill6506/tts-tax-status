@@ -95,8 +95,13 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
 2. **s106b rulings EXECUTED:** the 3 businesses resolved on prod (JC & Sons
    #2667 + Mash Dynamo #3090 DELETED — no longer clients; Lil Junk Shop
    #2925 swapped to S-corp w/ 1120-S shell) · LATE_FILING born-late
-   RATIFIED → DECISIONS.md. **Still pending Ken:** ack-with-note (elaboration
-   given s106b) · 8867 consolidation · date year-segment + AGI-lag (need repro).
+   RATIFIED → DECISIONS.md. **ACK-WITH-NOTE SHIPPED (`da0405b`, Ken-approved
+   — the Lacerte checkbox):** every non-error finding has an "ack" checkbox
+   + optional note; acks are fingerprint-keyed (rule+severity+message+details)
+   so they survive reruns and self-clear when the numbers change; errors can
+   never be acked; migrations diagnostics 0003+0004(RLS) applied BOTH DBs;
+   test_diagnostics_ack_s106 **5** · live demo cycle verified. **Still
+   pending Ken:** 8867 consolidation · date year-segment + AGI-lag (need repro).
 3. Standing queue (s105-era): S-17g A2A on WSDLs landing · 1120/709 waves ·
    1120-S ATS lane · SEC-5 plumbing · ratification backlog.
 
