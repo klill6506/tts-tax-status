@@ -131,10 +131,14 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
   (D_EIC_001 info · D_EIC_002 gates) · returns **78** (backfill_progress).
 - **Shared-DB state: NO new migrations s106** (all data ops were ORM writes:
   the 22-client restore + PTINs on prod; seed_rules re-run BOTH DBs twice).
-- ✅ **s106 deploy VERIFIED GREEN (s106b)** — bundle `index-DTVh0zQn.js` +
-  live server-behavior checks on prep.delviotax.com. ⚠ The GA auto-attach
-  commit `fc3510a` pushed after that verification — confirm its deploy
-  (bundle grep: `not started` in the monitor) before the next GA QA pass.
+- ✅ **s106 + GA auto-attach deploys VERIFIED GREEN (s106b)** — bundles
+  `index-DTVh0zQn.js` → `index-CAxON8LE.js` (carries the monitor's
+  `not started`). ⚠ **ONE OPEN VERIFICATION: the ack-feature deploy
+  (`da0405b`) had NOT landed at session close** (bundle still CAxON8LE at
+  13:0x) — next session: bundle grep `quiet until their numbers change`.
+  Both DBs are already migrated (diagnostics 0003+0004), so the deploy is
+  a plain code rollout; a build failure would surface per the s105 seed_all
+  CI guard.
 - NEW s106b suite: `test_ga500_auto_attach_s106` **4** (attach · no-attach ·
   resync · override survives). GA band 80 · flow 518 re-ran green.
 - ⚠ Prod still has NO identity keys (s97) · HSTS pending next deploy (s95).
