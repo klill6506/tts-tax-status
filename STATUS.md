@@ -20,7 +20,15 @@ separate Ken-Bot service lands, then only the `post()` target changes; the
 IRS-grounded/broad modes and the no-PII notice are unchanged). ALSO: the vite
 dev server now honors an assigned PORT + `autoPort` in launch.json (the s102
 coexistence pattern) so it can run alongside another session's server on 5173.
-Verified live on the demo app (port 60930); vitest 355 · tsc 0.*
+**s107b-2 (Ken): Ken-Bot is now SMALLER (36px, was 48), DRAGGABLE (pointer
+drag w/ 5px click-vs-drag threshold; position persists in
+localStorage `kenbot.pos`, clamped on resize; panel opens beside him,
+quadrant-aware), and HIDEABLE (eye-off in the panel header; Help menu →
+"Show Ken-Bot" restores via the `kenbot:show` window event). ⚠ Lesson: an
+early `return null` ABOVE two later hooks silently killed the component on
+hide (fewer-hooks render) — the hidden gate now sits after every hook.**
+Verified live on the demo app (port 60930, all paths incl. hide/restore +
+position persistence across reloads); vitest 355 · tsc 0.*
 
 **s107 (2026-07-24): THE SCHEDULE D "+ ADD TRANSACTION" BUTTON IS FIXED — Schedule
 D could not be started at all.** `ScheduleDSection.handleAdd` POSTed
