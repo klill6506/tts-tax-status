@@ -65,6 +65,41 @@ order) is untouched and is the next session's work.**)*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
 ## ▶ RESUME HERE
+***s106e addendum (2026-07-24, Ken-directed):* **FORM 8962 ANNUAL METHOD
+(line 10 Yes → line 11 direct entry) SHIPPED.** The old behavior required a
+monthly 1095-A even when line 10 was Yes and summed months for line 11; now
+three nullable Taxpayer fields (`f8962_line11_premium/_slcsp/_aptc`, mig
+returns.0210, BOTH DBs) carry the year totals A/B/F; compute writes the
+full 11a-f face row (C=8a, D=B−C, E=min(A,D)); engagement = 1095-A OR
+annual entry; **the two methods NEVER mix** (mode-switch pinned: stale
+inactive-mode data can't reach the calc); blank ≠ zero preserved end-to-end
+(API null / blank face / omitted XML element). Renderer + e-file annual
+branches now read the compute-written rows (bridge parity). SEHI iterative
+works in annual mode (premiums = 11a). 3 NEW diagnostics
+(D_8962_ANNUAL_INCOMPLETE / _CONFLICT / _UNSUPPORTED [Part 4/5]) +
+D_8962_NO_1095A no longer fires in annual mode — inactive monthly records
+are never an error; seed_rules BOTH DBs. UI: annual card (A/B/F green
+inputs, C/D/E yellow computed off fresh_return), monthly 1095-A workflow
+hidden behind an "ignored while annual" note. **LIVE-VERIFIED on the demo
+DB (Carter Lewis, reverted byte-exact) — which caught a REAL first-
+engagement race: parallel first-save PATCHes both backfilled the form's
+FFV rows → IntegrityError 500 (the s106 race class); fixed in
+`recompute_memo.ensure_lines_backfilled` with `ignore_conflicts` +
+DB-truth re-fetch (UUID pks can't reveal losers).** Ken's regression case
+pinned exactly: Single, A=5,482/B=5,860/F=5,482 → C 1,444 · D 4,416 ·
+E 4,416 · 27=1,066 · 28=975 · 29=975 → Sch 2 1a. NEW/re-cut suites:
+compute leg 17 · diagnostics leg 14 · render leg 19 (incl. monthly-blanks-
+line-11) · efile extract 22 (incl. blank-column-omitted) · NEW
+`test_form8962_annual_api_leg` 6 (null/zero/populated/$1B/auth). Flow gate
+518 green · vitest 342 · tsc 0. **FULL server suite ran: 6,154 passed /
+14 failed — ALL 14 verified NOT-OURS: 7 fail identically on unmodified
+main (8915f landing ×2 · manifest-json · AAA-negative ×2 · officer-comp
+×2, pre-existing) and 7 pass in isolation (seed_backfill ×4 ·
+user_preferences ×3 — full-suite ordering interference). Stash-proven,
+not assumed.** ⚠ Deploy verification pending next session: bundle grep
+`Line 11 — Annual Calculation`. ⚠ Follow-up worth a look: the 7
+pre-existing full-suite failures above.*
+
 ***s106d addendum (2026-07-24, later same day):* THE S-24 KEY HAND-OFF IS
 DONE — Ken set both TAX_IDENTITY_* keys on Render (deploy live), and the
 prod identity backfill RAN: **601 created / 0 updated / 0 conflicts** (367
