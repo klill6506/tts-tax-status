@@ -13,6 +13,15 @@
 
 ## ▶ RESUME HERE
 
+***s107b addendum (2026-07-24, Ken, parallel session):* the floating AI-help
+button is REBRANDED "Ken-Bot"** (`AiHelpPanel.tsx` — button title/aria, panel
+header, empty state; the backend stays the `ai_help` Gemini service until the
+separate Ken-Bot service lands, then only the `post()` target changes; the
+IRS-grounded/broad modes and the no-PII notice are unchanged). ALSO: the vite
+dev server now honors an assigned PORT + `autoPort` in launch.json (the s102
+coexistence pattern) so it can run alongside another session's server on 5173.
+Verified live on the demo app (port 60930); vitest 355 · tsc 0.*
+
 **s107 (2026-07-24): THE SCHEDULE D "+ ADD TRANSACTION" BUTTON IS FIXED — Schedule
 D could not be started at all.** `ScheduleDSection.handleAdd` POSTed
 `description: ""` the instant the button was clicked; `CapitalTransaction.description`
