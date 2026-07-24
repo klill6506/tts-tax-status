@@ -65,6 +65,21 @@ order) is untouched and is the next session's work.**)*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
 ## ▶ RESUME HERE
+***s106c addendum (2026-07-24, Ken's RM question):* the two same-name clients
+#1075/#1076 are now DISTINGUISHED on prod — hub client+entity name for #1076
+renamed with the middle initial (per the published mapping); a first-name typo
+in #1075's return snapshot fixed. Root cause of "I entered it in the return but
+RM doesn't show it": **Return Manager displays the HUB record (client name +
+identity last-4), not the return's Taxpayer card** — per SUITE_CONTRACT §3 the
+central record is master for names (no upward sync, by design), and the s97
+SSN write-back IS built but INERT on prod because the TAX_IDENTITY_* keys are
+still unset on Render (identity table = 0 rows). The ~358 legacy hub SSNs are
+the only ones RM can show today (ein-field fallback). **After Ken sets the
+keys: run the staged 590-row backfill PLUS a new sweep of `returns_taxpayer`
+snapshot SSNs entered meanwhile (write-back only fires on save).** ALSO: the
+ack-feature deploy (`da0405b`) is now VERIFIED GREEN — bundle `index-iyj0yLHd.js`
+carries the marker.*
+
 ***s106b addendum (same day, Ken's 4-item follow-up — ALL DONE):* (1) s106
 DEPLOY VERIFIED GREEN on prep.delviotax.com** (bundle `index-DTVh0zQn.js`
 carries every s106 marker; live spot checks: D_1040_011 GONE on 1018's fresh
@@ -109,7 +124,9 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
 1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
    the 3 no-entity-of-type rows are the REVIEW_QUEUE s106 scorp-entity call.
 2. **S-24 identity keys (s97):** copy both TAX_IDENTITY_* keys to Render →
-   prod identity backfill (590 staged) → hub-ein blanking leg.
+   prod identity backfill (590 staged) → hub-ein blanking leg. **s106c: this
+   is ALSO why RM's SSN column stays blank for newly-entered returns** — add
+   the snapshot-SSN sweep (s106c note above) to the backfill run.
 3. Auth env vars (s94) · A2A WSDL toolkit · WISP ratification (s96) ·
    SEC-5 [EXT] legs (s95) · Resend setup (s83) · role assignments (s84) ·
    e-services reply · CAF number (s69) · ERO EFIN/PIN source (s94) ·
@@ -133,12 +150,9 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
   the 22-client restore + PTINs on prod; seed_rules re-run BOTH DBs twice).
 - ✅ **s106 + GA auto-attach deploys VERIFIED GREEN (s106b)** — bundles
   `index-DTVh0zQn.js` → `index-CAxON8LE.js` (carries the monitor's
-  `not started`). ⚠ **ONE OPEN VERIFICATION: the ack-feature deploy
-  (`da0405b`) had NOT landed at session close** (bundle still CAxON8LE at
-  13:0x) — next session: bundle grep `quiet until their numbers change`.
-  Both DBs are already migrated (diagnostics 0003+0004), so the deploy is
-  a plain code rollout; a build failure would surface per the s105 seed_all
-  CI guard.
+  `not started`). ✅ **s106c: the ack-feature deploy (`da0405b`) VERIFIED
+  GREEN** — bundle `index-iyj0yLHd.js` greps the marker. No open deploy
+  verifications remain.
 - NEW s106b suite: `test_ga500_auto_attach_s106` **4** (attach · no-attach ·
   resync · override survives). GA band 80 · flow 518 re-ran green.
 - ⚠ Prod still has NO identity keys (s97) · HSTS pending next deploy (s95).
