@@ -65,6 +65,17 @@ order) is untouched and is the next session's work.**)*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
 ## ▶ RESUME HERE
+***s106d addendum (2026-07-24, later same day):* THE S-24 KEY HAND-OFF IS
+DONE — Ken set both TAX_IDENTITY_* keys on Render (deploy live), and the
+prod identity backfill RAN: **601 created / 0 updated / 0 conflicts** (367
+primary + 234 spouse; 2,829 individuals have no SSN source yet — they fill
+in as returns are entered, the write-back hook is now LIVE on prod). The +11
+over the 590 staged = snapshot SSNs entered since staging (both Larry
+Allens verified in the identity table with correct last-4s). RM's SSN
+column now populates for all 601. **UNBLOCKED → the hub-ein blanking leg**
+(blank individual `clients_entity.ein` full SSNs to last-4, ~358 rows) —
+data surgery, still gated on Ken's explicit go.*
+
 ***s106c addendum (2026-07-24, Ken's RM question):* the two same-name clients
 #1075/#1076 are now DISTINGUISHED on prod — hub client+entity name for #1076
 renamed with the middle initial (per the published mapping); a first-name typo
@@ -123,10 +134,10 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
 ## ▶ Waiting on Ken / external
 1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
    the 3 no-entity-of-type rows are the REVIEW_QUEUE s106 scorp-entity call.
-2. **S-24 identity keys (s97):** copy both TAX_IDENTITY_* keys to Render →
-   prod identity backfill (590 staged) → hub-ein blanking leg. **s106c: this
-   is ALSO why RM's SSN column stays blank for newly-entered returns** — add
-   the snapshot-SSN sweep (s106c note above) to the backfill run.
+2. **S-24 hub-ein blanking leg (s97, NOW UNBLOCKED by s106d):** keys are on
+   Render and the prod backfill ran (601 rows) — awaiting Ken's explicit go
+   to blank the ~358 legacy full SSNs in individual `clients_entity.ein`
+   down to last-4 (data surgery).
 3. Auth env vars (s94) · A2A WSDL toolkit · WISP ratification (s96) ·
    SEC-5 [EXT] legs (s95) · Resend setup (s83) · role assignments (s84) ·
    e-services reply · CAF number (s69) · ERO EFIN/PIN source (s94) ·
@@ -155,7 +166,9 @@ Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.*
   verifications remain.
 - NEW s106b suite: `test_ga500_auto_attach_s106` **4** (attach · no-attach ·
   resync · override survives). GA band 80 · flow 518 re-ran green.
-- ⚠ Prod still has NO identity keys (s97) · HSTS pending next deploy (s95).
+- ✅ s106d: prod identity keys LIVE + backfill applied (601 rows) — the s97
+  residue is closed except hub-ein blanking (Ken's go). HSTS pending
+  next-deploy check (s95).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help first).
 - Demo DB: probe user removed; Sarah Smith scenario data restored byte-exact
   after the s106 entry probes (Capital One Bank / 36,014 / 4,581).
