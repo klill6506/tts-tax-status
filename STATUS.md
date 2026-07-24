@@ -65,28 +65,38 @@ order) is untouched and is the next session's work.**)*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
 ## ▶ RESUME HERE
-**Ken's 2026-07-24 QA work order is the standing queue. P0s + P2s + P3s are DONE
-(above). What remains, in Ken's order:**
-1. **P1 FORMS BUILD ORDER — the next build work, spec-first via Rule Studio,
-   one full unit (input/compute/render/flow) at a time:**
-   (1) Schedule D / 8949 (~9 returns waiting — biggest unlock) →
-   (2) Schedule C + SE + 8995 QBI (~7) → (3) Form 8962 ACA PTC (~3) →
-   (4) Schedule E rental + 4562 (~2) → (5) S-corp K-1 / 7203 / 8582 (~3,
-   hardest; confirmed non-computing) → singletons (5329 · W-2G · 1099-MISC ·
-   7206 · 1116 · 8960). **Also: the GA Form 500 engine — EVERY return needs
-   GA; Refund Monitor STATE shows "—" on all returns.** Answer keys in hand
-   (1017: GA tax 0 / refund 1,503 · 1029: GA tax 3,671 / due 288 · 1053: GA
-   tax 241 / refund 4). ⚠ Editor nav already has entry sections for many of
-   these (Sch C/D/E, 8962?) — audit ENTRY vs COMPUTE state per form before
-   building; the batch triage says compute is the gap.
-2. **Deferred s106 items (Ken decisions / follow-ups):** diagnostics
-   "acknowledge with note" + 8867 one-screen consolidation (REVIEW_QUEUE s106) ·
-   the 3 businesses' missing scorp entity + 1120-S shells (REVIEW_QUEUE s106) ·
-   LATE_FILING born-late call to ratify · date-input year-segment recovery +
-   Refund-Monitor AGI lag (unreproduced — need a live repro).
-3. **Ken re-tests on prep.delviotax.com once Render deploys `f65ea63`** —
-   verify the deploy landed by grepping the prod bundle (per the s105 rule)
-   for `programmaticEventBridge` or `#e3eae1`.
+***s106b addendum (same day, Ken's 4-item follow-up — ALL DONE):* (1) s106
+DEPLOY VERIFIED GREEN on prep.delviotax.com** (bundle `index-DTVh0zQn.js`
+carries every s106 marker; live spot checks: D_1040_011 GONE on 1018's fresh
+prod run — 2 info findings only; Jacob C Lill P03248400 in the prod roster;
+scripted W-2 set with no blur → PATCH → API readback → reverted). **(2) the
+Larry Allen mapping is published** (`D:\tax-test-data\Done\_larry_allen_mapping.md`
+— #1075 = …9545/Cami/Windsor Dr, #1076 = …8621/Sandra/Hog Mountain Rd, both
+shells confirmed; both returns UNBLOCKED). **(3) GA-500 AUTO-ATTACH SHIPPED
+(`fc3510a`)** — a GA W-2 row auto-attaches the GA-500, auto-resyncs every
+federal save (override-respecting), GA W/H line 24 pulls from W-2/1099-R/
+INT/DIV/1099-G; PLUS a live-bug fix (the federal pull map was UNSCOPED across
+sibling forms — bare line "11" collision, the s100 class); monitor empty state
+now says "not started". **ANSWER-KEY REGRESSION: 1053 6/6 EXACT · 1029 4/4
+EXACT · 1018 W/H EXACT — fully automatic. 1017 OPEN: the GA retirement
+exclusion under-excludes (engine −44,639 vs TaxWise full zero) — the RIE
+base/inputs unit is the next GA work.** **(4) `D:\tax-test-data\SUPPORTED_FORMS.md`
+published — the 7/23 triage was WRONG: nearly everything COMPUTES incl. the
+S-corp K-1/7203 path (refuted); only K-1 PASSIVE losses (8582), Simplified
+Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.***
+
+**What remains:**
+1. **The P1 "forms build order" is MOSTLY MOOT** — see SUPPORTED_FORMS.md.
+   Real build gaps, in likely value order: **GA-500 retirement-exclusion
+   verification vs the GA instructions (the 1017 mismatch — every retiree)** ·
+   K-1 passive-loss 8582 wiring · Simplified Method · lump-sum SS election ·
+   digital-asset question input · 8814/8839/8919 · Sch A 4684. **Ken directs
+   the order** (asked via the s106b question set).
+2. **Deferred s106 items (Ken decisions):** ack-with-note + 8867 consolidation ·
+   the 3 businesses' scorp entities · LATE_FILING born-late ratify · date
+   year-segment + AGI-lag (need repro).
+3. **Re-triage the 26-return batch against SUPPORTED_FORMS.md** — most of the
+   ~20 "blocked" returns are enterable now.
 4. Standing queue (s105-era): S-17g A2A on WSDLs landing · 1120/709 waves ·
    1120-S ATS lane · SEC-5 plumbing · ratification backlog.
 
@@ -116,8 +126,12 @@ order) is untouched and is the next session's work.**)*
   (D_EIC_001 info · D_EIC_002 gates) · returns **78** (backfill_progress).
 - **Shared-DB state: NO new migrations s106** (all data ops were ORM writes:
   the 22-client restore + PTINs on prod; seed_rules re-run BOTH DBs twice).
-- ⚠ **Render deploy of `f65ea63` UNVERIFIED at close** — verify the bundle
-  per the s105 rule before telling Ken to re-test.
+- ✅ **s106 deploy VERIFIED GREEN (s106b)** — bundle `index-DTVh0zQn.js` +
+  live server-behavior checks on prep.delviotax.com. ⚠ The GA auto-attach
+  commit `fc3510a` pushed after that verification — confirm its deploy
+  (bundle grep: `not started` in the monitor) before the next GA QA pass.
+- NEW s106b suite: `test_ga500_auto_attach_s106` **4** (attach · no-attach ·
+  resync · override survives). GA band 80 · flow 518 re-ran green.
 - ⚠ Prod still has NO identity keys (s97) · HSTS pending next deploy (s95).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help first).
 - Demo DB: probe user removed; Sarah Smith scenario data restored byte-exact
