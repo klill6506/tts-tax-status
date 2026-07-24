@@ -1,61 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-24, session 106 (Ken-directed PRIORITY — the consolidated
-QA work order from the three back-entry agent sessions: 1017/1018/1029/1053 all
-verified dollar-for-dollar vs TaxWise; the ENGINE IS RIGHT, every finding was
-entry-layer / diagnostics / data plumbing). **ALL FOUR P0s + both P2 blocks +
-the P3 batch SHIPPED (7 commits, `5609c46`..`f65ea63`); P1 (the forms build
-order) is untouched and is the next session's work.**)*
-
-**s106 highlights:**
-- **P0-1 DEDUP RESTORE (prod DB surgery, `5609c46`):** the 7/23 name-only hub
-  dedup (ran outside this repo, no audit rows) deleted 25 clients. Re-audit vs
-  the roster provenance: **22 individuals were FALSE POSITIVES** (distinct
-  TaxWise export rows = distinct SSNs) — all RESTORED with original UUIDs +
-  client_numbers + backfill-2025 shells (`server/scripts/restore_dedup_20260723.py`,
-  dry-run→apply; clients 3,675→3,697, entities 3,979→4,001, shells +22, all
-  SQL-verified). **3 businesses (#2668/#2926/#3091) were true client-level
-  duplicates** (same company on two Lacerte module rosters) — left deleted, BUT
-  their scorp entity + 2025 1120-S shell are missing → REVIEW_QUEUE s106. The
-  dedup had also MERGED the deleted twins' email/phone onto 6 survivors —
-  reverted. Full audit: `docs/audits/2026-07-24_dedup_restore.md`. **Both Larry
-  Allen returns are unblocked.**
-- **P0-2 ENTRY COMMIT WIRING (`8aae22e`):** NEW `lib/programmaticEventBridge.ts`
-  (boot-installed delegated capture listener — the selectOnFocus pattern) defeats
-  React's value-tracker dedupe so scripted/autofill sets reach onChange. FieldGrid
-  cells are now SEMI-CONTROLLED (draft ?? server value): commit once-per-value on
-  native change OR blur (no blur needed), drafts survive refreshes (EIN-lookup
-  can't wipe an in-flight Box 1), zero remounts, failed saves keep showing what
-  was typed; `recordId` scopes drafts per card. W2Screen add-in-flight guard
-  (no silent fallback to card[0] — the $1.68B family, re-proven live). Live
-  demo probe: scripted set w/o blur → PATCH to the CORRECT card id, persists.
-- **P0-3 TAXPAYER SAVE PATH (`166f47a`):** the first-save 500 was the taxpayer
-  CREATE RACE (parallel per-field first-saves on a fresh shell; OneToOne 500'd
-  the losers) — losers now fall through to update (test-pinned deterministically).
-  `useTaxpayerFacts` keeps fields DIRTY until the save confirms — a failed save
-  can no longer let a re-seed silently blank a green field (the 1029 First-Name
-  episode). Box 2a overflow: already pinned 400-not-500 by s105. ⚠ META: the
-  "mangled URL" in commitValidated was a TOOL-DISPLAY ARTIFACT — bytes verified
-  correct; do not "fix" it.
-- **P0-4 D_1040_011 RE-CUT (`b8863a0`):** no longer claims "no computation
-  engine yet" for AOTC/EIC — line 29 flags only a preparer OVERRIDE (engine owns
-  computed values; _Ctx now carries the overridden-line set), line 27 only when
-  the EIC engine is NOT engaged. seed_rules BOTH DBs.
-- **P2 ROSTER (`2074ef4`):** prod PTINs set — Jacob C Lill P03248400, Tom
-  Parkman P01218105, Gail Daniels P00141816; David Nelson still unknown → red
-  "PTIN missing" pill in Preparer Manager + "⚠ PTIN missing" in both return
-  pickers. **Return 1029 unblocked for assignment.**
-- **P2 DIAGNOSTICS (`043abdd`):** 8867 tri-state fixed (blank ≠ selected-No —
-  BooleanField app-wide); D_EIC_001 → INFO auto-resolved (the D_EIC_007 s105
-  convention); D_EIC_002 gated on 27a>0 + 4797-question unanswered; LATE_FILING
-  also suppressed for returns CREATED after their own deadline (born-late
-  back-entry — the 1017 "inconsistency" was really the dead s104/s105 deploy);
-  D_1040_018 verified covering "missing DOB always warns". seed_rules BOTH DBs.
-- **P3 BATCH (`f65ea63`):** RM defaults to ALL preparers (`preparer=me` = the
-  explicit my-returns view); back-entry progress badge (X/Y firm-wide from the
-  list payload); taxpayer/spouse SSNs MASKED AT REST in the editor (full on
-  focus + select-all); forest theme one step greener (#e3eae1 canvas — Ken
-  never saw s105's pass, dead deploy).
+*Last updated: 2026-07-24, session 107 (Ken-directed bug fix — the Schedule D
+"+ Add transaction" button. First work inside P1's Schedule D/8949 unit.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -63,150 +9,105 @@ order) is untouched and is the next session's work.**)*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
+- *(s106 and its four same-day addenda are archived in `STATUS_ARCHIVE.md` — "Session 106".)*
 
 ## ▶ RESUME HERE
-***s106e addendum (2026-07-24, Ken-directed):* **FORM 8962 ANNUAL METHOD
-(line 10 Yes → line 11 direct entry) SHIPPED.** The old behavior required a
-monthly 1095-A even when line 10 was Yes and summed months for line 11; now
-three nullable Taxpayer fields (`f8962_line11_premium/_slcsp/_aptc`, mig
-returns.0210, BOTH DBs) carry the year totals A/B/F; compute writes the
-full 11a-f face row (C=8a, D=B−C, E=min(A,D)); engagement = 1095-A OR
-annual entry; **the two methods NEVER mix** (mode-switch pinned: stale
-inactive-mode data can't reach the calc); blank ≠ zero preserved end-to-end
-(API null / blank face / omitted XML element). Renderer + e-file annual
-branches now read the compute-written rows (bridge parity). SEHI iterative
-works in annual mode (premiums = 11a). 3 NEW diagnostics
-(D_8962_ANNUAL_INCOMPLETE / _CONFLICT / _UNSUPPORTED [Part 4/5]) +
-D_8962_NO_1095A no longer fires in annual mode — inactive monthly records
-are never an error; seed_rules BOTH DBs. UI: annual card (A/B/F green
-inputs, C/D/E yellow computed off fresh_return), monthly 1095-A workflow
-hidden behind an "ignored while annual" note. **LIVE-VERIFIED on the demo
-DB (Carter Lewis, reverted byte-exact) — which caught a REAL first-
-engagement race: parallel first-save PATCHes both backfilled the form's
-FFV rows → IntegrityError 500 (the s106 race class); fixed in
-`recompute_memo.ensure_lines_backfilled` with `ignore_conflicts` +
-DB-truth re-fetch (UUID pks can't reveal losers).** Ken's regression case
-pinned exactly: Single, A=5,482/B=5,860/F=5,482 → C 1,444 · D 4,416 ·
-E 4,416 · 27=1,066 · 28=975 · 29=975 → Sch 2 1a. NEW/re-cut suites:
-compute leg 17 · diagnostics leg 14 · render leg 19 (incl. monthly-blanks-
-line-11) · efile extract 22 (incl. blank-column-omitted) · NEW
-`test_form8962_annual_api_leg` 6 (null/zero/populated/$1B/auth). Flow gate
-518 green · vitest 342 · tsc 0. **FULL server suite ran: 6,154 passed /
-14 failed — ALL 14 verified NOT-OURS: 7 fail identically on unmodified
-main (8915f landing ×2 · manifest-json · AAA-negative ×2 · officer-comp
-×2, pre-existing) and 7 pass in isolation (seed_backfill ×4 ·
-user_preferences ×3 — full-suite ordering interference). Stash-proven,
-not assumed.** ⚠ Deploy verification pending next session: bundle grep
-`Line 11 — Annual Calculation`. ⚠ Follow-up worth a look: the 7
-pre-existing full-suite failures above.*
 
-***s106d addendum (2026-07-24, later same day):* THE S-24 KEY HAND-OFF IS
-DONE — Ken set both TAX_IDENTITY_* keys on Render (deploy live), and the
-prod identity backfill RAN: **601 created / 0 updated / 0 conflicts** (367
-primary + 234 spouse; 2,829 individuals have no SSN source yet — they fill
-in as returns are entered, the write-back hook is now LIVE on prod). The +11
-over the 590 staged = snapshot SSNs entered since staging (both Larry
-Allens verified in the identity table with correct last-4s). RM's SSN
-column now populates for all 601. **UNBLOCKED → the hub-ein blanking leg**
-(blank individual `clients_entity.ein` full SSNs to last-4, ~358 rows) —
-data surgery, still gated on Ken's explicit go.*
+**s107 (2026-07-24): THE SCHEDULE D "+ ADD TRANSACTION" BUTTON IS FIXED — Schedule
+D could not be started at all.** `ScheduleDSection.handleAdd` POSTed
+`description: ""` the instant the button was clicked; `CapitalTransaction.description`
+is a non-blank CharField, so DRF answered **400 "This field may not be blank."**,
+`onRefresh()` re-read an unchanged list, and **no editable row ever appeared**. The
+preparer saw a dead button. Client-only fix, ZERO compute code, no migrations.
 
-***s106c addendum (2026-07-24, Ken's RM question):* the two same-name clients
-#1075/#1076 are now DISTINGUISHED on prod — hub client+entity name for #1076
-renamed with the middle initial (per the published mapping); a first-name typo
-in #1075's return snapshot fixed. Root cause of "I entered it in the return but
-RM doesn't show it": **Return Manager displays the HUB record (client name +
-identity last-4), not the return's Taxpayer card** — per SUITE_CONTRACT §3 the
-central record is master for names (no upward sync, by design), and the s97
-SSN write-back IS built but INERT on prod because the TAX_IDENTITY_* keys are
-still unset on Render (identity table = 0 rows). The ~358 legacy hub SSNs are
-the only ones RM can show today (ein-field fallback). **After Ken sets the
-keys: run the staged 590-row backfill PLUS a new sweep of `returns_taxpayer`
-snapshot SSNs entered meanwhile (write-back only fires on save).** ALSO: the
-ack-feature deploy (`da0405b`) is now VERIFIED GREEN — bundle `index-iyj0yLHd.js`
-carries the marker.*
+**The new shape (all in `ScheduleDSection`, `client/src/renderer/pages/FormEditor.tsx`):**
+- The click seeds a **client-side draft row** (`SCHD_DRAFT_ID`) held in component
+  state and renders it immediately, fully editable. **No request fires on click.**
+- Nothing is POSTed until the description is non-blank. Columns keyed *before* the
+  description accumulate in `draftValuesRef` and are sent **with** it in the single
+  create — one transaction is always one record.
+- **The duplicate/split guard:** `creatingRef` holds the in-flight create promise,
+  assigned synchronously with the POST's first `await`. Any blur landing mid-flight
+  awaits that promise and PATCHes the id it returns. There is exactly ONE code path
+  that can POST and it is gated on both `draftIdRef` and `creatingRef` — fast tabbing
+  through six columns can no longer split a lot across two 8949 rows.
+- **Validation is inline**: a note inside the draft card shows either the
+  missing-description prompt or the DRF 400 message (`role="alert"`); the row and
+  everything typed into it SURVIVE, and the next edit retries the create.
+- **No mid-entry remount**: once persisted, the row keeps rendering AS the draft row
+  (same key, same DOM nodes) with the server row merged in for computed column (h),
+  rather than reappearing as a fresh list row. This is the s105/s106 lesson — a
+  remount wipes whatever field the preparer had not blurred yet.
+- Delete on an unsaved draft is local-only; on a saved draft it awaits any in-flight
+  create first so no record is orphaned. Ordinary-row edit/delete/calculation paths
+  are untouched. `ScheduleDSection` is now exported for testing (the
+  `DueDiligenceAttestation` precedent).
 
-***s106b addendum (same day, Ken's 4-item follow-up — ALL DONE):* (1) s106
-DEPLOY VERIFIED GREEN on prep.delviotax.com** (bundle `index-DTVh0zQn.js`
-carries every s106 marker; live spot checks: D_1040_011 GONE on 1018's fresh
-prod run — 2 info findings only; Jacob C Lill P03248400 in the prod roster;
-scripted W-2 set with no blur → PATCH → API readback → reverted). **(2) the
-Larry Allen mapping is published** (`D:\tax-test-data\Done\_larry_allen_mapping.md`
-— #1075 = …9545/Cami/Windsor Dr, #1076 = …8621/Sandra/Hog Mountain Rd, both
-shells confirmed; both returns UNBLOCKED). **(3) GA-500 AUTO-ATTACH SHIPPED
-(`fc3510a`)** — a GA W-2 row auto-attaches the GA-500, auto-resyncs every
-federal save (override-respecting), GA W/H line 24 pulls from W-2/1099-R/
-INT/DIV/1099-G; PLUS a live-bug fix (the federal pull map was UNSCOPED across
-sibling forms — bare line "11" collision, the s100 class); monitor empty state
-now says "not started". **ANSWER-KEY REGRESSION: 1053 6/6 EXACT · 1029 4/4
-EXACT · 1018 W/H EXACT — fully automatic. 1017 OPEN: the GA retirement
-exclusion under-excludes (engine −44,639 vs TaxWise full zero) — the RIE
-base/inputs unit is the next GA work.** **(4) `D:\tax-test-data\SUPPORTED_FORMS.md`
-published — the 7/23 triage was WRONG: nearly everything COMPUTES incl. the
-S-corp K-1/7203 path (refuted); only K-1 PASSIVE losses (8582), Simplified
-Method, lump-sum SS, 8814/8839/8919 + the digital-asset question are real gaps.***
+**Gates:** NEW `scheduleDDraftRow.test.tsx` **13** (draft appears w/ zero requests ·
+one record per transaction · pre-description values land on it · gated-promise rapid
+entry → 1 POST · 400 keeps the row · reload persists · unchanged PATCH path) →
+**vitest 355** (was 342). NEW `tests/test_schedule_d_draft_row.py` **10** (the old
+payload still 400s — so holding the draft is the only correct behaviour, not a
+preference · one create + PATCHes = 1 row · GET round-trips every column · **gain
+3,000 → Sch D 16 → 1040 line 7, and GA-500 line 8 == 1040 line 11 → GA AGI line 10
++3,000**; loss case and PATCH-recompute case too). Flow-assertion gate + Schedule D /
+8949 / GA-500 bands re-ran: **582 passed**. `tsc` 86 errors before AND after —
+identical set, all pre-existing.
 
-**What remains (Ken's s106b rulings applied):**
-1. **KEN'S CALL: re-triage the 26-return batch against SUPPORTED_FORMS.md
-   FIRST** (entry agents, before any engine build) — most of the ~20
-   "blocked" returns are enterable now. Real build gaps queue behind the
-   re-triage: GA-500 retirement-exclusion verification (the 1017 mismatch —
-   every retiree) · K-1 passive-loss 8582 · Simplified Method · lump-sum SS ·
-   digital-asset question · 8814/8839/8919 · Sch A 4684.
-2. **s106b rulings EXECUTED:** the 3 businesses resolved on prod (JC & Sons
-   #2667 + Mash Dynamo #3090 DELETED — no longer clients; Lil Junk Shop
-   #2925 swapped to S-corp w/ 1120-S shell) · LATE_FILING born-late
-   RATIFIED → DECISIONS.md. **ACK-WITH-NOTE SHIPPED (`da0405b`, Ken-approved
-   — the Lacerte checkbox):** every non-error finding has an "ack" checkbox
-   + optional note; acks are fingerprint-keyed (rule+severity+message+details)
-   so they survive reruns and self-clear when the numbers change; errors can
-   never be acked; migrations diagnostics 0003+0004(RLS) applied BOTH DBs;
-   test_diagnostics_ack_s106 **5** · live demo cycle verified. **Still
-   pending Ken:** 8867 consolidation · date year-segment + AGI-lag (need repro).
+**⚠ NOT live-verified in a browser.** `server/.env` points dev at the PRODUCTION
+Supabase project, so clicking through Schedule D in the preview writes real
+`CapitalTransaction` rows to prod. The 13 client tests render the real
+`ScheduleDSection` and drive real DOM change/blur events, which covers the
+interaction. If Ken wants a live probe, run it against a scratch return and revert.
+
+**▶ NEXT: continue P1 — the Schedule D/8949 unit** (~9 returns, the biggest
+back-entry unlock). The entry layer is now usable; **audit ENTRY vs COMPUTE per the
+rest of the form before building** — the compute leg (Topic 9) is long-shipped and
+green, so expect more entry-layer gaps like this one rather than engine work. Then
+GA Form 500 RIE (the 1017 retirement-exclusion mismatch — hits every retiree).
+
+**What remains (Ken's s106b rulings still standing):**
+1. **KEN'S CALL: re-triage the 26-return batch against `D:\tax-test-data\SUPPORTED_FORMS.md`
+   FIRST** (entry agents, before any engine build) — most of the ~20 "blocked"
+   returns are enterable now. Real build gaps queue behind it: GA-500
+   retirement-exclusion verification · K-1 passive-loss 8582 · Simplified Method ·
+   lump-sum SS · digital-asset question · 8814/8839/8919 · Sch A 4684.
+2. **Still pending Ken:** 8867 consolidation · date year-segment + AGI-lag (need repro).
 3. Standing queue (s105-era): S-17g A2A on WSDLs landing · 1120/709 waves ·
    1120-S ATS lane · SEC-5 plumbing · ratification backlog.
 
 ## ▶ Waiting on Ken / external
 1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
    the 3 no-entity-of-type rows are the REVIEW_QUEUE s106 scorp-entity call.
-2. **S-24 hub-ein blanking leg (s97, NOW UNBLOCKED by s106d):** keys are on
-   Render and the prod backfill ran (601 rows) — awaiting Ken's explicit go
-   to blank the ~358 legacy full SSNs in individual `clients_entity.ein`
-   down to last-4 (data surgery).
+2. **S-24 hub-ein blanking leg (s97, UNBLOCKED by s106d):** keys are on Render and
+   the prod backfill ran (601 rows) — awaiting Ken's explicit go to blank the ~358
+   legacy full SSNs in individual `clients_entity.ein` down to last-4 (data surgery).
 3. Auth env vars (s94) · A2A WSDL toolkit · WISP ratification (s96) ·
    SEC-5 [EXT] legs (s95) · Resend setup (s83) · role assignments (s84) ·
    e-services reply · CAF number (s69) · ERO EFIN/PIN source (s94) ·
    beta-agreement clauses (s96).
-4. **Ken ratifications pending:** s106 (LATE_FILING born-late · dedup
-   businesses · ack-with-note design) · s101 (4) · s100 (3) · s99a · s97 ·
-   s96 (4) · s95 · s94 · s93 · s89 · s85/s84 · s83 · s76..s72.
+4. **Ken ratifications pending:** s106 (LATE_FILING born-late · dedup businesses ·
+   ack-with-note design) · s101 (4) · s100 (3) · s99a · s97 · s96 (4) · s95 · s94 ·
+   s93 · s89 · s85/s84 · s83 · s76..s72.
 
 ## Active gates
-- **Flow-assertion band GREEN at 539** (s106 re-ran; zero compute code
-  touched all session — every change was entry/diagnostics/UX).
-- NEW s106 suites: `test_taxpayer_save_s106` **4** (create race · 400 pins ·
-  backfill badge) · FieldGrid **10** · programmaticEventBridge **4** ·
-  useTaxpayerFacts **6** · preparerFilter re-cut · TaxpayerInfoSection SSN
-  pin re-cut masked-at-rest → **vitest 342** · tsc 0.
-- Re-cut pins s106: test_1040_spine_diagnostics **51** (D_1040_011
-  override-gated; rule-count pin still 18) · test_entry_layer_diagnostics_s105
-  **12** (LATE_FILING born-late) · test_topic7_diagnostics_leg **27**
-  (D_EIC_001 info · D_EIC_002 gates) · returns **78** (backfill_progress).
-- **Shared-DB state: NO new migrations s106** (all data ops were ORM writes:
-  the 22-client restore + PTINs on prod; seed_rules re-run BOTH DBs twice).
-- ✅ **s106 + GA auto-attach deploys VERIFIED GREEN (s106b)** — bundles
-  `index-DTVh0zQn.js` → `index-CAxON8LE.js` (carries the monitor's
-  `not started`). ✅ **s106c: the ack-feature deploy (`da0405b`) VERIFIED
-  GREEN** — bundle `index-iyj0yLHd.js` greps the marker. No open deploy
-  verifications remain.
-- NEW s106b suite: `test_ga500_auto_attach_s106` **4** (attach · no-attach ·
-  resync · override survives). GA band 80 · flow 518 re-ran green.
-- ✅ s106d: prod identity keys LIVE + backfill applied (601 rows) — the s97
-  residue is closed except hub-ein blanking (Ken's go). HSTS pending
-  next-deploy check (s95).
+- **Flow-assertion band GREEN** (s107 re-ran it — zero compute code touched;
+  the s106e 518 / s106 539 bands both stand).
+- **vitest 355** (s107 +13) · **tsc 0 new errors** (86 pre-existing, unchanged set).
+- s107 suites: `scheduleDDraftRow` **13** (client) · `test_schedule_d_draft_row`
+  **10** (server). Schedule D / 8949 / GA-500 / flow re-run: **582 passed**.
+- **NO migrations s107.** No DB writes of any kind — the fix is client-side and the
+  server tests run against the pytest DB.
+- ⚠ **Deploy verification OPEN (two builds):** s106e's 8962 annual method (bundle grep
+  `Line 11 — Annual Calculation`) and now s107 (bundle grep `SCHD_DRAFT_ID` is
+  minified — grep the draft note text `enter a description in column (a)` instead).
+  **"Pushed" ≠ "deployed"** — grep the prod `/assets/index-*.js`; `/api/v1/version/`
+  is useless.
+- ⚠ Follow-up worth a look (s106e): the 7 pre-existing full-suite failures that fail
+  identically on unmodified main (8915f landing ×2 · manifest-json · AAA-negative ×2
+  · officer-comp ×2).
 - ⚠⚠ 1120-S upload gate unchanged (full scenario set + e-help first).
-- Demo DB: probe user removed; Sarah Smith scenario data restored byte-exact
-  after the s106 entry probes (Capital One Bank / 36,014 / 4,581).
+- Demo DB: untouched this session.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
