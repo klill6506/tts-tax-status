@@ -115,6 +115,35 @@ DoD:
 8. Form 8863
 9. State refund taxability worksheet (RED diagnostic until built)
 
+## BATCH-001 QA BACKLOG (2026-07-25 — in flight, not yet placed on the spine)
+
+An 8-workstream QA-derived backlog (`D:\tax-test-data\QA Reports\Batch-001\PRIORITIZED-CODE-FIXES.md`,
+read-only) is under review with Ken. **Not yet ordered onto BUILD_ORDER** — Ken's s106b
+re-triage call still stands ahead of it. Four of the eight are substantially already
+built (Schedule D draft row s107 · 8962 annual mode s106e · 5695 compute · GA-500
+auto-attach/re-pull s106b); the backlog was written against a pre-s106b build.
+
+**In flight:** GA-500 RIE diagnosis — **DIAGNOSED, cause confirmed.** `GA500_FEDERAL_PULL`
+(`returns/views.py`) carries only 2 entries (federal AGI → L8, taxable SS → S1-8); every
+RIE worksheet income line + the APPL/65 gates are preparer-entered by v1 design, so
+federal pension/IRA data never reaches the worksheet and it computes 0 over 0. The
+compute leg (`compute_ga500.rie()`) is correct and IT-511-verified — **do not rewrite it.**
+The v1 "per-spouse allocation judgment required" rationale is now partly obsolete (s106b
+automated the same judgment for GA withholding; 1099-R rows carry an owner).
+**RESOLVED 2026-07-25:** `GA_RIE_EARNED_CAP` = $5,000 is CORRECT (Ken-confirmed; corroborated
+by RS rule `R-GA500-RIE`, authorities O.C.G.A. §48-7-27(a)(5) *controlling* + 2025 GA Form 500
+Rev. 07/09/25). Constant needs the citation comment added, not a value change.
+**RULE STUDIO COVERS GEORGIA** — specs `500` / `GA501` / `GA600S` / `GA700` (+ AL/NC/SC);
+live endpoint verified 2026-07-25, cache byte-identical, no drift. The mandatory-fetch gate
+applies to GA work exactly as to federal. `status: draft` on all GA specs is the house norm
+(82 federal specs are also draft), not a signal.
+**KEY:** `R-GA500-RIE` specs the allocation rule the v1 pull comment called "judgment" —
+*"Each spouse qualifies separately; jointly-owned income split 50/50."* The deferral rationale
+is void. The rule also names all 26 input facts (`g_tp_rie_taxable_pension` et al.) = the
+exact wiring list. NOTE a naming layer: RS `g_tp_rie_*` facts ↔ DB `RIE-TP-*` line numbers.
+⚠ Also note: QA reports carry real client names/SSN fragments — refer to returns by
+number only in any file that mirrors to the PUBLIC `tts-tax-status` repo.
+
 ## RUNWAY TO JANUARY 2027 — SUPERSEDED by `SEASON_PLAN.md` (2026-07-02)
 
 > This section is superseded by **`SEASON_PLAN.md`** (repo root) — the authoritative dated
