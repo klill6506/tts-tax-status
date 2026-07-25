@@ -88,8 +88,16 @@ packaging and diagnostics.
 - Source: `D:\tax-test-data\QA Reports\Batch-001\PRIORITIZED-CODE-FIXES.md`
   (item 14). **Reproduce on the DEMO project (`django-demo`), never prod.**
 
-**Ken's standing s106b call still open:** re-triage the 26-return batch against
-`D:\tax-test-data\SUPPORTED_FORMS.md` BEFORE more engine work.
+**⛔ THE 26-RETURN RE-TRIAGE IS CLOSED — Ken, 2026-07-25 (s110): "let's ignore
+the triage report."** Do NOT reopen it, and do not take a build order from
+`_batch_triage_2026-07-23.md` (its blocked-list was wrong — that is what
+`SUPPORTED_FORMS.md` was written to correct, and it stays the ground truth for
+what the app can do). Events overtook the question anyway: of the 26, **15 are
+entered and verified in `Done`**, 4 produced the Batch-001 code fixes, **7 remain
+in `Inbox`** (five of those already have QA reports saying what stopped them),
+and the two Abney returns are unstarted — 1024 is Lacerte input sheets with **no
+computed answer key**, so it cannot be verified until the computed return is
+re-printed.
 
 ## ▶ Waiting on Ken / external
 1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
