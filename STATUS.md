@@ -133,8 +133,13 @@ packaging and diagnostics.
   (2026-07-25): **6,192 passed / 7 failed / 21 skipped, 55:25**, the 7 being the
   known pre-existing set (8915f landing ×2 · AAA-negative ×2 · officer-comp ×2 ·
   manifest-json).
-- ⚠ **NOT deploy-verified** — s110 is pushed but the prod bundle has not been
-  grepped. Marker string for the check: `Most expensive exterior door`.
+- ✅ **s110 DEPLOY VERIFIED LIVE ON PROD** — bundle `index-CgsV8fRF.js` →
+  **`index-D-t_Kwp7.js`**, carrying four s110-only markers (`Most expensive
+  exterior door` · `QM ID number` · `manufacturer ID number` · `e5695_doors_top`),
+  1 hit each. These strings did not exist in any earlier build, so the hit proves
+  the new bundle without needing a pre-push baseline. The server side needed no
+  deploy step — the migration and both seeders were run directly against prod.
+  **"Pushed" != "deployed" still stands; `/api/v1/version/` is useless for this.**
 - ⚠ **When refreshing `flow_assertions_1040.json` from RS, drop the STAGED ids
   afterwards.** RS carries `FA-1040-4835-06` as `active` while the app stages it
   in `flow_assertions_1040_pending.json` (no engine→4835 depreciation feeder
