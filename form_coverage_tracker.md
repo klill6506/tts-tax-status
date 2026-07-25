@@ -1,5 +1,42 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-25 session 109 — FORM 8879 "PERSISTENCE" FIXED — and the SERVER WAS
+> RIGHT ALL ALONG (client-only; ZERO server source changed, no migrations, no DB
+> writes).** The QA-ranked P0 the external backlog dropped: a signed MFJ 8879 —
+> both PINs, both dates, Part I snapshot — came back as "Start Form 8879" with
+> every field blank after a trip to the Forms view. **Nothing was ever lost.** The
+> QA run's own diagnostics still reported `D_8879_NEED` after the "loss", and
+> `d_8879_need` returns `[]` when the Form8879 row is absent — so the row provably
+> survived the navigation that appeared to destroy it. The whole defect lived in
+> the client seam: a self-managing card seeds `useState` from its `initial` prop
+> once and thereafter PATCHes the server directly, never telling FormEditor — so
+> `returnData.form_8879` stayed at its page-load `null` for the entire session,
+> and the Payments tab is conditionally rendered, so every tab switch remounted
+> the card onto that stale seed. **NINE cards shared the shape** (8879 · 8878 ·
+> 4868 · 8888 · 9465 · payment vouchers · 2848 · 3115 · 2553) — all nine fixed,
+> not just the reported one. Fix: an `onChange` on every card that reports only
+> what the SERVER confirmed, and a `setSingleton` in FormEditor that records it
+> in place (a key write, not a refetch — none of these cards feeds compute from
+> the client, and a refetch would risk stomping unflushed keystrokes).
+> **The lesson beyond this form: a "self-managing" card is only safe while it is
+> mounted.** Anything conditionally rendered must report its server state upward,
+> or its parent's copy becomes a stale seed that silently un-does completed work.
+> Gates: NEW `singletonCardPersistence.test.tsx` **7** → vitest **396** (was 389)
+> · tsc **0** · NEW `tests/test_8879_persistence.py` **7** — which passed on the
+> FIRST run with no server change, the cleanest proof the DB half was never
+> broken; it pins the reload payload, the `?fresh_return=1` payload (which
+> replaces returnData mid-session and would silently re-stale the seed if it ever
+> dropped the key), and get_or_create idempotency · `test_8879_8878` **33/33**
+> unchanged. **Live-verified on the DEMO project** (John & Judy Jones MFJ 1040,
+> the same return s94 probed): started → Forms → back to Input keeps the card ·
+> PINs 54654/16546 + both 07/23/2026 dates + snapshot survive a HARD RELOAD and a
+> second Forms round trip ("within tolerance") · Form 8879 present in the
+> generated package · scratch record deleted, demo left as found. Two adjacent QA
+> findings filed to REVIEW_QUEUE rather than fixed silently: `D_8879_NEED` is an
+> unclearable warning (a spec-severity call, and the very thing that misled the
+> tester), and the 8879 date fields accept only ISO while preparer dates accept
+> `07/23/2026`.
+
 > **2026-07-24 session 107 — SCHEDULE D `+ Add transaction` FIXED (entry layer only;
 > no migrations, no compute code, flow band re-ran green).** The button POSTed a
 > blank description, the API 400'd it, and no editable row ever appeared — Schedule D
