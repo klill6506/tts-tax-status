@@ -76,32 +76,79 @@ manifest driving Forms view, e-file packaging and diagnostics).
 `D:\tax-test-data\SUPPORTED_FORMS.md` BEFORE more engine work. The QA sprint is
 recorded in `SPRINT_SCOPE.md` but deliberately NOT on the BUILD_ORDER spine.
 
+**s109b (same day, Ken: "make the spec change and fix the date on 8879") —
+BOTH REVIEW_QUEUE items CLOSED.** Commit `cb756a1`; RS `8a30b6c`.
+
+1. **`D_8879_NEED` warning → INFO, spec-led.** Amended at **Rule Studio, which
+   owns this field** — loader amended, harness **79/0**, seeded to RS prod,
+   deployed export verified, then `server/specs/8879_spec.json` refreshed from
+   that export (the ONLY diff vs the old mirror was that one severity;
+   rules/line_map/facts/tests/metadata byte-identical). **Enforcement did not
+   move** — `D_8879_UNSIGNED` stays the ERROR that blocks transmission, and both
+   the RS harness and a new app test pin the pair so it can never go
+   all-non-blocking. ⚠ **The severity lives in TWO places in the app**: the
+   `_finding()` the rule emits AND the `RULES_8879` registration that seeds the
+   DB rule row the diagnostics catalogue reads — moving only one would have had
+   the UI file a finding under one severity while the catalogue advertised
+   another. `seed_rules` re-run + verified on BOTH DBs; confirmed in the running
+   app via `/api/v1/diagnostic-rules/`.
+2. **One date-entry contract — and it was worse than reported.** The 8879/8878
+   were the app's only raw `<input type="date">` signature fields; they now use
+   the shared masked `DateInput` like every other date. That swap exposed the
+   mirror-image defect in the shared component: **it silently mangled ISO input
+   — `2026-07-23` displayed `20/26/0723` and emitted `0723-20-26` (month 20, day
+   26, year 723) to all 17 consumers.** Probed and confirmed BEFORE changing
+   anything. `DateInput` now normalises a whole ISO date arriving in one change
+   and **never emits a date that does not exist**; a complete-but-impossible
+   entry is flagged `aria-invalid` + red ring and writes nothing.
+
+**Live-verified on the DEMO project** (production never touched): digits mask as
+typed (0 → 04 → 04/1 → 04/15 → 04/15/2026) · pasted `2026-07-23` → shows
+`07/23/2026`, PATCHes `{"primary_signed_date":"2026-07-23"}` · `02/31/2025`
+flagged, sends NOTHING · correcting it clears the flag and saves. Scratch record
+deleted.
+
+⚠ **Carry this: React's blur delegation listens on `focusout`, NOT `blur`.** A
+synthetic `blur` never reaches `onBlur` in the hidden pane — which is why s108
+concluded blur-driven fields were unverifiable there. **They are verifiable;
+dispatch `focusout`.** (Also: a synthetic `focusout` double-fires, so it showed
+two identical PATCHes — re-checked under RTL, the real path commits exactly
+once, now pinned.)
+
 **Entry guidance:** the s109 fix is **LIVE on prod** — the "my 8879 vanished"
 behaviour is gone, and 8879 entry is safe to do at any point in a return.
+s109b's date + severity changes go live with the deploy noted under Active gates.
 
 ## ▶ Waiting on Ken / external
-1. **NEW (s109) — two 8879 questions in `REVIEW_QUEUE.md`:** (a) `D_8879_NEED`
-   is a **warning no preparer can ever clear** (it fires whenever an 8879 is
-   needed, signed or not; the actionable gate is the separate `D_8879_UNSIGNED`
-   error). Recommend dropping it to INFO per the s105/s106 D_EIC convention —
-   **not done unilaterally because severity is set by the Rule Studio 8879 spec.**
-   (b) One shared **date-entry contract**: the 8879 signature-date fields accept
-   only `2026-07-23` while preparer signature dates accept `07/23/2026`.
-2. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
+1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
    the 3 no-entity-of-type rows are the REVIEW_QUEUE s106 scorp-entity call.
-3. **S-24 hub-ein blanking leg (s97, UNBLOCKED by s106d):** keys are on Render and
+2. **S-24 hub-ein blanking leg (s97, UNBLOCKED by s106d):** keys are on Render and
    the prod backfill ran (601 rows) — awaiting Ken's explicit go to blank the ~358
    legacy full SSNs in individual `clients_entity.ein` down to last-4 (data surgery).
-4. Auth env vars (s94) · A2A WSDL toolkit · WISP ratification (s96) ·
+3. Auth env vars (s94) · A2A WSDL toolkit · WISP ratification (s96) ·
    SEC-5 [EXT] legs (s95) · Resend setup (s83) · role assignments (s84) ·
    e-services reply · CAF number (s69) · ERO EFIN/PIN source (s94) ·
    beta-agreement clauses (s96).
-5. **Ken ratifications pending:** s106 (LATE_FILING born-late · dedup businesses ·
+4. **Ken ratifications pending:** s106 (LATE_FILING born-late · dedup businesses ·
    ack-with-note design) · s101 (4) · s100 (3) · s99a · s97 · s96 (4) · s95 · s94 ·
    s93 · s89 · s85/s84 · s83 · s76..s72.
 
 ## Active gates
-- **vitest 396** (s109 +7: `singletonCardPersistence`) · **tsc 0 errors**.
+- **vitest 408** (s109 +7 `singletonCardPersistence`; s109b +12: DateInput 5→12,
+  singletonCardPersistence 7→11) · **tsc 0 errors**.
+- **`test_8879_8878` 33 → 35** (s109b: the severity pin + a spec-mirror drift
+  pin) · 8879 + flow-assertion bands **560 passed** · core diagnostics bands
+  (`test_diagnostics`, `_ack_s106`, `1040_spine`, `entry_layer_s105`) **109
+  passed**.
+- **Rule Studio:** `validate_8879_8878.py` **79/0** — and REPAIRED: three of its
+  assertions had failed on EVERY run since 2026-07-15 because nobody updated
+  them after Ken approved Gate-1 (they still asserted `READY_TO_SEED` ships
+  False and the FAs are staged DRAFT). A permanently-red harness is one nobody
+  reads. Also fixed a stale loader message that printed "flow assertions (staged
+  DRAFT)" on every reseed — it read as though the run had just deactivated the 3
+  assertions the tts flow gate depends on. **Verified against RS prod: all 3
+  still `active`, 484 active FAs total** — the message was lying, the behaviour
+  was correct.
 - **NEW `tests/test_8879_persistence.py` 7** — it **passed on the first run with
   no server change**, which is the cleanest available proof that the DB half was
   never broken. It pins the hard-reload payload, the **`?fresh_return=1` payload**
@@ -115,13 +162,22 @@ behaviour is gone, and 8879 entry is safe to do at any point in a return.
   (8915f landing ×2 · AAA-negative ×2 · officer-comp ×2 · manifest-json).
 - **NO migrations. No production DB writes.** All live work ran against the
   separate demo project; the scratch 8879 was deleted afterwards.
-- ✅ **DEPLOY VERIFIED LIVE ON PROD** — bundle `index-XZ-tCoas.js` →
+- ✅ **s109 DEPLOY VERIFIED LIVE ON PROD** — bundle `index-XZ-tCoas.js` →
   **`index-CdtjNmcu.js`** (the same hash the local production build produced),
   carrying the s109-only marker `onSingletonChange`. The **zero-hit baseline was
   taken BEFORE the push**, and a local production build first confirmed the
   string survives minification, so the hit proves the new build rather than a
   pre-existing string. **"Pushed" != "deployed" still stands**;
   `/api/v1/version/` is useless for this.
+- ⚠ **s109b DEPLOY — verify it landed (check this first next session).**
+  Baseline taken BEFORE the push: prod was `index-CdtjNmcu.js` with **0 hits**
+  for `Not a real date`, and the local production build (`index-CgsV8fRF.js`)
+  confirms that string survives minification. Verify with:
+  `curl -s https://prep.delviotax.com/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'`
+  then grep that bundle for `Not a real date`. *(The Rule Studio severity change
+  is already live independently — RS serves it from its own DB, and both tax-app
+  DBs were reseeded directly, so the diagnostic reads INFO on prod regardless of
+  this bundle.)*
 - ⚠ Still not unit-tested (carried from s108): the autosave mutation-sequence
   guard lives inside FormEditor's closure — verified by construction only.
 

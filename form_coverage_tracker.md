@@ -1,5 +1,51 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-25 session 109b — THE TWO 8879 FOLLOW-UPS KEN ORDERED: `D_8879_NEED`
+> DROPPED TO INFO (spec-led) + ONE DATE-ENTRY CONTRACT.** No migrations.
+> **(1) THE SPEC CHANGE STARTED AT RULE STUDIO, which owns this field** — loader
+> amended, harness **79/0**, seeded to RS prod, deployed export verified, and the
+> cached mirror `server/specs/8879_spec.json` refreshed from that export (the only
+> diff vs the old mirror was that one severity; rules/line_map/facts/tests/metadata
+> byte-identical). RS `8a30b6c`. The rule states a FACT — this return requires an
+> 8879 — that nothing the preparer can do will clear; an unclearable warning is
+> unactionable, and this one did measurable harm (the Batch-001 tester read the
+> surviving finding as evidence the record had been lost and filed a P0 on it,
+> when it was proof the record still existed). **Enforcement did not move:
+> `D_8879_UNSIGNED` stays the ERROR that blocks transmission**, and both the RS
+> harness and a new app test pin the pair so it can never go all-non-blocking.
+> ⚠ **THE SEVERITY LIVES IN TWO PLACES IN THE APP** — the `_finding()` the rule
+> emits AND the `RULES_8879` registration that seeds the DB rule row the
+> diagnostics catalogue reads. Moving only the first would have left the UI filing
+> the finding under one severity while the catalogue advertised another; a test now
+> asserts they agree, and another reads the cached spec mirror so app-vs-spec drift
+> fails a test instead of reaching preparers. `seed_rules` re-run + verified on
+> BOTH DBs, and confirmed in the running app via `/api/v1/diagnostic-rules/`.
+> **(2) THE DATE FIX — and it was worse than reported.** The 8879/8878 were the
+> app's only raw `<input type="date">` signature fields (every other date uses the
+> shared masked `DateInput`), which is why they took only `2026-07-23` while the
+> preparer date took `07/23/2026`. Swapping them onto the shared control exposed
+> the MIRROR-IMAGE defect in that component: **it silently mangled ISO input —
+> `2026-07-23` displayed as `20/26/0723` and emitted `0723-20-26` (month 20, day
+> 26, year 723) to all 17 of its consumers.** Probed and confirmed BEFORE changing
+> anything. `DateInput` now normalises a whole ISO date arriving in one change
+> (paste/autofill/scripted set) and **never emits a date that does not exist** —
+> month 13 and 31 February yield "" (the same path a half-typed date takes, so
+> nothing is written) with the field flagged `aria-invalid` + red ring, instead of
+> pushing a nonsense date at the server to surface as a generic "Save failed".
+> Gates: **vitest 408** (was 396; DateInput 5→12, singletonCardPersistence 7→11) ·
+> tsc 0 · `test_8879_8878` 33→**35** · 8879 + flow-assertion bands **560** · core
+> diagnostics bands **109**. **Live-verified on the DEMO project**: digits mask as
+> typed (0 → 04 → 04/1 → 04/15 → 04/15/2026) · a pasted `2026-07-23` normalises to
+> `07/23/2026` and PATCHes `{"primary_signed_date":"2026-07-23"}` · `02/31/2025` is
+> flagged and sends NOTHING · correcting it clears the flag and saves; scratch
+> record deleted. ⚠ **Checked rather than assumed:** a synthetic `focusout` in the
+> browser pane produced TWO identical PATCHes, so the real event path was re-checked
+> under RTL — exactly one commit per entry (now pinned; this codebase has been
+> bitten by double-commit paths before). Also worth carrying: **React's blur
+> delegation listens on `focusout`, not `blur`** — a synthetic `blur` never reaches
+> `onBlur` in the hidden pane, which is why s108 believed blur-driven fields were
+> unverifiable there. They are verifiable; dispatch `focusout`.
+
 > **2026-07-25 session 109 — FORM 8879 "PERSISTENCE" FIXED — and the SERVER WAS
 > RIGHT ALL ALONG (client-only; ZERO server source changed, no migrations, no DB
 > writes).** The QA-ranked P0 the external backlog dropped: a signed MFJ 8879 —
