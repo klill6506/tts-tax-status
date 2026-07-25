@@ -76,9 +76,8 @@ manifest driving Forms view, e-file packaging and diagnostics).
 `D:\tax-test-data\SUPPORTED_FORMS.md` BEFORE more engine work. The QA sprint is
 recorded in `SPRINT_SCOPE.md` but deliberately NOT on the BUILD_ORDER spine.
 
-**Entry guidance:** the s109 fix removes the "my 8879 vanished" behaviour, but it
-is only live once the Render deploy lands (see the deploy note under Active
-gates). 8879 entry is now safe to do at any point in a return.
+**Entry guidance:** the s109 fix is **LIVE on prod** — the "my 8879 vanished"
+behaviour is gone, and 8879 entry is safe to do at any point in a return.
 
 ## ▶ Waiting on Ken / external
 1. **NEW (s109) — two 8879 questions in `REVIEW_QUEUE.md`:** (a) `D_8879_NEED`
@@ -116,15 +115,13 @@ gates). 8879 entry is now safe to do at any point in a return.
   (8915f landing ×2 · AAA-negative ×2 · officer-comp ×2 · manifest-json).
 - **NO migrations. No production DB writes.** All live work ran against the
   separate demo project; the scratch 8879 was deleted afterwards.
-- ⚠ **DEPLOY VERIFICATION OPEN — finish this first next session.** Baseline taken
-  **BEFORE** the push: prod bundle was `index-XZ-tCoas.js` with **0 hits** for
-  `onSingletonChange`, and a local production build confirms that string
-  **survives minification** (1 hit), so it is a valid new-code-only marker.
-  Verify with:
-  `curl -s https://prep.delviotax.com/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'`
-  then grep that bundle for `onSingletonChange` — a hit proves the s109 build is
-  live. **"Pushed" != "deployed" still stands**; `/api/v1/version/` is useless
-  for this.
+- ✅ **DEPLOY VERIFIED LIVE ON PROD** — bundle `index-XZ-tCoas.js` →
+  **`index-CdtjNmcu.js`** (the same hash the local production build produced),
+  carrying the s109-only marker `onSingletonChange`. The **zero-hit baseline was
+  taken BEFORE the push**, and a local production build first confirmed the
+  string survives minification, so the hit proves the new build rather than a
+  pre-existing string. **"Pushed" != "deployed" still stands**;
+  `/api/v1/version/` is useless for this.
 - ⚠ Still not unit-tested (carried from s108): the autosave mutation-sequence
   guard lives inside FormEditor's closure — verified by construction only.
 
