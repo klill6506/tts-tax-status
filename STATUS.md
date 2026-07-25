@@ -117,7 +117,8 @@ once, now pinned.)
 
 **Entry guidance:** the s109 fix is **LIVE on prod** — the "my 8879 vanished"
 behaviour is gone, and 8879 entry is safe to do at any point in a return.
-s109b's date + severity changes go live with the deploy noted under Active gates.
+**s109b's date + severity changes are LIVE on prod too** (deploy verified) — 8879
+signature dates now take `07/23/2026`, and `D_8879_NEED` reads INFO.
 
 ## ▶ Waiting on Ken / external
 1. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective:
@@ -169,15 +170,12 @@ s109b's date + severity changes go live with the deploy noted under Active gates
   string survives minification, so the hit proves the new build rather than a
   pre-existing string. **"Pushed" != "deployed" still stands**;
   `/api/v1/version/` is useless for this.
-- ⚠ **s109b DEPLOY — verify it landed (check this first next session).**
-  Baseline taken BEFORE the push: prod was `index-CdtjNmcu.js` with **0 hits**
-  for `Not a real date`, and the local production build (`index-CgsV8fRF.js`)
-  confirms that string survives minification. Verify with:
-  `curl -s https://prep.delviotax.com/ | grep -o '/assets/index-[A-Za-z0-9_-]*\.js'`
-  then grep that bundle for `Not a real date`. *(The Rule Studio severity change
-  is already live independently — RS serves it from its own DB, and both tax-app
-  DBs were reseeded directly, so the diagnostic reads INFO on prod regardless of
-  this bundle.)*
+- ✅ **s109b DEPLOY VERIFIED LIVE ON PROD** — bundle `index-CdtjNmcu.js` →
+  **`index-CgsV8fRF.js`**, the exact hash the local production build produced,
+  carrying the s109b-only marker `Not a real date` (1 hit against the **0-hit
+  baseline taken BEFORE the push**). The Rule Studio severity change went live
+  independently of the bundle — RS serves it from its own DB and both tax-app
+  DBs were reseeded directly, both verified reading `info`.
 - ⚠ Still not unit-tested (carried from s108): the autosave mutation-sequence
   guard lives inside FormEditor's closure — verified by construction only.
 
