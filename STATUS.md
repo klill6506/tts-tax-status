@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 113 (QA Batch-001 finishing run: items 7, 8,
-10 shipped; item 3 verified already-built; s112 deploy verified live on prod).*
+*Last updated: 2026-07-26, session 114 (QA Batch-001 item 11 — the Form 8867
+per-question rebuild SHIPPED end-to-end).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -9,95 +9,67 @@
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s112 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s113 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s113 (2026-07-26): Ken ordered the REMAINING QA Batch-001 items run to
-completion.** Shipped this session (each RS-first, committed + pushed):
+**s114 (2026-07-26): QA Batch-001 item 11 — the Form 8867 PER-QUESTION
+REBUILD is COMPLETE** (Ken's GO from s113). App `0f397da` + `de31033`; RS
+`a0708a5`; mig returns.0214 + seed_8867 + seed_rules applied + VERIFIED on
+BOTH DBs. Full detail → STATUS_ARCHIVE s114. The one-paragraph version:
+the compressed 12-line model became the full Rev. 11-2024 face (21 lines,
+one per printed checkbox incl. 4a/4b/7a/8/9a-9c/11/12/14/15 + the line-5
+docs list); N/A exists exactly where the face prints an N/A box
+(2/7/7a/8/9c/11/12 — template widget dump == MeF XSD, verified
+independently); stored answers migrated per Ken's rule (merged-true →
+components, merged-false/na → BLANK for re-answer — never invent); the
+cascade follows the face's own routing (new arms: 8 = yes/na from Schedule-C
+presence; 15 = the certification); the e-file now transmits every
+previously-ABSENT sub-question element + WorkPaperDocumentNm, with the
+certification reading row 15 (side flag removed); the print fills all 20
+questions + docs + preparer name/PTIN; the client grid has the N/A pill on
+exactly the 7 NA lines + the new Part VI section. Live demo probe:
+attest → all applicable filled → un-attest → full revert.
 
-1. **s112 deploy VERIFIED live** (prod probe: diagnostic run on return 1019 —
-   the false Sch 1/2/3 warnings gone; probe recipe → `.claude` auto-memory).
-2. **Item 7 (GA RIE) CLOSED** (`5f36876`; RS `b2318a8`): the s108 pull was
-   already 90% of it — what was missing was the two spec diagnostics.
-   D_GA500_002 realigned to the spec (DOB-required ERROR; the app had shipped
-   different semantics under that ID), old body re-homed as NEW D_GA500_016,
-   NEW D_GA500_017 warns when alimony/cap-gains/other/Sch-E-rental exist
-   federally but the RIE worksheet lines 8/9/10/13 are blank (the categories
-   the pull can't attribute per spouse). seed_rules BOTH DBs, verified.
-3. **Item 3 (autosave) — ALREADY BUILT** in s108d `e3c7168` (validation
-   isolation + latest-write-wins + honest status, test-pinned). No work needed.
-4. **Item 8 (7206 partner arm) SHIPPED** (`7050f93`; RS `6761b65`; mig 0213
-   BOTH DBs): ScheduleK1 gains sehi_amount (13M) + se_retirement_amount (13R);
-   the K-1 activity runs the SAME 7206 lines 4-10 on box 14A; line 5 pools
-   POSITIVE Sch C + K-1 profits only (2025 face verbatim — losses excluded);
-   K-1 SE retirement → Sch 1 L16; form_7206_rows mirrors for MeF parity;
-   client K-1 card gains the two rows. QA acceptance pinned (Sch C loss
-   −1,838 + K-1 2,602 + premiums 764 → L15 54 · L17 764).
-5. **Item 10 (2210 rates) SHIPPED** (`8b927d4`; RS `744ba30`): ChatGPT was
-   RIGHT — verified against the published 2025 i2210 Penalty Worksheet
-   (fetched live): × 0.07 in ALL FOUR rate periods; Rate Period 4 =
-   1/1-4/15/2026 as ONE 7% period. The 6% Q2 stub was a pre-publication
-   assumption UNDERSTATING penalties (the $1-3 TaxWise deltas; return
-   ...4331: 188 vs 189). Pins moved 461→466 · 143→145 · 217→219 · 369→372.
-   The RS authority "excerpt" that had paraphrased the assumption as i2210
-   text is now faithful worksheet text.
+**Gates green:** leg-C cascade 7 (3 new arms) · topic7 seed/render/
+diagnostics (new 4a/4b + na-where-boxed tests) · efile mef/extract/
+scenario2/print-gate/packet 63 · flow **520** · vitest 459 · tsc 52
+baseline · RS harness validate_8867_rebuild ALL GREEN.
 
-**▶ NEXT (cold-start pointer): QA Batch-001 item 11 — the Form 8867 rebuild
-(Ken GO 2026-07-26: "you can do it now").** Survey COMPLETE (task list +
-STATUS_ARCHIVE s113): official Rev. 11-2024 face (still current per irs.gov,
-fetched s113) = per-question lines 1/2/3/4/4a/4b/5(+docs list)/6/7/7a/8/
-9a/9b/9c/10/11/12/13/14/15 with Yes/No/N-A columns (Parts I-III); app + RS
-spec both carry the compressed 12-line boolean model (merged 4·7·9·10·"hoh";
-no face-8, no 15 row). Plan: RS re-model first (per-question choice facts
-yes/no/na), seed re-key + DATA MIGRATION (merged "true"→component "yes";
-merged "false"→BLANK so D_8867_001 forces re-answer — never invent an
-answer), attestation cascade in compute.py, render field map, e-file, client
-grid (visible after attestation). **E-file facts found post-close (verify,
-then reuse):** `efile/composition/mappers/y2025/builder.py` ~1355-1430 —
-`_F8867_BOOL_ELEMENTS` / `_F8867_CODE_ELEMENTS` / `build_irs8867`; the
-UNMAPPED sub-questions (4a/4b/9b/9c/11/12/face-8) are transmitted ABSENT
-today (schema-valid, minOccurs=0 — the compliance gap, not a rejection);
-lines 2/7/8 ALREADY flow "na"→N/A via the code elements, so some N/A
-plumbing exists to extend; internal "hoh" = face line 14; the spec's "Q8"
-row = face 7a; line 15 certification rides `src.certified` (the single
-attestation). Print map: `tts_forms/field_maps/f8867_2025.py`. ATS
-scenario2 attaches IRS8867 — re-run its band after. Ken's framing to honor:
-a BLANK on a filed 8867 reads as "the question wasn't asked" (§6695(g),
-~$600/credit/return) — the rebuild exists so no filed answer is ever blank
-merely because our model couldn't store it. After 11: item 15
-(source-summary mode — needs a design proposal for Ken) and the item-6
-residual (two REVIEW_QUEUE questions BLOCK it — see below).
+**▶ NEXT (cold-start pointer): QA Batch-001 item 15 — source-summary mode.**
+Ken wants a DESIGN PROPOSAL first (not a build): a per-form "where did this
+number come from" summary view. Draft the proposal, present options with a
+recommendation, wait for his pick. After that: the item-6 residual (BLOCKED
+on two REVIEW_QUEUE questions — GA line-5 filing-status pull · GA
+deduction-election coupling to federal). Spine otherwise idle — Ken directs.
 
 ## ▶ Waiting on Ken / external
-1. **s113 ratifications (REVIEW_QUEUE):** D_GA500_002 spec realignment ·
-   the 2210 flat-7% correction (tax-law) · the 7206 partner arm scope.
-2. **Item-6 residual — BLOCKING questions:** pull GA line 5 filing status
-   from federal? · couple the GA deduction election to the federal election?
-3. **s112 ratification:** manifest-aware RS amendment (mechanism only).
-4. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
+1. **s114 ratifications (REVIEW_QUEUE):** the 8867 rebuild's three judgment
+   calls (merged-TRUE propagation · cascade line-8 Sch-C arm · D_8867_001
+   requires line 15 always).
+2. **s113 ratifications:** D_GA500_002 realignment · 2210 flat-7% (tax-law)
+   · 7206 partner-arm scope.
+3. **Item-6 residual — BLOCKING questions:** GA line 5 filing status from
+   federal? · couple the GA deduction election to the federal election?
+4. **s112 ratification:** manifest-aware RS amendment (mechanism only).
+5. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
    auth env vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments ·
    e-services · CAF · ERO EFIN/PIN · beta clauses · older ratifications
    (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Bands green this session:** flow **520** (2210 FA runners re-pinned) ·
-  2210 compute leg 22 · 7206 band 20 (spec-driven; SC-T9 auto-pinned) ·
-  ga500 diagnostics 15 · RIE pull band 28 · MeF scenario-12 23 · w2u3
-  diagnostics 9 · vitest **459** · tsc-renderer 52 baseline unchanged.
-- **seed_rules + mig 0213 applied + VERIFIED on BOTH DBs** (prod aws-1,
-  demo aws-0).
-- **RS side:** 3 amendments seeded to RS prod, deployed exports verified,
-  mirrors refreshed verbatim (500/7206/2210 spec.json). Harnesses ALL PASS
-  (ga500 18 · 7206 9 · 2210 10 scenarios).
-- ⚠ **Deploy verification for s113's server-only changes PENDING** (three
-  pushes `5f36876`/`7050f93`/`8b927d4`; client bundle DID change this time —
-  FormEditor K-1 rows — so the bundle-grep recipe works: grep the prod
-  bundle for `13M` in the K-1 box map, baseline zero-hit taken pre-push).
-- ⚠ **FA-1040-4835-06 drift:** the RS 1040 FA export carries a Form 4835
-  assertion the app gate never merged (no runner). Chip filed (task
-  `task_0cf10eac`); the 2210 FA entries were updated surgically instead of
-  a wholesale export refresh.
+- **Deploy:** `0f397da` VERIFIED live (bundle `index-D1UrTt8d.js` carries
+  the s114 FormEditor marker). ⚠ **`de31033` (IndividualNav Part VI fix)
+  verification PENDING** — grep the prod bundle for `f8867_part_vi_cert`:
+  count goes 1 → **2** when live (baseline 1 taken on `index-D1UrTt8d.js`).
+- **DB state:** mig 0214 + seed_8867 (21 lines/6 sections) + seed_rules
+  applied + verified on BOTH DBs (prod aws-1, demo aws-0). Pre/post
+  migration audits reconciled; the one manually-answered prod return's
+  overrides survived.
+- ⚠ **FA-1040-4835-06 drift** (chip `task_0cf10eac`, unchanged from s113).
+- ⚠ **Dev-environment nit:** an autoPort vite origin (e.g. :57351) is not
+  in CSRF_TRUSTED_ORIGINS — saves 403 from a coexistence-port dev client;
+  reads work. Add a localhost wildcard or list the range if it bites again.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
