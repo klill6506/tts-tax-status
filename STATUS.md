@@ -66,10 +66,10 @@ item 16 · GA residual (still BLOCKED on the two REVIEW_QUEUE questions) ·
    (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s117 push `73a9d50` building on Render at session close —
-  **VERIFY next session if not confirmed below**: grep the prod
-  `/assets/index-*.js` bundle for `it saves as soon as you enter a
-  description` (baseline 0 hits on `index-BZjYNARY.js`, taken pre-push).
+- **Deploy:** s117 push `73a9d50` **VERIFIED live in-session** — prod bundle
+  rolled `index-BZjYNARY.js` → `index-Bc1mC_ho.js`; marker `it saves as
+  soon as you enter a description` ×1 vs the 0-hit pre-push baseline.
+  Nothing pending.
 - **DB state:** unchanged from s116 (mig 0217 applied+audited BOTH DBs;
   seed_rules current). No migrations in s117.
 - **RS:** unchanged from s116 (4562 spec at `5e6ffa3`+`37f565d`).
