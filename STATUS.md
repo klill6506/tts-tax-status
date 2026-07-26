@@ -58,10 +58,10 @@ deduction-election coupling to federal). Spine otherwise idle — Ken directs.
    (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** `0f397da` VERIFIED live (bundle `index-D1UrTt8d.js` carries
-  the s114 FormEditor marker). ⚠ **`de31033` (IndividualNav Part VI fix)
-  verification PENDING** — grep the prod bundle for `f8867_part_vi_cert`:
-  count goes 1 → **2** when live (baseline 1 taken on `index-D1UrTt8d.js`).
+- **Deploy:** BOTH s114 pushes VERIFIED live in-session — `0f397da`
+  (`index-D1UrTt8d.js`, FormEditor marker) then `de31033`
+  (`index-BmvSszab.js`, `f8867_part_vi_cert` count 1→2 against the
+  pre-deploy baseline). Nothing pending.
 - **DB state:** mig 0214 + seed_8867 (21 lines/6 sections) + seed_rules
   applied + verified on BOTH DBs (prod aws-1, demo aws-0). Pre/post
   migration audits reconciled; the one manually-answered prod return's
