@@ -69,9 +69,9 @@ Every scratch record deleted; the return re-verified byte-identical
 
 **▶ NEXT (cold-start pointer): unchanged — the 8962 manifest+diagnostics
 leg** (backlog #12, ONE authoritative generated-form manifest driving Forms
-view, e-file packaging and diagnostics). The Codex/ChatGPT entry fleet can
-re-check Joe Bennett + the 1099-R returns once the deploy is verified (see
-Active gates).
+view, e-file packaging and diagnostics). The Codex/ChatGPT entry fleet is
+CLEARED to re-check Joe Bennett + the affected 1099-R returns — deploy
+verified live (see Active gates).
 
 ## ▶ Waiting on Ken / external
 1. **s111 ratifications (REVIEW_QUEUE):** GA deduction election coupled to
@@ -105,13 +105,14 @@ Active gates).
 - **Spec mirrors refreshed verbatim from deployed RS exports:**
   `schedule_e_spec.json` · `form_4562_spec.json` · `500_spec.json` (drift was
   authority-source/test text only; no rule changes).
-- ⚠ **DEPLOY VERIFICATION IN FLIGHT at close:** pushed `5422101`; the
-  zero-hit baseline on live bundle `index-D-t_Kwp7.js` was taken BEFORE the
-  push for three s111-only markers (`In care of (c/o)` ·
-  `Schedule E rentals (Line 18)` · `the return recalculates after deletion`).
-  **Verify: grep the new prod `/assets/index-*.js` for those markers** before
-  telling the entry fleet to re-check. Server side needs no deploy step
-  (migration applied directly; no seeders).
+- ✅ **s111 DEPLOY VERIFIED LIVE ON PROD** — bundle `index-D-t_Kwp7.js` →
+  **`index-COZ7Jazr.js`**, carrying all three s111-only markers
+  (`In care of (c/o)` · `Schedule E rentals (Line 18)` ·
+  `the return recalculates after deletion`), 1 hit each against the
+  zero-hit baseline taken BEFORE the push. Server side needed no deploy
+  step (migration 0212 applied directly to both DBs; no seeders changed).
+  **The deployed build is READY for the Codex entry fleet to re-check Joe
+  Bennett and the affected 1099-R returns.**
 - Follow-up chip filed: the 1099-G card still has the pre-s108
   POST-per-blur shape (task chip pending Ken's click).
 
