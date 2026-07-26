@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 114 (QA Batch-001 item 11 — the Form 8867
-per-question rebuild SHIPPED end-to-end).*
+*Last updated: 2026-07-26, session 115 (QA Batch-001 item 9 second half — the
+Form 8962 Part IV shared-policy allocation SHIPPED end-to-end; item 15 design
+proposal DRAFTED, awaiting Ken's pick).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -9,67 +10,76 @@ per-question rebuild SHIPPED end-to-end).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s113 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s114 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s114 (2026-07-26): QA Batch-001 item 11 — the Form 8867 PER-QUESTION
-REBUILD is COMPLETE** (Ken's GO from s113). App `0f397da` + `de31033`; RS
-`a0708a5`; mig returns.0214 + seed_8867 + seed_rules applied + VERIFIED on
-BOTH DBs. Full detail → STATUS_ARCHIVE s114. The one-paragraph version:
-the compressed 12-line model became the full Rev. 11-2024 face (21 lines,
-one per printed checkbox incl. 4a/4b/7a/8/9a-9c/11/12/14/15 + the line-5
-docs list); N/A exists exactly where the face prints an N/A box
-(2/7/7a/8/9c/11/12 — template widget dump == MeF XSD, verified
-independently); stored answers migrated per Ken's rule (merged-true →
-components, merged-false/na → BLANK for re-answer — never invent); the
-cascade follows the face's own routing (new arms: 8 = yes/na from Schedule-C
-presence; 15 = the certification); the e-file now transmits every
-previously-ABSENT sub-question element + WorkPaperDocumentNm, with the
-certification reading row 15 (side flag removed); the print fills all 20
-questions + docs + preparer name/PTIN; the client grid has the N/A pill on
-exactly the 7 NA lines + the new Part VI section. Live demo probe:
-attest → all applicable filled → un-attest → full revert.
+**s115 (2026-07-26): two deliverables.**
 
-**Gates green:** leg-C cascade 7 (3 new arms) · topic7 seed/render/
-diagnostics (new 4a/4b + na-where-boxed tests) · efile mef/extract/
-scenario2/print-gate/packet 63 · flow **520** · vitest 459 · tsc 52
-baseline · RS harness validate_8867_rebuild ALL GREEN.
+1. **QA Batch-001 item 15 — the design proposal Ken asked for is DRAFTED**
+   at `Design/item15_source_summary_proposal.md` (`2b4936e`): Option A =
+   per-record source-summary flag + reconciliation panel (the QA ask, ~1
+   session); Option B = per-form "where did this number come from" provenance
+   panel (2-3 sessions); **recommendation C = A first, B rides A's chrome**.
+   NO BUILD until Ken picks.
+2. **QA Batch-001 item 9 (second half) — Form 8962 Part IV SHIPPED** (app
+   `9e13f89`; RS `16a5bc4`; mig 0215+0216 on BOTH DBs; deploy VERIFIED live,
+   bundle `index-q3S2nCYI.js`, markers ×3/×1). The s75 "Parts IV/V unmodeled"
+   boundary is half-closed: the 1095-A is now entered AS RECEIVED and the app
+   multiplies by the allocation percentages (R-8962-PART4, the face's own
+   line-34 mechanic, whole-dollar per policy-month; blank pct = retain 100%);
+   ONE aggregation feeds compute + print + e-file; page-2 grid + line 9/10/34
+   checkboxes print; MeF SharedPolicyAllocationGrp transmits; 4 new
+   diagnostics (EMPTY error / OVERLAP error / BLANK_PCT warning / TOO_MANY
+   error) + the s106e annual trio spec-homed in RS; client grid on each
+   1095-A card behind the line-9 checkbox; live demo probe green (grid
+   reveal + row round-trip), demo DB restored. **Part V (marriage alt)
+   remains unmodeled** (flag-only, line 9 asserts it).
 
-**▶ NEXT (cold-start pointer): QA Batch-001 item 15 — source-summary mode.**
-Ken wants a DESIGN PROPOSAL first (not a build): a per-form "where did this
-number come from" summary view. Draft the proposal, present options with a
-recommendation, wait for his pick. After that: the item-6 residual (BLOCKED
-on two REVIEW_QUEUE questions — GA line-5 filing-status pull · GA
-deduction-election coupling to federal). Spine otherwise idle — Ken directs.
+**Gates green:** part4 leg 15 · 8962 family 44 · efile/scenario/packet sweep
+952 · acroform+mef 120 · flow **521** (new FA-1040-8962-07) · vitest 459 ·
+tsc 52 baseline · RS harness check_8962_integrity ALL PASS (7 scenarios).
+
+**▶ NEXT (cold-start pointer): Ken's pick on the item-15 proposal (A/B/C).**
+After that, the remaining Batch-001 opens: **P0 item 6 (the depreciation
+multi-book rebuild — BIG, needs Ken's design sign-off)** · item 16's
+Schedule-A→8283 guided workflow (its conversion-mode half depends on item
+15) · the item-6-P1 GA-sync residual (BLOCKED on the two REVIEW_QUEUE
+questions) · the 2210 reconciliation panel (deferred UI). Spine otherwise
+idle — Ken directs.
 
 ## ▶ Waiting on Ken / external
-1. **s114 ratifications (REVIEW_QUEUE):** the 8867 rebuild's three judgment
-   calls (merged-TRUE propagation · cascade line-8 Sch-C arm · D_8867_001
-   requires line 15 always).
-2. **s113 ratifications:** D_GA500_002 realignment · 2210 flat-7% (tax-law)
-   · 7206 partner-arm scope.
-3. **Item-6 residual — BLOCKING questions:** GA line 5 filing status from
+1. **s115: the item-15 proposal pick (A / B / C-recommended)** — see
+   `Design/item15_source_summary_proposal.md`.
+2. **s115 ratifications (REVIEW_QUEUE):** Part IV blank-pct = retain-100%
+   semantics · line 34 always-Yes + the 4-row cap · line 9 true on the
+   flag-only marriage-alt assertion.
+3. **s114 ratifications:** the 8867 rebuild's three judgment calls.
+4. **s113 ratifications:** D_GA500_002 realignment · 2210 flat-7% · 7206
+   partner-arm scope.
+5. **Item-6-P1 residual — BLOCKING questions:** GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-4. **s112 ratification:** manifest-aware RS amendment (mechanism only).
-5. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
+6. **s112 ratification:** manifest-aware RS amendment (mechanism only).
+7. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
    auth env vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments ·
    e-services · CAF · ERO EFIN/PIN · beta clauses · older ratifications
    (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** BOTH s114 pushes VERIFIED live in-session — `0f397da`
-  (`index-D1UrTt8d.js`, FormEditor marker) then `de31033`
-  (`index-BmvSszab.js`, `f8867_part_vi_cert` count 1→2 against the
-  pre-deploy baseline). Nothing pending.
-- **DB state:** mig 0214 + seed_8867 (21 lines/6 sections) + seed_rules
-  applied + verified on BOTH DBs (prod aws-1, demo aws-0). Pre/post
-  migration audits reconciled; the one manually-answered prod return's
-  overrides survived.
+- **Deploy:** s115 push `9e13f89` VERIFIED live in-session (bundle
+  `index-q3S2nCYI.js`; `form-8962-allocations` ×3 + the new line-9 label ×1).
+  Nothing pending.
+- **DB state:** mig 0215 (Form8962Allocation) + 0216 (RLS default-deny) +
+  seed_form_8962 (42 lines) + seed_rules applied + VERIFIED on BOTH DBs
+  (prod aws-1, demo aws-0). Prod audit: exactly ONE return carries
+  f8962_shared_allocation — it now fires D_8962_PART4_EMPTY for guided
+  re-entry (intended; the flag-only entry could never file Part IV).
+- **RS:** specs.0003 widened FormDiagnostic.diagnostic_id 20→40 (applied to
+  RS prod) — the app's canonical codes must live in the spec verbatim.
 - ⚠ **FA-1040-4835-06 drift** (chip `task_0cf10eac`, unchanged from s113).
-- ⚠ **Dev-environment nit:** an autoPort vite origin (e.g. :57351) is not
-  in CSRF_TRUSTED_ORIGINS — saves 403 from a coexistence-port dev client;
-  reads work. Add a localhost wildcard or list the range if it bites again.
+- ⚠ **Dev-environment nit:** an autoPort vite origin is not in
+  CSRF_TRUSTED_ORIGINS — saves 403 from a coexistence-port dev client;
+  reads work (bit again in s115's probe; worked around server-side).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.

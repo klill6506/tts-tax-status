@@ -1,5 +1,26 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-26 session 115 — FORM 8962 PART IV (shared-policy allocation)
+> SHIPPED — the s75 "Parts IV/V unmodeled" boundary HALF-CLOSED** (app
+> `9e13f89`; RS `16a5bc4`; mig 0215+0216 + seed_form_8962 42 lines +
+> seed_rules on BOTH DBs; deploy verified live `index-q3S2nCYI.js`). QA
+> Batch-001 item 9's open half. R-8962-PART4 rewritten to the face's own
+> line-34 mechanic (verbatim excerpt; widget dump + IRS8962.xsd agree): the
+> 1095-A is entered AS RECEIVED and `_aggregate_1095a` multiplies each
+> covered policy-month by the entered percentages (whole-dollar per
+> policy-month; blank pct = retain 100%) — ONE aggregation feeds compute,
+> print, AND e-file. New Form8962Allocation rows (FK 1095-A) drive line 9,
+> the printed 30a-33g grid + line 34 Yes, and the MeF
+> SharedPolicyAllocationGrp; lines 9/10 checkboxes now print (never filled
+> before). 4 new diagnostics (PART4 EMPTY/OVERLAP/TOO_MANY errors +
+> BLANK_PCT warning); the s106e annual trio spec-homed in RS. Gates: part4
+> leg 15 · 8962 family 44 · efile sweep 952 · flow **521**
+> (FA-1040-8962-07) · vitest 459 · tsc 52 baseline · RS harness ALL PASS
+> (7 scenarios incl. T7: 1%-retained → 13/11/11 → repay 132). Live demo
+> probe: grid reveal + row round-trip; demo DB restored. **Part V (marriage
+> alt) stays flag-only** (DEFERRAL_AUDIT s115; REVIEW_QUEUE recommends
+> RED-gating the flag until built).
+
 > **2026-07-25 session 109b — THE TWO 8879 FOLLOW-UPS KEN ORDERED: `D_8879_NEED`
 > DROPPED TO INFO (spec-led) + ONE DATE-ENTRY CONTRACT.** No migrations.
 > **(1) THE SPEC CHANGE STARTED AT RULE STUDIO, which owns this field** — loader
