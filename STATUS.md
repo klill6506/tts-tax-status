@@ -1,9 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-25, session 112 (backlog #12 — the generated-form
-manifest: Sch 1/2/3 attachment warnings now consult what the packet actually
-contains; false "attach the manually prepared form" warnings on Schedule C /
-SE / 8880 / 8962 / 5329 / de-minimis-1116 returns are gone).*
+*Last updated: 2026-07-26, session 113 boot (s112 deploy VERIFIED live on
+prod — the generated-form manifest is serving; the false Sch 1/2/3
+"attach the manually prepared form" warnings are gone on a real
+previously-affected return).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -51,13 +51,16 @@ change.
 
 **▶ NEXT (cold-start pointer): idle — Ken directs.** Backlog #12 was the
 last queued unit; remaining prioritized-fix items and the P1 audit queue
-need Ken's order. ⚠ **One verification pending:** the server deploy of
-`a84afb7` (Render auto-deploys on push; client bundle hash will NOT change
-— server-only). Verify by re-running diagnostics on a prod return that
-previously carried the false warnings (e.g. the Batch-001 8962/5329/1116
-retiree returns): the false hits disappear and any real finding uses the
-new message "…required attachment is not in this return's packet…". The
-Codex entry fleet's re-checks will exercise exactly this.
+need Ken's order. ✅ **s112 deploy VERIFIED live (2026-07-26 02:18 UTC,
+s113 boot):** prod probe — magic-link token minted locally for the `dev`
+probe account (shared DB), redeemed against `prep.delviotax.com`, then
+`POST /api/v1/diagnostic-runs/run/` on return **1019** TY2025 (its
+07-24 pre-deploy run carried D_SCH2_004 + D_SCH3_003 from the old static
+lists; data unchanged — old code would have re-fired them). Post-deploy
+run `8485d5b5…`: **zero Sch 1/2/3 attachment findings**; the 4 remaining
+findings are all legitimate (D_GA500_008/001 info · D_2210_NO_PENALTY
+info · D_8962_REPAYMENT warning — an 8962-generated return, exactly the
+formerly-false class). Session logged out; token single-use-consumed.
 
 ## ▶ Waiting on Ken / external
 1. **s112 ratification (REVIEW_QUEUE):** the manifest-aware RS amendment
@@ -85,8 +88,8 @@ Codex entry fleet's re-checks will exercise exactly this.
   the amended names). No FormDef reseeds; no migration.
 - **RS side:** `check_sch123_integrity` ALL PASS · seeded to RS prod ·
   deployed export verified · mirrors refreshed verbatim (`a5a1a13`).
-- ⚠ **Server deploy verification PENDING** (see the NEXT pointer — the
-  bundle-grep recipe does not apply to a server-only change).
+- ✅ **Server deploy VERIFIED** (see the NEXT pointer — prod diagnostic
+  run on return 1019, false attachment warnings gone).
 - Follow-up chips: the 1099-G POST-per-blur card (s111) still pending
   Ken's click.
 
