@@ -1,3 +1,44 @@
+## 2026-07-26 - FORM_4562 destination routing + per-asset rounding + reconciliation (QA Batch-001 item 6 Leg 1, delvio s116) - SEEDED + export-verified
+- NEW standalone amendment loader load_4562_destination_rounding.py (the load_4562_section179_carryover
+  precedent - the owning loader is the sprawling multi-form load_remaining_1120s). RS 5e6ffa3 + 37f565d.
+- R016 "Depreciation by destination (1040)" - companion to the S-Corp R013: every 1040 asset requires a
+  SPECIFIC activity link (Sch C L13 / Sch E L18 / Sch F L14); a destination foreign to the return's form
+  is UNROUTABLE (the delvio [client] defect: the entity sched_f arm on a 1040 wrote nonexistent "F14",
+  swallowed silently). Authority: the Part IV line 22 face text quoted VERBATIM from the local
+  SHA-tracked f4562.pdf template ("Enter here and on the appropriate lines of your return").
+- R017 per-asset whole-dollar rounding - recorded HONESTLY as a Ken-ratified HOUSE CONVENTION
+  (2026-07-26, in-session), NOT as quoted IRS text: the IRS publishes no per-asset directive (the i1040
+  sum-then-round note flagged as the genuine ambiguity per the Authoritative-Source Rule); the face's
+  col-(g)/destination lines are whole-dollar and TaxWise rounds per asset ([client] 4,068 vs 4,069.03).
+- Diagnostics D_4562_DEST + D_4562_RECON under the app's CANONICAL codes (specs.0003 40-char rule);
+  D_4562_DEST severity EFFECT-SCALED (error when dollars move / warning for $0 legacy inventory - the
+  refinement reseeded same-session so a 39-asset fully-depreciated import can't brick a return).
+- Facts flow_destination + activity_reference; 4 scenarios incl. the constructed rounding pin
+  (266.49+1002.44+750.10+500+300+749+501: cent-sum 4,069.03 vs per-asset 4,068); FA-4562-DEST-01/
+  ROUND-01 staged. Seeded to RS prod; deployed export verified (17 rules / 16 diagnostics / 27 facts /
+  32 scenarios); delvio mirror form_4562_spec.json refreshed verbatim. App leg: delvio 3dfb977 (mig
+  0217 BOTH DBs; [client] prod recompute exact; deploy verified index-BZjYNARY.js).
+
+## 2026-07-26 - FORM_8962 Part IV shared-policy allocation modeled per-row (QA Batch-001 item 9, delvio s115) - SEEDED + export-verified
+- Amended IN THE OWNING LOADER (load_1040_form_8962.py, RS 16a5bc4). R-8962-PART4 rewritten from a
+  one-line placeholder to the 2025 face's own line-34 mechanic, quoted VERBATIM under NEW source
+  IRS_2025_F8962_FORM (the 8867/2210 faithful-text lesson applied from the start): the 1095-A is
+  entered AS RECEIVED; allocation rows (per policy: SSN / start-stop months / e-f-g percentages as
+  2-decimal ratios) multiply each covered policy-month, whole-dollar rounded; BLANK pct = retain
+  100% (IRS8962.xsd makes each pct optional — blank is schema-valid; 0.00 = keep none); line 9 /
+  line 34 / the MeF SharedPolicyAllocationGrp derive from the ROW SET (the flag is only the UI
+  reveal). V1 boundaries: one row per policy-month (Pub 974 3+-family RED-defers), max 4 rows.
+- Lines 31/32/33/34 added; 4 new Part IV diagnostics (EMPTY/OVERLAP/TOO_MANY errors + BLANK_PCT
+  warning) + the s106e APP-ONLY annual trio (ANNUAL_INCOMPLETE/CONFLICT/UNSUPPORTED) spec-homed
+  (the s113 divergence class); scenario 8962-T7 (1%-retained -> 13/11/11 -> repay 132 -> Sch 2 1a,
+  the QA acceptance with synthetic identifiers); FA-1040-8962-07.
+- specs.0003: FormDiagnostic.diagnostic_id WIDENED 20 -> 40 and migrated onto RS prod — the app's
+  canonical diagnostic codes run past 20 chars (D_8962_ANNUAL_INCOMPLETE = 24) and the spec must
+  carry them VERBATIM, never truncated aliases. check_8962_integrity extended with an independent
+  monthly+allocation recompute; ALL CHECKS PASS (7 scenarios). Seeded to RS prod; deployed export
+  verified (13 diagnostics / 42 lines / 7 scenarios); tts mirror form_8962_spec.json refreshed
+  verbatim. App leg: delvio 9e13f89 (mig 0215+0216 BOTH DBs; deploy verified live).
+
 ## 2026-07-26 - 8867 PER-QUESTION REBUILD to the Rev. 11-2024 face (QA Batch-001 item 11, tts s114) - SEEDED + export-verified
 - Amended IN THE OWNING LOADER (load_1040_eic.py, RS a0708a5). The compressed 12-line boolean model
   (merged 4/9/10 rows, face 7a stored under line key "8", no face-8 Schedule-C question, no line 15)
