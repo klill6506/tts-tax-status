@@ -1,9 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 113 boot (s112 deploy VERIFIED live on
-prod — the generated-form manifest is serving; the false Sch 1/2/3
-"attach the manually prepared form" warnings are gone on a real
-previously-affected return).*
+*Last updated: 2026-07-26, session 113 (QA Batch-001 finishing run: items 7, 8,
+10 shipped; item 3 verified already-built; s112 deploy verified live on prod).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,87 +9,80 @@ previously-affected return).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s111 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s112 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s112 (2026-07-25): QA backlog #12 SHIPPED — ONE generated-form manifest
-now drives the Sch 1/2/3 attachment diagnostics.** App commit `a84afb7`
-(pushed `5cf9cc6..a84afb7`); RS commit `a5a1a13`. No migration; no client
-change.
+**s113 (2026-07-26): Ken ordered the REMAINING QA Batch-001 items run to
+completion.** Shipped this session (each RS-first, committed + pushed):
 
-1. **RS went first (the s109b pipeline):** R-S1-10 / R-S2-09 / R-S3-07 and
-   D_SCH1_004 / D_SCH2_004 / D_SCH3_003 amended in the owning loader
-   (`load_1040_sch123.py`) — mechanism only, line lists and severities
-   untouched (the rules' own titles said "warn until their topics build";
-   the topics built). Harness ALL PASS → seeded RS prod → deployed export
-   verified carrying all six amendments → `server/specs/sch_{1,2,3}_spec.json`
-   refreshed verbatim. NEW `exceptions` on R-S3-07: §904(j) de minimis files
-   NO Form 1116 and never warns.
-2. **NEW `apps/tts_forms/form_manifest.py`:** the manifest answers "is form
-   X in this return's packet?" by calling the SAME 19 render callables
-   `render_complete_return` stages (bytes-or-None IS the truth) — so the
-   manifest, the printed packet, and the Forms sidebar can never disagree;
-   there is NO second copy of any engagement gate. It also owns the
-   Sch 1/2/3 line → required-form maps (moved out of rules_sch123) and the
-   two spec-cited legal exceptions (§904(j); the R-5329-03 direct-report
-   shortcut — Sch 2 line 8 with no Form 5329 when no owner must file).
-3. **rules_sch123 rewired:** warn only on a GENUINE omission — amount
-   present AND required form absent from the manifest AND no exception.
-   Hand-keyed amounts with no source data STILL warn (that omission is
-   real). Static SCH{1,2,3}_ATTACHMENT_LINES maps removed. Catalogue
-   names/descriptions re-seeded and VERIFIED on BOTH DBs.
-4. **The backlog's acceptance test is a real test:** for every nonzero
-   Sch 1/2/3 attachment-backed line, `test_form_manifest.py` compares the
-   required set against the FINAL rendered packet and asserts diagnostics
-   report only genuine omissions; plus manifest↔packet parity BOTH
-   directions per registry form, and e-file extract parity pins (5329 both
-   sides, 8880). QA-reported conflicts covered: D_SCH3_003 vs D_1116_001
-   (de minimis) and D_SCH2_004 vs a generated 5329.
+1. **s112 deploy VERIFIED live** (prod probe: diagnostic run on return 1019 —
+   the false Sch 1/2/3 warnings gone; probe recipe → `.claude` auto-memory).
+2. **Item 7 (GA RIE) CLOSED** (`5f36876`; RS `b2318a8`): the s108 pull was
+   already 90% of it — what was missing was the two spec diagnostics.
+   D_GA500_002 realigned to the spec (DOB-required ERROR; the app had shipped
+   different semantics under that ID), old body re-homed as NEW D_GA500_016,
+   NEW D_GA500_017 warns when alimony/cap-gains/other/Sch-E-rental exist
+   federally but the RIE worksheet lines 8/9/10/13 are blank (the categories
+   the pull can't attribute per spouse). seed_rules BOTH DBs, verified.
+3. **Item 3 (autosave) — ALREADY BUILT** in s108d `e3c7168` (validation
+   isolation + latest-write-wins + honest status, test-pinned). No work needed.
+4. **Item 8 (7206 partner arm) SHIPPED** (`7050f93`; RS `6761b65`; mig 0213
+   BOTH DBs): ScheduleK1 gains sehi_amount (13M) + se_retirement_amount (13R);
+   the K-1 activity runs the SAME 7206 lines 4-10 on box 14A; line 5 pools
+   POSITIVE Sch C + K-1 profits only (2025 face verbatim — losses excluded);
+   K-1 SE retirement → Sch 1 L16; form_7206_rows mirrors for MeF parity;
+   client K-1 card gains the two rows. QA acceptance pinned (Sch C loss
+   −1,838 + K-1 2,602 + premiums 764 → L15 54 · L17 764).
+5. **Item 10 (2210 rates) SHIPPED** (`8b927d4`; RS `744ba30`): ChatGPT was
+   RIGHT — verified against the published 2025 i2210 Penalty Worksheet
+   (fetched live): × 0.07 in ALL FOUR rate periods; Rate Period 4 =
+   1/1-4/15/2026 as ONE 7% period. The 6% Q2 stub was a pre-publication
+   assumption UNDERSTATING penalties (the $1-3 TaxWise deltas; return
+   ...4331: 188 vs 189). Pins moved 461→466 · 143→145 · 217→219 · 369→372.
+   The RS authority "excerpt" that had paraphrased the assumption as i2210
+   text is now faithful worksheet text.
 
-**▶ NEXT (cold-start pointer): idle — Ken directs.** Backlog #12 was the
-last queued unit; remaining prioritized-fix items and the P1 audit queue
-need Ken's order. ✅ **s112 deploy VERIFIED live (2026-07-26 02:18 UTC,
-s113 boot):** prod probe — magic-link token minted locally for the `dev`
-probe account (shared DB), redeemed against `prep.delviotax.com`, then
-`POST /api/v1/diagnostic-runs/run/` on return **1019** TY2025 (its
-07-24 pre-deploy run carried D_SCH2_004 + D_SCH3_003 from the old static
-lists; data unchanged — old code would have re-fired them). Post-deploy
-run `8485d5b5…`: **zero Sch 1/2/3 attachment findings**; the 4 remaining
-findings are all legitimate (D_GA500_008/001 info · D_2210_NO_PENALTY
-info · D_8962_REPAYMENT warning — an 8962-generated return, exactly the
-formerly-false class). Session logged out; token single-use-consumed.
+**▶ NEXT (cold-start pointer): QA Batch-001 item 11 — the Form 8867 rebuild.**
+Survey COMPLETE (in the session task list + STATUS_ARCHIVE s113): official
+Rev. 11-2024 face (still current) = 21 per-question lines incl. 4a/4b/7a/
+9a-c/10-12/14/15 with Yes/No/N-A columns; app + RS spec both carry the
+compressed 5-merged-line boolean model. Plan: RS re-model first (choice
+facts), seed re-key + data migration (merged "true"→component "yes"; merged
+"false"→BLANK so D_8867_001 forces re-answer — never invent an answer),
+attestation cascade, render map, e-file check, client grid. After 11:
+item 15 (source-summary mode — needs a design proposal for Ken) and the
+item-6 residual (two REVIEW_QUEUE questions BLOCK it — see below).
 
 ## ▶ Waiting on Ken / external
-1. **s112 ratification (REVIEW_QUEUE):** the manifest-aware RS amendment
-   of R-S1-10/R-S2-09/R-S3-07 (mechanism only).
-2. **s111 ratifications (REVIEW_QUEUE):** GA deduction election coupled to
-   the federal election · pull GA line 5 filing status from federal? ·
-   1099-INT "Seller-financed" currency cell sits over a Boolean field.
-3. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective.
-4. **S-24 hub-ein blanking leg** (s97, unblocked) — awaiting explicit go.
-5. Auth env vars (s94) · A2A WSDL · WISP (s96) · SEC-5 [EXT] · Resend (s83) ·
-   role assignments (s84) · e-services reply · CAF (s69) · ERO EFIN/PIN (s94) ·
-   beta clauses (s96).
-6. **Ratifications pending:** s110 (tri-state gates · QM PIN warning) · s106 ·
-   s101 (4) · s100 (3) · s99a · s97 · s96 (4) · s95 · s94 · s93 · s89 ·
-   s85/s84 · s83 · s76..s72.
+1. **s113 ratifications (REVIEW_QUEUE):** D_GA500_002 spec realignment ·
+   the 2210 flat-7% correction (tax-law) · the 7206 partner arm scope.
+2. **Item-6 residual — BLOCKING questions:** pull GA line 5 filing status
+   from federal? · couple the GA deduction election to the federal election?
+3. **s112 ratification:** manifest-aware RS amendment (mechanism only).
+4. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
+   auth env vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments ·
+   e-services · CAF · ERO EFIN/PIN · beta clauses · older ratifications
+   (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **NEW `tests/test_form_manifest.py` 10** (registry trip-wires ·
-  manifest↔packet parity · the only-genuine-omissions acceptance sweep ·
-  §904(j) + R-5329-03 exception scenarios · e-file extract parity pins).
-- **Bands re-run this session:** `test_1040_sch123_diagnostics` 41 ·
-  **flow assertions 520** — all green. No client change (no vitest/tsc
-  delta; s111 baselines stand: vitest 459 · tsc-renderer 52 pre-existing).
-- **`seed_rules` re-run + verified on BOTH DBs** (the catalogue rows carry
-  the amended names). No FormDef reseeds; no migration.
-- **RS side:** `check_sch123_integrity` ALL PASS · seeded to RS prod ·
-  deployed export verified · mirrors refreshed verbatim (`a5a1a13`).
-- ✅ **Server deploy VERIFIED** (see the NEXT pointer — prod diagnostic
-  run on return 1019, false attachment warnings gone).
-- Follow-up chips: the 1099-G POST-per-blur card (s111) still pending
-  Ken's click.
+- **Bands green this session:** flow **520** (2210 FA runners re-pinned) ·
+  2210 compute leg 22 · 7206 band 20 (spec-driven; SC-T9 auto-pinned) ·
+  ga500 diagnostics 15 · RIE pull band 28 · MeF scenario-12 23 · w2u3
+  diagnostics 9 · vitest **459** · tsc-renderer 52 baseline unchanged.
+- **seed_rules + mig 0213 applied + VERIFIED on BOTH DBs** (prod aws-1,
+  demo aws-0).
+- **RS side:** 3 amendments seeded to RS prod, deployed exports verified,
+  mirrors refreshed verbatim (500/7206/2210 spec.json). Harnesses ALL PASS
+  (ga500 18 · 7206 9 · 2210 10 scenarios).
+- ⚠ **Deploy verification for s113's server-only changes PENDING** (three
+  pushes `5f36876`/`7050f93`/`8b927d4`; client bundle DID change this time —
+  FormEditor K-1 rows — so the bundle-grep recipe works: grep the prod
+  bundle for `13M` in the K-1 box map, baseline zero-hit taken pre-push).
+- ⚠ **FA-1040-4835-06 drift:** the RS 1040 FA export carries a Form 4835
+  assertion the app gate never merged (no runner). Chip filed (task
+  `task_0cf10eac`); the 2210 FA entries were updated surgically instead of
+  a wholesale export refresh.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.

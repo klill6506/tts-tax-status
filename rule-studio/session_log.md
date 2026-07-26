@@ -1,3 +1,46 @@
+## 2026-07-26 - FORM_2210 rate correction: FLAT 7% to 4/15/2026 (QA Batch-001 item 10, tts s113) - SEEDED + export-verified
+- TAX-LAW CORRECTION, verified against the OFFICIAL 2025 Instructions for Form 2210 Penalty
+  Worksheet (fetched live from irs.gov): x 0.07 in ALL FOUR rate periods - Rate Period 4 is
+  "January 1, 2026-April 15, 2026" as ONE 7% period; Table 2 total days 365/304/212/90.
+  The spec's prior "7% through 3/31/2026, 6% for 4/1-4/15/2026" was an assumption made
+  before the worksheet published (the Q2-2026 §6621 ruling postdated the June build), and
+  its authority "excerpt" had PARAPHRASED that assumption as if it were i2210 text - the
+  excerpt is now faithful to the actual worksheet. Penalties were UNDERSTATED by 15 days x
+  1% - the QA Batch-001 $1-3 TaxWise deltas (Almond Barbara: Delvio 188 vs TaxWise 189).
+- Constants RATE_6 -> 0.07 (machinery retained for a real straddle year), DAYS -> [365,304,
+  212,90], R7_END = CAP; scenario pins P-T3 461->466, P-T6 143->145, P-T7 217->219 (P-T8
+  unchanged); FA-1040-2210-02/07 text re-pinned; D_2210_TY2026 message now points at the
+  published-worksheet re-pin rule. check_2210_integrity independent constants updated to
+  the verified values; ALL CHECKS PASS. Seeded to prod; export verified (466/145/219).
+
+## 2026-07-26 - FORM_7206 partner-arm amendment (QA Batch-001 item 8, tts s113) - SEEDED + export-verified
+- R-7206-SCHEDC amended IN THE OWNING LOADER (load_1040_form_7206.py): title/formula/description now
+  name the partner source VERBATIM from the 2025 face - line 5 lists "Schedule K-1 (Form 1065), box 14,
+  code A" alongside Sch C 31 / Sch F 34, and "Don't include any net losses shown on these schedules";
+  i7206 eligibility bullet quoted in the description. The partner path runs the SAME lines 4-10 - no
+  new rule, no fact changes, no formula-semantics change for existing scenarios (T1-T8 unchanged).
+- NEW scenario SC-T9 (QA Batch-001 item 8 acceptance): K-1 box 14A 2,602 activity w/ premiums 764,
+  sibling Sch C LOSS excluded from line 5 -> line 7 = 54, line 10 = 2,548, line 14 = 764.
+- Harness check_form_7206_integrity ALL PASS (9 scenarios, dynamic re-derivation); seeded to RS prod;
+  deployed export verified carrying the amendment; tts mirror 7206_spec.json refreshed verbatim
+  (also picked up an earlier authority-excerpt-only drift the cache had missed).
+
+## 2026-07-26 - GA500 D_GA500_016/017 additions (QA Batch-001 item 7, tts s113) - SEEDED + export-verified
+- Amended IN THE OWNING LOADER (load_ga500_form_500.py, update_or_create-safe). Mechanism additions
+  only - no tax-law element changes; not a CHANGE_REGISTER item.
+- WHY: (a) the app's D_GA500_002 had DIVERGED from this spec - the spec defines 002 as the
+  DOB-required ERROR; the app shipped "elected but $0 excluded" (warning) under that ID. The
+  app realigns to the spec in tts s113; the elected-but-$0 semantics get a legitimate home as
+  NEW D_GA500_016. (b) NEW D_GA500_017 is the no-silent-gap companion to the tts s108
+  federal->RIE pull: alimony / capital gains / other income / Sch E page-1 rental have no
+  per-owner source in the tts data model, so they are never auto-pulled into the RIE base -
+  017 warns when a RIE-qualified person exists, those federal amounts exist, and worksheet
+  lines 8/9/10/13 are blank for both spouses (the views.py comment promised a D_GA500_RIE_SRC
+  diagnostic that was never built; 017 is it).
+- Harness check_ga500_integrity ALL PASS (18 scenarios); loader re-run against RS prod
+  (17 diagnostics); deployed export verified carrying 016+017; tts mirror 500_spec.json
+  refreshed verbatim.
+
 ## 2026-07-25 - R-S1-10 / R-S2-09 / R-S3-07 manifest-aware amendment (QA backlog #12, tts s112) - SEEDED + tts leg SHIPPED
 - Amended IN THE OWNING LOADER (load_1040_sch123.py, in-place re-run safe). **No tax-law element
   changes** - the line lists and severities are untouched; this is a MECHANISM amendment (the
