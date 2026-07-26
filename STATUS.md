@@ -43,16 +43,31 @@ completion.** Shipped this session (each RS-first, committed + pushed):
    The RS authority "excerpt" that had paraphrased the assumption as i2210
    text is now faithful worksheet text.
 
-**▶ NEXT (cold-start pointer): QA Batch-001 item 11 — the Form 8867 rebuild.**
-Survey COMPLETE (in the session task list + STATUS_ARCHIVE s113): official
-Rev. 11-2024 face (still current) = 21 per-question lines incl. 4a/4b/7a/
-9a-c/10-12/14/15 with Yes/No/N-A columns; app + RS spec both carry the
-compressed 5-merged-line boolean model. Plan: RS re-model first (choice
-facts), seed re-key + data migration (merged "true"→component "yes"; merged
-"false"→BLANK so D_8867_001 forces re-answer — never invent an answer),
-attestation cascade, render map, e-file check, client grid. After 11:
-item 15 (source-summary mode — needs a design proposal for Ken) and the
-item-6 residual (two REVIEW_QUEUE questions BLOCK it — see below).
+**▶ NEXT (cold-start pointer): QA Batch-001 item 11 — the Form 8867 rebuild
+(Ken GO 2026-07-26: "you can do it now").** Survey COMPLETE (task list +
+STATUS_ARCHIVE s113): official Rev. 11-2024 face (still current per irs.gov,
+fetched s113) = per-question lines 1/2/3/4/4a/4b/5(+docs list)/6/7/7a/8/
+9a/9b/9c/10/11/12/13/14/15 with Yes/No/N-A columns (Parts I-III); app + RS
+spec both carry the compressed 12-line boolean model (merged 4·7·9·10·"hoh";
+no face-8, no 15 row). Plan: RS re-model first (per-question choice facts
+yes/no/na), seed re-key + DATA MIGRATION (merged "true"→component "yes";
+merged "false"→BLANK so D_8867_001 forces re-answer — never invent an
+answer), attestation cascade in compute.py, render field map, e-file, client
+grid (visible after attestation). **E-file facts found post-close (verify,
+then reuse):** `efile/composition/mappers/y2025/builder.py` ~1355-1430 —
+`_F8867_BOOL_ELEMENTS` / `_F8867_CODE_ELEMENTS` / `build_irs8867`; the
+UNMAPPED sub-questions (4a/4b/9b/9c/11/12/face-8) are transmitted ABSENT
+today (schema-valid, minOccurs=0 — the compliance gap, not a rejection);
+lines 2/7/8 ALREADY flow "na"→N/A via the code elements, so some N/A
+plumbing exists to extend; internal "hoh" = face line 14; the spec's "Q8"
+row = face 7a; line 15 certification rides `src.certified` (the single
+attestation). Print map: `tts_forms/field_maps/f8867_2025.py`. ATS
+scenario2 attaches IRS8867 — re-run its band after. Ken's framing to honor:
+a BLANK on a filed 8867 reads as "the question wasn't asked" (§6695(g),
+~$600/credit/return) — the rebuild exists so no filed answer is ever blank
+merely because our model couldn't store it. After 11: item 15
+(source-summary mode — needs a design proposal for Ken) and the item-6
+residual (two REVIEW_QUEUE questions BLOCK it — see below).
 
 ## ▶ Waiting on Ken / external
 1. **s113 ratifications (REVIEW_QUEUE):** D_GA500_002 spec realignment ·
