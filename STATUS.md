@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-25, session 111 (the ChatGPT back-entry QA batch — six
-defects, all shipped: Sch E depreciation flow · clean 1099-R drafts · durable
-field clears · GA-500 12a pull · in-app delete confirm · care-of address line).*
+*Last updated: 2026-07-25, session 112 (backlog #12 — the generated-form
+manifest: Sch 1/2/3 attachment warnings now consult what the packet actually
+contains; false "attach the manually prepared form" warnings on Schedule C /
+SE / 8880 / 8962 / 5329 / de-minimis-1116 returns are gone).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,111 +11,84 @@ field clears · GA-500 12a pull · in-app delete confirm · care-of address line
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s110 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s111 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s111 (2026-07-25, Ken-relayed ChatGPT/Codex QA batch): ALL SIX DEFECTS
-SHIPPED.** Commits `6c014e6` (items 1-3) + `5422101` (items 4-6), pushed
-`9186d03..5422101`. Migration `returns.0212` (additive `Taxpayer.in_care_of`,
-BOTH DBs). **Audit-before-accepting held again (the s108 lesson):**
+**s112 (2026-07-25): QA backlog #12 SHIPPED — ONE generated-form manifest
+now drives the Sch 1/2/3 attachment diagnostics.** App commit `a84afb7`
+(pushed `5cf9cc6..a84afb7`); RS commit `a5a1a13`. No migration; no client
+change.
 
-1. **Sch E depreciation (item 1): THE ENGINE PATH ALREADY EXISTED AND WAS
-   RIGHT** — `flow_to="8825"` + the `rental_property` FK feeds Sch E line 18
-   on a 1040, exactly as RS `R-SCHE-NET` specs ("depreciation rides the
-   existing rental_property_id linkage retargeted for the 1040"). What
-   shipped: the worksheet now speaks Schedule E on a 1040 (labels, group
-   headers, flow option — same stored value, NO migration), the Sch E line-18
-   input gets the read-only "Calculated" guard the entity editor had, the
-   exact QA regression is pinned (187,365 building, PIS 2023-01 → 6,813 →
-   net 5,187 → Sch 1 line 5), and a REAL stale-flow bug was fixed: deleting
-   or repointing an asset now pulls its depreciation back OUT of the old
-   target (aggregate_depreciation early-returns on zero assets, so the old
-   amount survived forever).
-2. **1099-R inheritance (item 2): a DOM-identity bug, not a data bug** — the
-   draft card's constant React key + uncontrolled inputs meant "+ Add" was
-   reconciled as the SAME element; the new card showed the old row's values.
-   Fix = a `draftSeq` generation in the key (remount once per NEW draft,
-   never mid-entry). Schedule D's draft row had the identical latent defect.
-3. **Clearing reverts (item 3): two real mechanisms** — payer enrichment
-   re-ran on every EIN blur and refilled just-cleared blanks (now only on an
-   EIN *change*); and the shared 1099-INT/DIV grids sent `v || null`, which
-   400s on the blank=True-but-NOT-nullable text columns and non-null money
-   → the row silently kept its old value. Text now clears to "", nullable
-   money to null, non-null money to "0" (`SlimColumn.clearValue`).
-4. **GA-500 12a (item 4): the RIE class again** — the election logic was
-   right; 12a was never fed. New override-respecting pull writes 12a =
-   federal Sch A 17 exactly when the federal return itemized (NEW
-   `compute_schedule_a.federal_itemized_used()`), and back to blank when it
-   stops. compute_ga500 also blanks the UN-taken 11/12c line. QA regression
-   exact: Sch A 60,860 / MFJ → 12a/12c 60,860, GA taxable (60,860).
-5. **Asset delete (item 5):** NEW `ConfirmDialog.tsx` replaces the native
-   `confirm()` (busy guard = one DELETE per confirm; Escape; focus contract).
-   27 other native confirm sites inventoried, deliberately not bulk-converted.
-6. **Care-of line (item 6):** NEW `Taxpayer.in_care_of` threaded through
-   serializer → proforma → taxpayer screen → 1040/GA/AL/NC/SC faces (ONE
-   shared `compose_care_of_street()` — the faces have no c/o field, so it
-   composes "% NAME street" at render time; stored street never modified) →
-   MeF `InCareOfNm`, where an entered name also satisfies the
-   personal-representative case non-MFJ decedent returns used to refuse on.
+1. **RS went first (the s109b pipeline):** R-S1-10 / R-S2-09 / R-S3-07 and
+   D_SCH1_004 / D_SCH2_004 / D_SCH3_003 amended in the owning loader
+   (`load_1040_sch123.py`) — mechanism only, line lists and severities
+   untouched (the rules' own titles said "warn until their topics build";
+   the topics built). Harness ALL PASS → seeded RS prod → deployed export
+   verified carrying all six amendments → `server/specs/sch_{1,2,3}_spec.json`
+   refreshed verbatim. NEW `exceptions` on R-S3-07: §904(j) de minimis files
+   NO Form 1116 and never warns.
+2. **NEW `apps/tts_forms/form_manifest.py`:** the manifest answers "is form
+   X in this return's packet?" by calling the SAME 19 render callables
+   `render_complete_return` stages (bytes-or-None IS the truth) — so the
+   manifest, the printed packet, and the Forms sidebar can never disagree;
+   there is NO second copy of any engagement gate. It also owns the
+   Sch 1/2/3 line → required-form maps (moved out of rules_sch123) and the
+   two spec-cited legal exceptions (§904(j); the R-5329-03 direct-report
+   shortcut — Sch 2 line 8 with no Form 5329 when no owner must file).
+3. **rules_sch123 rewired:** warn only on a GENUINE omission — amount
+   present AND required form absent from the manifest AND no exception.
+   Hand-keyed amounts with no source data STILL warn (that omission is
+   real). Static SCH{1,2,3}_ATTACHMENT_LINES maps removed. Catalogue
+   names/descriptions re-seeded and VERIFIED on BOTH DBs.
+4. **The backlog's acceptance test is a real test:** for every nonzero
+   Sch 1/2/3 attachment-backed line, `test_form_manifest.py` compares the
+   required set against the FINAL rendered packet and asserts diagnostics
+   report only genuine omissions; plus manifest↔packet parity BOTH
+   directions per registry form, and e-file extract parity pins (5329 both
+   sides, 8880). QA-reported conflicts covered: D_SCH3_003 vs D_1116_001
+   (de minimis) and D_SCH2_004 vs a generated 5329.
 
-**LIVE-VERIFIED ON THE DEMO PROJECT** (production never touched): the full
-Sch E regression on John & Judy Jones (asset → 6,813 on-screen line 18
-read-only "Calculated" → net 5,187 → Sch 1 line 5 → AGI 35,492→40,679, then
-delete-confirm via the new dialog → depreciation pulled back to 0) · a
-scripted rapid-entry 1099-R landed on ONE record and the second card opened
-fully blank · care-of set → survived a hard reload → cleared → DB blank.
-Every scratch record deleted; the return re-verified byte-identical
-(AGI 35,492, zero rentals/assets/1099-Rs).
-
-**▶ NEXT (cold-start pointer): unchanged — the 8962 manifest+diagnostics
-leg** (backlog #12, ONE authoritative generated-form manifest driving Forms
-view, e-file packaging and diagnostics). The Codex/ChatGPT entry fleet is
-CLEARED to re-check Joe Bennett + the affected 1099-R returns — deploy
-verified live (see Active gates).
+**▶ NEXT (cold-start pointer): idle — Ken directs.** Backlog #12 was the
+last queued unit; remaining prioritized-fix items and the P1 audit queue
+need Ken's order. ⚠ **One verification pending:** the server deploy of
+`a84afb7` (Render auto-deploys on push; client bundle hash will NOT change
+— server-only). Verify by re-running diagnostics on a prod return that
+previously carried the false warnings (e.g. the Batch-001 8962/5329/1116
+retiree returns): the false hits disappear and any real finding uses the
+new message "…required attachment is not in this return's packet…". The
+Codex entry fleet's re-checks will exercise exactly this.
 
 ## ▶ Waiting on Ken / external
-1. **s111 ratifications (REVIEW_QUEUE):** GA deduction election coupled to
+1. **s112 ratification (REVIEW_QUEUE):** the manifest-aware RS amendment
+   of R-S1-10/R-S2-09/R-S3-07 (mechanism only).
+2. **s111 ratifications (REVIEW_QUEUE):** GA deduction election coupled to
    the federal election · pull GA line 5 filing status from federal? ·
    1099-INT "Seller-financed" currency cell sits over a Boolean field.
-2. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective.
-3. **S-24 hub-ein blanking leg** (s97, unblocked) — awaiting explicit go.
-4. Auth env vars (s94) · A2A WSDL · WISP (s96) · SEC-5 [EXT] · Resend (s83) ·
+3. **86 backfill review rows** (`backfill_review.csv`) — now 83 effective.
+4. **S-24 hub-ein blanking leg** (s97, unblocked) — awaiting explicit go.
+5. Auth env vars (s94) · A2A WSDL · WISP (s96) · SEC-5 [EXT] · Resend (s83) ·
    role assignments (s84) · e-services reply · CAF (s69) · ERO EFIN/PIN (s94) ·
    beta clauses (s96).
-5. **Ratifications pending:** s110 (tri-state gates · QM PIN warning) · s106 ·
+6. **Ratifications pending:** s110 (tri-state gates · QM PIN warning) · s106 ·
    s101 (4) · s100 (3) · s99a · s97 · s96 (4) · s95 · s94 · s93 · s89 ·
    s85/s84 · s83 · s76..s72.
 
 ## Active gates
-- **NEW tests: server** `test_schedule_e_depreciation_flow` 4 ·
-  `test_clear_saved_fields` 6 · `test_ga500_itemized_pull` 5 ·
-  `test_care_of_address` 11; **client** `scheduleEDepreciationFlow` 8 ·
-  `clearSavedFields` 10 · `depreciationDeleteDialog` 6 · `careOfAddress` 4 ·
-  retirement1099RDraftRow 14→17 · scheduleDDraftRow 13→14.
-- **Server bands: flow assertions 520 + GA-500 + Sch A + taxpayer-input =
-  662 passed**; adjacent Sch E/topic8/SchF/mar30/depr-engine 122+28;
-  efile/proforma/renderer batch **295 passed / 1 failed** — the failure is
-  `test_manifest_is_valid_json`, one of the SEVEN KNOWN pre-existing s108e
-  failures. ⚠ No full server suite this session (s108e's 6,192/7/21 stands).
-- **vitest 459** (was 427) · **`npx tsc --noEmit -p tsconfig.renderer.json`
-  52 errors — the pre-existing baseline, zero new** (the bare `tsc --noEmit`
-  is still a no-op; never trust it).
-- **Migration `returns.0212`** (additive) applied to BOTH DBs. No seeder
-  changes; `seed_rules`/FormDef reseeds NOT needed this session.
-- **Spec mirrors refreshed verbatim from deployed RS exports:**
-  `schedule_e_spec.json` · `form_4562_spec.json` · `500_spec.json` (drift was
-  authority-source/test text only; no rule changes).
-- ✅ **s111 DEPLOY VERIFIED LIVE ON PROD** — bundle `index-D-t_Kwp7.js` →
-  **`index-COZ7Jazr.js`**, carrying all three s111-only markers
-  (`In care of (c/o)` · `Schedule E rentals (Line 18)` ·
-  `the return recalculates after deletion`), 1 hit each against the
-  zero-hit baseline taken BEFORE the push. Server side needed no deploy
-  step (migration 0212 applied directly to both DBs; no seeders changed).
-  **The deployed build is READY for the Codex entry fleet to re-check Joe
-  Bennett and the affected 1099-R returns.**
-- Follow-up chip filed: the 1099-G card still has the pre-s108
-  POST-per-blur shape (task chip pending Ken's click).
+- **NEW `tests/test_form_manifest.py` 10** (registry trip-wires ·
+  manifest↔packet parity · the only-genuine-omissions acceptance sweep ·
+  §904(j) + R-5329-03 exception scenarios · e-file extract parity pins).
+- **Bands re-run this session:** `test_1040_sch123_diagnostics` 41 ·
+  **flow assertions 520** — all green. No client change (no vitest/tsc
+  delta; s111 baselines stand: vitest 459 · tsc-renderer 52 pre-existing).
+- **`seed_rules` re-run + verified on BOTH DBs** (the catalogue rows carry
+  the amended names). No FormDef reseeds; no migration.
+- **RS side:** `check_sch123_integrity` ALL PASS · seeded to RS prod ·
+  deployed export verified · mirrors refreshed verbatim (`a5a1a13`).
+- ⚠ **Server deploy verification PENDING** (see the NEXT pointer — the
+  bundle-grep recipe does not apply to a server-only change).
+- Follow-up chips: the 1099-G POST-per-blur card (s111) still pending
+  Ken's click.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
