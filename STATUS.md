@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 116 (QA Batch-001 item 6 — depreciation
-rebuild: proposal APPROVED (all 4 recommendations) + Leg 1 SHIPPED end-to-end
-and deploy-verified; item 15 PARKED by Ken in favor of the depreciation work).*
+*Last updated: 2026-07-26, session 117 (QA Batch-001 item 6 — depreciation
+rebuild Leg 2 SHIPPED: entry integrity — draft-row Add Asset, per-asset save
+queue, keyed edit card).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,55 +10,46 @@ and deploy-verified; item 15 PARKED by Ken in favor of the depreciation work).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s115 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s116 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s116 (2026-07-26): the depreciation rebuild (item 6, P0) is APPROVED and
-Leg 1 is SHIPPED.**
+**s117 (2026-07-26): depreciation Leg 2 (entry integrity) SHIPPED** (app
+`73a9d50`, client-only — no migrations, no RS change, no compute change):
 
-1. **Ken's picks:** item 15 parked ("Depreciation redesign" instead). The
-   four-leg rebuild plan (`Design/item6_depreciation_rebuild_proposal.md`,
-   `58ce774`) got GO + all three sub-ratifications: per-asset ROUND_HALF_UP
-   rounding · single-farm auto-link migration · add-fields-only basis model.
-2. **Leg 1 SHIPPED** (app `3dfb977`+`0961407`; RS `5e6ffa3`+`37f565d`; mig
-   0217 + seed_rules BOTH DBs; deploy VERIFIED live, bundle
-   `index-BZjYNARY.js`, markers ×1/×1 vs 0-hit baseline):
-   - **The Benkoski bug fixed**: on a 1040 the Flow To dropdown offered the
-     ENTITY farm arm (`sched_f`), which wrote a nonexistent "F14" line —
-     silently swallowed; the module showed "$4,069 → Schedule F" while
-     line 14 stayed 0. The 1040 dropdown is now Schedule C/E/F with
-     business/farm/property pickers (serializer now exposes `schedule_f` —
-     it never had); entity arms never route on a 1040 (incl. the page1
-     transient-stamp of the 1040's own line 14).
-   - **Per-asset whole-dollar rounding (RS R017, Ken-ratified)**: engine
-     reports each asset whole-dollar; destinations sum rounded amounts
-     (TaxWise parity: Benkoski 4,068, not ROUND(4,069.03)).
-   - **Migration 0217** (audited before+after BOTH DBs): prod 50 `sched_f`
-     assets → `schedule_f` all auto-linked (every one was single-farm);
-     1 `page1` → `schedule_c` linked; 1 blank $0 asset left red. Demo: 0.
-   - **New diagnostics**: D_4562_DEST (unroutable asset — error when
-     dollars move, warning for $0 legacy) + D_4562_RECON (module vs
-     destination mismatch = blocking). RS spec-homed, seed_rules BOTH DBs.
-   - **Benkoski PROD recompute verified**: Sch F 14 = 4,068 · farm loss
-     6,642 · AGI 20,729 — the QA report's expected column, exact.
-   - **Live demo UI probe green** (add asset → auto-links single farm →
-     143 whole-dollar → farm line 14 = 143 → delete clears it; demo
-     restored). ALSO fixed the standing dev nit: the vite dev proxy now
-     rewrites Origin, so autoPort coexistence clients can SAVE (`0961407`).
+1. **Add Asset = the s107 draft-row convention.** No placeholder POST; the
+   draft lives in client state and persists ONCE on the first non-blank
+   description, carrying everything typed before it. Concurrent blurs
+   serialise onto ONE create (in-flight promise ref); a failed create keeps
+   the card + values with the DRF message inline + Retry.
+2. **Per-asset FIFO save queue** — field saves on an asset chain behind each
+   other, so a delayed response can never interleave with a later edit (the
+   QA's "delayed autosave overwrote a different asset" class).
+3. **Visible Saving…/Saved/Not-saved state** in the edit-card header;
+   Add / Edit / Del / Import / Close are blocked while a save is unresolved
+   (in flight or errored-unretried; Retry re-sends the exact payload).
+4. **The cross-asset clobber is dead**: the edit card is keyed by asset id,
+   so switching rows remounts fresh `defaultValue` inputs instead of
+   inheriting the previous asset's DOM text (the s111 unkeyed-card defect).
+5. Close keeps an unsaved-but-typed draft in the table (nothing typed is
+   lost); an untouched empty draft is discarded; Add Asset returns to an
+   existing unsaved draft instead of clobbering it.
 
-**Gates green:** new leg 7 · engine 92 · flow **521** · schF-orch/topic8/schL
-86 · vitest 459 · tsc 52 baseline (0 new) · RS export verified (17 rules /
-16 diags incl. the 2 canonical-code additions).
+**Gates green:** NEW `depreciationEntryIntegrity.test.tsx` **10** (incl. the
+single-create race guard + the remount repro) · vitest **469** · tsc 52
+baseline (0 new). Live demo probe green: Add → ZERO requests → draft card +
+unsaved chip → description blur → exactly one POST 201 → Saved ✓ → delete
+restored the demo DB.
 
-**▶ NEXT (cold-start pointer): depreciation Leg 2 — entry integrity** (the
-s107 draft-row convention for Add Asset, per-asset in-flight save queue,
-Saving/Saved/Error state, block row-switch mid-save, fix the defaultValue
-remount clobber). Then Leg 3 (basis fields: `original_cost` +
-`prior_bonus_depreciation`, §280F in AMT/GA arms) and Leg 4 (paste grid +
-CSV import for legacy inventories). All scoped in the approved proposal.
-After the legs: item 15 (parked, proposal drafted) · item 16 · GA residual
-(still BLOCKED on the two REVIEW_QUEUE questions) · 2210 panel.
+**▶ NEXT (cold-start pointer): depreciation Leg 3 — basis fidelity** (add
+`original_cost` + `prior_bonus_depreciation` alongside `cost_basis`;
+computed accumulated-depreciation / adjusted-basis on the card; disposal
+math on the split fields; fold §280F caps into the AMT/GA parallel arms —
+the s46 boundary). Acceptance: the Barn keyed faithfully (9,010 / 4,505 /
+historical split) still computes 266. Then Leg 4 (paste grid + CSV import,
+legacy inventories). After the legs: item 15 (parked, proposal drafted) ·
+item 16 · GA residual (still BLOCKED on the two REVIEW_QUEUE questions) ·
+2210 panel.
 
 ## ▶ Waiting on Ken / external
 1. **s115 ratifications (REVIEW_QUEUE):** 8962 Part IV blank-pct ·
@@ -75,22 +66,15 @@ After the legs: item 15 (parked, proposal drafted) · item 16 · GA residual
    (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s116 push `3dfb977` VERIFIED live in-session (bundle
-  `index-BZjYNARY.js`; "no farm selected" ×1 + "Schedule F Farm" ×1 vs the
-  0-hit pre-push baseline). `0961407` (dev-only vite proxy) rides the next
-  build harmlessly. Nothing pending.
-- **DB state:** mig 0217 applied + audited BOTH DBs (prod: 50→schedule_f
-  linked / 1→schedule_c / 1 red; demo: no-op). seed_rules BOTH DBs
-  (D_4562_DEST + D_4562_RECON active). Benkoski's prod return recomputed to
-  the corrected figures (intended — the QA fix itself).
-- **RS:** 4562 spec amended (R016 destination / R017 rounding / 2 canonical
-  diagnostics / L22 face excerpt / 4 scenarios); deployed export verified;
-  tts mirror refreshed verbatim. FA-4562-DEST-01/ROUND-01 staged in RS —
-  NOT yet in the app's flow-assertion export (surgical-refresh rule; the
-  new pytest leg pins the same flows meanwhile).
+- **Deploy:** s117 push `73a9d50` building on Render at session close —
+  **VERIFY next session if not confirmed below**: grep the prod
+  `/assets/index-*.js` bundle for `it saves as soon as you enter a
+  description` (baseline 0 hits on `index-BZjYNARY.js`, taken pre-push).
+- **DB state:** unchanged from s116 (mig 0217 applied+audited BOTH DBs;
+  seed_rules current). No migrations in s117.
+- **RS:** unchanged from s116 (4562 spec at `5e6ffa3`+`37f565d`).
+  FA-4562-DEST-01/ROUND-01 still staged in RS only (surgical-refresh rule).
 - ⚠ **FA-1040-4835-06 drift** (chip `task_0cf10eac`, unchanged from s113).
-- ~~autoPort vite CSRF 403 nit~~ **FIXED s116** (`0961407` — proxy rewrites
-  Origin to the canonical dev origin).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
