@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-26 session 117 — FORM 4562 LEG 2: ENTRY INTEGRITY (QA Batch-001
+> item 6, approved proposal leg 2)** (app `73a9d50`; client-only — no
+> migrations, no RS spec change, no compute/render change). **Add Asset is
+> now the s107 draft-row convention:** no placeholder POST — the draft
+> lives in client state, persists ONCE on the first non-blank description
+> carrying everything typed before it, concurrent blurs serialise onto ONE
+> create via the in-flight promise ref, and a failed create keeps the card
+> + values with the DRF message + Retry. **Per-asset FIFO save queue:**
+> every field save chains behind the previous one, so a delayed response
+> can never interleave with a later edit (the QA's "delayed autosave
+> overwrote a different asset's name/date" class). **Visible
+> Saving…/Saved/Not-saved state** in the edit-card header; Add / Edit /
+> Del / Import / Close blocked while a save is unresolved. **The
+> cross-asset clobber is dead:** the edit card is keyed by asset id, so
+> switching rows remounts fresh `defaultValue` inputs instead of
+> inheriting the previous asset's DOM text (the s111 unkeyed-card
+> defect). Close keeps an unsaved-but-typed draft; an untouched empty
+> draft is discarded; Add Asset returns to an existing unsaved draft.
+> Gates: NEW `depreciationEntryIntegrity.test.tsx` **10** (single-create
+> race guard + remount fix pinned) · vitest **469** · tsc 52 baseline.
+> Live demo probe green (Add → zero requests → draft card + unsaved chip
+> → description blur → exactly one POST 201 → Saved ✓ → delete restored
+> demo). ▶ Legs 3-4 queued (basis fields + §280F parallels · grid/CSV
+> bulk).
+
 > **2026-07-26 session 116 — FORM 4562 LEG 1: 1040 DESTINATION ROUTING +
 > PER-ASSET ROUNDING + RECONCILIATION (QA Batch-001 item 6 P0, Ken GO +
 > 4 ratifications)** (app `3dfb977`+`0961407`; RS `5e6ffa3`+`37f565d`, new
