@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-27, session 121 (QA Batch-001 item 16 — structured
-Form 8283 workflow SHIPPED `3ed3c76`; RS `0c8fc7f`; no migration).*
+*Last updated: 2026-07-27, session 122 (QA Batch-001 item 15 — source-summary
+entry basis BUILT; RS `7cdf804`; app `1a02124` + `2d9a864`; **migration 0220
+NOT applied, nothing pushed — awaiting Ken**).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -9,134 +10,142 @@ Form 8283 workflow SHIPPED `3ed3c76`; RS `0c8fc7f`; no migration).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s119–s120 detail is archived in `STATUS_ARCHIVE.md`.)*
+- *(s119–s121 detail is archived in `STATUS_ARCHIVE.md`.)*
 
-## ▶ RESUME HERE
+## ▶ RESUME HERE — ONE DECISION IS WAITING
 
-**s121 (2026-07-27): QA Batch-001 item 16 — structured Form 8283 workflow
-SHIPPED** (app `3ed3c76`, RS `0c8fc7f`, **no migration**).
+**s122 built QA Batch-001 item 15 (Option A) end to end. Everything is
+committed locally and green. NOTHING IS PUSHED, because the push IS the
+migration decision (the s119 rule) and migration 0220 adds columns the new
+code selects.** Ken's go-ahead is the only thing outstanding.
 
-Audit-first held for the **fourth** time: item 16 was ~80% already built —
-the `NoncashContribution` model, `compute_8283`, `render_8283` + AcroForm
-map, the MeF `IRS8283` document, 16 diagnostics and the client item grid all
-shipped in the s57 1040 leg and the s65 entity amendment. Four real gaps
-remained, all now closed:
+**The ship sequence, once Ken says go** (order matters — s121's lesson):
+1. `git push origin main` in `delvio-tax` (RS `7cdf804` is already pushed).
+2. The deploy runs `migrate` → 0220 lands on **both** DBs.
+3. **THEN** `seed_rules` on **BOTH** DBs — never before the deploy, or the
+   unresolvable `rule_function` for `D_INTDIV_012/013/014` becomes a red
+   finding on every 1040.
+4. Verify the deploy: bundle-grep markers `Add a source-packet total` /
+   `Source summary — no payer detail`. **Baseline not yet taken — take the
+   zero-hit baseline BEFORE pushing.**
+5. Live browser verify (blocked until 0220 is applied — the dev server shares
+   the production DB, so the UI cannot be exercised before the migration).
 
-1. **Reconciliation** (RS `R-8283-RECON` / `D_8283_017`). `R-8283-SCHA12`
-   lets a flat line-12 entry override the 8283 row total per field
-   (deliberate, unchanged) — but the override was **silent**: the printed
-   Form 8283 carried the rows, line 12 carried the override, and nothing
-   compared them. A conversion keeping a packet total but keying only part
-   of the detail claimed the difference with no form item behind it. The
-   1065 already had this guard (`D_8283_016`); the 1040 did not.
-   **Effect-scaled** (the `D_4562_DEST` convention): error when line 12
-   exceeds the non-withheld row total with no withheld row present; warning
-   on the reversed delta; **warning whenever a conservation/historic row is
-   present** — `D_8283_006` has the preparer key the allowable amount by
-   hand, so a gap is expected there. No amount moves.
-2. **1040 finding routing** — `RULE_TAB_MAP`'s 1040 scope had **no
-   `D_8283_` entry at all** (both entity scopes did), so every 8283 finding
-   on a 1040 produced no tab dot and nothing to click.
-3. **Line-12 guidance** (the literal item-16 ask) — the Schedule A line-12
-   fields had no >$500 notice and no link into the item workflow. Inline
-   notice mirroring the server ladder + a jump that scrolls to and
-   highlights the grid; `CONSERVATION_TYPES` exported so card and grid share
-   one transcription.
-4. **Missing facts** — `D_8283_005/007` named the offending item but not
-   *which* facts were missing. They now list the specific columns
-   ((e)/(f)/(g)), row facts, zero amounts and out-of-year dates.
+### What the audit changed (fifth session running)
 
-Plus **Form 8283 registered in the s112 generated-form manifest** (it was
-absent, so `is_form_generated` returned False), calling `render_8283` itself
-so the $500 engagement gate has no second copy.
+Option A was written as "add a flag, downgrade the nagging detail warnings to
+INFO." Parsing **all 734 diagnostics** found essentially nothing to downgrade:
+Delvio never demands a payer address, and what it does demand is either
+legally required or needed to compute a number. Exactly ONE genuine nag
+existed (`D_INTDIV_011` fired "payer EIN is blank" with an EMPTY payer name on
+a conversion total that has no payer by construction) — now excluded. And the
+**8949 broker-summary leg was already built and already correct**, so no flag
+was added there.
 
-**QA acceptance pinned verbatim:** a synthetic $1,100 noncash aggregate with
-no detail keeps the $1,100 Schedule A total, blocks, and lists the missing
-facts; after complete entry the form generates and every finding clears with
-itemized deductions unchanged.
+**The real defect was ENTRY, not severity.** A return-level total could not be
+held without inventing a payer, and the invention was load-bearing:
+- the fabricated payer **printed on Schedule B Part II** and was
+  **transmitted in the MeF XML as a payer element** (QA return 8621 shipped
+  the literal string `SOURCE TOTALS - DETAIL OMITTED`);
+- typing the capital gain distributions onto 1040 line 7 instead left
+  `exception_1_state.sum_2a == 0`, so `route_line_16` returned BLOCKED and
+  **line 16 — the tax — went blank**. There was no honest way to make that
+  return compute.
 
-**Gates green:** NEW server `test_8283_item16_recon.py` **13** · 8283 band
-**46** · Schedule A legs **40** · manifest **10** · flow assertions **521** ·
-NEW client `form8283Item16.test.tsx` **14** · vitest **525/525** · tsc **52
-baseline** · live demo probe green end-to-end (error arm with correct
-numbers, jump+highlight, the real runner fired `D_8283_017`; demo restored).
+**The rule** (RS `R-AGG-SUMMARY`), from the 2025 Schedule B face transcribed
+the same day: it itemizes by payer **exactly two** amounts — taxable interest
+(Part I line 1) and ordinary dividends (Part II line 5). Everything else is a
+return-level figure no form attributes to a payer. A conversion total may carry
+those; it may never carry the two the law requires listed, nor an adjustment to
+one (`D_INTDIV_012`, blocking). The flag never loosens a legally required
+listing.
 
-**Also fixed (off-scope, never silent):** RS `check_8283_integrity.py` had
-been **RED since the s65 entity amendment (2026-07-12)** — T14/T15/T16 were
-authored without extending the harness's transcription, so all three
-reported "expected key not produced" and the gate had stopped meaning
-anything. Entity arm modeled; 19/19 green, with a negative control run to
-prove the new K12b override check actually fails when broken.
+**KEN RULED in-session 2026-07-27** (JUDGMENT ITEM 7): a source-summary record
+has no boxes 2b/2c/2d to inspect, so Exception 1 condition (2) computes on the
+preparer's assertion, with `D_INTDIV_013` (info) recording that the check was
+**vacuous** rather than satisfied. Blocking was rejected on the record — it
+leaves the return with no computed tax, the exact pressure that produced the
+fabricated payer.
+
+On 8283 rows the flag changes the **wording, never the verdict**: §170(f)(11)
+makes the item facts a condition of the deduction, so `D_8283_005/007` stay
+blocking and keep s121's missing-fact listing. That closes item 16's deferred
+fourth bullet.
+
+**Also fixed (off-scope, never silent):** RS carried **two contradictory
+versions of scenarios ID-G1/ID-G2** — the pre-Topic-9 pair asserting the
+retired `D_INTDIV_001/002` block, and the Schedule-D pair that replaced it. The
+Topic 9 leg authored its corrections under NEW `scenario_name`s and
+`update_or_create` keys on the name, so the originals were orphaned rather than
+replaced. Undetected for six weeks because this repo's spec mirror was last
+refreshed 2026-06-12 and carried no ID-G scenario at all, so the
+spec-parametrized runner had never executed either one.
+`_retire_topic9_superseded()` now deletes them; both survivors run and pass.
+
+**Gates green:** NEW server `test_source_summary_item15.py` **12** (incl. the
+QA 8621 acceptance case verbatim + negative controls on both the guard and the
+assertion arm) · `test_intdiv_scenarios` **29** · Schedule B render + flow
+assertions **521** · combined server run **584** · NEW client
+`sourceSummaryItem15.test.tsx` **11** · vitest **536/536** (was 525) · tsc
+**52 = the recorded baseline exactly**, none in touched files. RS harness green,
+baseline-checked on clean HEAD first, then proven able to fail via two negative
+controls.
+
+**One PRE-EXISTING unrelated failure**, confirmed by stash-and-rerun on clean
+HEAD: `test_topic3_input_leg::test_exception_1_assertion_drives_line_7a`
+(`FormFieldValue.DoesNotExist`). Untouched, reported, not inherited as "noise".
 
 ## ▶ NEXT (cold-start pointer)
 
-**KEN DECIDED 2026-07-27 (s121 close): item 15 = Option C — build A now, treat
-B as a separate later decision. Start s122 on Option A; do not re-ask.**
+After item 15 ships: **item-6-P1 GA residual** (BLOCKED on the two GA
+REVIEW_QUEUE questions) · **2210 reconciliation panel**. Option B (per-form
+"where did this number come from" provenance view) stays **deferred, not
+dropped** — raise it only after A has run on real conversions.
 
-**Option A scope (from `Design/item15_source_summary_proposal.md`):** a
-per-record `entry_basis` choice (`detail` / `source summary`) on the record
-types where conversion bites — interest/dividend payer rows, 8283 noncash
-items, 8949 broker-summary rows — plus a return-level banner. Then:
-- missing detail on a summarized record → **INFO**, worded "entered from a
-  source packet; detail not keyed" (not WARNING — converted returns must not
-  be wallpapered in yellow);
-- missing detail the IRS legally requires to file → **stays a blocking
-  ERROR**, but the finding lists exactly which facts are missing. The flag
-  never loosens a legally-required gate;
-- a per-return reconciliation panel riding the s112 generated-form manifest.
-Cost: one migration (flag on ~4 record types + the return), diagnostic
-condition edits, one new panel. **No compute changes** — totals already flow.
+Batch-001 is now **12 of 16** done; opens = 15 (shipping) · GA residual · 2210.
 
-**Direct tie-in to s121:** `D_8283_017` and `D_8283_005/007` are exactly the
-"lists which facts are missing" behavior Option A generalizes — build A's
-INFO-downgrade so it reads the same missing-fact lists rather than a second
-copy. This closes item 16's deferred fourth bullet at the same time.
-
-After item 15A: item-6-P1 GA residual (BLOCKED on the two GA REVIEW_QUEUE
-questions) · 2210 reconciliation panel. Option B (per-form "where did this
-number come from" provenance view) is **explicitly deferred, not dropped** —
-raise it again only after A ships.
-
-## Known follow-ups from s121 (tracked in DEFERRAL_AUDIT)
-- Item 16's **conversion/source-summary bullet is deferred into item 15A**
-  (Ken picked Option C at the s121 close, so it is now scheduled, not
-  blocked). Everything else in item 16 is done.
-- Section B still is not e-fileable (`UnmappableValue`, the J7 wet-ink
-  appraiser/donee signature seam) — unchanged, pre-existing boundary.
-- 1065 MeF still has no `IRS8283` document (rides the future 1065 mapper).
-- `NoncashContribution` rows are per-return, not per-owner.
+## Known follow-ups from s122 (tracked in DEFERRAL_AUDIT)
+- The reconciliation view is the **banner + per-row control**, not yet a
+  separate panel riding the s112 manifest. The banner answers "which records
+  are summarized and does anything block filing"; a fuller panel is worth
+  building only once real conversions show what else preparers ask for.
+- `entry_basis` is on interest / dividend / 8283 rows. **8949 reuses its own
+  `is_summary`** by design; `entry_basis_of()` reads both. W-2 boxes 3/5 and
+  the Schedule C "net loss with no detail" cases from the QA reports are NOT
+  covered — separate record types, separate decisions.
+- Schedule B payer ORDER differs between the printed face and the XML
+  (pre-existing, harmless, logged in REVIEW_QUEUE — deliberately not fixed).
 
 ## ▶ Waiting on Ken / external
-*(Item-15 pick RESOLVED 2026-07-27 — Option C, build A first. See ▶ NEXT.)*
-1. s121 ratification (REVIEW_QUEUE): the `D_8283_017` severity ladder — most
-   notably the conservation arm that warns rather than errors.
-2. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
-3. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
-4. s114 ratifications: the 8867 rebuild's three judgment calls.
-5. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
-6. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+1. **THE PUSH + migration 0220 on both DBs** (see ▶ RESUME HERE).
+2. s122 ratification (REVIEW_QUEUE): the source-summary listing line,
+   specifically the nominee/accrued/ABP **adjustment** arm, which is my call.
+3. s121 ratification: the `D_8283_017` severity ladder (conservation arm).
+4. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
+5. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+6. s114 ratifications: the 8867 rebuild's three judgment calls.
+7. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+8. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-7. s112 ratification: manifest-aware RS amendment (mechanism only).
-8. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
-   vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
-   CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
-   s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
+9. s112 ratification: manifest-aware RS amendment (mechanism only).
+10. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+    vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
+    CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
+    s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s121 push `3ed3c76` **VERIFIED live in-session** — prod + demo
-  bundles rolled `index-DQfYbJEX.js` → `index-BhoKt46x.js`; markers
-  `no item on the form to support it` / `Enter the Form 8283 items` /
-  `Review the Form 8283 items` each ×1 against the 0-hit pre-push baseline.
-  Nothing pending.
-- **Rule catalogue:** `seed_rules` run on **BOTH DBs after the deploy** (the
-  required order — the runner turns an unresolvable `rule_function` into a red
-  finding, so seeding first would have put a spurious error on every 1040 on
-  prod; a deploy does **not** run `seed_rules`). Verified: `D_8283_017` present
-  and active on both, D_8283 family 17/17 on both.
-- **DB state:** no new migrations (latest remains 0219, applied BOTH DBs in s119).
-- **RS:** 8283 spec at `0c8fc7f` (10 rules / 17 diagnostics / 19 scenarios);
-  deployed export verified and mirrored to `server/specs/8283_spec.json`.
-- ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged from s113).
+- **Deploy: NOTHING PUSHED.** Two local commits on `main` (`1a02124` server,
+  `2d9a864` client) awaiting Ken's go. RS `7cdf804` IS pushed and seeded.
+- **DB state: migration 0220 NOT APPLIED to either shared DB.** Additive —
+  three `entry_basis` columns (default `detail`); the two `payer_name`
+  AlterFields are Django-level only (`blank=True`), no column change, ~700
+  existing prod rows untouched.
+- **Rule catalogue:** `seed_rules` NOT yet run for `D_INTDIV_012/013/014` —
+  must run **after** the deploy, on BOTH DBs.
+- **RS:** `1040_INTDIV` at `7cdf804` (18 rules / 11 diagnostics / 56 facts /
+  18 scenarios); deployed export verified and mirrored verbatim to
+  `server/specs/intdiv_spec.json`.
+- ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged since s113).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
