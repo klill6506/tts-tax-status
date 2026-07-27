@@ -1,5 +1,35 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-27 session 123 — FORM 2210 RECONCILIATION + PART III FACE (QA
+> Batch-001 item 10, second half)** (RS `7bdad04` seeded/verified/mirrored;
+> app **NOT PUSHED — migration 0221 staged, Ken's gate**). Item 10's first
+> half (the $1-3 penalty deltas) was ALREADY closed by s113's flat-7%
+> correction: both QA fact patterns now reproduce the prior software exactly
+> (289 and 189). **RENDER leg — was PARTIAL, now COMPLETE:** the field map
+> held 5 of 46 fields; Part I lines **1/2/3/6/8** were unmapped, so the face
+> printed line 9 as "the smaller of line 5 or line 8" with **line 8 BLANK**
+> (the prior-year safe harbor), and the whole Part III worksheet was empty.
+> Now Part I 1-9 + Section A lines 10-18 × four columns + line 19.
+> **COMPUTE leg — the per-period derivation was computed and DISCARDED**
+> (only installments[0] and the SUM of the underpayments were stored); now
+> the full Section A grid, the safe-harbor decision, and a per-accrual trace
+> (amount · dates · days · rate) are retrievable. **LINE-NUMBER CORRECTION:**
+> Part III Section A is lines **10-18** on the 2025 face — the app stored the
+> required installment on "18" (the face's OVERPAYMENT) and the underpayment
+> on "25" (a line Part III does not have; 25 is Schedule AI). Verified against
+> the face text, the widget grid, and the IRS template's own subform names
+> (`SectionATable[0].Line10[0]`…`Line18[0]`). "25" is DELETED, not orphaned.
+> **SECTION A ALLOCATION FIX:** the old code carried only overpayments
+> forward; the face's line 14 makes each column cover the prior column's
+> unpaid balance first (diverges only on a LATE catch-up). **No penalty
+> changed.** **NEW:** documented source override (2210 line 19 + 1040 line 38
+> move together per F2210-006-01) + `D_2210_SRC` / `D_2210_TIE`. **GATES:**
+> new `test_2210_reconciliation_item10.py` 23 · existing 2210 suites 54 ·
+> flow assertions 521 · client 7 · vitest 543 · tsc 52 = baseline. **STILL
+> OPEN on this form:** Part II boxes A/B/D/E unmodeled (so no IRS2210 is
+> transmittable; box D is a penalty-REDUCING election) and Schedule AI page 3
+> unfilled — both in DEFERRAL_AUDIT.
+
 > **2026-07-26 session 120 — FORM 4562 LEG 4: CONVERSION-SCALE ENTRY (QA
 > Batch-001 item 6, approved proposal leg 4 — FINAL LEG)** (app `202559d`;
 > no migration; entry tooling only — no engine/tax-law change, no RS
