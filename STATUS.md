@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-26, session 120 (Form 4562 Leg 4 — conversion-scale
-entry SHIPPED `202559d`; deploy verification pending below).*
+entry SHIPPED `202559d`; deploy VERIFIED live in-session).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -45,13 +45,10 @@ depreciation regression subset **97** · lacerte parser **39** · NEW client
 **52 baseline** · live demo probe green end-to-end (demo DB restored).
 
 ## ▶ NEXT (cold-start pointer)
-1. **Verify the s120 deploy** — marker `Paste assets from a spreadsheet`,
-   pre-push baseline `index-Drjjuvdj.js` = 0 hits (taken in-session). No
-   migration rides this push.
-2. Then the spine: item 15 (source-summary proposal — awaiting Ken's
-   A/B/C pick, rec C) · item 16 · item-6-P1 GA residual (BLOCKED on the
-   two GA REVIEW_QUEUE questions) · 2210 reconciliation panel. Spine
-   otherwise idle — Ken directs.
+The spine: item 15 (source-summary proposal — awaiting Ken's A/B/C pick,
+rec C) · item 16 · item-6-P1 GA residual (BLOCKED on the two GA
+REVIEW_QUEUE questions) · 2210 reconciliation panel. Spine otherwise idle —
+Ken directs.
 
 ## Known follow-ups from s120 (tracked in DEFERRAL_AUDIT)
 - Import/bulk-update don't feed the s119 header saveScope pill yet
@@ -76,10 +73,10 @@ depreciation regression subset **97** · lacerte parser **39** · NEW client
    s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s120 push `202559d` — bundle-grep verification PENDING
-  (marker `Paste assets from a spreadsheet`; baseline `index-Drjjuvdj.js`
-  0 hits, taken pre-push). Server-side additions ride the same bundle
-  check (client marker changes the hash).
+- **Deploy:** s120 push `202559d`+`84f2b8c` **VERIFIED live in-session** —
+  prod + demo bundles rolled `index-Drjjuvdj.js` → `index-DQfYbJEX.js`;
+  marker `Paste assets from a spreadsheet` ×1 vs the 0-hit pre-push
+  baseline. Nothing pending.
 - **DB state:** no new migrations (latest remains 0219, applied BOTH DBs
   in s119).
 - **RS:** 4562 spec at `51371ec` (unchanged — Leg 4 is entry tooling, no
