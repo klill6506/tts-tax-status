@@ -1,8 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 118 (QA Batch-001 item 6 — depreciation
-rebuild Leg 3 SHIPPED: basis fidelity + §280F caps in the AMT/GA parallel
-arms).*
+*Last updated: 2026-07-26, session 119 (autosave stabilization — built and
+tested; COMMITTED BUT NOT PUSHED, see the deploy gate).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,75 +9,93 @@ arms).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s117 is archived in `STATUS_ARCHIVE.md`.)*
+- *(s118 is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s118 (2026-07-26): depreciation Leg 3 (basis fidelity + §280F parallels)
-SHIPPED** (RS `51371ec` seeded + export-verified, mirror refreshed; app
-`bb2935e`, mig 0218 BOTH DBs; seed_rules BOTH DBs):
+**s119 (2026-07-26): autosave stabilization BUILT + TESTED, push held.**
+The "stuck on Saving…/Calculating…, fields vanish on reload, duplicate blank
+state rows, silent Add failures" family is closed end-to-end:
 
-1. **Split basis history (RS R018):** `original_cost` (null ⇒ equals
-   `cost_basis`; pre-Leg-3 fleet untouched) + `prior_bonus_depreciation`.
-   `cost_basis` stays the engine input — no recompute change (Ken's
-   add-fields-only pick). Barn pin: 9,010 / 4,505 / 4,505 → still 266;
-   accumulated 5,971 / adjusted 3,039 derived on the card.
-2. **§280F caps now bind the AMT refigure and the GA arm (RS R019, closes
-   s46 boundary #3).** AMT = same table as federal (§280F(a)(1)(A)
-   statutory derivation — i6251 SILENT, flagged); GA = the NO-bonus table
-   (the $8,000 bump IS §168(k)(2)(F)(i), never conformed). Plus the cap
-   now runs AFTER the ≤50% SL recompute (it previously escaped the cap).
-   **Both judgment calls await Ken's ratification (REVIEW_QUEUE).**
-3. **Disposal + §1250-additional math on the split fields at every site**
-   (compute / views / rules_4797 / renderer / MeF read_model — bridge
-   parity), via the ONE model property `disposal_cost_basis`.
-4. **D_4562_BASIS** effect-scaled (error impossible basis / warning recon
-   gap; fires only when original_cost keyed). seed_rules BOTH DBs.
-5. Stale-pin repair: `test_schedule_e_depreciation_flow` cents pin
-   6,812.59 → 6,813 (the one assertion the s116 whole-dollar repin missed;
-   fails on unmodified HEAD — not a Leg 3 regression).
+1. **Bounded timeouts** — every request aborts at 30s (uploads 120s); the UI
+   can never sit on "Saving…" forever (`lib/api.ts`).
+2. **saveScope** (`lib/saveScope.ts`) — ONE global save store; every mutation
+   runs in a per-record FIFO lane (the s117 depreciation queue,
+   generalized). A failure blocks its lane holding the payload; header
+   Retry replays in order, Discard is confirm-gated.
+3. **Server revision acks** — `TaxReturn.revision` bumps on every successful
+   mutation (`saved_revision` on the response, `revision` in fresh_return);
+   the client discards stale payloads and shows "All changes saved" only
+   after a real acknowledgement.
+4. **Idempotent creates** — `X-Idempotency-Key` per user intent on the 8
+   record-create endpoints (W-2, 1099-R, Sch C, dependents, W-2
+   state/locality/Box 12/Box 14); a retry after a timeout replays the
+   stored response instead of duplicating the row. Add buttons disable +
+   show pending while their create is in flight.
+5. **Calc separation (persist-first)** — a compute crash after a save
+   returns 200 + `compute_error` instead of a 500; the header shows an
+   amber "Calculation failed — data saved" with Recalculate, never a
+   failed save.
+6. **Unsaved-work protection** — beforeunload guard + Return Manager link
+   confirm + unmount flush (return-id pinned) + a save-details popover
+   (last acked revision, pending op + elapsed, Retry/Discard).
 
-**Gates green:** NEW `test_4562_leg3_basis_fidelity.py` **12** (Barn ·
-AMT/GA caps · ≤50% cap ordering · disposal split · D_4562_BASIS ·
-serializer no-double-count) · depr/4797/render **148** · flow **521** ·
-mef_1120s **75** · schF **20** · vitest **469** · tsc **52 baseline**.
-Live demo probe green (card fields render → 9,010 save → Saved ✓ →
-adjusted 8,460 → cleared/restored; demo DB clean).
+**Gates green:** client vitest **501/501** (32 new across 5 files —
+regression tests A–E: persistence, delayed create, duplicate child,
+failure-and-retry, slow calc) · tsc **52 baseline (unchanged)** · server
+`test_autosave_stabilization.py` **9/9** + mutation-recompute/8879/schD/
+entry-layer subset (isolated test DB).
 
-**▶ NEXT (cold-start pointer): depreciation Leg 4 — conversion-scale entry**
-(spreadsheet-style paste grid · CSV import/export with a published template ·
-bulk assignment of activity/method/life/convention · filters · first-class
-fully-depreciated legacy inventory rows). Acceptance: Benkoski's full
-46-asset inventory imports without changing the current-year result. After
-Leg 4: item 15 (parked, proposal drafted) · item 16 · item-6-P1 GA residual
-(still BLOCKED on the two REVIEW_QUEUE GA questions) · 2210 panel.
+## ⚠ ACTIVE GATE — migration 0219 / deploy order (Ken decides)
+- New server code reads `TaxReturn.revision` → it **cannot run against a DB
+  that hasn't applied `returns/0219`** (every TaxReturn query errors).
+- Ken declined running migrate against the shared DBs in-session, so:
+  **committed locally, NOT pushed.** Pushing to main deploys, and both
+  Render services run `migrate --noinput` at start — the deploy applies
+  0219 to prod + demo automatically (additive: one bigint column default 0,
+  one new RLS-enabled table).
+- Until 0219 applies, a local `runserver` on this commit breaks against
+  both shared DBs. **Next action: Ken says "push" (deploy auto-migrates) or
+  runs migrate manually first.**
+- Post-deploy verification: bundle marker `Calculation failed — data saved`
+  (new-code-only string; take the zero-hit baseline BEFORE the push).
+
+## ▶ NEXT (cold-start pointer)
+1. Resolve the 0219 gate above (push → verify deploy → live demo probe of
+   the new header pill / Retry / pending Add buttons).
+2. Then back to the BUILD_ORDER spine: **depreciation Leg 4
+   (conversion-scale entry)** — unchanged from s118.
+
+## Known follow-ups from s119 (tracked in DEFERRAL_AUDIT)
+- Sch D / dependents / interest / dividend / Sch F row saves get timeouts +
+  revision acks (via api.ts) but are not yet on saveScope FIFO lanes.
+- DepreciationSection still runs its own s117 queue + local pill (works,
+  but doesn't feed the header).
+- Nav guard covers reload/close + the Return Manager breadcrumb; other
+  in-app exits (sidebar links) don't confirm yet (HashRouter — no useBlocker).
+- Calc still runs inline in the mutation request (bounded by the timeout);
+  true async recompute is future work.
 
 ## ▶ Waiting on Ken / external
-1. **s118 ratifications (REVIEW_QUEUE):** §280F AMT-arm statutory
-   derivation · GA no-bump table.
-2. **s115 ratifications:** 8962 Part IV blank-pct · line 34/4-row cap ·
-   line-9 marriage-alt.
-3. **s114 ratifications:** the 8867 rebuild's three judgment calls.
-4. **s113 ratifications:** D_GA500_002 realignment · 2210 flat-7% · 7206
-   partner-arm scope.
-5. **Item-6-P1 GA residual — BLOCKING questions:** GA line 5 filing status
-   from federal? · couple the GA deduction election to the federal election?
-6. **s112 ratification:** manifest-aware RS amendment (mechanism only).
-7. **86 backfill review rows** (now 83 effective) · S-24 hub-ein blanking ·
-   auth env vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments ·
-   e-services · CAF · ERO EFIN/PIN · beta clauses · older ratifications
-   (s110 · s106 · s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
+1. **s119: the 0219 push/migrate decision (gate above).**
+2. s118 ratifications (REVIEW_QUEUE): §280F AMT-arm derivation · GA no-bump table.
+3. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+4. s114 ratifications: the 8867 rebuild's three judgment calls.
+5. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+6. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+   federal? · couple the GA deduction election to the federal election?
+7. s112 ratification: manifest-aware RS amendment (mechanism only).
+8. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+   vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
+   CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
+   s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s118 push `bb2935e` **VERIFIED live in-session** — prod bundle
-  rolled `index-Bc1mC_ho.js` → `index-Bg17tHbm.js`; marker `Accum.
-  Depreciation (EOY)` ×1 vs the 0-hit pre-push baseline. Nothing pending.
-- **DB state:** mig 0218 applied BOTH DBs; seed_rules re-run BOTH DBs
-  (D_4562_BASIS catalogued).
-- **RS:** 4562 spec at `51371ec` (R018/R019 + D_4562_BASIS); mirror
-  refreshed verbatim. FA-4562-DEST-01/ROUND-01/280F-01 staged in RS only
-  (surgical-refresh rule).
-- ⚠ **FA-1040-4835-06 drift** (chip `task_0cf10eac`, unchanged from s113).
+- **Deploy:** s119 commit LOCAL ONLY (push held — 0219 gate). Last verified
+  live deploy remains s118 `bb2935e` (`index-Bg17tHbm.js`).
+- **DB state:** mig 0218 applied BOTH DBs; **0219 PENDING BOTH DBs**.
+- **RS:** 4562 spec at `51371ec`; FA-4562 staged entries unchanged (s118).
+- ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged from s113).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
