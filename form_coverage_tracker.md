@@ -1,5 +1,40 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-26 session 120 — FORM 4562 LEG 4: CONVERSION-SCALE ENTRY (QA
+> Batch-001 item 6, approved proposal leg 4 — FINAL LEG)** (app `202559d`;
+> no migration; entry tooling only — no engine/tax-law change, no RS
+> amendment needed). **Published CSV template + parser**
+> (`apps/imports/importers/csv_depr_parser.py`): header aliases ·
+> $/comma/parens amounts · M/D/YY dates · per-row errors · EXAMPLE-row
+> skip · export-only columns round-trip. **One import path** for template
+> CSVs, PASTED spreadsheet rows (tab-separated w/ header), and Lacerte
+> TXT: preview shows each row's PROJECTED current-year depreciation +
+> fully-depreciated badge + resolved Activity; commit is idempotent
+> (X-Idempotency-Key) and runs the FULL recompute (old commit left the
+> return stale). **Activity column** resolves to Sch C/E/F pickers
+> (C:/E:/F: prefixes; blank = single-activity auto-link, else unassigned
+> + D_4562_DEST guides). **Lacerte boundary fixes:** snake-code group
+> labels → model display values (engine's Land/Vehicles branches never
+> saw the raw codes — a Lacerte land asset would depreciate), and bonus %
+> suggested ONLY for year-1 assets (continuing assets got 40% stamped,
+> re-reducing remaining basis vs the D_4562_BASIS keying). **NEW GET
+> depreciation-csv** (template=1 / round-trip export) + **POST
+> depreciation/bulk-update** (activity arm+FK · method · convention ·
+> life · group; return-scoped FK checks). **Client:** Paste rows panel ·
+> Template/Export CSV buttons · filter bar (search/activity/group/status
+> incl. Fully depreciated) · row checkboxes + group select-all + bulk
+> toolbar · fully-depreciated row badge. **ACCEPTANCE MET:** 7 active +
+> 39 fully-depreciated legacy rows import without changing the
+> current-year result (test-pinned; farm depreciation 6,858 unchanged,
+> every legacy row $0 across federal/AMT/GA). Gates: NEW
+> `test_4562_leg4_bulk_entry.py` **16** · depreciation regression subset
+> **97** · lacerte parser **39** · NEW `depreciationLeg4Entry.test.tsx`
+> **10** · client vitest **511/511** · tsc 52 baseline. Live demo probe
+> green (paste → preview $245 + badge → commit +245 exactly → status
+> filter → bulk repoint to the 8825 property (800→1,045) →
+> template/export 200s → demo DB restored to baseline). **Item-6
+> depreciation rebuild: ALL FOUR LEGS COMPLETE.**
+
 > **2026-07-26 session 118 — FORM 4562 LEG 3: BASIS FIDELITY + §280F
 > PARALLEL-ARM CAPS (QA Batch-001 item 6, approved proposal leg 3)** (RS
 > `51371ec` — R018/R019 + D_4562_BASIS, seeded + export-verified, mirror
