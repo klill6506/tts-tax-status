@@ -927,6 +927,32 @@
 > 2026-03-15 → LATE + relief + legend under concurrent saves; autofill
 > painted the 9-digit CAF YELLOW). Boundaries → DEFERRAL_AUDIT s69 (7).
 
+> **2026-07-27 session 121 — FORM 8283 1040 RECONCILIATION ARM (QA Batch-001
+> item 16) — ★ SHIPPED (app `3ed3c76`, RS `0c8fc7f`, no migration; deploy
+> VERIFIED live, `index-BhoKt46x.js`, 3 markers vs 0-hit baseline;
+> `seed_rules` BOTH DBs POST-deploy, D_8283 family 17/17).** Audit-first: item
+> 16 was ~80% already built (model/compute/render/MeF/16 diagnostics/client
+> grid, from the s57 1040 leg + the s65 entity amendment above). **COMPUTE**:
+> unchanged — no amount moves. **DIAGNOSTICS**: NEW `D_8283_017`
+> (RS `R-8283-RECON`, J8) closes the SILENT-override hole — a flat Schedule A
+> line-12 entry beats the 8283 row total by design (R-8283-SCHA12), but
+> nothing compared the two, and adding one partial row SILENCED `D_8283_001`
+> (which needs zero rows); effect-scaled error/warning with a
+> withheld-conservation false-positive guard. `D_8283_005/007` now name the
+> SPECIFIC missing facts (cols (e)/(f)/(g), row facts, zero amounts,
+> out-of-year dates), not just the offending item. **INPUT/UI**: Schedule A
+> line-12 >$500 notice mirroring the server ladder + jump-and-highlight into
+> the item grid; `D_8283_` added to the 1040 `RULE_TAB_MAP` (the family had
+> NO 1040 route — no tab dot, nothing to click, while both entity scopes had
+> one). **RENDER**: unchanged, but Form 8283 REGISTERED in the s112
+> generated-form manifest (was absent). **Gates**: NEW test_8283_item16_recon
+> 13 · 8283 band 46 · Sch A legs 40 · manifest 10 · flow 521 · NEW
+> form8283Item16.test.tsx 14 · vitest 525 · tsc 52 baseline · live demo probe
+> green (real runner fired D_8283_017; demo restored). QA acceptance pinned
+> verbatim ($1,100 aggregate → blocks + lists facts → completes → clears with
+> itemized deductions unchanged). Item 16's conversion/source-summary bullet
+> DEFERRED (rides item 15). Boundaries → DEFERRAL_AUDIT s121 (6).
+
 > **2026-07-12 sessions 65-66 — ENTITY FORM 8283 (Spine S-20a) — ★★ UNIT
 > COMPLETE, BOTH LEGS — SPEC-FIRST RS round-trip (RS `8b6faca`).** The shared
 > 8283 spec's PTE stated-boundary (D_8283_010) closed with an additive
