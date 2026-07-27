@@ -91,6 +91,19 @@ retired 6% stub. s113 corrected the rate but never re-pinned this render-leg
 value. Proved pre-existing by running it on clean HEAD with the session's work
 stashed; it failed there too. Now 372.
 
+**Full server suite: 6,401 passed / 8 failed (1:11:33).** All 8 verified
+PRE-EXISTING by checking out `c96ce13` (the s122 close) and re-running them —
+identical failures there, and none touches a file this commit changed. They are
+NOT inherited as "ordering noise" (the s108e lesson); they are:
+`test_8915f::TestLandingChain` ×2 · `test_mar30_session4::TestAAANegative` ×2 ·
+`test_supporting_forms_spec::TestOfficerCompensationFlow` ×2 ·
+`test_section_179_diagnostics::test_family_registration` (a stale D_4562_ family
+list missing `D_4562_BASIS`/`DEST`/`RECON`, all added by the s116/s118
+depreciation legs) · `test_tts_forms::TestManifest::test_manifest_is_valid_json`
+(expects 93 manifest entries; there are 95). **The last two are one-line
+re-pins someone should take** — they are stale expectations from completed work,
+exactly the class that hid a real bug in s108e.
+
 ## ▶ NEXT (cold-start pointer)
 
 **Ken's call on pushing 0221.** Then: **Form 2210 Part II boxes A/B/D/E** (the
