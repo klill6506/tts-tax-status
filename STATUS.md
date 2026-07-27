@@ -69,31 +69,55 @@ anything. Entity arm modeled; 19/19 green, with a negative control run to
 prove the new K12b override check actually fails when broken.
 
 ## ▶ NEXT (cold-start pointer)
-Item 15 (source-summary/conversion mode) — **still awaiting Ken's A/B/C pick**
-(rec C); it is also item 16's remaining fourth bullet. Then item-6-P1 GA
-residual (BLOCKED on the two GA REVIEW_QUEUE questions) · 2210 reconciliation
-panel. Spine otherwise idle — Ken directs.
+
+**KEN DECIDED 2026-07-27 (s121 close): item 15 = Option C — build A now, treat
+B as a separate later decision. Start s122 on Option A; do not re-ask.**
+
+**Option A scope (from `Design/item15_source_summary_proposal.md`):** a
+per-record `entry_basis` choice (`detail` / `source summary`) on the record
+types where conversion bites — interest/dividend payer rows, 8283 noncash
+items, 8949 broker-summary rows — plus a return-level banner. Then:
+- missing detail on a summarized record → **INFO**, worded "entered from a
+  source packet; detail not keyed" (not WARNING — converted returns must not
+  be wallpapered in yellow);
+- missing detail the IRS legally requires to file → **stays a blocking
+  ERROR**, but the finding lists exactly which facts are missing. The flag
+  never loosens a legally-required gate;
+- a per-return reconciliation panel riding the s112 generated-form manifest.
+Cost: one migration (flag on ~4 record types + the return), diagnostic
+condition edits, one new panel. **No compute changes** — totals already flow.
+
+**Direct tie-in to s121:** `D_8283_017` and `D_8283_005/007` are exactly the
+"lists which facts are missing" behavior Option A generalizes — build A's
+INFO-downgrade so it reads the same missing-fact lists rather than a second
+copy. This closes item 16's deferred fourth bullet at the same time.
+
+After item 15A: item-6-P1 GA residual (BLOCKED on the two GA REVIEW_QUEUE
+questions) · 2210 reconciliation panel. Option B (per-form "where did this
+number come from" provenance view) is **explicitly deferred, not dropped** —
+raise it again only after A ships.
 
 ## Known follow-ups from s121 (tracked in DEFERRAL_AUDIT)
-- Item 16's **conversion/source-summary bullet is deferred** — it rides item
-  15, which is blocked on Ken's pick. Everything else in item 16 is done.
+- Item 16's **conversion/source-summary bullet is deferred into item 15A**
+  (Ken picked Option C at the s121 close, so it is now scheduled, not
+  blocked). Everything else in item 16 is done.
 - Section B still is not e-fileable (`UnmappableValue`, the J7 wet-ink
   appraiser/donee signature seam) — unchanged, pre-existing boundary.
 - 1065 MeF still has no `IRS8283` document (rides the future 1065 mapper).
 - `NoncashContribution` rows are per-return, not per-owner.
 
 ## ▶ Waiting on Ken / external
-1. **Item-15 pick (A / B / rec C)** — proposal at `Design/item15_source_summary_proposal.md`.
-2. s121 ratification (REVIEW_QUEUE): the `D_8283_017` severity ladder — most
+*(Item-15 pick RESOLVED 2026-07-27 — Option C, build A first. See ▶ NEXT.)*
+1. s121 ratification (REVIEW_QUEUE): the `D_8283_017` severity ladder — most
    notably the conservation arm that warns rather than errors.
-3. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
-4. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
-5. s114 ratifications: the 8867 rebuild's three judgment calls.
-6. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
-7. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+2. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
+3. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+4. s114 ratifications: the 8867 rebuild's three judgment calls.
+5. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+6. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-8. s112 ratification: manifest-aware RS amendment (mechanism only).
-9. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+7. s112 ratification: manifest-aware RS amendment (mechanism only).
+8. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
    vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
    CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
    s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
