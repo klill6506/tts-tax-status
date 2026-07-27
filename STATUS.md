@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-27, session 123 (QA Batch-001 item 10 — Form 2210
-reconciliation panel + Part III face **BUILT**; RS `7bdad04` seeded + deployed
-export verified + mirrored; **migration 0221 STAGED, NOT APPLIED — awaiting
-Ken's push**).*
+reconciliation panel + Part III face **SHIPPED AND VERIFIED LIVE**; RS
+`7bdad04`; app `167e908` + deploy fix `2eef57c` + diagnostic fix `42a854b`;
+migration 0221 applied BOTH DBs; `seed_rules` BOTH DBs after the deploy; panel
+probed on the deployed demo build).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -116,10 +117,10 @@ Batch-001 is now **13 of 16** done; opens = GA residual · the two QA cases item
 detail).
 
 ## ▶ Waiting on Ken / external
-1. **PUSH GATE: migration 0221** (three additive nullable/blank Taxpayer fields
-   for the documented source override). Staged, not applied.
-2. s123 ratifications (REVIEW_QUEUE): the narrowed 2210 e-file policy · Part II
-   box sequencing (incl. box D) · D_2210_TIE at warning.
+1. s123 ratifications (REVIEW_QUEUE): the narrowed 2210 e-file policy · Part II
+   box sequencing (incl. box D) · D_2210_TIE at warning · **the stale-2210-face
+   fix when line 38 is overridden** (my recommendation is logged; it carries a
+   tax-law question about whether the worksheet prints at all).
 3. s122 ratification: the source-summary listing line (nominee/accrued/ABP arm).
 4. s121 ratification: the `D_8283_017` severity ladder (conservation arm).
 5. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
@@ -134,37 +135,92 @@ detail).
     CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
     s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
-## ⚠ NOT VERIFIED IN A BROWSER — and why
+## 🔴 THE FIRST DEPLOY FAILED — cause found and fixed (`2eef57c`)
 
-**The panel has NOT been probed live.** Migration 0221 is unapplied on both
-shared DBs (Ken's gate), and Django selects every model field, so the new
-`t2210_penalty_source_amount` column makes **every 1040 taxpayer query fail**
-against an un-migrated DB — the demo editor 500s before the tab renders. I did
-not migrate the demo DB to get around it; that is Ken's trigger to pull.
+Ken said push. It went out as `167e908`, **migrations applied to BOTH shared
+DBs, and the code never shipped.** The s105 shape exactly: `build.sh` runs
+`migrate` then `seed_all` under `set -o errexit`, so a raise in a seeder kills
+the build *after* the databases have moved forward.
 
-**Consequence for the deploy, and it is not a soft one:** this code **cannot**
-ship without 0221 landing in the same deploy. Code-without-migration is not
-degraded, it is a broken 1040 for every client. Render runs `migrate` in the
-build, which is the normal path — but the two must go together.
+**Cause: `FormFieldValue.form_line` is `on_delete=PROTECT`.** My
+`_retire_superseded_lines` deleted the FormLine rows directly, which raises the
+moment any return holds a value on them — the shared DBs carried **108** such
+rows. Proved by running the delete inside a rolled-back transaction against the
+real database. Dependents are now deleted first; the overridden-row guard still
+refuses to touch entered data.
 
-**First thing after the push:** open a 1040 with a penalty on the demo build and
-confirm the panel renders (Part I with the harbor line, the Section A columns,
-the accrual trace). That is the s114 check — four green server legs and a full
-vitest run once missed a whole tab that never rendered.
+**Why every test missed it:** a fresh test DB has no value rows attached when
+the seeder runs, so the delete had nothing to protect against. Two new tests
+attach values first (the production shape) and pin that an overridden row is
+still left alone.
+
+**A second regression the fix surfaced, caught before shipping:** with no
+`--year` (how `seed_all` invokes it) only 2025 seeded, but the shared DBs also
+carry a **TY2026** FORM_2210. It would have kept the superseded numbering while
+compute wrote the corrected one — every `_write_row` no-opping, and a TY2026
+return **silently rendering no 2210 face at all**. A no-arg run now seeds the
+default year plus every year that already has a definition.
+
+**How the failure was detected — behaviour, not the bundle hash.** The bundle
+was unchanged, which alone reads as "still building". The decisive probe: an
+existing route (`k1-allocations`) answered **403** on both services while
+`form-2210-reconciliation` answered **404** — route absent, code not live.
+
+**Verified before re-pushing:** the fixed seeder dry-run inside a rolled-back
+transaction against BOTH shared DBs — no superseded rows left, prod 94 lines
+(47 × two years), demo 47, neither database changed. 600 tests green.
+
+## ✅ DEPLOY VERIFIED LIVE — and the probe found one more thing
+
+**Verified by BEHAVIOUR, not just the bundle hash.** The decisive check: an
+existing route (`k1-allocations`) answers **403** while the new
+`form-2210-reconciliation` answered **404** — route absent. After `2eef57c` it
+answers **403** on prod, demo, and prep. Bundle rolled `index-CVBMlEDz.js` →
+`index-D9JtpMC0.js`; six new markers present, **and the marker method itself was
+validated with control strings** (my first asset path was wrong and 404'd, so
+every count including the "baseline" was measuring nothing).
+
+**`seed_rules` run on BOTH DBs AFTER the deploy** (the required order):
+`D_2210_SRC` and `D_2210_TIE` present + active + severity `warning` on both;
+D_2210 family 8/8. Superseded lines retired: **0 remaining** on both DBs
+(prod 94 FORM_2210 lines = 47 × two years, demo 47).
+
+**Live probe on the deployed demo build** (return with a $141 penalty). The
+panel renders in full: Part I lines 1-9 with "← sets line 9" on the controlling
+harbor and line 8 reading *"not available — no prior-year tax entered"*; the
+Section A grid across all four columns; and the Section B accrual table with
+per-chunk day counts at 7%. Computed penalty 141.00, matching the engine.
+
+### The probe found a PRE-EXISTING defect (logged, not fixed)
+
+The header showed **$70** while the panel derived **$141**. Cause:
+`compute_2210_db` returns early whenever 1040 line 38 carries a preparer
+override, so the FORM_2210 rows are neither refreshed nor blanked — the face
+keeps a stale penalty. On that return line 38 is deliberately **blank** (the
+i2210 "let the IRS figure it and bill you" election, which the ATS scenarios
+model), line 19 still held $70 from an older run, and the current facts derive
+$141. The $70 would print.
+
+`D_2210_TIE` was firing there and blaming the preparer for splitting two
+numbers. **Fixed in `42a854b`:** a blank line-38 override is recognised as the
+election, and the finding now names the stale worksheet amount and says to
+recompute. The early return itself is UNTOUCHED — it is a deliberate rule and
+the fix carries a tax-law question (should the 2210 print at all when the IRS is
+asked to figure the penalty?). Recommendation logged in REVIEW_QUEUE.
 
 ## Active gates
-- **Deploy: NOTHING PUSHED this session.** Last live deploy is s122's `22a7dd7`.
-- **DB state: migration 0221 STAGED, NOT APPLIED to either DB.** Additive only —
+- **Deploy: `42a854b` VERIFIED live** on prod + demo + prep (route 403, bundle
+  `index-CVBMlEDz.js` → `index-D9JtpMC0.js`, six markers present with the grep
+  method control-validated). The FIRST attempt (`167e908`) failed — see above.
+- **DB state: migration 0221 APPLIED to BOTH DBs.** Additive only —
   `t2210_penalty_source_amount` (nullable decimal; NULL means "no override",
-  deliberately distinct from an override of $0), `_label`, `_note`. No existing
-  row changes behaviour.
-- **Seeder note for the deploy:** `seed_form_2210` now DELETES the two
-  superseded bare rows ("18"/"25") and their compute-written values, which the
-  next recompute rebuilds. It REFUSES to touch any row a preparer has
-  overridden. Audited 2026-07-27 on the shared DB: 15 returns hold FORM_2210
-  values, **0 overridden anywhere**.
-- **Rule catalogue:** `seed_rules` must run on BOTH DBs **AFTER** the deploy
-  (the required order) for the new `D_2210_SRC` / `D_2210_TIE`.
+  deliberately distinct from an override of $0), `_label`, `_note`.
+- **Seeder:** `seed_form_2210` retires the superseded bare rows ("18"/"25") —
+  dependent value rows first (`FormFieldValue.form_line` is PROTECT), refusing
+  any row a preparer overrode. Verified post-deploy: **0 superseded rows remain**
+  on either DB. A no-arg run now seeds every year that has a definition.
+- **Rule catalogue:** `seed_rules` RUN on both DBs after the deploy —
+  `D_2210_SRC` / `D_2210_TIE` present, active, warning; D_2210 family 8/8.
 - **RS:** `FORM_2210` at `7bdad04` — 15 facts / 5 rules / 21 lines / 8
   diagnostics / 14 scenarios / 9 flow assertions; **already live** (RS's own
   Supabase project backs the deployed instance), export verified and mirrored
