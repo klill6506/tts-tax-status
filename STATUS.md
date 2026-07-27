@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 120 (Form 4562 Leg 4 — conversion-scale
-entry SHIPPED `202559d`; deploy VERIFIED live in-session).*
+*Last updated: 2026-07-27, session 121 (QA Batch-001 item 16 — structured
+Form 8283 workflow SHIPPED `3ed3c76`; RS `0c8fc7f`; no migration).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -9,78 +9,109 @@ entry SHIPPED `202559d`; deploy VERIFIED live in-session).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s119 and s120 detail are archived in `STATUS_ARCHIVE.md`.)*
+- *(s119–s120 detail is archived in `STATUS_ARCHIVE.md`.)*
 
 ## ▶ RESUME HERE
 
-**s120 (2026-07-26): Form 4562 Leg 4 — conversion-scale entry SHIPPED
-(`202559d`, no migration).** The QA Batch-001 item-6 depreciation rebuild
-is COMPLETE — all four legs (s116 routing/rounding · s117 entry integrity ·
-s118 basis fidelity/§280F arms · s120 conversion-scale entry):
+**s121 (2026-07-27): QA Batch-001 item 16 — structured Form 8283 workflow
+SHIPPED** (app `3ed3c76`, RS `0c8fc7f`, **no migration**).
 
-1. **Published CSV template** + parser (aliased headers, per-row errors);
-   Template / Export CSV buttons on the Depreciation tab (round-trip:
-   export → edit in Excel → re-import).
-2. **Paste rows** — spreadsheet rows pasted straight in (header row
-   required) preview through the same server parser.
-3. **Preview projects the engine result per row** — projected current-year
-   column, fully-depreciated badges, batch total, resolved Activity;
-   commit is idempotent and runs the full recompute.
-4. **Activity column** resolves to Sch C/E/F by name (C:/E:/F: prefixes;
-   blank auto-links a single-activity return, else unassigned + warning).
-5. **Bulk assignment** (`depreciation/bulk-update`): activity / method /
-   convention / life / group over any selection; filter bar (search,
-   activity, group, status incl. Fully depreciated).
-6. **Fully-depreciated legacy inventory is first-class**: imports at $0,
-   badged, filterable — ACCEPTANCE test-pinned: 7 active + 39 legacy rows
-   import without changing the current-year result.
-7. **Lacerte boundary fixes**: snake-case group labels normalized (a
-   Lacerte land asset would previously DEPRECIATE); bonus % suggestion now
-   year-1-only (continuing assets were getting 40% stamped on remaining
-   basis).
+Audit-first held for the **fourth** time: item 16 was ~80% already built —
+the `NoncashContribution` model, `compute_8283`, `render_8283` + AcroForm
+map, the MeF `IRS8283` document, 16 diagnostics and the client item grid all
+shipped in the s57 1040 leg and the s65 entity amendment. Four real gaps
+remained, all now closed:
 
-**Gates green:** NEW server `test_4562_leg4_bulk_entry.py` **16** ·
-depreciation regression subset **97** · lacerte parser **39** · NEW client
-`depreciationLeg4Entry.test.tsx` **10** · client vitest **511/511** · tsc
-**52 baseline** · live demo probe green end-to-end (demo DB restored).
+1. **Reconciliation** (RS `R-8283-RECON` / `D_8283_017`). `R-8283-SCHA12`
+   lets a flat line-12 entry override the 8283 row total per field
+   (deliberate, unchanged) — but the override was **silent**: the printed
+   Form 8283 carried the rows, line 12 carried the override, and nothing
+   compared them. A conversion keeping a packet total but keying only part
+   of the detail claimed the difference with no form item behind it. The
+   1065 already had this guard (`D_8283_016`); the 1040 did not.
+   **Effect-scaled** (the `D_4562_DEST` convention): error when line 12
+   exceeds the non-withheld row total with no withheld row present; warning
+   on the reversed delta; **warning whenever a conservation/historic row is
+   present** — `D_8283_006` has the preparer key the allowable amount by
+   hand, so a gap is expected there. No amount moves.
+2. **1040 finding routing** — `RULE_TAB_MAP`'s 1040 scope had **no
+   `D_8283_` entry at all** (both entity scopes did), so every 8283 finding
+   on a 1040 produced no tab dot and nothing to click.
+3. **Line-12 guidance** (the literal item-16 ask) — the Schedule A line-12
+   fields had no >$500 notice and no link into the item workflow. Inline
+   notice mirroring the server ladder + a jump that scrolls to and
+   highlights the grid; `CONSERVATION_TYPES` exported so card and grid share
+   one transcription.
+4. **Missing facts** — `D_8283_005/007` named the offending item but not
+   *which* facts were missing. They now list the specific columns
+   ((e)/(f)/(g)), row facts, zero amounts and out-of-year dates.
+
+Plus **Form 8283 registered in the s112 generated-form manifest** (it was
+absent, so `is_form_generated` returned False), calling `render_8283` itself
+so the $500 engagement gate has no second copy.
+
+**QA acceptance pinned verbatim:** a synthetic $1,100 noncash aggregate with
+no detail keeps the $1,100 Schedule A total, blocks, and lists the missing
+facts; after complete entry the form generates and every finding clears with
+itemized deductions unchanged.
+
+**Gates green:** NEW server `test_8283_item16_recon.py` **13** · 8283 band
+**46** · Schedule A legs **40** · manifest **10** · flow assertions **521** ·
+NEW client `form8283Item16.test.tsx` **14** · vitest **525/525** · tsc **52
+baseline** · live demo probe green end-to-end (error arm with correct
+numbers, jump+highlight, the real runner fired `D_8283_017`; demo restored).
+
+**Also fixed (off-scope, never silent):** RS `check_8283_integrity.py` had
+been **RED since the s65 entity amendment (2026-07-12)** — T14/T15/T16 were
+authored without extending the harness's transcription, so all three
+reported "expected key not produced" and the gate had stopped meaning
+anything. Entity arm modeled; 19/19 green, with a negative control run to
+prove the new K12b override check actually fails when broken.
 
 ## ▶ NEXT (cold-start pointer)
-The spine: item 15 (source-summary proposal — awaiting Ken's A/B/C pick,
-rec C) · item 16 · item-6-P1 GA residual (BLOCKED on the two GA
-REVIEW_QUEUE questions) · 2210 reconciliation panel. Spine otherwise idle —
-Ken directs.
+Item 15 (source-summary/conversion mode) — **still awaiting Ken's A/B/C pick**
+(rec C); it is also item 16's remaining fourth bullet. Then item-6-P1 GA
+residual (BLOCKED on the two GA REVIEW_QUEUE questions) · 2210 reconciliation
+panel. Spine otherwise idle — Ken directs.
 
-## Known follow-ups from s120 (tracked in DEFERRAL_AUDIT)
-- Import/bulk-update don't feed the s119 header saveScope pill yet
-  (DepreciationSection still runs its own local queue/pill).
-- Paste grid requires the header row (headerless pastes rejected with
-  guidance — deliberate).
-- TaxWise-native file parsing stays out (CSV template + paste covers
-  conversions, per the approved proposal).
+## Known follow-ups from s121 (tracked in DEFERRAL_AUDIT)
+- Item 16's **conversion/source-summary bullet is deferred** — it rides item
+  15, which is blocked on Ken's pick. Everything else in item 16 is done.
+- Section B still is not e-fileable (`UnmappableValue`, the J7 wet-ink
+  appraiser/donee signature seam) — unchanged, pre-existing boundary.
+- 1065 MeF still has no `IRS8283` document (rides the future 1065 mapper).
+- `NoncashContribution` rows are per-return, not per-owner.
 
 ## ▶ Waiting on Ken / external
-1. Item-15 pick (A / B / rec C) — proposal at `Design/item15_source_summary_proposal.md`.
-2. s118 ratifications (REVIEW_QUEUE): §280F AMT-arm derivation · GA no-bump table.
-3. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
-4. s114 ratifications: the 8867 rebuild's three judgment calls.
-5. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
-6. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+1. **Item-15 pick (A / B / rec C)** — proposal at `Design/item15_source_summary_proposal.md`.
+2. s121 ratification (REVIEW_QUEUE): the `D_8283_017` severity ladder — most
+   notably the conservation arm that warns rather than errors.
+3. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
+4. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+5. s114 ratifications: the 8867 rebuild's three judgment calls.
+6. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+7. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-7. s112 ratification: manifest-aware RS amendment (mechanism only).
-8. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+8. s112 ratification: manifest-aware RS amendment (mechanism only).
+9. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
    vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
    CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
    s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s120 push `202559d`+`84f2b8c` **VERIFIED live in-session** —
-  prod + demo bundles rolled `index-Drjjuvdj.js` → `index-DQfYbJEX.js`;
-  marker `Paste assets from a spreadsheet` ×1 vs the 0-hit pre-push
-  baseline. Nothing pending.
-- **DB state:** no new migrations (latest remains 0219, applied BOTH DBs
-  in s119).
-- **RS:** 4562 spec at `51371ec` (unchanged — Leg 4 is entry tooling, no
-  tax-law change); FA-4562 staged entries unchanged (s118).
+- **Deploy:** s121 push `3ed3c76` **VERIFIED live in-session** — prod + demo
+  bundles rolled `index-DQfYbJEX.js` → `index-BhoKt46x.js`; markers
+  `no item on the form to support it` / `Enter the Form 8283 items` /
+  `Review the Form 8283 items` each ×1 against the 0-hit pre-push baseline.
+  Nothing pending.
+- **Rule catalogue:** `seed_rules` run on **BOTH DBs after the deploy** (the
+  required order — the runner turns an unresolvable `rule_function` into a red
+  finding, so seeding first would have put a spurious error on every 1040 on
+  prod; a deploy does **not** run `seed_rules`). Verified: `D_8283_017` present
+  and active on both, D_8283 family 17/17 on both.
+- **DB state:** no new migrations (latest remains 0219, applied BOTH DBs in s119).
+- **RS:** 8283 spec at `0c8fc7f` (10 rules / 17 diagnostics / 19 scenarios);
+  deployed export verified and mirrored to `server/specs/8283_spec.json`.
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged from s113).
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
