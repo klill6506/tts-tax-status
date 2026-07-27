@@ -1,5 +1,33 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-26 session 118 — FORM 4562 LEG 3: BASIS FIDELITY + §280F
+> PARALLEL-ARM CAPS (QA Batch-001 item 6, approved proposal leg 3)** (RS
+> `51371ec` — R018/R019 + D_4562_BASIS, seeded + export-verified, mirror
+> refreshed; app `bb2935e`; mig 0218 + seed_rules BOTH DBs). **Split basis
+> history:** `original_cost` (null ⇒ equals cost_basis — pre-Leg-3 fleet
+> byte-identical) + `prior_bonus_depreciation`; cost_basis stays the
+> engine's depreciable-basis input (no recompute change — Ken's
+> add-fields-only pick). Barn pin: 9,010 / 4,505 prior bonus / 4,505
+> depreciable → current still **266**; card shows derived Accum (EOY)
+> 5,971 / Adjusted Basis 3,039 (serializer year-aware — no year-1
+> §179/bonus double count). **Disposal + §1250-additional math on the
+> split fields at every site** (compute / views / rules_4797 / renderer /
+> MeF read_model — bridge parity) via the ONE property
+> `disposal_cost_basis`. **§280F caps now bind the AMT refigure (same
+> table as federal — §280F(a)(1)(A) statutory derivation, i6251 SILENT,
+> flagged) and the GA arm (NO-bonus table — §168(k)(2)(F)(i)
+> nonconformity; GA was previously UNCAPPED)**, and the cap runs AFTER
+> the ≤50% SL recompute (previously escaped it). Both §280F judgment
+> calls → REVIEW_QUEUE. **New diagnostic:** D_4562_BASIS (effect-scaled
+> error/warning, only when original_cost keyed). Stale-pin repair:
+> schedule_e_depreciation_flow 6,812.59 → 6,813 (the cents pin the s116
+> repin missed; fails on unmodified HEAD). Gates: NEW
+> `test_4562_leg3_basis_fidelity.py` **12** · depr/4797/render **148** ·
+> flow **521** · mef_1120s **75** · schF **20** · vitest **469** · tsc 52
+> baseline. Live demo probe green (fields render → 9,010 save → Saved ✓ →
+> adjusted 8,460 → cleared/restored). ▶ Leg 4 queued (paste grid / CSV /
+> bulk assignment / legacy inventory).
+
 > **2026-07-26 session 117 — FORM 4562 LEG 2: ENTRY INTEGRITY (QA Batch-001
 > item 6, approved proposal leg 2)** (app `73a9d50`; client-only — no
 > migrations, no RS spec change, no compute/render change). **Add Asset is
