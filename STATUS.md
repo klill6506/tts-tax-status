@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-26, session 119 (autosave stabilization — built and
-tested; COMMITTED BUT NOT PUSHED, see the deploy gate).*
+*Last updated: 2026-07-26, session 119 (autosave stabilization — SHIPPED,
+deploy verified live; migration 0219 applied to BOTH DBs by the deploy).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,7 +13,8 @@ tested; COMMITTED BUT NOT PUSHED, see the deploy gate).*
 
 ## ▶ RESUME HERE
 
-**s119 (2026-07-26): autosave stabilization BUILT + TESTED, push held.**
+**s119 (2026-07-26): autosave stabilization SHIPPED (`2e44e31`, deploy
+verified live in-session).**
 The "stuck on Saving…/Calculating…, fields vanish on reload, duplicate blank
 state rows, silent Add failures" family is closed end-to-end:
 
@@ -46,25 +47,20 @@ failure-and-retry, slow calc) · tsc **52 baseline (unchanged)** · server
 `test_autosave_stabilization.py` **9/9** + mutation-recompute/8879/schD/
 entry-layer subset (isolated test DB).
 
-## ⚠ ACTIVE GATE — migration 0219 / deploy order (Ken decides)
-- New server code reads `TaxReturn.revision` → it **cannot run against a DB
-  that hasn't applied `returns/0219`** (every TaxReturn query errors).
-- Ken declined running migrate against the shared DBs in-session, so:
-  **committed locally, NOT pushed.** Pushing to main deploys, and both
-  Render services run `migrate --noinput` at start — the deploy applies
-  0219 to prod + demo automatically (additive: one bigint column default 0,
-  one new RLS-enabled table).
-- Until 0219 applies, a local `runserver` on this commit breaks against
-  both shared DBs. **Next action: Ken says "push" (deploy auto-migrates) or
-  runs migrate manually first.**
-- Post-deploy verification: bundle marker `Calculation failed — data saved`
-  (new-code-only string; take the zero-hit baseline BEFORE the push).
+## ✅ 0219 gate RESOLVED (Ken said push, 2026-07-26)
+- Pushed `2e44e31`; both Render services rolled `index-Bg17tHbm.js` →
+  `index-Drjjuvdj.js`; marker `Calculation failed — data saved` ×1 vs the
+  0-hit pre-push baseline; prod + demo both serving 200 ⇒ `migrate
+  --noinput` applied **0219 on BOTH DBs** (it runs before gunicorn).
+- Local `runserver` against either DB works again on this commit.
 
 ## ▶ NEXT (cold-start pointer)
-1. Resolve the 0219 gate above (push → verify deploy → live demo probe of
-   the new header pill / Retry / pending Add buttons).
-2. Then back to the BUILD_ORDER spine: **depreciation Leg 4
-   (conversion-scale entry)** — unchanged from s118.
+Back to the BUILD_ORDER spine: **depreciation Leg 4 (conversion-scale
+entry)** — paste grid · CSV import/export with a published template · bulk
+assignment · filters · fully-depreciated legacy rows. Acceptance: the
+46-asset Benkoski inventory imports without changing the current-year
+result. (Optional first: a live demo probe of the new header pill / Retry /
+pending Add buttons — the 32 vitest UI tests cover these states.)
 
 ## Known follow-ups from s119 (tracked in DEFERRAL_AUDIT)
 - Sch D / dependents / interest / dividend / Sch F row saves get timeouts +
@@ -77,23 +73,25 @@ entry-layer subset (isolated test DB).
   true async recompute is future work.
 
 ## ▶ Waiting on Ken / external
-1. **s119: the 0219 push/migrate decision (gate above).**
-2. s118 ratifications (REVIEW_QUEUE): §280F AMT-arm derivation · GA no-bump table.
-3. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
-4. s114 ratifications: the 8867 rebuild's three judgment calls.
-5. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
-6. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+1. s118 ratifications (REVIEW_QUEUE): §280F AMT-arm derivation · GA no-bump table.
+2. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+3. s114 ratifications: the 8867 rebuild's three judgment calls.
+4. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+5. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-7. s112 ratification: manifest-aware RS amendment (mechanism only).
-8. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+6. s112 ratification: manifest-aware RS amendment (mechanism only).
+7. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
    vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
    CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
    s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy:** s119 commit LOCAL ONLY (push held — 0219 gate). Last verified
-  live deploy remains s118 `bb2935e` (`index-Bg17tHbm.js`).
-- **DB state:** mig 0218 applied BOTH DBs; **0219 PENDING BOTH DBs**.
+- **Deploy:** s119 push `2e44e31` **VERIFIED live in-session** — prod +
+  demo bundles rolled `index-Bg17tHbm.js` → `index-Drjjuvdj.js`; marker
+  `Calculation failed — data saved` ×1 vs the 0-hit pre-push baseline.
+  Nothing pending.
+- **DB state:** mig 0219 applied BOTH DBs (by the deploy's
+  `migrate --noinput`).
 - **RS:** 4562 spec at `51371ec`; FA-4562 staged entries unchanged (s118).
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged from s113).
 
