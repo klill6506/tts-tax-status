@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-27, session 122 (QA Batch-001 item 15 — source-summary
-entry basis BUILT; RS `7cdf804`; app `1a02124` + `2d9a864`; **migration 0220
-NOT applied, nothing pushed — awaiting Ken**).*
+entry basis **SHIPPED**; RS `7cdf804`; app `22a7dd7`; migration 0220 applied
+BOTH DBs via the deploy; deploy VERIFIED live; `seed_rules` run BOTH DBs after
+the deploy).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,24 +13,22 @@ NOT applied, nothing pushed — awaiting Ken**).*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 - *(s119–s121 detail is archived in `STATUS_ARCHIVE.md`.)*
 
-## ▶ RESUME HERE — ONE DECISION IS WAITING
+## ▶ RESUME HERE
 
-**s122 built QA Batch-001 item 15 (Option A) end to end. Everything is
-committed locally and green. NOTHING IS PUSHED, because the push IS the
-migration decision (the s119 rule) and migration 0220 adds columns the new
-code selects.** Ken's go-ahead is the only thing outstanding.
+**s122 SHIPPED QA Batch-001 item 15 (Option A) end to end** — Ken approved the
+push in-session. Deploy verified live, migration applied, rules seeded, and the
+whole path exercised on a real demo return. **Nothing pending.**
 
-**The ship sequence, once Ken says go** (order matters — s121's lesson):
-1. `git push origin main` in `delvio-tax` (RS `7cdf804` is already pushed).
-2. The deploy runs `migrate` → 0220 lands on **both** DBs.
-3. **THEN** `seed_rules` on **BOTH** DBs — never before the deploy, or the
-   unresolvable `rule_function` for `D_INTDIV_012/013/014` becomes a red
-   finding on every 1040.
-4. Verify the deploy: bundle-grep markers `Add a source-packet total` /
-   `Source summary — no payer detail`. **Baseline not yet taken — take the
-   zero-hit baseline BEFORE pushing.**
-5. Live browser verify (blocked until 0220 is applied — the dev server shares
-   the production DB, so the UI cannot be exercised before the migration).
+**Live acceptance on the deployed build (demo return, then restored):** clicking
+"+ Add a source-packet total" created a dividend row with **no payer name**
+showing "Source summary — no payer detail", and the return-level banner appeared
+("1 dividend record entered from a source packet"). The QA-8621 amounts were
+ACCEPTED (200) — qualified 12,533 · capital gain 32,686 · foreign tax 68 ·
+§199A 43 — while box 1a was REFUSED (400) with the reason. After recompute:
+**line 3a = 12,533 · line 7 = 32,686 · line 16 = 61.** Line 16 computing is the
+whole point: that case used to leave the tax BLANK, which is what made the
+fabricated payer load-bearing. A fresh diagnostics run fired both
+`D_INTDIV_013` and `D_INTDIV_014` through the real runner.
 
 ### What the audit changed (fifth session running)
 
@@ -97,12 +96,14 @@ HEAD: `test_topic3_input_leg::test_exception_1_assertion_drives_line_7a`
 
 ## ▶ NEXT (cold-start pointer)
 
-After item 15 ships: **item-6-P1 GA residual** (BLOCKED on the two GA
+**item-6-P1 GA residual** (BLOCKED on the two GA
 REVIEW_QUEUE questions) · **2210 reconciliation panel**. Option B (per-form
 "where did this number come from" provenance view) stays **deferred, not
 dropped** — raise it only after A has run on real conversions.
 
-Batch-001 is now **12 of 16** done; opens = 15 (shipping) · GA residual · 2210.
+Batch-001 is now **12 of 16** done; opens = GA residual · 2210 panel · the two
+QA cases item 15 deliberately did NOT cover (W-2 boxes 3/5 unavailable, and a
+Schedule C net loss with no detail — separate record types, separate decisions).
 
 ## Known follow-ups from s122 (tracked in DEFERRAL_AUDIT)
 - The reconciliation view is the **banner + per-row control**, not yet a
@@ -117,31 +118,34 @@ Batch-001 is now **12 of 16** done; opens = 15 (shipping) · GA residual · 2210
   (pre-existing, harmless, logged in REVIEW_QUEUE — deliberately not fixed).
 
 ## ▶ Waiting on Ken / external
-1. **THE PUSH + migration 0220 on both DBs** (see ▶ RESUME HERE).
-2. s122 ratification (REVIEW_QUEUE): the source-summary listing line,
+1. s122 ratification (REVIEW_QUEUE): the source-summary listing line,
    specifically the nominee/accrued/ABP **adjustment** arm, which is my call.
-3. s121 ratification: the `D_8283_017` severity ladder (conservation arm).
-4. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
-5. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
-6. s114 ratifications: the 8867 rebuild's three judgment calls.
-7. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
-8. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
+2. s121 ratification: the `D_8283_017` severity ladder (conservation arm).
+3. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
+4. s115 ratifications: 8962 Part IV blank-pct · line 34/4-row cap · line-9 marriage-alt.
+5. s114 ratifications: the 8867 rebuild's three judgment calls.
+6. s113 ratifications: D_GA500_002 realignment · 2210 flat-7% · 7206 partner-arm scope.
+7. Item-6-P1 GA residual — BLOCKING questions: GA line 5 filing status from
    federal? · couple the GA deduction election to the federal election?
-9. s112 ratification: manifest-aware RS amendment (mechanism only).
-10. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
+8. s112 ratification: manifest-aware RS amendment (mechanism only).
+9. 86 backfill review rows (83 effective) · S-24 hub-ein blanking · auth env
     vars · A2A WSDL · WISP · SEC-5 · Resend · role assignments · e-services ·
     CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
     s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
 ## Active gates
-- **Deploy: NOTHING PUSHED.** Two local commits on `main` (`1a02124` server,
-  `2d9a864` client) awaiting Ken's go. RS `7cdf804` IS pushed and seeded.
-- **DB state: migration 0220 NOT APPLIED to either shared DB.** Additive —
-  three `entry_basis` columns (default `detail`); the two `payer_name`
-  AlterFields are Django-level only (`blank=True`), no column change, ~700
-  existing prod rows untouched.
-- **Rule catalogue:** `seed_rules` NOT yet run for `D_INTDIV_012/013/014` —
-  must run **after** the deploy, on BOTH DBs.
+- **Deploy: `22a7dd7` VERIFIED live in-session** — prod + demo bundles rolled
+  `index-BhoKt46x.js` → `index-CVBMlEDz.js`; markers `Add a source-packet
+  total` / `Source summary` / `entered from a source packet` each ×1 against
+  the 0-hit pre-push baseline. Nothing pending.
+- **DB state: migration 0220 APPLIED to BOTH DBs via the deploy** (`migrate
+  --check` clean). Additive — three `entry_basis` columns (default `detail`);
+  the two `payer_name` AlterFields are Django-level only, no column change,
+  existing rows untouched and unchanged in behavior.
+- **Rule catalogue:** `seed_rules` run on **BOTH DBs AFTER the deploy** (the
+  required order — seeding first would turn the unresolvable `rule_function`
+  into a red finding on every 1040). Verified: `D_INTDIV_012` (error) / `013`
+  (info) / `014` (info) present + active on both; D_INTDIV family 14/14.
 - **RS:** `1040_INTDIV` at `7cdf804` (18 rules / 11 diagnostics / 56 facts /
   18 scenarios); deployed export verified and mirrored verbatim to
   `server/specs/intdiv_spec.json`.
