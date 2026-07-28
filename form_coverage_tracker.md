@@ -1,5 +1,50 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-27 session 124 — FORM 4562 `D_4562_RECON` AMENDED FOR THE §179
+> BUSINESS-INCOME LIMITATION** (RS `6e61341` → R020, seeded/export-verified/
+> mirrored; app leg green; **no migration**). Found while settling the 8
+> pre-existing suite failures, NOT from a QA report: widening the stale
+> `D_4562` family list made the rule visible on the §179 pipeline test, and it
+> was raising a **BLOCKING error on a CORRECT return**. The s116 condition was
+> unconditional per-destination equality, which cannot survive §179(b)(3)(A) —
+> $10,000 of equipment fully elected against $8,000 of Schedule C income
+> legitimately puts the ALLOWED 8,000 on Schedule C line 13 and carries 2,000
+> to Form 4562 line 13, while the asset module still holds the full election.
+> **Ken approved the two-part fix in-session** over downgrading the severity or
+> deferring. Now: **(a)** every destination must carry at least its NON-§179
+> total (less = ordinary depreciation that failed to route, the original
+> silent-skip class, still blocking); **(b)** the §179 that landed across the
+> business and farm schedules must equal **line 12**, the amount allowed after
+> the limitation. With no §179 on the return the two parts collapse to the
+> original strict equality — **strictly stronger** for the ordinary return, not
+> a relaxation. RS harness re-implements the PRE-amendment condition as a
+> negative control (proves the amendment changes a real verdict); **three
+> perturbation controls each observed failing**. Read-only prod scan: 2 tax
+> years carry a §179 asset, neither currently tripping it — the defect was
+> reproducible but had not yet bitten a stored return. **GATES:**
+> `test_section_179_diagnostics.py` **13** (4 new `test_recon_*` = the RS
+> scenario oracles) · depreciation/diagnostics band **680** · flow assertions
+> **521**. **RATIFICATIONS OPEN** (REVIEW_QUEUE): accrual Schedule F scoped out
+> of part (b) · part (b) standing down in the pure-prior-year-carryover shape.
+
+> **2026-07-27 session 124 — SUITE GATE: all 8 pre-existing failures settled**
+> (app `931f4a6`; tests + one seeding fix, no product code). Re-run in
+> ISOLATION first: all 8 still failed, so none was ordering noise (s108e).
+> Five were **stale expectations** — the `D_4562` family list predating
+> DEST/BASIS/RECON · the manifest trip-wire at 93 vs 95 (f8879 + f8878 from
+> s94) · `TestOfficerCompensationFlow` on the pre-renumber 1120-S page-1
+> numbering (the 2025 face is 21 = total deductions, 22 = OBI) · and
+> `TestAAANegative`, which pinned "distributions can drive AAA negative" —
+> **wrong law** (Reg. §1.1368-2(a)(3)(iii) reduces AAA by distributions but NOT
+> BELOW ZERO; RS `1120S_M2` R002 corrected 2026-07-12). That class is
+> **RETIRED**, not rewritten, because `test_1120s_spec.py` already pins both
+> arms. The sixth was a **real coverage hole**: `test_8915f::TestLandingChain`
+> asserts Schedule 2 line 8, whose writer is gated on the 5329 form definition
+> AND on SCH_2 being seeded — the module seeded neither, so those assertions
+> had never tested anything and only ever passed on seeds leaked from another
+> module's `django_db_blocker` fixture. Product path proved correct first
+> ($18,000 code-1 → $1,800), then the module made self-sufficient.
+
 > **2026-07-27 session 123 — FORM 2210 RECONCILIATION + PART III FACE (QA
 > Batch-001 item 10, second half)** (RS `7bdad04` seeded/verified/mirrored;
 > app **NOT PUSHED — migration 0221 staged, Ken's gate**). Item 10's first

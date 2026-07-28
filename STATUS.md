@@ -1,10 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-27, session 123 (QA Batch-001 item 10 — Form 2210
-reconciliation panel + Part III face **SHIPPED AND VERIFIED LIVE**; RS
-`7bdad04`; app `167e908` + deploy fix `2eef57c` + diagnostic fix `42a854b`;
-migration 0221 applied BOTH DBs; `seed_rules` BOTH DBs after the deploy; panel
-probed on the deployed demo build).*
+*Last updated: 2026-07-27, session 124 (suite-gate settlement — all 8
+pre-existing failures explained and closed — plus the Form 4562 `D_4562_RECON`
+§179 fix that work uncovered; app `931f4a6` + the RECON leg; RS `6e61341`;
+**no migration**).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,115 +11,183 @@ probed on the deployed demo build).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s119–s122 detail is archived in `STATUS_ARCHIVE.md`.)*
+- *(s119–s123 detail is archived in `STATUS_ARCHIVE.md`.)*
+
+## ✅ PUSH-HOLD LIFTED AND PUSHED — Ken's call, 2026-07-27 evening
+
+`91f303d..9abe664` is on origin/main. 15 commits went together: s124's §179
+RECON fix, the parallel session's TB-import/mappings work, and Plan 2's SSO
+trust layer. Working tree verified green before pushing (72 mappings/import-TB
+tests + 114 sso/auth tests).
+
+**Two migration sets ride this deploy — verify both applied:**
+- `mappings/0002_mappingtemplate_form_code.py` — **not additive-only**: adds
+  `form_code`, backfills, then **drops `one_default_per_firm` and replaces it**
+  with a per-form unique constraint. This was the reason for the hold.
+- `sso/0001_initial` + `sso/0002_enable_rls_on_supabaseidentity` — new table
+  only, additive, RLS default-deny.
+
+**Still owed after this deploy (house rule: migrations run against BOTH DBs):**
+1. Confirm Render's deploy applied the migrations to **prod**, then run the
+   **demo** leg by hand: `TTS_ENV=demo migrate`. A drifted demo is a broken
+   sales demo (DECISIONS.md).
+2. Probe the live site, not the deploy status — the launcher go-live lesson
+   was that a green deploy proves nothing about what is served.
+3. Run `powershell -File scripts\sync_status_mirror.ps1` for the
+   `tts-tax-status` mirror (held while this was unpushed; `BUILD_ORDER.md` is
+   already edited locally in `D:\dev\tts-tax-status` and the sync's
+   `git add -A` will carry it).
+
+⚠ The parallel session still had **uncommitted** work in the tree at push time
+(`server/apps/returns/views.py` modified, plus untracked
+`server/apps/returns/tb_import.py` and `server/tests/test_tb_import.py`).
+Those were deliberately NOT staged — they are that session's to finish. Nothing
+committed references them, so what shipped is self-contained.
 
 ## ▶ RESUME HERE
 
-**s123 built QA Batch-001 item 10 (Ken scoped "panel + Part III grid"
-in-session).** Rule Studio leg is SHIPPED and live. The app leg is complete and
-green but **NOT pushed — migration 0221 is staged and Ken pulls that trigger**
-(push = deploy = migrate on the shared DBs).
+**PLAN 2 IS BUILT AND GREEN, FLAG-OFF — 3 commits, still UNPUSHED behind the
+hold above.** Ken's directive (2026-07-27 evening) was the SSO trust layer in
+this repo. Done through Task 7 of
+`delvio-launcher/docs/superpowers/plans/2026-07-27-delvio-tax-sso-trust-layer.md`
+(plan doc written before the code, as directed).
 
-### The audit changed the work again (sixth session running)
+New `apps/sso/`: reader for the Launcher's chunked `sb-<ref>-auth-token`
+cookie, ES256 JWT verification against the project JWKS, a `SupabaseIdentity`
+mapping table + migration (**generated, NOT applied** — push-hold),
+`app_access('tax')` enforcement, middleware + DRF auth class, and the SPA
+login redirecting to the Launcher. **114 tests green** (59 new sso + 55
+existing auth/session/firm, no regressions). `SSO_ENABLED` defaults false, so
+main behaves exactly as it did.
 
-**The $1–3 deltas the QA reported were already fixed.** Re-running both QA fact
-patterns against current code: the MFJ high-income case computes **289** (was
-286) and the single-retiree case **189** (was 188) — both exact against the
-prior software. s113's flat-7%-through-4/15 correction closed them. Item 10's
-first half needed nothing.
+**Before this can go live (Plan 2 Task 8 tail, then Plan 3):**
+1. Ken lifts the push-hold -> push -> the `sso` migration applies on BOTH DBs.
+2. Flag-on rehearsal against the real project with Ken's own login, local
+   only — including confirming which `auth_user` row is his. That table holds
+   just 4 rows and the launcher's notes assume `id=2`; verify, don't assume.
+3. `SSO_ENABLED=true` on Render only at cutover, with `SSO_REQUIRE_AAL2`
+   staying false until MFA enrollment is done (that split is deliberate —
+   see DECISIONS.md).
 
-**What was actually missing was the reconciliation view**, and it is worth more
-than $3. Compute derived per-period installments, per-period underpayments, day
-counts and per-payment accrual — then discarded all of it, storing only the
-first installment and the SUM of the underpayments. On screen a preparer got one
-sentence with the total. On the single-retiree return, entering the packet's
-prior-year figures drops the penalty **189 → 0**; nothing on screen said the
-safe harbor was what moved it.
+**Four findings from the prep-step auth audit that change Plan 3's scope:**
+- **delvio-1099 reads DIFFERENT cookie names** (`sb-access-token`) than the
+  Launcher writes (`sb-<ref>-auth-token`, chunked). Setting `COOKIE_DOMAIN`
+  there shares its OWN cookie — it will NOT see the Launcher session. Port
+  `apps/sso/cookies.py`; it was written dependency-free for exactly that.
+- **delvio-1099 auto-enrols any authenticated user as `staff`**
+  (`api/auth.py:91-117`). Under a shared suite cookie that silently grants
+  everyone 1099 access. Security fix; must land before 1099 joins.
+- **sherpa-portal is on `portal.delvio.com`** — a different zone — and its
+  staff surface is Django admin only. Its client magic-link sessions ride the
+  same `sessionid` cookie, so widening `SESSION_COOKIE_DOMAIN` there would
+  broadcast CLIENT sessions suite-wide.
+- **Check-In has no staff auth at all** on `/desk/*` (shared password on
+  `/admin` only). Build-from-zero retrofit, not a migration.
 
-### Three defects the audit turned up, none previously logged
+The design doc's "the other apps already speak Supabase" holds for 1099 only.
+Full audit table + the three design departures: plan doc §1-§2; departures
+recorded in DECISIONS.md ("P2b trust layer — four build decisions").
 
-1. **The stored Part III line numbers came from a SUPERSEDED Form 2210.** The
-   2025 face runs Part III Section A as lines **10-18** (10 = required
-   installment, 17 = underpayment, 18 = **overpayment**). The app stored the
-   installment on "18" and the underpayment on "25" — and Part III has no line
-   25 at all (25 is a Schedule AI line). RS carried the identical numbering.
-   Confirmed three ways: the face text, the widget grid (exactly nine 4-column
-   rows + line 19), and the IRS template's own subform names
-   (`SectionATable[0].Line10[0]` … `Line18[0]`). Line "25" is **retired**, not
-   left beside its replacement.
-2. **Part I lines 1/2/3/6/8 were never rendered.** The printed form showed line
-   9 as "the smaller of line 5 or line 8" with **line 8 blank** — the
-   prior-year safe harbor, the exact number the QA called unauditable.
-3. **Section A's allocation was wrong for late payments.** The old code carried
-   only OVERPAYMENTS forward; the face's line 14 makes each column's payments
-   cover the previous column's unpaid balance first. A $5,000 payment in period
-   3 against $2,500 installments used to report periods 3-4 as paid; the form
-   reports all four still short. **No penalty changed** — Section B already
-   applied payments earliest-first.
+**s123's Form 2210 work is fully shipped and verified live** — nothing left
+hanging there (deploy `42a854b`, migration 0221 on BOTH DBs, `seed_rules` run
+after the deploy). No open in-app bug reports.
 
-**A correction I made to my own framing, on Ken's challenge.** I had said the
-2210 is never transmitted, citing s75. Ken pushed back; he was right. IRS rule
-**F2210-002-02** (Active/Reject, read from the business-rules file this repo
-holds) says a transmitted 2210 must carry one of Part II boxes A-E, and the face
-says *"You must file Form 2210"* whenever one applies. The 2210 **is** filed in
-real cases. What is true is only that *this app* transmits none — it models box
-C alone and refuses at extract. That s75 note is still sitting in REVIEW_QUEUE
-marked "ratify"; I had cited it back to Ken as his decision, which it was not.
+s124 took the one clearly-unblocked thing on the board: the **8 test failures
+s123 had verified as pre-existing but never explained**, two of which it had
+flagged as "one-line re-pins someone should take."
 
-**Line 17 is a RUNNING outstanding balance, not each period's own shortfall** —
-my first authored expectation was wrong and the harness caught it. Both readings
-integrate to the same amount-days, so the penalty is identical; the harness now
-pins that tie directly (Section A ↔ Section B, two independent routes).
+### All 8 settled — and none of them was ordering noise
 
-**Also shipped:** the documented source override — a controlling outside figure
-recorded *without* discarding the computed penalty, moving 2210 line 19 and 1040
-line 38 **together** per F2210-006-01 (overriding line 38 alone splits them,
-which is what the QA preparer had to do). `D_2210_TIE` catches that workaround.
+Re-run in **isolation first**: all 8 still failed. So the s108e lesson held —
+they were not inheritable as noise.
 
-**Gates green:** NEW server `test_2210_reconciliation_item10.py` **23** (both QA
-cases verbatim, the safe-harbor swing, the Section A↔B tie across four shapes,
-the late-catch-up correction with the retired behaviour as a negative control,
-and a silent-case control on each new diagnostic) · the five existing 2210
-suites **54** · flow assertions **521** · NEW client
-`form2210Reconciliation.test.tsx` **7** · vitest **543/543** (was 536) · tsc
-**52 = the recorded baseline exactly**. RS harness baseline-checked on clean HEAD
-first, then **three negative controls each observed failing** before restore.
+**Five were stale expectations; the product code was correct in every one.**
+The `D_4562` family list predated `D_4562_DEST`/`BASIS`/`RECON` (s116/s118) ·
+the manifest trip-wire said 93 forms against a 95-form manifest (f8879 + f8878,
+the s94 signature pair) · `TestOfficerCompensationFlow` used the pre-renumber
+1120-S page-1 numbering (the 2025 face runs **20** = Other deductions, **21** =
+Total deductions, **22** = Ordinary business income, per RS `1120S_PAGE1`).
 
-**One PRE-EXISTING stale test found and re-pinned, not inherited:**
-`test_face_penalty_lands` expected a penalty of **369** — the answer under the
-retired 6% stub. s113 corrected the rate but never re-pinned this render-leg
-value. Proved pre-existing by running it on clean HEAD with the session's work
-stashed; it failed there too. Now 372.
+The fourth was a tax-law one. `TestAAANegative` pinned *"distributions can
+drive AAA negative."* They cannot — **Reg. §1.1368-2(a)(3)(iii)** decreases AAA
+by distributions **but not below zero**, and RS `1120S_M2` R002 was corrected to
+match on 2026-07-12 (Ken-ratified 07-13). Because `test_1120s_spec.py` already
+pins both arms (`TestM2DistributionCapNNA` for the cap,
+`TestM2LossCanMakeNegative` for losses), that class is **RETIRED with a
+pointer**, not rewritten into a duplicate asserting the opposite rule.
 
-**Full server suite: 6,401 passed / 8 failed (1:11:33).** All 8 verified
-PRE-EXISTING by checking out `c96ce13` (the s122 close) and re-running them —
-identical failures there, and none touches a file this commit changed. They are
-NOT inherited as "ordering noise" (the s108e lesson); they are:
-`test_8915f::TestLandingChain` ×2 · `test_mar30_session4::TestAAANegative` ×2 ·
-`test_supporting_forms_spec::TestOfficerCompensationFlow` ×2 ·
-`test_section_179_diagnostics::test_family_registration` (a stale D_4562_ family
-list missing `D_4562_BASIS`/`DEST`/`RECON`, all added by the s116/s118
-depreciation legs) · `test_tts_forms::TestManifest::test_manifest_is_valid_json`
-(expects 93 manifest entries; there are 95). **The last two are one-line
-re-pins someone should take** — they are stale expectations from completed work,
-exactly the class that hid a real bug in s108e.
+**The sixth was a real coverage hole.** `test_8915f::TestLandingChain` asserts
+Schedule 2 line 8 — the §72(t) additional tax. That line has **two silent
+gates**: `compute_retirement` runs `compute_5329_db`, its only writer, solely
+when the 5329 FormDefinition exists, and `_write_sch2_line8` no-ops when SCH_2
+is unseeded. The module seeded neither, so line 8 simply stayed blank and those
+assertions had **never tested anything** — they could only ever have passed on
+seeds leaked from another module's `django_db_blocker` fixture, which commits
+outside the per-test transaction. The product path was proved correct first
+($18,000 code-1 distribution → $1,800), then the module was made self-sufficient.
+
+## 🔴 That work uncovered a live defect — FIXED (Ken-approved in-session)
+
+Widening the stale `D_4562` family made `D_4562_RECON` visible on the §179
+pipeline test, and it was **raising a blocking RED on a CORRECT return.**
+
+$10,000 of equipment fully elected under §179 against $8,000 of Schedule C
+income: the engine does the right thing — Schedule C line 13 carries the
+**allowed 8,000** and Form 4562 line 13 carries **2,000** to next year, exactly
+as §179(b)(3) requires. The s116 rule compared the destination against
+Σ(`current_depreciation`), still holding the **full 10,000**, and told the
+preparer *"The difference would file a wrong return."*
+
+The RS spec's condition was the generic unconditional equality with nothing
+about the limitation, so it was flagged rather than guessed. **Ken chose the
+proper fix** over downgrading the severity or deferring.
+
+**The fix (RS `6e61341` → R020, then the app leg).** Reconcile in two parts:
+- **(a)** every destination must carry at least its **non-§179** total — less
+  than that is ordinary depreciation that failed to route, the original
+  silent-skip class, still blocking;
+- **(b)** the §179 that actually landed across the business and farm schedules
+  must equal Form 4562 **line 12** — the amount allowed after the limitation,
+  not the elected amount and not line 9.
+
+With no §179 on the return the two parts **collapse to the original strict
+equality**, so this is *strictly stronger* for the ordinary return rather than a
+relaxation: a real routing gap now breaks the tie to line 12, where before the
+return was already failing for a benign reason and the real gap was
+indistinguishable from it.
+
+**A correction I made to my own report.** I told Ken this was "live on prod
+today." A read-only scan says otherwise — only **2 tax years** in the shared DB
+carry a §179 asset at all and neither currently trips it. The defect is real and
+reproducible; it had not yet bitten a stored return.
+
+**RS leg discipline held:** face text for lines 11/12/13 re-pinned **verbatim**
+off the local SHA-tracked `f4562.pdf` (pymupdf, same day), never memory; the
+harness re-implements the **pre-amendment** condition and asserts it *misfires*
+on the limited-but-correct scenario, so it proves the amendment changes a real
+verdict instead of echoing the authored answer; **three perturbation controls
+each observed failing** before restore. Seeded → deployed export verified
+carrying R020 → mirrored verbatim into `server/specs/form_4562_spec.json`.
 
 ## ▶ NEXT (cold-start pointer)
 
-**Ken's call on pushing 0221.** Then: **Form 2210 Part II boxes A/B/D/E** (the
-unit that would let a 2210 actually be transmitted — box D is a penalty-REDUCING
-election we don't offer) · **item-6-P1 GA residual** (still BLOCKED on the two
-GA REVIEW_QUEUE questions) .
+**Ken's call on pushing s124** (test-only + a diagnostics change; no migration,
+so this is an ordinary deploy). Then the s123 pointer stands: **Form 2210 Part
+II boxes A/B/D/E** (the unit that would let a 2210 actually be transmitted — box
+D is a penalty-REDUCING election we don't offer) · **item-6-P1 GA residual**
+(still BLOCKED on the two GA REVIEW_QUEUE questions).
 
-Batch-001 is now **13 of 16** done; opens = GA residual · the two QA cases item
-15 deliberately did not cover (W-2 boxes 3/5, Schedule C net loss with no
-detail).
+Batch-001 remains **13 of 16**; opens = GA residual · the two QA cases item 15
+deliberately did not cover (W-2 boxes 3/5, Schedule C net loss with no detail).
 
 ## ▶ Waiting on Ken / external
-1. s123 ratifications (REVIEW_QUEUE): the narrowed 2210 e-file policy · Part II
-   box sequencing (incl. box D) · D_2210_TIE at warning · **the stale-2210-face
-   fix when line 38 is overridden** (my recommendation is logged; it carries a
-   tax-law question about whether the worksheet prints at all).
+1. **s124 ratifications (REVIEW_QUEUE): the two scoping calls inside the
+   `D_4562_RECON` fix** — accrual Schedule F scoped out of part (b), and part
+   (b) standing down in the pure-prior-year-carryover shape. Neither is
+   IRS-sourced.
+2. s123 ratifications: the narrowed 2210 e-file policy · Part II box sequencing
+   (incl. box D) · D_2210_TIE at warning · the stale-2210-face fix when line 38
+   is overridden.
 3. s122 ratification: the source-summary listing line (nominee/accrued/ABP arm).
 4. s121 ratification: the `D_8283_017` severity ladder (conservation arm).
 5. s118 ratifications: §280F AMT-arm derivation · GA no-bump table.
@@ -135,97 +202,29 @@ detail).
     CAF · ERO EFIN/PIN · beta clauses · older ratifications (s110 · s106 ·
     s101(4) · s100(3) · s99a · s97 · s96(4) · s95..s72).
 
-## 🔴 THE FIRST DEPLOY FAILED — cause found and fixed (`2eef57c`)
-
-Ken said push. It went out as `167e908`, **migrations applied to BOTH shared
-DBs, and the code never shipped.** The s105 shape exactly: `build.sh` runs
-`migrate` then `seed_all` under `set -o errexit`, so a raise in a seeder kills
-the build *after* the databases have moved forward.
-
-**Cause: `FormFieldValue.form_line` is `on_delete=PROTECT`.** My
-`_retire_superseded_lines` deleted the FormLine rows directly, which raises the
-moment any return holds a value on them — the shared DBs carried **108** such
-rows. Proved by running the delete inside a rolled-back transaction against the
-real database. Dependents are now deleted first; the overridden-row guard still
-refuses to touch entered data.
-
-**Why every test missed it:** a fresh test DB has no value rows attached when
-the seeder runs, so the delete had nothing to protect against. Two new tests
-attach values first (the production shape) and pin that an overridden row is
-still left alone.
-
-**A second regression the fix surfaced, caught before shipping:** with no
-`--year` (how `seed_all` invokes it) only 2025 seeded, but the shared DBs also
-carry a **TY2026** FORM_2210. It would have kept the superseded numbering while
-compute wrote the corrected one — every `_write_row` no-opping, and a TY2026
-return **silently rendering no 2210 face at all**. A no-arg run now seeds the
-default year plus every year that already has a definition.
-
-**How the failure was detected — behaviour, not the bundle hash.** The bundle
-was unchanged, which alone reads as "still building". The decisive probe: an
-existing route (`k1-allocations`) answered **403** on both services while
-`form-2210-reconciliation` answered **404** — route absent, code not live.
-
-**Verified before re-pushing:** the fixed seeder dry-run inside a rolled-back
-transaction against BOTH shared DBs — no superseded rows left, prod 94 lines
-(47 × two years), demo 47, neither database changed. 600 tests green.
-
-## ✅ DEPLOY VERIFIED LIVE — and the probe found one more thing
-
-**Verified by BEHAVIOUR, not just the bundle hash.** The decisive check: an
-existing route (`k1-allocations`) answers **403** while the new
-`form-2210-reconciliation` answered **404** — route absent. After `2eef57c` it
-answers **403** on prod, demo, and prep. Bundle rolled `index-CVBMlEDz.js` →
-`index-D9JtpMC0.js`; six new markers present, **and the marker method itself was
-validated with control strings** (my first asset path was wrong and 404'd, so
-every count including the "baseline" was measuring nothing).
-
-**`seed_rules` run on BOTH DBs AFTER the deploy** (the required order):
-`D_2210_SRC` and `D_2210_TIE` present + active + severity `warning` on both;
-D_2210 family 8/8. Superseded lines retired: **0 remaining** on both DBs
-(prod 94 FORM_2210 lines = 47 × two years, demo 47).
-
-**Live probe on the deployed demo build** (return with a $141 penalty). The
-panel renders in full: Part I lines 1-9 with "← sets line 9" on the controlling
-harbor and line 8 reading *"not available — no prior-year tax entered"*; the
-Section A grid across all four columns; and the Section B accrual table with
-per-chunk day counts at 7%. Computed penalty 141.00, matching the engine.
-
-### The probe found a PRE-EXISTING defect (logged, not fixed)
-
-The header showed **$70** while the panel derived **$141**. Cause:
-`compute_2210_db` returns early whenever 1040 line 38 carries a preparer
-override, so the FORM_2210 rows are neither refreshed nor blanked — the face
-keeps a stale penalty. On that return line 38 is deliberately **blank** (the
-i2210 "let the IRS figure it and bill you" election, which the ATS scenarios
-model), line 19 still held $70 from an older run, and the current facts derive
-$141. The $70 would print.
-
-`D_2210_TIE` was firing there and blaming the preparer for splitting two
-numbers. **Fixed in `42a854b`:** a blank line-38 override is recognised as the
-election, and the finding now names the stale worksheet amount and says to
-recompute. The early return itself is UNTOUCHED — it is a deliberate rule and
-the fix carries a tax-law question (should the 2210 print at all when the IRS is
-asked to figure the penalty?). Recommendation logged in REVIEW_QUEUE.
-
 ## Active gates
-- **Deploy: `42a854b` VERIFIED live** on prod + demo + prep (route 403, bundle
-  `index-CVBMlEDz.js` → `index-D9JtpMC0.js`, six markers present with the grep
-  method control-validated). The FIRST attempt (`167e908`) failed — see above.
-- **DB state: migration 0221 APPLIED to BOTH DBs.** Additive only —
-  `t2210_penalty_source_amount` (nullable decimal; NULL means "no override",
-  deliberately distinct from an override of $0), `_label`, `_note`.
-- **Seeder:** `seed_form_2210` retires the superseded bare rows ("18"/"25") —
-  dependent value rows first (`FormFieldValue.form_line` is PROTECT), refusing
-  any row a preparer overrode. Verified post-deploy: **0 superseded rows remain**
-  on either DB. A no-arg run now seeds every year that has a definition.
-- **Rule catalogue:** `seed_rules` RUN on both DBs after the deploy —
-  `D_2210_SRC` / `D_2210_TIE` present, active, warning; D_2210 family 8/8.
-- **RS:** `FORM_2210` at `7bdad04` — 15 facts / 5 rules / 21 lines / 8
-  diagnostics / 14 scenarios / 9 flow assertions; **already live** (RS's own
-  Supabase project backs the deployed instance), export verified and mirrored
-  verbatim to `server/specs/2210_spec.json`.
+- **Deploy: `42a854b` (s123) verified live** on prod + demo + prep. **s124 is
+  committed and NOT pushed — held on Ken's instruction** (see the entanglement
+  block at the top).
+- **DB state: no migration in s124.** Migration 0221 (s123) is applied to BOTH
+  DBs. ⚠ The parallel session's `mappings/0002` is committed locally and
+  UNAPPLIED — it rides whichever push lands first.
+- **Full server suite: 6,420 passed / 21 skipped / 0 failed (48:02)** against
+  the s123 baseline of 6,401 passed / **8 failed**. All eight settled, nothing
+  new broken.
+- **`seed_rules` IS required after the s124 deploy** — `D_4562_RECON`'s catalogue
+  *description* changed (no new rule, no severity change). Run on BOTH DBs, after
+  the deploy, per the standing order.
+- **RS:** `FORM_4562` at `6e61341` — 20 rules / 17 diagnostics / 39 scenarios;
+  deployed export verified and mirrored verbatim to
+  `server/specs/form_4562_spec.json`.
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`, unchanged since s113).
+- ⚠ **Dev-environment repair (not a code change):** `server/.venv/pyvenv.cfg`
+  pointed its base interpreter at a `C:\Users\Ken2\…\Python313` profile that no
+  longer exists, and the venv stopped launching mid-session. Repointed to the
+  real `C:\Users\Ken\…\Python313` — **same version, 3.13.14**, packages
+  untouched; `.venv/pyvenv.cfg.bak` holds the original. Worth knowing if Ken's
+  own shell hits it.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. No piecemeal ATS testing.
