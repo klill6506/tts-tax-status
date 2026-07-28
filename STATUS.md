@@ -22,22 +22,32 @@ supersedes queue order).** Read FIRST:
 3. The behavioral contract: `D:\dev\delvio-design\cc-implementation-prompt.md`.
 
 **State:** delvio-design v2.0 SHIPPED (`4e97342`, tagged, pushed). Root
-`D:\dev\CLAUDE.md` Color System → Field-State System (red/yellow/green RETIRED,
-Ken 2026-07-28). delvio-tax branch **`slate-ui`** cut from main; **Leg 0
-shipped** (`1c0fc0c`, pushed to origin/slate-ui — branch push, NO deploy):
-`lib/featureFlags.ts` (NEW_UI: VITE_NEW_UI env, default OFF; dev localStorage
-`delvio-new-ui` override) · vendored `slate/slate-tokens.css` · `SlateRoot.tsx`
-+ `slate.css` · `vite-env.d.ts` shim (tsc 52 → **46 pre-existing**, new files
-clean) · README design section → Slate. Flag tests 4/4 green.
+`D:\dev\CLAUDE.md` Color System → Field-State System (red/yellow/green RETIRED).
+Branch **`slate-ui`**: **Leg 0 shipped** (`1c0fc0c` — NEW_UI flag, vendored
+tokens, SlateRoot, vite-env shim; tsc baseline 52→46) and **Leg 1 SHIPPED**
+(`c5b213c`): the Slate editor shell is LIVE behind the flag. FormEditor's four
+primary-tab bodies extracted as shared consts (legacy + Slate render them
+VERBATIM — the splice is the only structural change to the 22k file);
+SlateEditorChrome = AppHeader 44px · ClientHeader 38px (status pill,
+Diagnostics/Form-view toggles) · LeftRail 272px (grouped, 10px bordered dots,
+Import TB, legend) · SummaryBar 46px (RefundMonitor sources mirrored);
+AppShell takeover hides legacy chrome in the editor. **Live-verified on the
+demo DB** (dev/dev, return "Slate QA Household" bc270846…): metrics exact
+(44/38/272/46, rail 272), rail nav + Diagnostics/Forms toggles work, flag OFF
+= full legacy incl. stylesheet-never-loads, no console errors. tsc 46 =
+baseline (identical profile) · vitest 561/561. ⚠ `.claude/launch.json` django
+interpreters repointed to `server/.venv` (poetry-cache venv is dead, s124).
 
-**Next action (Leg 1):** Slate editor shell inside `FormEditor` behind the flag
-— `AppHeader` (44px accent bar) · `ClientHeader` (38px toolbar) · `LeftRail`
-(272px; sections from `INDIVIDUAL_TABS` + `tabStatus()` → Slate 10px dots) ·
-`SummaryBar` (46px; reuse RefundMonitor sources: 1040 lines 11/34/37 +
-GA-500 fetch) — legacy tabs render inside the shell until converged. Then Legs
-2-7 per plan §8; STOP at side-by-side screenshots for Ken (Phase 1 gate).
-Component geometry: plan §5 layout + the survey report values; W-2 archetype
-export is the visual truth (`delvio-design/screens/w2-entry.html.html`).
+**Next action (Leg 2):** `slate/screens/SlateW2Screen.tsx` — DocumentTabs
+(employer tabs replace the RecordList sidebar; SAME activeId in-flight-add
+safety semantics as W2Screen.tsx:123), InputRow grid with box-code badges,
+nested collections (Box 12/14, state/locality) on the existing saveScope
+lanes (`queueW2Patch` / `useNestedRowSaves` patterns). Then Leg 3 field states
++ ghost (rulings: plan §12 RESOLVED — Boxes 4&6 computed ƒx w/ Ctrl+Enter;
+ghost = 3&5 only), Legs 4-7 per plan §8; STOP at side-by-side screenshots
+(Phase 1 gate). Visual truth: `delvio-design/screens/w2-entry.html.html`.
+Dev QA recipe: preview_start django-demo + vite → login dev/dev →
+localStorage `delvio-new-ui`=1 → reload (flag reads at module load).
 
 **Build rules in force:** presentation-only (sole exceptions Ken-approved:
 read-only `expected_box3/5` serializer fields + additive `details.field` on
