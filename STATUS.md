@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-28, session 126g (QA Batch-001 **1065 partnership repair
-brief COMPLETE — 9 of 9 items shipped, PUSHED, DEPLOYED, and live-verified**;
-migrations 0222–0226 applied to BOTH prod and demo).*
+*Last updated: 2026-07-28, session 127 (**SLATE REDESIGN — front of the line by
+Ken's directive**: Slate v2.0 landed in delvio-design, plan ratified, Phase 1
+Leg 0 shipped on branch `slate-ui`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,74 +10,73 @@ migrations 0222–0226 applied to BOTH prod and demo).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
-- *(s119–s124 detail is archived in `STATUS_ARCHIVE.md`; s125–s126g per-item
-  detail lives in the BUILD_ORDER 🟢 ledger blocks.)*
 
-## ▶ RESUME HERE — the brief is DONE; idle, Ken directs
+## ▶ RESUME HERE — Slate Phase 1, Leg 1 (the editor shell), on branch `slate-ui`
 
-**Ken's brief** (`D:\tax-test-data\QA Reports\1065\Batch-001\CC_1065_FIXES.md`)
-against seeded return `ed62b605-84bb-4aaf-bd3b-273e0b834387` (409 Family
-Holdings LLC) is **complete AND DEPLOYED** (Ken authorised the push
-2026-07-28). Remaining follow-up: Ken's own browser pass over the QA return
-(the API-level live QA is done — see Active gates) + the seven REVIEW_QUEUE
-rulings.
+**The suite redesign ("Slate" v2.0) is the active project (Ken, 2026-07-28 —
+supersedes queue order).** Read FIRST:
+1. `Design/SLATE_IMPLEMENTATION_PLAN.md` — the ratified plan + Ken's rulings
+   (all 12 questions RESOLVED; Boxes 4 & 6 stay computed w/ Ctrl+Enter override).
+2. `D:\dev\delvio-design\SLATE_DESIGN_SYSTEM.md` — the v2.0 spec (tag `v2.0`,
+   pushed). Contrast gate: `python contrast-check.py` (22 must-pass PASS).
+3. The behavioral contract: `D:\dev\delvio-design\cc-implementation-prompt.md`.
 
-### Done — 1-2 (s125) · 3 (s126) · 4 (s126b) · 5 (s126c) · 6 (s126d) · 7 (s126e) · 8 (s126f) · 9 (s126g)
+**State:** delvio-design v2.0 SHIPPED (`4e97342`, tagged, pushed). Root
+`D:\dev\CLAUDE.md` Color System → Field-State System (red/yellow/green RETIRED,
+Ken 2026-07-28). delvio-tax branch **`slate-ui`** cut from main; **Leg 0
+shipped** (`1c0fc0c`, pushed to origin/slate-ui — branch push, NO deploy):
+`lib/featureFlags.ts` (NEW_UI: VITE_NEW_UI env, default OFF; dev localStorage
+`delvio-new-ui` override) · vendored `slate/slate-tokens.css` · `SlateRoot.tsx`
++ `slate.css` · `vite-env.d.ts` shim (tsc 52 → **46 pre-existing**, new files
+clean) · README design section → Slate. Flag tests 4/4 green.
 
-- Items 1-8: see BUILD_ORDER ledger / tracker.
-- **Item 9 — five-decimal percentages: COMPLETE.** Migration **0226 STAGED**
-  widens `Partner` profit/loss/capital_pct (+ `_boy`),
-  `PartnerAllocation.percentage`, and the `PartnerK1Computed.profit_pct`
-  audit snapshot from numeric(7,4) → numeric(8,5). The brief's regression
-  split (ending capital 1.00013% / 98.99987%, total 100%) was rejected with
-  HTTP 400; it now saves, round-trips exactly, and prints on K-1 item J —
-  proven against the rendered PDF bytes (template-rect sweep), per the
-  brief. D_K1_PCT100 now also validates ending capital + the three BOY
-  columns when in use (tolerance 0.01); ending profit/loss stay always-on.
-  RS SCHEDULE_K1_1065 re-fetched — it carries no PCT100 diagnostic (the
-  rule is the app-side Ken-ratified S-21b check), so no spec conflict.
-  Client totals display five decimals; entry inputs needed no change.
+**Next action (Leg 1):** Slate editor shell inside `FormEditor` behind the flag
+— `AppHeader` (44px accent bar) · `ClientHeader` (38px toolbar) · `LeftRail`
+(272px; sections from `INDIVIDUAL_TABS` + `tabStatus()` → Slate 10px dots) ·
+`SummaryBar` (46px; reuse RefundMonitor sources: 1040 lines 11/34/37 +
+GA-500 fetch) — legacy tabs render inside the shell until converged. Then Legs
+2-7 per plan §8; STOP at side-by-side screenshots for Ken (Phase 1 gate).
+Component geometry: plan §5 layout + the survey report values; W-2 archetype
+export is the visual truth (`delvio-design/screens/w2-entry.html.html`).
+
+**Build rules in force:** presentation-only (sole exceptions Ken-approved:
+read-only `expected_box3/5` serializer fields + additive `details.field` on
+W-2-family diagnostics + new Box 3/5 variance REVIEW rules) · every input a
+real DOM input · **selective `git add` only — NEVER `git add .` on this
+branch** (a parallel session's uncommitted tb_import work sits in the tree) ·
+no merge/deploy without Ken.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE)
-
-1. **RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065** (s126e).
-2. **Retire MATH_BALANCE_SHEET's 1065 arm?** (s126d).
-3. **RS R-M2-3-TIE adjudication** (s126b).
-4. **K-1 box 13/11 type codes** (s125).
-5. **RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics** (s126).
-6. **s124's `D_4562_RECON` scoping pair**.
-7. **Real One Heart EIN in committed test fixtures** (chip `task_f06ee3ed`).
+1. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
+2. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
+3. RS R-M2-3-TIE adjudication (s126b).
+4. K-1 box 13/11 type codes (s125).
+5. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
+6. s124's `D_4562_RECON` scoping pair.
+7. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
+8. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
 
 ## Active gates
-- **PUSHED + DEPLOYED 2026-07-28** (Ken authorised): the 16-commit batch
-  `13ee449`…`9547250` went to origin; the Render deploy went green (new
-  SPA bundle `index-2lsp2Pjl.js` carries the batch markers), applying
-  **migrations 0222–0226 to prod** and rerunning `seed_all` (seed_1065 ·
-  seed_ga700 · seed_rules incl. the D_K1_PCT100 update). **Demo DB
-  migrated + seeded locally** (`TTS_ENV=demo` migrate + seed_all) per the
-  both-environments discipline.
-- **Live verification DONE (API level):** magic-link probe as `dev` on
-  prod — the QA return's partners showed the old truncated 1.00010 /
-  98.99990; PATCHing the brief's true split **1.00013 / 98.99987 returned
-  200 (was 400) and echoed exactly**; capital now totals 100%. Ken's own
-  browser pass on 409 Family Holdings is the remaining eyeball check.
-- **Gates at s126g:** NEW server `test_1065_pct_precision.py` **12** (API
-  400 repro · exact DB roundtrip · allocation + snapshot width · item J PDF
-  prints via template-rect sweep · D_K1_PCT100 column/tolerance cases) ·
-  K-1/diagnostics band **73** · flow + 1065 band **610** · client vitest
-  **557** · tsc **52** = baseline.
-- **A parallel session's uncommitted work stays unstaged**:
-  `server/apps/returns/views.py`, `server/apps/returns/tb_import.py`,
-  `server/tests/test_tb_import.py`.
+- **Branch discipline:** repo is checked out on `slate-ui`. A parallel
+  session's uncommitted work rides in the tree UNSTAGED:
+  `server/apps/returns/views.py` (M), `server/apps/returns/tb_import.py`,
+  `server/tests/test_tb_import.py`. Do not stage, do not stash, do not
+  `git add .`. If that session resumes, it may switch back to main — Slate
+  work always recommits on `slate-ui`.
+- **Gates at s127:** client vitest 557 + 4 new flag tests · tsc **46 =
+  new baseline** (was 52; vite-env.d.ts shim fixed 6 pre-existing) · server
+  suites untouched this session.
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`).
 - ⚠ One test DB — never overlap pytest runs.
 - ⚠ `server/.venv` repaired s124; use `.venv\Scripts\python.exe` directly.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
-Unchanged. No piecemeal ATS testing.
+Unchanged — Slate redesign runs in front of it by Ken's 2026-07-28 directive.
 
 ## Authoritative files read at boot
 - **`tts-tax-status`:** `BUILD_ORDER.md` · `SEASON_PLAN.md` · `PRODUCT_MAP.md`.
 - **tax-app root:** `SPRINT_SCOPE.md` · `MASTER_PROMPT.md` · `MEMORY.md`/`DECISIONS.md`/`SUITE_CONTRACT.md` ·
   `REVIEW_QUEUE.md` · `form_coverage_tracker.md` · `USABILITY_QUEUE.md` ·
   `STATUS_ARCHIVE.md` (history) · RS `session_log.md`.
+- **Slate lane:** `Design/SLATE_IMPLEMENTATION_PLAN.md` ·
+  `D:\dev\delvio-design\SLATE_DESIGN_SYSTEM.md`.
