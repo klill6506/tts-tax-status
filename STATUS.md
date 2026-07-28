@@ -49,8 +49,7 @@ is listed under Active gates.
 
 ## Active gates
 - **Nothing pushed.** Local commits: `13ee449` · `5cb9d7c` · `8868341` ·
-  `efdf902` · `7bfe0cf` · `8f6a78e` · `47b6f94` · the s126g item-9 commit
-  (+ docs). Migrations **0222+0223+0224+0225+0226 STAGED, NOT applied**.
+  `efdf902` · `7bfe0cf` · `8f6a78e` · `47b6f94` · `668236e` (+ docs). Migrations **0222+0223+0224+0225+0226 STAGED, NOT applied**.
   At deploy: migrate · `seed_1065` rerun (401 lines) · `seed_ga700` rerun ·
   `seed_rules` BOTH DBs (D_M2_1 + D_8990_* + the D_K1_PCT100 description) ·
   then live QA on the 409 Family Holdings return.
