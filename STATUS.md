@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-28, session 126g (QA Batch-001 **1065 partnership repair
-brief COMPLETE — 9 of 9 items shipped**; migrations **0222–0226 STAGED, NOT
-applied**; nothing pushed).*
+brief COMPLETE — 9 of 9 items shipped, PUSHED, DEPLOYED, and live-verified**;
+migrations 0222–0226 applied to BOTH prod and demo).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -17,9 +17,10 @@ applied**; nothing pushed).*
 
 **Ken's brief** (`D:\tax-test-data\QA Reports\1065\Batch-001\CC_1065_FIXES.md`)
 against seeded return `ed62b605-84bb-4aaf-bd3b-273e0b834387` (409 Family
-Holdings LLC) is **complete — all 9 items shipped locally**. **Nothing is
-pushed or deployed** — Ken authorises that separately. What deploy day needs
-is listed under Active gates.
+Holdings LLC) is **complete AND DEPLOYED** (Ken authorised the push
+2026-07-28). Remaining follow-up: Ken's own browser pass over the QA return
+(the API-level live QA is done — see Active gates) + the seven REVIEW_QUEUE
+rulings.
 
 ### Done — 1-2 (s125) · 3 (s126) · 4 (s126b) · 5 (s126c) · 6 (s126d) · 7 (s126e) · 8 (s126f) · 9 (s126g)
 
@@ -48,14 +49,18 @@ is listed under Active gates.
 7. **Real One Heart EIN in committed test fixtures** (chip `task_f06ee3ed`).
 
 ## Active gates
-- **Nothing pushed.** Local commits: `13ee449` · `5cb9d7c` · `8868341` ·
-  `efdf902` · `7bfe0cf` · `8f6a78e` · `47b6f94` · `668236e` (+ docs). Migrations **0222+0223+0224+0225+0226 STAGED, NOT applied**.
-  At deploy: migrate · `seed_1065` rerun (401 lines) · `seed_ga700` rerun ·
-  `seed_rules` BOTH DBs (D_M2_1 + D_8990_* + the D_K1_PCT100 description) ·
-  then live QA on the 409 Family Holdings return.
-- ⚠ Live QA follows Ken's push+migrate; the test DB carries the proof
-  (items 6-9 all proven there; live browser QA deliberately skipped per the
-  s126b staged-migration rule).
+- **PUSHED + DEPLOYED 2026-07-28** (Ken authorised): the 16-commit batch
+  `13ee449`…`9547250` went to origin; the Render deploy went green (new
+  SPA bundle `index-2lsp2Pjl.js` carries the batch markers), applying
+  **migrations 0222–0226 to prod** and rerunning `seed_all` (seed_1065 ·
+  seed_ga700 · seed_rules incl. the D_K1_PCT100 update). **Demo DB
+  migrated + seeded locally** (`TTS_ENV=demo` migrate + seed_all) per the
+  both-environments discipline.
+- **Live verification DONE (API level):** magic-link probe as `dev` on
+  prod — the QA return's partners showed the old truncated 1.00010 /
+  98.99990; PATCHing the brief's true split **1.00013 / 98.99987 returned
+  200 (was 400) and echoed exactly**; capital now totals 100%. Ken's own
+  browser pass on 409 Family Holdings is the remaining eyeball check.
 - **Gates at s126g:** NEW server `test_1065_pct_precision.py` **12** (API
   400 repro · exact DB roundtrip · allocation + snapshot width · item J PDF
   prints via template-rect sweep · D_K1_PCT100 column/tolerance cases) ·
