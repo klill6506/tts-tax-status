@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-28 session 126g — 1065 FIVE-DECIMAL PARTNER PERCENTAGES — K-1
+> ITEM J PRECISION** (QA Batch-001 1065 brief item 9, **THE LAST — the
+> brief is COMPLETE 9/9**; **migrations 0222-0226 STAGED, NOT applied**;
+> not pushed). **THE MECHANISM:** every partner percentage column stored 4
+> decimal places (numeric(7,4)), so the QA return's actual ending capital
+> split — **1.00013% / 98.99987%** — was rejected with HTTP 400 "no more
+> than 4 decimal places"; the return could not be keyed as Lacerte
+> prepared it. **FIX:** mig **0226** widens `Partner`
+> profit/loss/capital_pct (+ `_boy`), `PartnerAllocation.percentage`, and
+> the `PartnerK1Computed.profit_pct` audit snapshot to numeric(8,5) —
+> saves, round-trips EXACTLY, and **prints on K-1 item J** (`_pct` already
+> trimmed trailing zeros; proven against the RENDERED bytes by
+> template-rect sweep per the brief's PDF-values requirement).
+> **D_K1_PCT100 grows column coverage:** ending profit/loss always-on (the
+> allocator rides them); ending capital + the three BOY columns (item J)
+> validate when IN USE (any nonzero), tolerance 0.01. RS `SCHEDULE_K1_1065`
+> re-fetched — NO PCT100 diagnostic there (app-side S-21b Ken-ratified
+> rule; no spec conflict); registration description updated →
+> **seed_rules rerun BOTH DBs at deploy**. Client: totals + allocation row
+> totals display 5 decimals (entry inputs were already free-text).
+> **GATES:** NEW server `test_1065_pct_precision.py` **12** (API 400
+> repro · exact roundtrip · allocation + snapshot width · item J PDF
+> prints · diagnostic column/tolerance cases) · K-1/diagnostics band
+> **73** · flow + 1065 band **610** · tsc **52 = baseline** · vitest
+> **557 = baseline**.
+
 > **2026-07-28 session 126c — 1065 PARTNER AUTO-SAVE IDENTITY + STABLE
 > ORDERING** (QA Batch-001 1065 brief item 5; **migrations 0222-0225 STAGED,
 > NOT applied**; not pushed). **THE MECHANISM:** `Partner.Meta` ordered by
