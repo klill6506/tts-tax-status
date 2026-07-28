@@ -1,5 +1,137 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-28 session 126c — 1065 PARTNER AUTO-SAVE IDENTITY + STABLE
+> ORDERING** (QA Batch-001 1065 brief item 5; **migrations 0222-0225 STAGED,
+> NOT applied**; not pushed). **THE MECHANISM:** `Partner.Meta` ordered by
+> `(sort_order, name)` and `addPartner` never sent a sort_order — two
+> just-added partners tied at 0 and ordered by NAME, so each blur-save's
+> refresh reordered the cards WHILE the preparer typed a name (empty-name
+> ties were Postgres-unstable on top). Separately, two rapid saves put two
+> responses in flight and the earlier one landing LAST repainted stale data
+> over the newer entry. **FIX:** mig **0225** → ordering
+> `(sort_order, created_at)` (edit-independent; AlterModelOptions, no DB
+> op) · `addPartner` claims an explicit slot · a save-sequence guard in
+> `PartnersSection` lets only the LATEST response apply a refresh (patches
+> were already bound to immutable partner ids via closures — now
+> test-pinned per call). `views.py` deliberately untouched (parallel
+> session owns it). ⚠ The same latent name-ordering exists on
+> **Shareholder** (1120-S) — flagged, out of the brief's scope. **GATES:**
+> NEW client `partnerAutosaveIdentity.test.tsx` **3** (the brief's
+> regression verbatim: two partners rapidly populated with out-of-order
+> responses — every PATCH id-correct, no fields crossed, exactly one
+> refresh applied) · NEW server `test_partner_identity_item5` **5** ·
+> affected band **645** · tsc **52 = baseline** · vitest **546** (+3).
+
+> **2026-07-28 session 126b — 1065 PARTNERSHIP M-2 + K-1 ITEM L ROLL-FORWARD**
+> (QA Batch-001 1065 brief item 4; **migrations 0222+0223+0224 STAGED, NOT
+> applied**; not pushed). The audit shrank the item AGAIN: the entity M-2 was
+> already fully built server-side (FORMULAS_1065 lines 5/8/9, render map, the
+> D_M2_3/D_M1_ANALYSIS/EXEMPT diagnostics) — the real defects were the UI and
+> the partner layer. **(1) The 1065 screen showed the 1120-S AAA/PTEP/AE&P/
+> OAA table** whose M2_1a..M2_8d keys don't exist on a 1065 (every cell
+> dead); `BalanceSheetsSection` now branches DATA-DRIVEN (a seeded bare
+> `M2_9` ⇒ the partnership Analysis of Partners' Capital Accounts panel,
+> lines 1-9). **(2) The partner card DISPLAYED a client-computed EOY but
+> persisted 0.00** — every K-1 printed a BLANK item L ending capital (the
+> QA's "ending capital cannot be entered"), and `current_year_increase` had
+> NO writer anywhere. Per RS `SCHEDULE_K1_1065` R-K1-ITEM-L (§705):
+> **mig 0224** adds `capital_other` (the missing item L row 4 — its K-1
+> widget `l_other_increase` existed unwired since s125) + a
+> `capital_eoy_overridden` flag; `Partner.save()` derives eoy = boy +
+> contributed + current-year + other − withdrawals unless overridden
+> (update_fields-safe), and 0224 backfills the only two partner rows in the
+> shared DB (read-only audited: both eoy 0.00 → 7,894 / 781,403, no
+> deliberate entries to preserve). Card: current-year + other editable, EOY
+> = YELLOW derived input / GREEN typed override / "↺ derive" reset — the
+> house provenance convention. **(3) NEW `D_M2_1`** (info; R-M2-1-TIE) ties
+> M-2 line 1 to Σ partner beginning capital (B4-exempt suppressed);
+> `D_K1_ITEML` gained the `capital_other` term and now polices OVERRIDES
+> only; the M2_3 seed label re-worded to the 2025 face (the old "per Books"
+> contradicted the tax-basis M-2 — the COMPUTED tie to M1_9 is queued for
+> Ken's adjudication per R-M2-3-TIE). 1065_M2 spec mirror refreshed.
+> **GATES:** NEW `test_1065_m2_item4` **13** (§705 roll-forward incl.
+> update_fields + override/reset · D_M2_1 four arms · the brief's 789,297
+> regression asserted on the RENDERED faces — M-2 line 9 "789,297", both K-1
+> item L columns 7,894/781,403) · `test_item_l_breaks` repinned to the
+> override contract + a derived-always-ties arm · affected band **663** ·
+> diagnostics legs **24** · seed pins **13** · tsc **52 = baseline** ·
+> vitest **543**. At deploy: seed_1065 rerun + `seed_rules` BOTH DBs
+> (D_M2_1). ⚠ Until 0222/0224 apply, the checked-out code cannot serve 1065
+> partner screens against the live DB (missing columns) — live QA follows
+> Ken's push.
+
+> **2026-07-28 session 126 — 1065 SCHEDULE B PAGES 2-4 RENDER MAP + SCHEDULE
+> B-1** (QA Batch-001 1065 brief item 3; **migrations 0222+0223 STAGED, NOT
+> applied**; not pushed). **THE RS SPEC EXISTS — `1065_B`**: s125's "no spec"
+> scoping note was wrong because the RS forms LIST endpoint paginates and the
+> form hid on a later page; `lookup/1065_B/export/` returns it (6 rules /
+> 32-line map / 5 diagnostics / the `b1_entity_type` choice tokens). Mirrored
+> to `server/specs/1065_b_spec.json`; the map was reconciled against it —
+> line inventory 1-33 matches the seed 1:1 and the B1 tokens are the spec's
+> choices VERBATIM (test-pinned). **RENDER leg:** every seeded Schedule B key
+> now lands on the face — Yes/No pairs (x=537.6/559.2 on the LAST line of
+> each question), B11/B32 single boxes (x=517.6), all inline detail boxes,
+> and the PR/DI designation block; B33_PR_TIN deliberately unmapped (e-file
+> only, no widget). The §743(b)/§734(b) NEGATIVE boxes sit inside pre-printed
+> "$(  )" — the renderer prints the ABSOLUTE value there (test-pinned).
+> **B1 is now an ENUMERATED choice** end-to-end: client select
+> (`FIELD_CHOICES["1065:B1"]`), renderer token → c2_1[0..5], NEW seed line
+> `B1_OTHER` (seed 355→356), migration 0223 normalizing the ONE pre-existing
+> free-text value in the shared DB; an unrecognized legacy value prints
+> NOTHING rather than guessing a box. **SCHEDULE B-1 (Rev. 8-2019) is a NEW
+> FORM**: manifest+template (95→96), `f1065sb1_2025.py` maps ALL 65 widgets
+> (type column 7pt — "Exempt organization" overflows 10pt into the country
+> box), `render_schedule_b1` generates when an active partner's max ending
+> profit/loss/capital pct ≥ 50 (Part I entities / Part II
+> individuals+estates; TINs via `partner_display`; instructions page
+> stripped), packet-wired before the K-1s + `GENERATED_FORM_RENDERERS`.
+> **DELIBERATE GAPS (flagged, not built):** Sch B 3a/3b detail tables have no
+> seed lines (entry gap) · Partner has no country field (foreign B-1 country
+> blank) · B-1 lists DIRECT owners only (constructive ownership underivable) ·
+> the RS spec's 5 diagnostics have NO app runners · RS's "B-1 RED-deferred"
+> note in D_B2_B1 is now STALE (REVIEW_QUEUE — needs an RS push). **GATES:**
+> NEW `test_1065_schb_render` **23** (map-vs-template validation · the 409
+> regression set: Domestic LLC, 2a Yes, 4 No via override, 24 Yes, 33 No, PR
+> Floyd Lance · B-1 One Heart 99% Part I / 60% individual Part II · packet +
+> manifest parity) · 1065/1041/forms/flow band **1499** (5 trip-wire pins
+> re-baselined: seed 356, manifest 96) · targeted modules **590** · tsc **52
+> = baseline** · vitest **543**. Pages 2-4 + B-1 also verified VISUALLY
+> (checkbox alignment, parens, PR block).
+
+> **2026-07-28 session 125 — SCHEDULE K-1 (FORM 1065) GENERATION** (QA
+> Batch-001 1065 brief item 1; app `13ee449`; **migration 0222 STAGED, NOT
+> applied**; not pushed). **INPUT leg: was already complete** (partners,
+> item J/K/L, GP, distributions all seeded + editable). **RENDER leg: was
+> ENTIRELY MISSING and reported as present** — `field_maps/f1065sk1_2025.py`
+> was the GENERATED STUB (111 AcroForm names listed for reference, `FIELD_MAP`
+> and `HEADER_MAP` both EMPTY). **DISPATCH leg: broken two ways** —
+> `render_all_k1s` queried `Shareholder` unconditionally (the reported "No
+> active shareholders found for this return" on a partnership) and
+> `render_complete_return`'s owner block was scoped `form_code == "1120-S"`, so
+> a partnership packet printed pages 1-6 + letter + invoice and nothing else.
+> All three legs now green. Field map built from GEOMETRY (template has NO
+> tooltips; caption y → widget y is +9pt; the face's own `Line13/14/15/17/18/
+> 19/20` subform names identify the code column) — **all 111 widgets mapped, no
+> missing / no duplicate targets / no type mismatches, test-pinned.** Box code
+> letters transcribed VERBATIM from the RS `SCHEDULE_K1_1065` spec's
+> `IRS_2025_I1065SK1` excerpts. **Item 2 rode along** (item 1 needs item I1):
+> `PartnerEntityType` 11 choices + `Partner.entity_type` + mig 0222 (backfill
+> classifies ONLY `is_individual=True`; False is left BLANK — never invented),
+> `partner_display.py` as the one TIN/I1/I2 source, UI dropdown, and the EIN
+> fix on BOTH sides (the client's unconditional `formatSSN` was the real cause
+> of a partner EIN rendering in SSN punctuation — two-digit prefix regrouped
+> as three-two-four). **2 OPEN RULINGS** (REVIEW_QUEUE): box 13
+> contribution-type and box 11 character codes cannot be derived from what the
+> app stores; documented defaults shipped, exposed by
+> `k1_1065_ambiguous_codes()`. **GATES:** NEW `test_1065_k1_package` **17**
+> (asserts PDF box values by reading text at each field's template geometry —
+> the filler strips widgets, so widget-value reads return nothing) ·
+> 1065/1041/forms/flow band **769** · client tsc **52 = baseline** · vitest
+> **543**. **STILL OPEN on the 1065:** brief items 3-9 — Schedule B pages 2-4
+> render map + Schedule B-1 (template NOT in the repo), partnership M-2,
+> partner auto-save identity, Schedule L IRS labels + BOY diagnostic, Form
+> 8990, Georgia package, five-decimal percentages.
+
 > **2026-07-27 session 124 — FORM 4562 `D_4562_RECON` AMENDED FOR THE §179
 > BUSINESS-INCOME LIMITATION** (RS `6e61341` → R020, seeded/export-verified/
 > mirrored; app leg green; **no migration**). Found while settling the 8
