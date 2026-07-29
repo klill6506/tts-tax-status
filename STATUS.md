@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-28, session 127 (**Phase 2 item 3a SHIPPED: the
-1099-R stack converged onto the InputRow grid** on branch `slate-ui`).*
+*Last updated: 2026-07-28, session 127 (**item 3a SHIPPED + three
+Ken-directed entry fixes: EIN-first creates · payer state-ID tracking ·
+ZIP autofill wiring** on branch `slate-ui`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -45,6 +46,35 @@ NEW reusable `scripts/slate_screen_screenshots.mjs` (takes any rail label
 Gates: vitest **650/650** (12 new; the draft-contamination test was
 proven to bite by dropping the draftSeq key and watching it fail) · tsc
 **46 = baseline**.
+
+**THEN (same session, Ken live-directed — `712e558` + `fddb639`, pushed):**
+**(1) EIN-first creates the 1099-R** (Ken ruled after seeing the live
+proof): the client gate is now payer NAME **or** EIN — the serializer had
+allowed an EIN-first create since 2026-07-02 but the client demanded the
+name, so the registry lookup (whose job is FILLING the name) could never
+fire on a new 1099-R. Pinned regression contract #2 updated in the same
+change; its fake serializer had also drifted (400'd blank names the real
+one accepts). Rode along: draft-keyed lookup marks (hints never showed on
+draft cards, either rendering). **(2) Payer state-ID tracking** ("TaxWise
+would not save the state ID"): the registry's EmployerStateAccount table
+existed (the W-2 loop has been saving them all along) — the 1099-R loop
+now FEEDS it (Box 15 state + payer's state number, learned even onto
+bulk-imported payers, never modifying existing rows) and the lookup READS
+it (single account + both cells blank → the pair fills; state typed later
+→ ID fills from the cached accounts). **(3) ZIP autofill wiring** ("the
+zip database doesn't seem to work very often"): the table was NEVER the
+problem (40,979 rows both DBs, all Athens/Conyers ZIPs hit) — the hook
+was missing from the TAXPAYER address (the most-typed address in the app)
+and the 1099-R payer block; both wired, fill-blanks-only; Slate 1099-R
+payer block reordered ZIP-before-City so the fill is visible.
+Live-proven end-to-end on the demo DB (EIN-first → name/GA/state-ID all
+filled + "from payer registry" hints · taxpayer ZIP 30606 → Athens, GA
+persisted; all QA data reverted; demo registry seeded w/ synthetic TRS
+payer + GA account). Gates: server **35/35** across the three
+employer-learning bands (5 new) · vitest **656/656** (4 new) · tsc 46.
+⚠ **These are flag-independent entry fixes riding `slate-ui`** — they
+reach the live app only when Ken approves a merge/deploy of the branch
+(or asks for a cherry-pick to main). Flagged to Ken in-session.
 
 *(Item 2 detail, for reference)* `slate/screens/SlateDiagnosticsWorkspace.tsx`
 is a VIEW over the legacy DiagnosticsTab container (runs/auto-run/ack
@@ -92,13 +122,14 @@ unstaged) · no merge/deploy without Ken · at deploy: seed_rules BOTH DBs
 (D_W2_ family).
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE)
-1. **NEW (s127j): 1099-R EIN-first entry can never fire the payer lookup** —
-   the serializer allows an EIN-first create, the client gate + a pinned
-   regression test require a payer name first. Recommend relaxing the gate
-   to "name OR EIN" and updating the pinned test in the same change.
-   Not fixed unilaterally (a green test asserts the current shape).
-2. **NEW (s127j, minor): the form-view pane still shows the W-2 facsimile on
+1. **NEW: merge/cherry-pick the flag-independent entry fixes?** The
+   EIN-first + state-ID + ZIP work benefits the LIVE app (legacy UI
+   included) but rides `slate-ui` — Ken decides merge vs cherry-pick vs
+   wait for the Slate cutover.
+2. **(s127j, minor): the form-view pane still shows the W-2 facsimile on
    non-W-2 screens** — recommend falling back to 1040 p.1 off-W-2.
+   *(Also minor: remaining address blocks — 2441 provider, preparer/firm —
+   not yet audited for the ZIP hook; wire as each screen converges.)*
 3. **(s127i): Diagnostics workspace adaptations** — mock's Category
    taxonomy / Authority row / editable field-in-context need small server
    columns if wanted; read-only ctx recommended as permanent.
@@ -123,7 +154,11 @@ unstaged) · no merge/deploy without Ken · at deploy: seed_rules BOTH DBs
 - **Branch discipline:** `slate-ui` checked out; parallel session's
   uncommitted work UNSTAGED (`server/apps/returns/views.py`, `tb_import.py`,
   `test_tb_import.py`). Never stage/stash/`git add .`.
-- **Gates at s127 item 3a:** vitest **650/650** · tsc **46 = baseline**.
+- **Gates at s127 close:** vitest **656/656** · tsc **46 = baseline** ·
+  employer-learning server bands **35/35**.
+- ⚠ Demo employers registry now holds a SYNTHETIC payer: TRS of Georgia
+  58-1234567 + GA account 1234567-AB (seeded for the EIN-first QA proof;
+  synthetic, demo DB only, harmless to keep).
 - ⚠ Demo QA return: has preparer "QA Test Preparer" (synthetic PTIN) since
   Leg 5 QA — print gate clear, D_PREPARER_001 silent on it. A QA
   ack/unack cycle on D_W2_BOX5_SUGGEST was fully reverted. **Item 3a QA
