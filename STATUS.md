@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-29, session 131 (bespoke-screen sweep: SCHEDULE E +
-K-1 PAGE 2 converged as sweep unit 8; live-proven end-to-end and fully
-reverted; no open bug reports at boot).*
+*Last updated: 2026-07-29, session 132 (bespoke-screen sweep: SCHEDULE F +
+SCHEDULE J converged as sweep units 9 and 10; both live-proven end-to-end and
+fully reverted; no open bug reports at boot).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,66 +11,66 @@ reverted; no open bug reports at boot).*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **Schedule F**, then J / Depreciation / the remainder
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **Depreciation** (the big one), then 6252 / 8824 / 7217 / the remainder
 
-**s131 shipped sweep unit 8 on `slate-ui` (`b5c47ef`, pushed, no deploy):
-Schedule E (Part I rentals & royalties) + Schedule E page 2 (K-1 router) as
-TWO screens on the Schedule C DocumentTabs paradigm** — view-over-container,
-one state machine, two renderings:
+**s132 shipped sweep units 9 + 10 on `slate-ui` (no deploy):**
 
-- **SlateScheduleEScreen** — property tabs over the two-column worksheet
-  (address/type/days · income · the 15 expense lines); line 18 renders a
-  locked ƒx cell when the Depreciation worksheet feeds the property; line 21
-  net + 8582 allowed/suspended locked computed; the Schedule E / 8582 / 461
-  facts span rides the ONE useTaxpayerFacts lane (REP sub-panel gate
-  verbatim). Money cells commit the raw CurrencyInput-lane value VERBATIM
-  (blank stays "" — never coerced to "0"; day ints keep `parseInt(v) || 0`).
-- **SlateScheduleK1Screen** — K-1 tabs; the box grid IS the legacy
-  sortK1FieldsByBox (source_type drives box visibility: 1065 GP/SE vs 1041
-  other-portfolio proven); `k1EinValid` lifted to module scope and shared by
-  both renderings (invalid = overlay + error rownote); 8582 + §199A lanes;
-  **the legacy Form 7203 panel mounts VERBATIM via a render prop** (one
-  implementation — restyle queued as a cosmetic REVIEW_QUEUE item); computed
-  page-2 totals span (32/37/41).
+- **Schedule F `aa24213` — SlateScheduleFScreen** on the Sch C DocumentTabs
+  paradigm (view-over-container over ScheduleF1040Section): farm tabs over
+  the two-column worksheet (A–G identification w/ EIN overlay + the accrual
+  hard warning · Part I income w/ computed 1c/9 · Part II expenses w/ locked
+  line 14 from the 4562 engine + 32/33 · 8582 panel gated line E "No" AND
+  cash · 32a-f nested other-expense rows · SE farm-optional span · computed
+  farm total → Sch 1 line 6). **Money commits "0" on blank (the legacy Sch F
+  lane = Sch C's, NOT Sch E's raw lane — carry per-section).** Live QA:
+  raised 40,000/repairs 5,000/other 500 → net 34,500 ƒx flow-back →
+  **SCH_1 L6 34,500 / AGI 94,560 → 126,622 ORM-verified** → Slate delete
+  (204) → restored clean (0 farms, L11 94,560). The zeroed orphan SE row
+  after farm delete = the KNOWN s129 residue class, zero-filtered everywhere.
+- **Schedule J `f1b3f23` — SlateScheduleJScreen** on the Credits/8812
+  singleton paradigm (screenbar + worksheet; no tabs — the three base years
+  are FIXED, not records): election + line 2 + CY preferential detail + base
+  year 1 left · base years 2–3 right · computed span (4/6/8/12/16/17/22/23)
+  gated on the election. Election checkbox commits a PLAIN boolean (not
+  tri-state); base-year fs selects keep the blank "(same: …)" option; legacy
+  `<details>` collapsibles flattened (density-first); per-base-year
+  aria-labels carry the calendar year. Live QA: singleton created on first
+  edit → elect → 3 base years 50,000/6,000 → line 6 = 10,000 / line 23 =
+  12,425 → **1040 L16 10,785 → 12,425 ORM-verified** → un-elect + zero
+  through the same lane → restored exact (L16 10,785); the inert QA
+  singleton row ORM-removed (no UI delete lane exists for it, matching
+  legacy).
 
-**Live QA (demo return `bc270846…`), full lifecycle proven:** add property →
-exact PATCH bodies (`description`/`rents_received: "24000"`/`repairs`) → net
-23,000 flowed back into the ƒx cell; add K-1 → box 1 5,000 → Part II 5,000 /
-line 41 28,000 on-screen; **AGI 94,560 → 122,560 ORM-verified** (1040 L11 +
-SCHEDULE_E L26/32/41 exact); both records then deleted THROUGH the Slate
-delete buttons (204s, recompute fired); **return restored clean: props 0,
-k1s 0, L11 = 94,560, Sch E lines blank.** ≥400 console noise identical
-count+endpoint across legacy/slate (pre-existing baseline).
+**Gates at s132 close:** vitest **782/782** (17 new: 11 Sch F + 6 Sch J) ·
+tsc **46 = baseline** · 4 side-by-sides committed
+(`Design/slate-phase2-screenshots/{legacy,slate}-{schf,schj}.png`) ·
+`/bugs` sweep at boot: no open reports · console ≥400 noise identical to the
+s131 baseline on every headless run.
 
-**Gates at s131 close:** vitest **765/765** (14 new) · tsc **46 = baseline**
-(0 errors in the new screens) · 4 side-by-sides committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-{sche,k1p2}.png`) ·
-`/bugs` sweep at boot: no open reports.
-
-**Next action: continue the sweep at Schedule F** (ScheduleF1040Section —
-the Sch C/E DocumentTabs template again), then J, Depreciation, 6252, 8824,
-7217, 8606, 8915-F, SS lump-sum, 1099-G, State Refund, Misc Income, HSA
-8889, EIC, 2441, 8962, education, 5695, estimates/extension/e-file cards.
-Pattern settled: view-over-container; PayerTable for record lists,
-DocumentTabs+worksheet for card stacks, InputRow worksheets for facts cards;
-multi-section tabs share ONE `.slate-screen` at the call site; screenshots
-per screen; live QA writes reverted.
+**Next action: continue the sweep at Depreciation** (DepreciationSection —
+the LARGEST bespoke screen: asset table + bulk assignment + conversion entry
++ bonus elect-out classes, built s116–s120; plan the Slate shape before
+coding — likely PayerTable-style asset rows + a detail worksheet), then
+6252, 8824, 7217, 8606, 8915-F, SS lump-sum, 1099-G, State Refund, Misc
+Income, HSA 8889, EIC, 2441, 8962, education, 5695,
+estimates/extension/e-file cards. Pattern settled: view-over-container;
+PayerTable for record lists, DocumentTabs+worksheet for card stacks, InputRow
+worksheets for facts cards (screenbar header for singletons); multi-section
+tabs share ONE `.slate-screen` at the call site; screenshots per screen;
+live QA writes reverted.
 
 **Dev QA recipe (proven again this session):** preview_start django-demo +
 vite · demo QA return `bc270846-5800-4cbc-8f7f-573d0a5a953f` ·
 `scripts/mint_magic_link.py` (SINGLE-USE — mint per run) ·
 `scripts/slate_screen_screenshots.mjs <returnId> <tokenFile> "<rail label>"
-<slug>` · NEW this session: `scripts/qa_sche_k1_entry.mjs` +
-`qa_sche_k1_revert.mjs` (the trusted-typing entry/revert pair — reusable
-shape for the remaining sweep screens). ⚠ Headless replace-typing: use
-Ctrl+A before page.type — `click({clickCount: 3})` does NOT reliably select,
-values APPEND (24000 became 240000 on the first run; caught by ORM before
-any assertion trusted it). ⚠ FFV ORM path is
-`form_line__section__form__code`. ⚠ PS 5.1 `Out-File -Encoding utf8` writes
-a BOM — a `git commit -F` message file picks it up into the subject line;
-use ASCII for commit-message files. ⚠ NEW_UI reads at module load — reload
-after setting localStorage. ⚠ QA .mjs scripts live under the repo root.
-⚠ Judge saves by settled PATCH responses, never flat sleeps.
+<slug>` · entry/revert pairs now exist for Sch E/K-1 (`qa_sche_k1_*`), Sch F
+(`qa_schf_*`), Sch J (`qa_schj_*`) — the reusable trusted-typing shape.
+⚠ There is NO `.slate-summarybar` class — judge AGI by ORM (the bottom bar
+is the refund monitor). ⚠ FFV ORM path = `form_line__section__form__code`;
+the 1040's form code is `1040` (not F1040). ⚠ Headless replace-typing: Ctrl+A
+before page.type. ⚠ NEW_UI reads at module load — reload after setting
+localStorage. ⚠ QA .mjs scripts live under the repo root. ⚠ Judge saves by
+settled PATCH responses, never flat sleeps.
 
 **Build rules in force:** presentation-only (server untouched this session) ·
 selective `git add` only — NEVER `git add .` (parallel tb_import work
@@ -106,10 +106,10 @@ constraint (sherpa-1099 prod + ~700 real clients).
 - ⚠ Demo QA return (Slate QA Household `bc270846…`): carries the synthetic
   review data ON PURPOSE — s127 1099-R (TRS $24,000) + s128 1099-INT
   ($1,250/$300/$50 W/H) + 1099-DIV ($800/$600/$150) + SS box 5 $21,600.
-  Fed balance due ~$8,020 at rest — expected, don't chase it (the s131
-  committed shots show $14,438 because the QA rental/K-1 were IN PLACE for
-  the capture). All s131 QA writes fully reverted after (ORM-verified:
-  0 rental properties, 0 schedule K-1s, 1040 L11 = 94,560).
+  Fed balance due ~$8,020 at rest — expected, don't chase it. All s132 QA
+  writes fully reverted (ORM-verified: 0 farms, 0 Schedule J rows, L11 =
+  94,560, L16 = 10,785). Note: the s132 farm delete left SCH_1 L6 = "0"
+  (was blank) — cosmetic recompute residue, value-equal.
 - ⚠ D_8995/D_8959 NoneType errors fire on this QA return's diagnostics —
   known RS-session agenda item (REVIEW_QUEUE), not a sweep defect.
 - ⚠ Demo employers registry: synthetic TRS of Georgia 58-1234567 + GA
