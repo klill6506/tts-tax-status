@@ -39,7 +39,18 @@ Info + Dependents converged; Ken's s128 morning review still open).*
 **Gates at s129 close:** vitest **706/706** · tsc **46 = baseline** · demo QA
 return restored (dependents 0, taxpayer fields '' / null as found).
 
-**Next action: continue the sweep, highest-traffic first — Schedule C, then
+**KEN RULED LIVE (2026-07-29, after the s129 close — two question rounds):**
+§13 dispositions **APPROVED as shipped** · **launcher MERGED + DEPLOYED**
+(delvio-launcher `60d17e8` → main; live bundle `index-BgY9TTrp.js` verified
+carrying the Slate login at app.delviotax.com) · **RS authoring session
+SCHEDULED** (agenda in REVIEW_QUEUE: topic/authority values · approved
+D_8990_DISALLOW non-partnership scoping · D_8995/D_8959 None-guards ·
+D_B2_B1 note · R-M2-3-TIE · K-1 box 13/11 codes) · **MATH_BALANCE_SHEET
+1065-arm retirement APPROVED** (small build unit — do it next session
+before/with Schedule C) · One Heart EIN fixture stays (item closed).
+
+**Next action: the MATH_BALANCE_SHEET 1065-arm retirement (approved, small),
+then continue the sweep, highest-traffic first — Schedule C, then
 Schedule D → Credits/8812 → Schedule A → the rest** (Preparer, Sch E (+K-1
 pg2), F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum,
 1099-G, State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education,
@@ -47,10 +58,9 @@ pg2), F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum,
 container; PayerTable (now with custom renders) for record lists, InputRow
 worksheets for cards; screenshots per screen; live QA writes reverted.
 
-**⚠ s128 morning-review items STILL OPEN for Ken** (he said "go" without
-ruling): the 8 s128 side-by-sides + these 4 new shots in
-`Design/slate-phase2-screenshots/` · §13 legacy-feature dispositions table ·
-delvio-launcher `slate-ui` merge call · rule topic/authority authoring.
+**s128 morning review: CLOSED** — every item ruled (see KEN RULED LIVE
+above). The screenshots stay in `Design/slate-phase2-screenshots/` for
+reference; overrules can still come back any session.
 
 **Dev QA recipe (proven again this session):** preview_start django-demo +
 vite · demo QA return `bc270846-5800-4cbc-8f7f-573d0a5a953f` (Slate QA
@@ -77,24 +87,16 @@ He switches to Slate when the redesign is FINISHED; everything rides
 constraint (sherpa-1099 prod + ~700 real clients).
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
-1. **(s128) Morning review of the overnight run** — shots + §13 dispositions
-   + launcher merge call + rule topic/authority authoring. Overrule anything;
-   it comes back next session.
-2. **(s128) delvio-launcher `slate-ui` merge** — your call (auto-deploys the
-   live login hub).
-3. **(s128) Rule topic/authority authoring** — columns live, values blank
-   until authored in RS/seed_rules.
-4. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
-5. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
-6. RS R-M2-3-TIE adjudication (s126b).
-7. K-1 box 13/11 type codes (s125).
-8. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
-9. s124's `D_4562_RECON` scoping pair.
-10. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
-11. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
-12. *(pre-existing)* D_8995/D_8959 NoneType crashes on skeleton returns —
-    unchanged behavior, still visible in shots.
-13. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
+1. **(s129) The RS authoring session** — scheduled, runs when Ken sits down
+   for it; agenda in REVIEW_QUEUE (topic/authority · D_8990 fix · D_8995/
+   D_8959 guards · D_B2_B1 note · R-M2-3-TIE · K-1 box codes).
+2. **(s129) Launcher menu extras** — recents feed / firm stats / locked
+   cards have no data source; rulings wanted before server work.
+3. s124's `D_4562_RECON` scoping pair.
+4. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
+5. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
+6. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B diagnostic
+   runners (build leg, pairs with the RS session's D_B2_B1 fix).
 
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's
