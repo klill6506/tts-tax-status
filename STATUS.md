@@ -49,8 +49,13 @@ D_B2_B1 note · R-M2-3-TIE · K-1 box 13/11 codes) · **MATH_BALANCE_SHEET
 1065-arm retirement APPROVED** (small build unit — do it next session
 before/with Schedule C) · One Heart EIN fixture stays (item closed).
 
-**Next action: the MATH_BALANCE_SHEET 1065-arm retirement (approved, small),
-then continue the sweep, highest-traffic first — Schedule C, then
+**MATH_BALANCE_SHEET 1065-arm retirement: DONE (`51e6f0b`, same day).**
+Silent on every 1065 shape, no-coverage-hole test pins D_L_BALANCE reporting
+the imbalance once; Schedule L leg 9/9 · diagnostics+flow 562/562. Demo DB
+re-seeded; **deploy checklist: seed_rules BOTH DBs now also carries the
+MATH_BALANCE_SHEET description change.**
+
+**Next action: continue the sweep, highest-traffic first — Schedule C, then
 Schedule D → Credits/8812 → Schedule A → the rest** (Preparer, Sch E (+K-1
 pg2), F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum,
 1099-G, State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education,
