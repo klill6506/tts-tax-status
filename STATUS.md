@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-29, session 138 (bespoke-screen sweep unit 20:
-FORM 2441 / Child and Dependent Care, §21. Live-proven end-to-end and fully
-reverted. SEVEN real defects, one of which silently zeroed the entire credit
-and another of which overstates it against the IRS instructions.)*
+*Last updated: 2026-07-29, session 138 (bespoke-screen sweep units 20 and 21:
+FORM 2441 / Child and Dependent Care (§21) and FORM 8962 / Premium Tax Credit
+(§36B). Both live-proven end-to-end and fully reverted. FIFTEEN real defects —
+including the worst the sweep has found: a blank line 11(f) that swings the
+federal balance due by $11,050 and turns a repayment into a refund.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,14 +13,14 @@ and another of which overstates it against the IRS instructions.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **Form 8962 (PTC)**
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **education credits (Form 8863)**
 
-**s138 shipped unit 20 on `slate-ui` (no deploy): `c7fa893`**
+**s138 shipped units 20 and 21 on `slate-ui` (no deploy): `c7fa893` · `29b2fc4`**
 
-Remaining 1040 screens (~15 of ~39; the count was re-measured in s137 by
+Remaining 1040 screens (~14 of ~39; the count was re-measured in s137 by
 mapping every `activeTab` to its section component **file** and checking each
 for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**8962** ≈323 lines · **Sch 1-A** ≈342 · **EIC** ≈280 · **5329** ≈278 ·
+**Sch 1-A** ≈342 · **EIC** ≈280 · **5329** ≈278 ·
 **6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8863** ≈170 · **8880** ≈156 ·
 **8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
 **prior-year / tax-summary** views · the estimates/extension/e-file cards.
@@ -27,6 +28,62 @@ Most are small worksheet singletons now that the paradigms are settled.
 **The business-entity screens (1120-S / 1065 shareholders, partners, balance
 sheets, allocations, 7203, page-1 income/deductions) are a SEPARATE unscoped
 lane — ~12 more, none started. Ken's call when to take them.**
+
+### Unit 21 — Form 8962, Premium Tax Credit (§36B), `29b2fc4`
+**DocumentTabs** per Form 1095-A (a received information return with its own
+policy identity and 36 monthly boxes — the W-2 archetype, not a PayerTable row),
+with the 12 × 3 monthly grid and the Part IV allocation rows as nested
+`.slate-asstable` blocks, an InputRow facts worksheet, and the computed face from
+the server's own FORM_8962 rows as locked ƒx cells. Presentation only.
+
+- ⚠⚠⚠ **DEFECT — A BLANK LINE 11(f) REPORTS THE WHOLE ADVANCE PTC AS ZERO. The
+  worst defect the sweep has found.** The annual method (line 10 Yes) reads
+  **only** the line 11 year totals; the monthly 1095-A is ignored entirely.
+  `D_8962_ANNUAL_INCOMPLETE` checks only 11(a)/11(b) and **explicitly permits** a
+  blank 11(f) ("may be blank when there were no advance payments");
+  `D_8962_ANNUAL_CONFLICT` only says the monthly amounts are "ignored". So with
+  11(a)+11(b) entered, 11(f) blank and a 1095-A carrying APTC, **nothing flags
+  it.** Live-proven on the demo return (one 1095-A, 12 × 1,000 premium / 1,100
+  SLCSP / 900 advance PTC), three states of the SAME return:
+  | state | line 25 APTC | result | balance due |
+  |---|---|---|---|
+  | monthly (the truth) | 10,800 | Sch 2 1a **REPAY 5,940** | 16,340 |
+  | 11(f) filled 10,800 | 10,800 | Sch 2 1a **REPAY 5,939** | 16,339 |
+  | **11(f) BLANK** | **0** | Sch 3 9 **REFUND 4,861** | **5,290** |
+  A blank 11(f) swings the federal balance due by **$11,050** and turns a $5,940
+  repayment into a $4,861 refundable credit. Also proven through the UI: ticking
+  line 10 moved advance PTC 10,800 → 0 and the repayment 5,940 → 0. The screen
+  now names the discarded advance at the 11(f) cell and says why no diagnostic
+  catches it.
+- ⚠⚠ **DEFECT — clearing any of the 36 monthly cells was a silent revert.** The
+  grid committed CurrencyInput's raw value and `parseCurrency("")` returns `""`.
+  Serializer-proven: `{"m03_premium": ""}` → 400 *"A valid number is required"*;
+  `null` → 400 *"This field may not be null"*; **only `"0"`** is accepted (all 36
+  columns are `DecimalField(default=0)`, NOT NULL). CurrencyInput renders 0 as
+  **blank**, so every zero cell looks empty and clearing one is the natural
+  correction. Live-proven fixed: `{"m03_premium":"0"}`, credit 4,860 → 4,455.
+- ⚠⚠ **DEFECT — the SEHI checkbox said "flagged" for something fully computed.**
+  Ticking it runs the Pub 974 iterative SEHI↔PTC loop, **rewrites Schedule 1
+  line 17** and reflows AGI (D_8962_SEHI's own text says so). The s136
+  SS-lump-sum shape — a screen understating its own engine.
+- ⚠ **DEFECT — a month with no column A earns no credit but still repays its
+  APTC** (`if prem <= 0: continue`). Engine-proven: premium 0 all year with
+  900/mo advanced → PTC 0, APTC 10,800, **repayment 975**. Now an error on that
+  month's column A, and the policy tab carries the error dot.
+- ⚠ **DEFECT — no 100%-of-FPL eligibility floor.** §36B(c)(1)(A) is 100–400%;
+  engine-proven, the full credit is granted at **66% of FPL**. Deliberately a
+  CONFIRM, not an error — §1.36B-2(b)(6) covers the common
+  advanced-on-a-higher-estimate case. → REVIEW_QUEUE.
+- ⚠ **DEFECT — the 400% cliff was invisible.** `repayment_limit` returns None at
+  ≥400% and line 28 is then written **0**, which reads as "no cap needed" when it
+  means "no cap exists". Engine-proven: household 60,000 → cap 1,625; **60,241 →
+  no cap at all**.
+- ⚠ **DEFECT — a 2026 return silently computes nothing** (`if tax_year != 2025:
+  disengage()`), leaving Sch 3 line 9 and Sch 2 line 1a **blank, not $0**.
+  D_8962_2026 is a RED but the screen said nothing.
+- ⚠ **DEFECT — there was no computed face** beyond line 11 c/d/e in annual mode:
+  no family size, FPL, FPL%, applicable figure, contribution, PTC, advance, net
+  PTC, excess, cap or repayment. On a reconciliation form.
 
 ### Unit 20 — Form 2441, Child & Dependent Care (§21), `c7fa893`
 A **singleton screenbar** hosting three paradigms that NEST: a bare
@@ -80,13 +137,13 @@ FORM_2441 rows as locked ƒx cells. Presentation only — the server was untouch
   consumed the limit / the nonrefundable clamp) explains itself rather than
   showing a bare zero.
 
-**Gates at s138 close:** vitest **947/947** (+27) · tsc **46 = baseline** ·
-side-by-sides committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-f2441.png`) · all 7 QA PATCHes
-**200** · demo QA writes reverted with **ZERO drift** against the pre-seed
-baseline.
+**Gates at s138 close:** vitest **974/974** (+54 across the two units) · tsc
+**46 = baseline** · side-by-sides committed
+(`Design/slate-phase2-screenshots/{legacy,slate}-{f2441,f8962}.png`) · every QA
+PATCH **200** · demo QA writes reverted with **ZERO drift** against the pre-seed
+baseline, twice (unit 20 and unit 21 each verified independently).
 
-**Next action: continue the sweep at Form 8962 (PTC)**, then education (8863),
+**Next action: continue the sweep at the education credits (Form 8863)**, then
 EIC, Sch 1-A, 8880, 8615, 5329, 6251, 8960, 1116, 5695, 1040-X, the state tab,
 and the estimates/extension/e-file cards. Paradigms settled: view-over-container;
 **PayerTable** for flat record lists keyed by row id, **DocumentTabs +
@@ -98,16 +155,25 @@ paradigms may NEST; multi-section tabs share ONE `.slate-screen` at the call
 site; screenshots per screen; live QA writes reverted.
 
 ## 🔑 Method that is finding these defects (keep doing this)
-1. **Read the engine against the screen before writing any JSX.** All seven of
-   this unit's defects came from that, not from the UI work.
+1. **Read the engine against the screen before writing any JSX.** All fifteen
+   defects across units 20 and 21 came from that, not from the UI work.
 2. **Probe the engine's PURE functions first** — no DB, no browser. One
    `compute_2441_lines` probe proved the claim-flag gap, the both-deemed
    overstatement, the DCB chain and the tax-liability clamp in a single run.
 3. **Check the MODEL TYPE and nullability of EVERY field in a blank map** —
    nullable-sent-"0" and non-nullable-sent-"" are both silent-revert factories.
-4. **Follow the field past compute into RENDER and E-FILE.** Defects 3, 4 and 5
-   are invisible from compute alone: a column with no input, a checkbox whose
-   path raises, and a silent `[:3]` truncation.
+4. **Follow the field past compute into RENDER and E-FILE.** Unit 20's defects
+   3, 4 and 5 are invisible from compute alone: a column with no input, a
+   checkbox whose path raises, and a silent `[:3]` truncation.
+4b. **Ask what the DIAGNOSTIC actually tests, not what its name suggests.** Unit
+   21's worst defect hid behind two rules that both "cover" the annual method:
+   one checks 11(a)/11(b) and *explicitly permits* the blank 11(f) that costs
+   $11,050, the other only says data is "ignored". Read the rule body and the
+   exact predicate before concluding a hole is covered.
+4c. **Where two modes read disjoint inputs, the inactive side is a silent
+   liability.** "The methods never mix" is a correct safeguard that also means a
+   switch can discard a whole information return. Say what is being discarded,
+   in dollars.
 5. **When the RS spec is SILENT on a rule the IRS states, flag it — never fill
    it.** Verify the rule against the instructions first so the flag is right.
 6. **Distinguish a missing-data zero from a legitimate zero** and explain both.
@@ -117,9 +183,24 @@ preview_start django-demo + vite · demo QA return
 `bc270846-5800-4cbc-8f7f-573d0a5a953f` · `scripts/mint_magic_link.py`
 (SINGLE-USE — **mint per run**; defaults to the DEMO DB) ·
 `scripts/slate_screen_screenshots.mjs <returnId> <tokenFile> "<rail label>"
-<slug> [outDir]` · `scripts/qa_unit20.mjs` (entry + revert in one) · the unit-20
-ORM seed/revert pair lived in the scratchpad (a Dependent + CareProvider are
-needed before the screen shows anything).
+<slug> [outDir]` · `scripts/qa_unit20.mjs` · `scripts/qa_unit21.mjs` · the unit-20
+and unit-21 ORM seed/revert pairs lived in the scratchpad (a Dependent +
+CareProvider, and a Form 1095-A, are needed before those screens show anything).
+- ⚠⚠⚠ **`settle()` MUST WAIT FOR THE WRITE TO BE *ISSUED* BEFORE WAITING FOR IT
+  TO FINISH.** The taxpayer-facts lane DEBOUNCES (dirty set + `scheduleFlush`),
+  so at the moment a scripted action returns, `inflight` is still **0** — the
+  request does not exist yet. A settle that only waits for `inflight → 0` returns
+  instantly and every value read after it is stale: unit 21's first run reported
+  "(no write issued)" for three fields and read pre-write numbers, which looked
+  exactly like the screen being broken. Two phases: wait (bounded, ~12s) for a
+  matching request to appear, THEN drain, THEN a commit pause. This is the
+  s136 in-flight lesson's mirror image — that one was "don't settle on silence",
+  this one is "silence can mean not-yet-started".
+- ⚠⚠ **Consecutive scripted writes on the facts lane still coalesce** even with
+  the two-phase settle (~11s per PATCH, ~300KB `fresh_return` each, and the
+  repaint can land mid-type). For multi-field arithmetic proofs, set the facts by
+  **ORM + `compute_return`** and read the rows back — the browser proves the
+  screen, the ORM proves the numbers. Don't burn a session fighting the lane.
 - ⚠⚠ **A WRITING pass adds one `400` per write to the console — that is the
   §6695(g) DUE-DILIGENCE PRINT GATE, not a defect.** FormViewPane re-POSTs
   `render-pdf/` after every save, and `_enforce_print_gate` 400s while
@@ -160,15 +241,20 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
-1. **(s138) Form 2441 deems BOTH spouses for the same months** — engine-proven
+1. **(s138) Form 8962 has NO 100%-of-FPL eligibility floor** — engine-proven, a
+   full premium tax credit at 66% of FPL, where §36B(c)(1)(A) is 100–400%. Genuinely
+   nuanced: the §1.36B-2(b)(6) safe harbour makes it CORRECT for the common
+   advanced-on-a-higher-estimate case and wrong only where no APTC was paid.
+   Recommendation: a `warning` that distinguishes the two, not an error.
+2. **(s138) Form 2441 deems BOTH spouses for the same months** — engine-proven
    $1,920 vs $0 against an explicit IRS instruction the RS spec never carries.
    Needs a spec amendment + a per-owner months allocation + a diagnostic.
-2. **(s138) A tax-exempt care provider cannot be e-filed** (the extract raises)
+3. **(s138) A tax-exempt care provider cannot be e-filed** (the extract raises)
    and printed a blank TIN column. The screen now instructs "Tax-Exempt";
    the IRS2441 mapping still needs a ruling.
-3. **(s138, minor) Only three Part I / Part II rows print** — is the overflow
+4. **(s138, minor) Only three Part I / Part II rows print** — is the overflow
    statement page wanted before the season?
-4. **(s137) FIVE tax-accuracy holes the screens now WARN about but that no
+5. **(s137) FIVE tax-accuracy holes the screens now WARN about but that no
    DIAGNOSTIC covers** — each a silent wrong number on a filed return:
    (a) a blank prior-year Sch A **5e** untaxes a whole state refund;
    (b) an **age/blind box count above 4**; (c) a tax year with no
@@ -176,25 +262,25 @@ the shared Supabase DB caution is the one true-production constraint.
    **§165(d) cap** not following the W-2G documents; (e) an explicit **$0
    `family_allocation`** zeroing the HSA deduction. Recommendation: seed (a),
    (d), (e) as errors and (b), (c) as warnings.
-5. **(s137) Should `scha_gambling_winnings` auto-populate** from the W-2G box-1
+6. **(s137) Should `scha_gambling_winnings` auto-populate** from the W-2G box-1
    sum + `other_gambling_winnings`?
-6. **(s137) `compute_8889_db` stores the FORM_8889 face from accounts[0] only.**
+7. **(s137) `compute_8889_db` stores the FORM_8889 face from accounts[0] only.**
    The PDF is correct per owner; confirm the stored rows are feeders-only.
-7. **(s137, minor)** `worksheet_2` computes `w8` unclamped while
+8. **(s137, minor)** `worksheet_2` computes `w8` unclamped while
    `_worksheet_rows` displays `max(0, …)` — confirm which the statement shows.
-8. **(s130, re-confirmed s136/s137/s138) PATCH `/taxpayer/` and the per-form
+9. **(s130, re-confirmed s136/s137/s138) PATCH `/taxpayer/` and the per-form
    PATCH lanes run tens of seconds in-process.** Profile in a session that owns
    views.py.
-9. **(s131) Form 7203 panel legacy-styled** inside the Slate K-1 screen.
-10. **(s129) The RS authoring session** — scheduled; agenda in REVIEW_QUEUE.
-11. **(s129) Launcher menu extras** — no data source; rulings wanted.
-12. s124's `D_4562_RECON` scoping pair.
-13. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
-14. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
-15. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B runners.
-16. **(s136)** Replace-all nested lists (8915-F item C) remain vulnerable to
+10. **(s131) Form 7203 panel legacy-styled** inside the Slate K-1 screen.
+11. **(s129) The RS authoring session** — scheduled; agenda in REVIEW_QUEUE.
+12. **(s129) Launcher menu extras** — no data source; rulings wanted.
+13. s124's `D_4562_RECON` scoping pair.
+14. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
+15. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
+16. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B runners.
+17. **(s136)** Replace-all nested lists (8915-F item C) remain vulnerable to
     out-of-order server arrival of two overlapping PATCHes.
-17. **(s137, bookkeeping)** Neither **STATE_REFUND** nor the sweep's other
+18. **(s137, bookkeeping)** Neither **STATE_REFUND** nor the sweep's other
     worksheet pseudo-forms have rows in `form_coverage_tracker.md`, though their
     spec/compute/render/diagnostic/test legs all exist. Worth a short
     reconciliation pass.
@@ -207,8 +293,9 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ Demo QA return (`bc270846…`) carries synthetic review data ON PURPOSE —
   s127 1099-R (TRS $24,000) + s128 1099-INT ($1,250/$300/$50 W/H) + 1099-DIV
   ($800/$600/$150) + SS box 5 $21,600.
-  **At rest after the s138 revert (ORM-verified, ZERO drift): 0 dependents,
+  **At rest after the s138 reverts (ORM-verified, ZERO drift): 0 dependents,
   0 care providers, 0 FORM_2441 rows, all six `f2441_*` facts at defaults,
+  0 Forms 1095-A, 0 FORM_8962 rows, all nine `f8962_*` facts at defaults,
   0 W-2G, 0 HSA accounts, all 17 `sr_*` facts at defaults,
   `scha_gambling_losses`/`_winnings` 0, 0 Forms 8915-F / 8606 / Roth trackers /
   SS lump-sums / 1099-G. AGI 94,560, L15 78,810, L16/L18 12,204, L19 0, L20 0,
