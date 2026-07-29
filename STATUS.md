@@ -13,10 +13,39 @@ close.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **1099-G (unemployment)**
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **State Refund**
 
-**s136 shipped units 14 and 15 on `slate-ui` (no deploy): `3d57e5d` + `53dfd5b`**
+**s136 shipped units 14, 15 and 16 on `slate-ui` (no deploy): `3d57e5d` ·
+`53dfd5b` · `e030b71`**
 *(s135 shipped unit 13 — Form 8606 + the Roth basis tracker — as `9e88fdd`.)*
+
+### Unit 16 — Form 1099-G, unemployment §85, `e030b71`
+- **PayerTable slim grid** (many state agencies, one number each — the INT/DIV
+  shape). The legacy draft card `__draft_1099g__` is **retired under the flag**
+  by the s130 type-to-add ruling: the typed payer name IS the create payload.
+- ⚠⚠ **TRAP AVOIDED — check `OWNER_CHOICES` before wiring `showOwner`.**
+  `Form1099G` allows **taxpayer/spouse only**, while PayerTable's shared owner
+  column offers a third **"Joint"** — correct for InterestIncome /
+  DividendIncome / CapitalTransaction (`IncomeOwner` / `CapitalOwner` carry it)
+  and a **400-and-silent-revert** here. This screen renders its own owner cell;
+  Spouse still appears only on a joint return.
+- **No ƒx cells** · blank map: five money columns → `"0"`, `payer_name` is
+  `blank=True` → `""` and the blank guard is OFF (proven live).
+- The row preview nets exactly as `compute_1099g.net_unemployment` (box 1 less
+  the SAME-YEAR repayment, **floored at zero**), and three engine conditions
+  the legacy screen never surfaced at the row now show where they are caused:
+  **D_1099G_WH_ONLY** as an invalid overlay on the box-4 cell,
+  **D_1099G_1341** and **D_1099G_OTHERBOXES** as alerts in the expansion. The
+  legacy header text was checked against the engine and **is accurate** — it
+  carries over unchanged (the unit-15 audit, run again and passing).
+- **Live QA (reverted, ORM-verified):** "GA Dept of Labor", box 1 $6,000 with
+  $600 withheld → Sch 1 line 7 6,000 → 1040 L8 6,000, AGI **94,560 → 100,560**,
+  L15 84,810, L16 12,204 → 13,524, L25b **2,450 → 3,050**. A $1,500 same-year
+  repayment nets the row to 4,500; box 1 cleared to 0 raises the box-4 overlay
+  + alert and both clear when it comes back. Deleted through its own lane (204)
+  → back at rest.
+
+### Unit 15 — the SS Lump-Sum Election (Pub 915 Worksheets 2 + 4), `53dfd5b`
 
 ### Unit 15 — the SS Lump-Sum Election (Pub 915 Worksheets 2 + 4), `53dfd5b`
 - **PayerTable, not document tabs.** An earlier-year row is not a separately
@@ -112,13 +141,13 @@ $24,000 TRS pension designated a qualified disaster distribution → lines
 8,970. Deleted through the screen's own Remove lane (204) → back to **AGI
 94,560 / L15 78,810 / L16 12,204**.
 
-**Gates at s136 close:** vitest **876/876** (+19 new across both units) · tsc
-**46 = baseline** · side-by-sides committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-{8915f,sslump}.png`) ·
+**Gates at s136 close:** vitest **885/885** (+28 new across the three units) ·
+tsc **46 = baseline** · side-by-sides committed
+(`Design/slate-phase2-screenshots/{legacy,slate}-{8915f,sslump,1099g}.png`) ·
 console ≥400 noise identical in BOTH modes (same 403/404 baseline).
 
-**Next action: continue the sweep at 1099-G (unemployment)**, then
-State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education, 5695,
+**Next action: continue the sweep at State Refund**, then
+Misc Income, HSA 8889, EIC, 2441, 8962, education, 5695,
 estimates/extension/e-file cards. Pattern settled: view-over-container;
 **PayerTable** for flat record lists **keyed by row id**, **DocumentTabs +
 worksheet** for card stacks AND for per-filed-form rows (the unit-12 ruling),
@@ -134,7 +163,8 @@ vite · demo QA return `bc270846-5800-4cbc-8f7f-573d0a5a953f` ·
 `scripts/mint_magic_link.py` (SINGLE-USE — **mint per run**) ·
 `scripts/slate_screen_screenshots.mjs <returnId> <tokenFile> "<rail label>"
 <slug> [outDir]` · new `scripts/qa_unit14_{entry,revert}.mjs` and
-`scripts/qa_unit15_{entry,revert}.mjs <returnId> <tokenFile>`.
+`scripts/qa_unit15_{entry,revert}.mjs` and
+`scripts/qa_unit16_{entry,revert}.mjs <returnId> <tokenFile>`.
 ⚠ A QA `.mjs` must live **under the repo root** — `puppeteer-core` is an
 ephemeral root install, so a script in a scratch folder fails to resolve it.
 ⚠⚠ **`Ctrl+A` only SELECTS** — clearing a cell needs an explicit `Backspace`,
@@ -198,8 +228,9 @@ constraint (sherpa-1099 prod + ~700 real clients).
   ($1,250/$300/$50 W/H) + 1099-DIV ($800/$600/$150) + SS box 5 $21,600.
   **At rest after the s136 revert (ORM-verified): 0 Forms 8915-F, 0 Forms
   8606, 0 Roth trackers, 0 SS lump-sum rows, both SS lump-sum flags false,
-  AGI 94,560, L4b 0, L5b 24,000, L6a 21,600, L6b 18,360, L15 78,810,
-  L16 12,204.** Fed balance due ≈$8,512 at rest — expected.
+  0 Forms 1099-G, AGI 94,560, L4b 0, L5b 24,000, L6a 21,600, L6b 18,360,
+  L8 0, L15 78,810, L16 12,204, L25b 2,450.** Fed balance due ≈$8,512 at rest
+  — expected.
 - ⚠ **An ORM delete on the QA return must be followed by `compute_return(tr)`**
   before any figure is recorded as a baseline (the s133 correction).
 - ⚠ D_8995/D_8959 NoneType errors fire on this QA return's diagnostics —
