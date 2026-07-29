@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-29, session 136 (bespoke-screen sweep: FORM 8915-F
-converged as sweep unit 14 — live-proven end-to-end, two real defects fixed,
-fully reverted. Also closes out s135's unit 13 (Form 8606), which shipped
-`9e88fdd` but never got a session close.)*
+*Last updated: 2026-07-29, session 136 (bespoke-screen sweep: FORM 8915-F as
+unit 14 and the SS LUMP-SUM ELECTION as unit 15 — both live-proven end-to-end
+and fully reverted; five real defects fixed between them. Also closes out
+s135's unit 13 (Form 8606), which shipped `9e88fdd` but never got a session
+close.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -12,10 +13,57 @@ fully reverted. Also closes out s135's unit 13 (Form 8606), which shipped
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **SS lump-sum (Pub 915)**
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **1099-G (unemployment)**
 
-**s136 shipped sweep unit 14 on `slate-ui` (no deploy): `3d57e5d`**
+**s136 shipped units 14 and 15 on `slate-ui` (no deploy): `3d57e5d` + `53dfd5b`**
 *(s135 shipped unit 13 — Form 8606 + the Roth basis tracker — as `9e88fdd`.)*
+
+### Unit 15 — the SS Lump-Sum Election (Pub 915 Worksheets 2 + 4), `53dfd5b`
+- **PayerTable, not document tabs.** An earlier-year row is not a separately
+  filed form — it is one preparer-asserted fact set per year, keyed by row id
+  and a handful of numbers wide, so it takes the slim grid + expansion. The
+  legacy "Add Earlier Year" button + separate edit panel become **type-to-add**
+  (the typed year IS the create payload).
+- **No ƒx cells** — `compute_ss_lumpsum` re-derives every worksheet line at
+  render and no serializer column is computed. The WS1-vs-WS4 comparison
+  reaches the preparer through **D_RET_008**, not this screen.
+- **Blank-commit map:** `earlier_year` is `null=True` → blank commits **null**
+  (an unnumbered row is a real state), so PayerTable's payer-name blank guard
+  is OFF; all six money columns are non-nullable `default=0` → blank commits
+  **"0"**. Both proven live (`{"earlier_year_agi":"0"}`, `{"earlier_year":null}`).
+- **THREE stale-or-wrong guidance defects fixed**, all found by reading the
+  engine against the screen:
+  1. the RED note fired on *(election && no rows)*; **D_RET_004 gates on the
+     SSA-1099 indicator** (`Taxpayer.ssa_lump_sum_prior_year`, now passed down
+     from FormEditor) **and on "no row carries a positive amount"** — a
+     preparer with the election on, a row added and $0 in it saw the warning
+     vanish while the diagnostic still fired RED;
+  2. the note claimed Worksheet 4 supersedes 6b *"only if it is lower"* — it
+     supersedes **whenever the toggle is on** (`taxable_6b = w4["l21"] if
+     applied else ws1`); D_RET_008 warns rather than reverting;
+  3. **the Social Security screen (Slate AND legacy) still said the election
+     "is not yet supported — prepare manually"** — it has been computed since
+     the retiree-hardening cluster. Both now point at this screen and keep the
+     one caveat that is still true: **pre-1994 years take Worksheet 3, which is
+     not built** — and since `earlier_year` is a LABEL the engine never reads,
+     a 1993 row would run silently through Worksheet 2, so it carries the
+     invalid overlay + an alert.
+- **Live QA (reverted, ORM-verified)** — the classic disability back-payment:
+  indicator on, 2023 carrying **$9,000** of the $21,600 box 5, that year's box
+  5 $12,000 against AGI $8,000 → the earlier year stays under the §86 base so
+  Worksheet 2 adds nothing, and this year re-runs on $12,600 → **1040 L6b
+  18,360 → 10,710**, AGI **94,560 → 86,910**, L15 71,160, L16 12,204 → 10,521
+  (`compute_lump_sum_db`: savings 7,650, beneficial, applied). Row deleted
+  through its own lane (204), both flags cleared → back to at rest.
+- ⚠⚠ **Driver lesson: a checkbox click TOGGLES.** An unconditional click flips
+  the flag back OFF on a second run — which is exactly what "the indicator
+  never saved" looked like for two runs before the cause was found. Both
+  toggles in the unit-15 drivers are idempotent and assert their state.
+- ⚠ The taxpayer-facts lane is `/tax-returns/<id>/taxpayer/`, **not** `/info/`.
+- ⚠ The Social Security screen's checkboxes carry **no aria-label** (the
+  wrapping `<label>` is their name) — drive them by that label's text.
+
+### Unit 14 — Form 8915-F, `3d57e5d`
 
 - **Form 8915-F takes the unit-12 document ruling.** "One form per disaster
   year (item B) per spouse — never combine spouses", so a row is a separately
@@ -64,12 +112,12 @@ $24,000 TRS pension designated a qualified disaster distribution → lines
 8,970. Deleted through the screen's own Remove lane (204) → back to **AGI
 94,560 / L15 78,810 / L16 12,204**.
 
-**Gates at s136 close:** vitest **867/867** (+10 new) · tsc **46 = baseline** ·
-side-by-side committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-8915f.png`) · console ≥400
-noise identical in BOTH modes (same 403/404 baseline).
+**Gates at s136 close:** vitest **876/876** (+19 new across both units) · tsc
+**46 = baseline** · side-by-sides committed
+(`Design/slate-phase2-screenshots/{legacy,slate}-{8915f,sslump}.png`) ·
+console ≥400 noise identical in BOTH modes (same 403/404 baseline).
 
-**Next action: continue the sweep at SS lump-sum (Pub 915)**, then 1099-G,
+**Next action: continue the sweep at 1099-G (unemployment)**, then
 State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education, 5695,
 estimates/extension/e-file cards. Pattern settled: view-over-container;
 **PayerTable** for flat record lists **keyed by row id**, **DocumentTabs +
@@ -85,8 +133,10 @@ writes reverted.
 vite · demo QA return `bc270846-5800-4cbc-8f7f-573d0a5a953f` ·
 `scripts/mint_magic_link.py` (SINGLE-USE — **mint per run**) ·
 `scripts/slate_screen_screenshots.mjs <returnId> <tokenFile> "<rail label>"
-<slug> [outDir]` · new `scripts/qa_unit14_{entry,revert}.mjs <returnId>
-<tokenFile>`.
+<slug> [outDir]` · new `scripts/qa_unit14_{entry,revert}.mjs` and
+`scripts/qa_unit15_{entry,revert}.mjs <returnId> <tokenFile>`.
+⚠ A QA `.mjs` must live **under the repo root** — `puppeteer-core` is an
+ephemeral root install, so a script in a scratch folder fails to resolve it.
 ⚠⚠ **`Ctrl+A` only SELECTS** — clearing a cell needs an explicit `Backspace`,
 or the value never changes, no commit fires, and a driver awaiting that write
 **hangs forever** (no timeout, no output).
@@ -147,7 +197,8 @@ constraint (sherpa-1099 prod + ~700 real clients).
   review data ON PURPOSE — s127 1099-R (TRS $24,000) + s128 1099-INT
   ($1,250/$300/$50 W/H) + 1099-DIV ($800/$600/$150) + SS box 5 $21,600.
   **At rest after the s136 revert (ORM-verified): 0 Forms 8915-F, 0 Forms
-  8606, 0 Roth trackers, AGI 94,560, L4b 0, L5b 24,000, L15 78,810,
+  8606, 0 Roth trackers, 0 SS lump-sum rows, both SS lump-sum flags false,
+  AGI 94,560, L4b 0, L5b 24,000, L6a 21,600, L6b 18,360, L15 78,810,
   L16 12,204.** Fed balance due ≈$8,512 at rest — expected.
 - ⚠ **An ORM delete on the QA return must be followed by `compute_return(tr)`**
   before any figure is recorded as a baseline (the s133 correction).
