@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-29, session 130 (bespoke-screen sweep: SCHEDULE D +
-CREDITS/8812 + the SCHEDULE A TAB converged; all live-proven; no open bug
-reports at boot).*
+CREDITS/8812 + the SCHEDULE A TAB + PREPARER converged; all live-proven; the
+~64s PATCH /info/ perf defect measured + logged; no open bug reports at boot).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -11,9 +11,9 @@ reports at boot).*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **Preparer**, then the remainder
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **Sch E (+K-1 pg2)**, then F/J and the remainder
 
-**s130 shipped THREE sweep units on `slate-ui` (no deploy):**
+**s130 shipped FOUR sweep units on `slate-ui` (no deploy):**
 
 1. **Schedule D `4126eb9` (sweep 4)** — SlateScheduleDScreen on the INT/DIV
    PayerTable paradigm: 8 slim columns (frozen computed (h); V/INH date
@@ -41,14 +41,26 @@ reports at boot).*
    charitable tab keeps its R-8283-ENTFEED wording). Live-proven across all
    three lanes; ORM-verified clean after.
 
-**Gates at s130 close:** vitest **746/746** (32 new this session) · tsc
-**46 = baseline** · 8 shots committed (schd/credits8812/scha ×
-legacy/slate/live) · `/bugs` sweep at boot: no open reports.
+4. **Preparer `1c6d3e9` (sweep 7)** — SlatePreparerScreen on the archetype
+   worksheet: signing/staff selects (active roster, PTIN-missing warning in
+   the option label), the DateInput mask reused, Save-now + autosave status,
+   read-only detail as frozen text. Live-proven by PATCH REQUEST bodies +
+   ORM-observed commits, restored clean — because **NEW FINDING (REVIEW_
+   QUEUE): PATCH `/info/` takes ~64s IN-PROCESS on the QA return** (Django
+   test client, 200) and minutes under editor traffic; BOTH renderings'
+   preparer saves have always ridden it; the save COMMITS even when the
+   client gives up (s127d). Profile in a session that owns views.py.
+   Also: `slate_screen_screenshots.mjs` readiness waits now count inputs OR
+   selects (threshold 2) — select-heavy screens broke the old >4 gate.
 
-**Next action: continue the sweep** — remaining screens: Preparer, Sch E
-(+K-1 pg2), F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum,
-1099-G, State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education,
-5695, estimates/extension/e-file cards. Pattern settled: view-over-container;
+**Gates at s130 close:** vitest **751/751** (37 new this session) · tsc
+**46 = baseline** · 11 shots committed (schd/credits8812/scha/preparer) ·
+`/bugs` sweep at boot: no open reports.
+
+**Next action: continue the sweep** — remaining screens: Sch E (+K-1 pg2),
+F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum, 1099-G,
+State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education, 5695,
+estimates/extension/e-file cards. Pattern settled: view-over-container;
 PayerTable (custom renders + optional detail) for record lists,
 DocumentTabs+worksheet for card stacks (Sch C = the template for Sch E/F),
 InputRow worksheets for facts cards; multi-section tabs share ONE
