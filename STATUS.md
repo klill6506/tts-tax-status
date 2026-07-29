@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-07-28, session 127 (**SLATE REDESIGN — front of the line by
-Ken's directive**: Phase 1 Legs 0-5 shipped on branch `slate-ui`).*
+Ken's directive**: Phase 1 Legs 0-6 shipped on branch `slate-ui`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,7 +10,7 @@ Ken's directive**: Phase 1 Legs 0-5 shipped on branch `slate-ui`).*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — Slate Phase 1, Leg 6 (keyboard registry), on branch `slate-ui`
+## ▶ RESUME HERE — Slate Phase 1, Leg 7 (acceptance sweep + side-by-sides), on branch `slate-ui`
 
 **The suite redesign ("Slate" v2.0) is the active project (Ken, 2026-07-28 —
 supersedes queue order).** Read FIRST:
@@ -20,43 +20,41 @@ supersedes queue order).** Read FIRST:
 
 **State:** Branch **`slate-ui`** (pushed): Leg 0 `1c0fc0c` · Leg 1 `c5b213c`
 (shell) · Leg 2 `ff0e571` (SlateW2Screen) · Leg 3 `973e0ad` (field states +
-ghost + D_W2_ rules) · Leg 4 `b3162c4` (DiagnosticsPanel dock + deep links +
-F3) · **Leg 5 SHIPPED `0c05d28`: FormViewPane** — 452px read-only right pane
-in the chrome: "Form W-2" tab = HTML facsimile of the W-2 face (archetype
-export), data-driven off the ACTIVE employer copy via the new `activeW2`
-module channel (focusField-style; pane falls back to the first copy on a
-stale id), live on every `fresh_return`; "1040 p.1" tab = page 1 of the
-server `render-pdf` drawn via pdfjs (lazy import, debounced refetch on
-fresh_return; the 1040 due-diligence print gate's 400 displays as a message
-in the pane — never an ambient override). FICA suggestion/computed derivation
-extracted VERBATIM to `slate/w2Derived.ts` — ONE implementation shared by the
-entry screen and the facsimile. ClientHeader "Form view" now toggles the PANE
-(pane default-open like the dock); the full Forms view stays reachable via
-the pane's "Full view →" (Leg 4 pattern). `SlateReturnLike` carries
-`w2_incomes` + `taxpayer` (structural, additive).
-**Live-verified demo DB**: facsimile follows employer-tab switches AND a live
-employer-name edit (fresh_return repaint); PDF tab proven both ways — 400
-print-gate → message shown, then (QA preparer "QA Test Preparer" created +
-assigned to the QA return) 200 → pdfjs parsed p.1 and sized the canvas to
-pane width; the final paint was blocked only by hidden-pane rAF starvation
-(QA-env artifact — pdf.js renders on rAF, which the hidden Browser pane
-starves; same dependency as the proven legacy PdfViewer). Flag OFF = legacy
-intact; zero trapped console errors. Gates: vitest **606/606** (8 new) · tsc
-**46 = baseline** · server untouched this leg.
-⚠ QA-return state change: the demo QA return now HAS a preparer of record —
-MISSING_PREPARER / D_PREPARER_001 will no longer fire on it, and the print
-gate no longer blocks its renders.
+ghost + D_W2_ rules) · Leg 4 `b3162c4` (DiagnosticsPanel dock) · Leg 5
+`0c05d28` (FormViewPane) · **Leg 6 SHIPPED `bb5929b`: the keyboard layer** —
+`slate/keyboard.ts` registry (global **Ctrl/Cmd+J** JumpBox toggle + **F6**
+form-pane toggle, both preventDefault; `advanceFromInput` extends
+`lib/field-grid-nav`'s pure scan to the Slate DOM: next blank editable
+`.slate-field`, skipping filled cells and locked ƒx cells, wrapping once),
+**JumpBox** command palette (all rail sections kinded by nav group + the
+current screen's `[data-field]` inputs, collected from the DOM at open;
+↑↓/⏎/Esc; field select = `focusFieldInDom` focus+flash; the AppHeader
+trigger is enabled), **FieldStateInput Enter = accept-and-advance** on ghost
+cells / plain advance elsewhere (⚠ the advance blurs the cell mid-accept —
+the DOM value is synced BEFORE the focus move, else the blur commit reads
+the unflushed empty value and WIPES the acceptance; test-pinned), and the
+ClientHeader **"Recomputed · ⟨ago⟩" stamp** off `saveScope.lastAckedAt`
+(every save path recomputes before responding, so ack time = recompute
+time). **Live-verified demo DB**: Ctrl+J → filter → Enter jumped to
+Schedule A; field jump landed focus+flash on Box 2; F6 hid/showed the pane;
+Enter-advance from Box 2 skipped filled Box 3 + overridden Box 4 and landed
+on ghost Box 5; ghost Enter accepted 50,000, advanced to Box 7, the PATCH
+survived the blur, and the Recomputed stamp appeared (Box 5 reverted to
+ghost afterward — QA return left as found). Flag OFF = legacy intact AND
+Ctrl+J NOT intercepted (the registry never mounts). Gates: vitest
+**617/617** (11 new) · tsc **46 = baseline** · server untouched.
 
-**Next action (Leg 6): keyboard registry** (plan §8.7): one `keyboard.ts`
-registry — Ctrl+J JumpBox overlay (screens + fields; preventDefault verified
-in Chrome), **F6** = the FormViewPane toggle key (button already wired),
-Enter-advance via extended `field-grid-nav`, "Recomputed · time" indicator
-off saveScope's last acknowledged mutation. Then Leg 7 (acceptance sweep +
-side-by-side screenshots) — **STOP at the Phase 1 gate**.
+**Next action (Leg 7): acceptance sweep + side-by-side screenshots** (plan
+§8.8): legacy vs Slate on the dev server, SAME return, screenshots posted →
+**STOP at the Phase 1 gate for Ken's review.** Sweep the plan's testing list
+(§8 end): flag-off assertion suite, two-cell suggest guard, deep-link
+routing, JumpBox filtering, Enter-advance ordering — all have tests; the
+sweep re-verifies against the ACCEPTANCE list + captures the screenshots.
+⚠ **Screenshots need a VISIBLE Browser pane** — the hidden pane can't
+composite frames (screenshot times out) and starves rAF (pdfjs paints
+stall). Run Leg 7 when the pane is displayed, or ask Ken to pop it open.
 Dev QA recipe: preview_start django-demo + vite → app root `#/` (NOT
 `#/tax-returns`) → Open return → localStorage `delvio-new-ui`=1 → reload.
-⚠ Hidden Browser pane: timers throttle ~1s, rAF starves (pdfjs paints stall),
-screenshots time out — verify via DOM probes; visible window behaves normally.
 
 **Build rules in force:** presentation-only (the Leg 3 server exceptions are
 done; anything further needs Ken) · every input a real DOM input · **selective
@@ -83,7 +81,10 @@ unstaged in the tree) · no merge/deploy without Ken.
 - **Branch discipline:** repo checked out on `slate-ui`; parallel session's
   uncommitted work UNSTAGED in the tree (`server/apps/returns/views.py`,
   `tb_import.py`, `test_tb_import.py`). Never stage/stash/`git add .`.
-- **Gates at s127 Leg 5:** vitest **606/606** · tsc **46 = baseline**.
+- **Gates at s127 Leg 6:** vitest **617/617** · tsc **46 = baseline**.
+- ⚠ Demo QA return state: has a preparer of record ("QA Test Preparer",
+  synthetic PTIN) since Leg 5 QA — its print gate is clear and
+  MISSING_PREPARER/D_PREPARER_001 no longer fire on it.
 - ⚠ At deploy (Ken gates): **seed_rules BOTH DBs** (D_W2_ family, Leg 3).
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`).
 - ⚠ One test DB — never overlap pytest runs.
