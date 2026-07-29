@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-28, session 127 (**Phase 2 item 2 SHIPPED: Slate
-Diagnostics workspace** on branch `slate-ui`).*
+*Last updated: 2026-07-28, session 127 (**Phase 2 item 3a SHIPPED: the
+1099-R stack converged onto the InputRow grid** on branch `slate-ui`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,15 +10,43 @@ Diagnostics workspace** on branch `slate-ui`).*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — Slate Phase 2, item 3: entry-paradigm convergence (plan §9.3)
+## ▶ RESUME HERE — Slate Phase 2, item 3b: next entry screen (INT/DIV payer grids)
 
 Ken ratified the Slate archetype 2026-07-28; Phase 2 proceeds in plan §9
 order, each screen screenshot-reviewed. Flag stays prod-OFF; no
 merge/deploy without Ken.
 
-**State:** Branch **`slate-ui`** (pushed `e7a0f30`): Phase 1 complete ·
-item 1 Return Manager (`0672a6c`) · **item 2 SHIPPED `e7a0f30`: Slate
-Diagnostics workspace** — `slate/screens/SlateDiagnosticsWorkspace.tsx`
+**State:** Branch **`slate-ui`** (pushed `4b67755`): Phase 1 complete ·
+item 1 Return Manager (`0672a6c`) · item 2 Diagnostics workspace
+(`e7a0f30`) · **item 3a SHIPPED `4b67755`: the 1099-R stack on the
+InputRow grid** — `slate/screens/SlateR1099Screen.tsx` is a VIEW over
+RetirementIncomeSection (the s107 draft-row single-create path, the payer
+EIN lookup, the draft remount generation, delete and the 5329 fact lane
+all stay in the container). The vertical card stack becomes DOCUMENT TABS
+(one per payer) over the two-column worksheet; Simplified Method + the
+return-level 5329 span; running gross/taxable totals in the tools bar.
+Adaptations, loud: the legacy "autofilled" YELLOW has no Slate mapping
+(Ken ruling open) → neutral "from payer registry" hint, no colour
+invented; `sm_taxable` is serializer-read-only → renders computed and
+stays LOCKED via a NEW additive `noOverride` on FieldStateInput (proven:
+the same dispatched Ctrl+Enter unlocks the W-2's Box 6 and does not
+unlock this cell). One live-found defect fixed: the draft row is SPARSE
+until first commit, so the controlled cells were flipping
+uncontrolled→controlled — one normalizer at the boundary (display only;
+the commit handlers still restore null-vs-zero).
+**Live-verified demo DB:** entering a 1099-R through the Slate view =
+ONE POST + six PATCHes against the SAME record (the split-record contract
+holds), box 2a clears to NULL while a model-default box clears to "0", a
+second draft starts clean, flag OFF = legacy card stack intact with zero
+slate nodes and zero console errors. Side-by-sides committed
+(`Design/slate-phase2-screenshots/legacy-r1099 · slate-r1099`) via the
+NEW reusable `scripts/slate_screen_screenshots.mjs` (takes any rail label
+— serves every remaining screen of the convergence).
+Gates: vitest **650/650** (12 new; the draft-contamination test was
+proven to bite by dropping the draftSeq key and watching it fail) · tsc
+**46 = baseline**.
+
+*(Item 2 detail, for reference)* `slate/screens/SlateDiagnosticsWorkspace.tsx`
 is a VIEW over the legacy DiagnosticsTab container (runs/auto-run/ack
 machinery untouched — one state machine, two renderings): rail filters
 (severity · by-screen via RULE_TAB_MAP · Active/Acknowledged · persisted
@@ -46,17 +74,16 @@ errors, ≥400s attributed (login `/me/` 403 + `/prior-year/` 404,
 same-count-same-endpoint across modes). Review shots delivered to Ken +
 committed: `Design/slate-phase2-screenshots/` (legacy-diagnostics ·
 slate-diagnostics · slate-diag-filtered · slate-goto-field; demo DB
-only). New capture recipe: `scripts/slate_diag_screenshots.mjs`.
-Gates: vitest **638/638** (11 new) · tsc **46 = baseline**.
+only). Capture recipe: `scripts/slate_diag_screenshots.mjs`.
 
-**Next action (Phase 2 item 3): entry-paradigm convergence** (plan §9.3)
-— one screen at a time onto the InputRow grid: 1099-R stack, INT/DIV
-payer grids, Social Security page, Schedule 1/2/3 tables, state line
-tables; anything that can't fit the grid gets listed and asked, not
-forced. Then §9.4 launcher/login (separate delvio-launcher item). Dev QA
-recipe: preview_start django-demo + vite → `#/` → localStorage
-`delvio-new-ui`=1 → reload. Screenshots: `scripts/slate_screenshots.mjs`
-/ `slate_diag_screenshots.mjs` (+ `scripts/mint_magic_link.py`).
+**Next action (item 3b): the INT/DIV payer grids** — plan §9.3 names them
+the most likely "can't fit the grid" candidate (inline-columns + expand);
+audit first, convert if it fits, otherwise LIST IT AND ASK rather than
+force it. Then Social Security, Schedule 1/2/3 tables, state line tables;
+then §9.4 launcher/login (separate delvio-launcher item). Dev QA recipe:
+preview_start django-demo + vite → `#/` → localStorage `delvio-new-ui`=1
+→ reload. Screenshots: `scripts/slate_screen_screenshots.mjs <returnId>
+<tokenFile> "<rail label>" <slug>` (+ `scripts/mint_magic_link.py`).
 
 **Build rules in force:** presentation-only (server exceptions need Ken —
 RM aggregates + rule kind/authority columns are QUEUED, not built) ·
@@ -65,32 +92,45 @@ unstaged) · no merge/deploy without Ken · at deploy: seed_rules BOTH DBs
 (D_W2_ family).
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE)
-1. **NEW (s127i): Diagnostics workspace adaptations** — mock's Category
+1. **NEW (s127j): 1099-R EIN-first entry can never fire the payer lookup** —
+   the serializer allows an EIN-first create, the client gate + a pinned
+   regression test require a payer name first. Recommend relaxing the gate
+   to "name OR EIN" and updating the pinned test in the same change.
+   Not fixed unilaterally (a green test asserts the current shape).
+2. **NEW (s127j, minor): the form-view pane still shows the W-2 facsimile on
+   non-W-2 screens** — recommend falling back to 1040 p.1 off-W-2.
+3. **(s127i): Diagnostics workspace adaptations** — mock's Category
    taxonomy / Authority row / editable field-in-context need small server
    columns if wanted; read-only ctx recommended as permanent.
-2. RM refund/due column + aggregate season totals (s127h) — server aggregate.
-3. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
-4. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
-5. RS R-M2-3-TIE adjudication (s126b).
-6. K-1 box 13/11 type codes (s125).
-7. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
-8. s124's `D_4562_RECON` scoping pair.
-9. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
-10. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
-11. *(minor)* Legacy "autofilled" yellow → Slate treatment ruling.
-12. *(pre-existing)* D_8995/D_8959 NoneType crashes on skeleton returns —
+4. RM refund/due column + aggregate season totals (s127h) — server aggregate.
+5. **Legacy "autofilled" yellow → Slate treatment** — now CONCRETE: the
+   1099-R payer fields ship with a neutral "from payer registry" hint
+   instead of the retired yellow. Ruling wanted before more screens land.
+6. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
+7. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
+8. RS R-M2-3-TIE adjudication (s126b).
+9. K-1 box 13/11 type codes (s125).
+10. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
+11. s124's `D_4562_RECON` scoping pair.
+12. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
+13. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
+14. *(pre-existing)* D_8995/D_8959 NoneType crashes on skeleton returns —
     visible as 4 errors in the new workspace shots; unchanged behavior.
-13. *(cosmetic, Phase 2)* Legacy floating "Calculating…" chip needs a Slate
-    home (overlaps the workspace's bottom-right in the review shots).
+15. *(cosmetic, Phase 2)* Legacy floating "Calculating…" chip needs a Slate
+    home (overlaps the bottom-right in the review shots).
 
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's
   uncommitted work UNSTAGED (`server/apps/returns/views.py`, `tb_import.py`,
   `test_tb_import.py`). Never stage/stash/`git add .`.
-- **Gates at s127 item 2:** vitest **638/638** · tsc **46 = baseline**.
+- **Gates at s127 item 3a:** vitest **650/650** · tsc **46 = baseline**.
 - ⚠ Demo QA return: has preparer "QA Test Preparer" (synthetic PTIN) since
   Leg 5 QA — print gate clear, D_PREPARER_001 silent on it. A QA
-  ack/unack cycle on D_W2_BOX5_SUGGEST was fully reverted.
+  ack/unack cycle on D_W2_BOX5_SUGGEST was fully reverted. **Item 3a QA
+  left ONE synthetic 1099-R on it** (Teachers Retirement System, $24,000
+  gross / box 2a deliberately blank, GA withholding) — kept on purpose so
+  the converged screen is reviewable; it moves the return to a balance
+  due, which is why the refund monitor differs from earlier legs' shots.
 - ⚠ FA-1040-4835-06 drift (chip `task_0cf10eac`).
 - ⚠ One test DB — never overlap pytest runs.
 - ⚠ `server/.venv` repaired s124; use `.venv\Scripts\python.exe` directly.
