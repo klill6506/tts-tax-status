@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-29, session 129 (bespoke-screen sweep begun: Taxpayer
-Info + Dependents converged; Ken's s128 morning review still open).*
+*Last updated: 2026-07-29, session 129 (bespoke-screen sweep: Taxpayer Info +
+Dependents + SCHEDULE C converged; every s128 review item Ken-ruled; launcher
+live; MATH_BALANCE_SHEET 1065 arm retired).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -10,7 +11,22 @@ Info + Dependents converged; Ken's s128 morning review still open).*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **Schedule C**
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **Schedule D**
+
+**s129 late add — SCHEDULE C SHIPPED (`5247ec5`, sweep screen 3).**
+SlateScheduleCScreen = view over ScheduleCSection: the card stack becomes
+DOCUMENT TABS (1099-R paradigm) over the two-column worksheet; SE /
+8995-8959 facts / QBI aggregation cards render as spans; aggregation CRUD
+lifted to shared handlers; Schedule C types + field lists exported from
+FormEditor (one list, two renderings). Blank-commit semantics legacy
+VERBATIM (money "0" · sqft 0 · ints null); computed columns locked ƒx
+(noOverride, Ctrl+Enter-stays-locked test-pinned); statutory-linked line 1
+locks to the W-2 Box 1. Live-proven: tab add → POST → gross receipts 50,000
+→ **computed NET PROFIT 50,000 + SE tax 7,065 flowed back into locked ƒx
+cells** + the SE span auto-appeared; missing list keys caught live + fixed;
+delete → 0 businesses; the zeroed orphan SE row = legacy compute behavior
+(cleaned via ORM, QA return fully restored). Gates: vitest **714/714**
+(8 new) · tsc **46** · shots committed.
 
 **s129 (2026-07-29, after Ken's "go"): sweep screens 1–2 SHIPPED on
 `slate-ui` (no deploy):**
@@ -55,13 +71,14 @@ the imbalance once; Schedule L leg 9/9 · diagnostics+flow 562/562. Demo DB
 re-seeded; **deploy checklist: seed_rules BOTH DBs now also carries the
 MATH_BALANCE_SHEET description change.**
 
-**Next action: continue the sweep, highest-traffic first — Schedule C, then
-Schedule D → Credits/8812 → Schedule A → the rest** (Preparer, Sch E (+K-1
-pg2), F, J, Depreciation, 6252, 8824, 7217, 8606, 8915-F, SS lump-sum,
-1099-G, State Refund, Misc Income, HSA 8889, EIC, 2441, 8962, education,
-5695, estimates/extension/e-file cards). Pattern is settled: view-over-
-container; PayerTable (now with custom renders) for record lists, InputRow
-worksheets for cards; screenshots per screen; live QA writes reverted.
+**Next action: continue the sweep — Schedule D, then Credits/8812 →
+Schedule A → the rest** (Preparer, Sch E (+K-1 pg2), F, J, Depreciation,
+6252, 8824, 7217, 8606, 8915-F, SS lump-sum, 1099-G, State Refund, Misc
+Income, HSA 8889, EIC, 2441, 8962, education, 5695, estimates/extension/
+e-file cards). Pattern is settled: view-over-container; PayerTable (custom
+renders) for record lists, DocumentTabs+worksheet for card stacks (Sch C is
+the template for Sch E/F), InputRow worksheets for cards; screenshots per
+screen; live QA writes reverted.
 
 **s128 morning review: CLOSED** — every item ruled (see KEN RULED LIVE
 above). The screenshots stay in `Design/slate-phase2-screenshots/` for
