@@ -121,33 +121,40 @@ selective `git add` only — NEVER `git add .` (parallel tb_import work
 unstaged) · no merge/deploy without Ken · at deploy: seed_rules BOTH DBs
 (D_W2_ family).
 
+**KEN CLARIFIED (2026-07-28, in-session): the tax app is NOT in
+production use — everything is TESTING until January 2027.** He switches
+to the redesign as soon as it is FINISHED; no cherry-picks to main —
+everything rides `slate-ui` until then. "Finishing the redesign" =
+Phase 2 items 3b…n (entry convergence, every screen) + the queued polish
+units (RM aggregates · form-pane facsimile fallback · legacy-features
+rulings) + §9.4 launcher/login (delvio-launcher item). The deployed site
+(prep.delviotax.com) is a TEST deployment; the only true-production
+caution that remains is the SHARED Supabase DB (sherpa-1099 prod + ~700
+real clients — treat DB writes accordingly, unchanged).
+
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE)
-1. **NEW: merge/cherry-pick the flag-independent entry fixes?** The
-   EIN-first + state-ID + ZIP work benefits the LIVE app (legacy UI
-   included) but rides `slate-ui` — Ken decides merge vs cherry-pick vs
-   wait for the Slate cutover.
-2. **(s127j, minor): the form-view pane still shows the W-2 facsimile on
+1. **(s127j, minor): the form-view pane still shows the W-2 facsimile on
    non-W-2 screens** — recommend falling back to 1040 p.1 off-W-2.
    *(Also minor: remaining address blocks — 2441 provider, preparer/firm —
    not yet audited for the ZIP hook; wire as each screen converges.)*
-3. **(s127i): Diagnostics workspace adaptations** — mock's Category
+2. **(s127i): Diagnostics workspace adaptations** — mock's Category
    taxonomy / Authority row / editable field-in-context need small server
    columns if wanted; read-only ctx recommended as permanent.
-4. RM refund/due column + aggregate season totals (s127h) — server aggregate.
-5. **Legacy "autofilled" yellow → Slate treatment** — now CONCRETE: the
+3. RM refund/due column + aggregate season totals (s127h) — server aggregate.
+4. **Legacy "autofilled" yellow → Slate treatment** — now CONCRETE: the
    1099-R payer fields ship with a neutral "from payer registry" hint
    instead of the retired yellow. Ruling wanted before more screens land.
-6. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
-7. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
-8. RS R-M2-3-TIE adjudication (s126b).
-9. K-1 box 13/11 type codes (s125).
-10. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
-11. s124's `D_4562_RECON` scoping pair.
-12. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
-13. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
-14. *(pre-existing)* D_8995/D_8959 NoneType crashes on skeleton returns —
+5. RS D_8990_DISALLOW vs D_8990_EBIE conflicting guidance on a 1065 (s126e).
+6. Retire MATH_BALANCE_SHEET's 1065 arm? (s126d).
+7. RS R-M2-3-TIE adjudication (s126b).
+8. K-1 box 13/11 type codes (s125).
+9. RS 1065_B stale D_B2_B1 note + 5 unbuilt Sch B diagnostics (s126).
+10. s124's `D_4562_RECON` scoping pair.
+11. Real One Heart EIN in committed test fixtures (chip `task_f06ee3ed`).
+12. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
+13. *(pre-existing)* D_8995/D_8959 NoneType crashes on skeleton returns —
     visible as 4 errors in the new workspace shots; unchanged behavior.
-15. *(cosmetic, Phase 2)* Legacy floating "Calculating…" chip needs a Slate
+14. *(cosmetic, Phase 2)* Legacy floating "Calculating…" chip needs a Slate
     home (overlaps the bottom-right in the review shots).
 
 ## Active gates
