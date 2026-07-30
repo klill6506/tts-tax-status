@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-07-29, session 138 (bespoke-screen sweep units 20 and 21:
-FORM 2441 / Child and Dependent Care (§21) and FORM 8962 / Premium Tax Credit
-(§36B). Both live-proven end-to-end and fully reverted. FIFTEEN real defects —
-including the worst the sweep has found: a blank line 11(f) that swings the
-federal balance due by $11,050 and turns a repayment into a refund.)*
+*Last updated: 2026-07-29, session 138 (bespoke-screen sweep units 20, 21 and 22:
+FORM 2441 / Child and Dependent Care (§21), FORM 8962 / Premium Tax Credit
+(§36B) and FORM 8863 / Education Credits (§25A). All three live-proven
+end-to-end and fully reverted. TWENTY-TWO real defects — including the worst the
+sweep has found: a blank line 11(f) that swings the federal balance due by
+$11,050 and turns a repayment into a refund.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,21 +14,65 @@ federal balance due by $11,050 and turns a repayment into a refund.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **education credits (Form 8863)**
+## ▶ RESUME HERE — the bespoke-screen sweep continues at **EIC**
 
-**s138 shipped units 20 and 21 on `slate-ui` (no deploy): `c7fa893` · `29b2fc4`**
+**s138 shipped units 20, 21 and 22 on `slate-ui` (no deploy): `c7fa893` ·
+`29b2fc4` · `54a3d04`**
 
-Remaining 1040 screens (~14 of ~39; the count was re-measured in s137 by
+Remaining 1040 screens (~13 of ~39; the count was re-measured in s137 by
 mapping every `activeTab` to its section component **file** and checking each
 for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
 **Sch 1-A** ≈342 · **EIC** ≈280 · **5329** ≈278 ·
-**6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8863** ≈170 · **8880** ≈156 ·
+**6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
 **8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
 **prior-year / tax-summary** views · the estimates/extension/e-file cards.
 Most are small worksheet singletons now that the paradigms are settled.
 **The business-entity screens (1120-S / 1065 shareholders, partners, balance
 sheets, allocations, 7203, page-1 income/deductions) are a SEPARATE unscoped
 lane — ~12 more, none started. Ken's call when to take them.**
+
+### Unit 22 — Form 8863, Education Credits (§25A), `54a3d04`
+**DocumentTabs** per student (Part III is one full page per student — the unit-19
+per-owner ruling), an InputRow worksheet for the expenses and the four
+eligibility answers, a nested institution block, and the computed face from the
+server's own FORM_8863 rows as locked ƒx cells. Presentation only.
+
+- ⚠⚠ **DEFECT — one student with BOTH expense boxes gets BOTH credits.**
+  `sum_l30` runs over AOTC-eligible students and `sum_llc` over ALL students,
+  entirely independently, so the same money earns both. §25A(c)(2)(A) forbids the
+  LLC for a student whose AOTC is allowed. Engine-proven: $4,000 in both boxes
+  gives L19 **2,300** against **1,500** — an extra $800 on an overstated return.
+  **Live-proven through the real API:** entering the LLC box left line 1 at
+  **2,500** while line 10 became **4,000** — the same $4,000 counted twice,
+  simultaneously. Legacy's own prose said "A student takes AOTC *or* LLC, not
+  both" as though it were enforced, and D_8863_DUAL_STUDENT is only a `warning`.
+- ⚠⚠ **DEFECT — the "→ LLC only" checkbox labels promised a routing that never
+  happens.** `_aotc_eligible` merely EXCLUDES the student from the AOTC sum;
+  nothing moves the money and `llc_expenses` stays 0. Engine-proven: ticking
+  "completed first 4 years" with the money still in the AOTC box gives L19 **0**,
+  where moving it to the LLC box gives **800**. Live-proven: the tick collapsed
+  line 1 from 2,500 to **0** with line 10 still 0 — the expenses vanished.
+- ⚠⚠ **DEFECT — the line-7 lockout is a per-student checkbox with a RETURN-WIDE
+  effect** (`lockout = any(s.line7_lockout for s in students)`). Engine-proven:
+  two students, ticked on ONE → the refundable **$2,000 for BOTH** becomes
+  nonrefundable (L8 2,000 → 0, L9 3,000 → 5,000). D_8863_LOCKOUT says "A student
+  is subject…" and never mentions the scope.
+- ⚠ **DEFECT — clearing either expense box was a silent revert.** Serializer-
+  proven: `{"aotc_expenses": ""}` → 400 *"A valid number is required"*; `null` →
+  400 *"may not be null"*; **only `"0"`** is accepted (both columns are
+  `DecimalField(default=0)`, NOT NULL). Live-proven fixed: `{"llc_expenses":"0"}`
+  and line 10 back to 0.
+- ⚠ **DEFECT — a student without a 9-digit SSN makes the return UNFILEABLE** —
+  the y2025 extract raises `UnmappableValue` ("missing name/SSN(9) — required for
+  the IRS8863 student group") whenever line 8 or 19 is nonzero. Nothing flagged
+  it; the SSN and name cells now carry the overlay.
+- ⚠ **DEFECT — MFS / a dependent filer bars both credits** and the engine zeroes
+  every student's expenses, but the screen just showed "$0.00".
+- ⚠ **DEFECT — there was no computed face** beyond lines 8 and 19: no line 1,
+  MAGI, ceiling, phaseout ratio, line 7 or 9, and none of the LLC chain
+  (10-12, 17, 18), so the phaseout was invisible. Live-verified on the demo
+  return (MAGI 94,560, above the 90,000 ceiling): the face now says "both credits
+  are $0 — correct, not missing data" instead of a bare zero.
 
 ### Unit 21 — Form 8962, Premium Tax Credit (§36B), `29b2fc4`
 **DocumentTabs** per Form 1095-A (a received information return with its own
@@ -137,14 +182,20 @@ FORM_2441 rows as locked ƒx cells. Presentation only — the server was untouch
   consumed the limit / the nonrefundable clamp) explains itself rather than
   showing a bare zero.
 
-**Gates at s138 close:** vitest **974/974** (+54 across the two units) · tsc
+**Gates at s138 close:** vitest **1002/1002** (+82 across the three units) · tsc
 **46 = baseline** · side-by-sides committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-{f2441,f8962}.png`) · every QA
-PATCH **200** · demo QA writes reverted with **ZERO drift** against the pre-seed
-baseline, twice (unit 20 and unit 21 each verified independently).
+(`Design/slate-phase2-screenshots/{legacy,slate}-{f2441,f8962,f8863}.png`) ·
+every QA PATCH **200** · demo QA writes reverted to the exact pre-seed baseline,
+three times (each unit verified independently).
+⚠ **Unit 22's revert needed ONE extra step: `disengage()` cannot clear a "0" it
+wrote itself.** `compute_8863_db.disengage()` blanks Schedule 3 line 3 only when
+`sch3_l3 != ZERO`, so a phased-out-to-zero credit leaves the literal `"0"` on the
+row after the students are deleted. Semantically identical (1040 line 20 and the
+balance due were unchanged) but it PRINTS a 0 where the form should be blank —
+restored by hand here, recorded in REVIEW_QUEUE.
 
-**Next action: continue the sweep at the education credits (Form 8863)**, then
-EIC, Sch 1-A, 8880, 8615, 5329, 6251, 8960, 1116, 5695, 1040-X, the state tab,
+**Next action: continue the sweep at EIC**, then
+Sch 1-A, 8880, 8615, 5329, 6251, 8960, 1116, 5695, 1040-X, the state tab,
 and the estimates/extension/e-file cards. Paradigms settled: view-over-container;
 **PayerTable** for flat record lists keyed by row id, **DocumentTabs +
 worksheet** for card stacks AND per-filed-form rows, **InputRow worksheets** for
@@ -241,20 +292,34 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
-1. **(s138) Form 8962 has NO 100%-of-FPL eligibility floor** — engine-proven, a
+1. **(s138) Form 8863 lets ONE student take BOTH education credits** — the same
+   $4,000 earns an extra $800, live-proven (line 1 2,500 and line 10 4,000 at
+   once). §25A(c)(2)(A) forbids it and D_8863_DUAL_STUDENT is only a warning.
+   Recommendation: make it an error, and have compute drop the LLC expenses for
+   any student whose AOTC is allowed.
+2. **(s138) The Form 8863 line-7 lockout is global but keyed per student** —
+   ticking it on one student makes the WHOLE return's AOTC nonrefundable
+   ($2,000 in the proof). Either make the compute per-student or move the
+   checkbox to the return.
+3. **(s138, minor) `compute_8863_db.disengage()` cannot clear a "0" it wrote
+   itself** — it blanks Schedule 3 line 3 only when the value is nonzero, so a
+   phased-out-to-zero credit leaves a literal "0" that PRINTS where the form
+   should be blank. Same shape likely in the other disengage paths guarded on
+   `!= ZERO`; worth one sweep.
+4. **(s138) Form 8962 has NO 100%-of-FPL eligibility floor** — engine-proven, a
    full premium tax credit at 66% of FPL, where §36B(c)(1)(A) is 100–400%. Genuinely
    nuanced: the §1.36B-2(b)(6) safe harbour makes it CORRECT for the common
    advanced-on-a-higher-estimate case and wrong only where no APTC was paid.
    Recommendation: a `warning` that distinguishes the two, not an error.
-2. **(s138) Form 2441 deems BOTH spouses for the same months** — engine-proven
+5. **(s138) Form 2441 deems BOTH spouses for the same months** — engine-proven
    $1,920 vs $0 against an explicit IRS instruction the RS spec never carries.
    Needs a spec amendment + a per-owner months allocation + a diagnostic.
-3. **(s138) A tax-exempt care provider cannot be e-filed** (the extract raises)
+6. **(s138) A tax-exempt care provider cannot be e-filed** (the extract raises)
    and printed a blank TIN column. The screen now instructs "Tax-Exempt";
    the IRS2441 mapping still needs a ruling.
-4. **(s138, minor) Only three Part I / Part II rows print** — is the overflow
+7. **(s138, minor) Only three Part I / Part II rows print** — is the overflow
    statement page wanted before the season?
-5. **(s137) FIVE tax-accuracy holes the screens now WARN about but that no
+8. **(s137) FIVE tax-accuracy holes the screens now WARN about but that no
    DIAGNOSTIC covers** — each a silent wrong number on a filed return:
    (a) a blank prior-year Sch A **5e** untaxes a whole state refund;
    (b) an **age/blind box count above 4**; (c) a tax year with no
@@ -262,31 +327,31 @@ the shared Supabase DB caution is the one true-production constraint.
    **§165(d) cap** not following the W-2G documents; (e) an explicit **$0
    `family_allocation`** zeroing the HSA deduction. Recommendation: seed (a),
    (d), (e) as errors and (b), (c) as warnings.
-6. **(s137) Should `scha_gambling_winnings` auto-populate** from the W-2G box-1
+9. **(s137) Should `scha_gambling_winnings` auto-populate** from the W-2G box-1
    sum + `other_gambling_winnings`?
-7. **(s137) `compute_8889_db` stores the FORM_8889 face from accounts[0] only.**
+10. **(s137) `compute_8889_db` stores the FORM_8889 face from accounts[0] only.**
    The PDF is correct per owner; confirm the stored rows are feeders-only.
-8. **(s137, minor)** `worksheet_2` computes `w8` unclamped while
+11. **(s137, minor)** `worksheet_2` computes `w8` unclamped while
    `_worksheet_rows` displays `max(0, …)` — confirm which the statement shows.
-9. **(s130, re-confirmed s136/s137/s138) PATCH `/taxpayer/` and the per-form
+12. **(s130, re-confirmed s136/s137/s138) PATCH `/taxpayer/` and the per-form
    PATCH lanes run tens of seconds in-process.** Profile in a session that owns
    views.py.
-10. **(s131) Form 7203 panel legacy-styled** inside the Slate K-1 screen.
-11. **(s129) The RS authoring session** — scheduled; agenda in REVIEW_QUEUE.
-12. **(s129) Launcher menu extras** — no data source; rulings wanted.
-13. s124's `D_4562_RECON` scoping pair.
-14. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
-15. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
-16. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B runners.
-17. **(s136)** Replace-all nested lists (8915-F item C) remain vulnerable to
+13. **(s131) Form 7203 panel legacy-styled** inside the Slate K-1 screen.
+14. **(s129) The RS authoring session** — scheduled; agenda in REVIEW_QUEUE.
+15. **(s129) Launcher menu extras** — no data source; rulings wanted.
+16. s124's `D_4562_RECON` scoping pair.
+17. *(carried)* Ken's browser pass over 409 Family Holdings (s126g deploy).
+18. *(cosmetic)* Legacy floating "Calculating…" chip needs a Slate home.
+19. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B runners.
+20. **(s136)** Replace-all nested lists (8915-F item C) remain vulnerable to
     out-of-order server arrival of two overlapping PATCHes.
-18. **(s137, bookkeeping)** Neither **STATE_REFUND** nor the sweep's other
+21. **(s137, bookkeeping)** Neither **STATE_REFUND** nor the sweep's other
     worksheet pseudo-forms have rows in `form_coverage_tracker.md`, though their
     spec/compute/render/diagnostic/test legs all exist. Worth a short
     reconciliation pass.
 
 ## Active gates
-- **Branch discipline:** `slate-ui` checked out (pushed through `c7fa893`);
+- **Branch discipline:** `slate-ui` checked out (pushed through `54a3d04`);
   parallel session's uncommitted work UNSTAGED. Never stage/stash/`git add .`.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe).
