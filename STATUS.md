@@ -1,20 +1,17 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 145 (**LEG 2 items 3 AND 4 are COMPLETE** on
-`slate-ui`, **no deploy**. Item 3 (`0800455`): Form 5329 Part I line 4 is a
-genuine 25%/10% blend — the s141 proof case falls **13,000 → 5,500**; 17 tests,
-three reverts, live-proven on the demo return and reverted with ZERO drift.
-Item 4: **KEN RULED on the education-credit election** — a nonzero AOTC amount
-on an eligible student IS the §25A(c)(2)(A) election, so that student leaves the
-Form 8863 line-10 LLC base and the same $4,000 can no longer earn both credits
-($800 on the proof return); `D_8863_DUAL_STUDENT` is **demoted error → warning**
-because compute now enforces the rule; 12 tests, two reverts; ruling recorded in
-**DECISIONS.md**. ⚠⚠ **The app is now knowingly AHEAD of TWO specs** —
-`R-5329-02` and `R-8863-LLC` — both flagged in REVIEW_QUEUE, neither silently
-diverged. ⚠ **Seed change: the D_RET_007 description AND the D_8863_DUAL_STUDENT
-severity+description** — `seed_rules` on BOTH DBs at deploy. No migration.
-Prior s143 closed LEG 2 items 1+2 (`4c76624`); s142 closed LEG 1. Next: **LEG 2
-item 5**, the Schedule 1-A tips owner filter.)*
+*Last updated: 2026-07-30, session 146 (**THE SCREEN SWEEP IS BACK ON, and unit
+26 — Form 6251 / AMT — is SHIPPED** (`1436cf1` on `slate-ui`, no deploy). Ken:
+*"Let's get back to the redesign unless this is pressing."* The remaining backlog
+item 5 is NOT pressing (nothing is in front of clients until Jan 2027 and the
+defect is already visible on the Sch 1-A screen), so it waits. **30 of ~39
+screens converted; the sweep resumes at Form 8615.** Earlier the same day: LEG 2
+item 3 (`0800455`, the Form 5329 25%/10% blend, 13,000 → 5,500) and item 4
+(`3850e2d`, Ken's education-credit election ruling, $800). ⚠⚠ **The app is now
+knowingly AHEAD of THREE specs** — `R-5329-02`, `R-8863-LLC` and Schedule 1-A —
+all flagged in REVIEW_QUEUE as ONE pattern for the RS session. ⚠ **At deploy:
+`seed_rules` on BOTH DBs** (s144's D_RET_007 description + s145's
+D_8863_DUAL_STUDENT severity). **No migration anywhere in s144/145/146.**)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -23,18 +20,20 @@ item 5**, the Schedule 1-A tips owner filter.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **LEG 2 item 5: the Schedule 1-A tips owner filter.**
-*(Item 4 is now DONE — Ken ruled on the education-credit election in s145.)*
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8615 (unit 27).**
 
-Ken's redirect stands: *"You can fix those items first and then go back to the
-screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
-6251 (AMT)** once the backlog is clear.
+Ken redirected back to the redesign on 2026-07-30 (s146) after item 4 closed:
+*"Let's get back to the redesign unless this is pressing."* **The rule/diagnostic
+backlog is PAUSED mid-LEG-2, at item 5** (the Schedule 1-A tips owner filter) —
+it is a real overstatement but not pressing: nothing is in front of clients until
+January 2027 and the unit-24 screen already flags it by employer name. Ken
+directs when it resumes.
 
 **LEG 1 is done.** Every item below is written up in full in `REVIEW_QUEUE.md`
 — read the entry before touching code; each carries its engine proof and my
 recommendation.
 
-### ▶ LEG 2 — compute fixes with real dollars. **ITEM 5 IS NEXT.**
+### ▶ LEG 2 — compute fixes with real dollars. **PAUSED at item 5** (s146, Ken's redirect).
 Each one needs the RS spec fetched first (the CLAUDE.md gate), the
 flow-assertion gate run after (`pytest tests/test_flow_assertions.py -v`), and
 a **Ken deploy**. Diagnostics now EXIST for four of the five, so the wrong
@@ -118,7 +117,7 @@ number is at least loud while the compute fix is pending.
    — identical but for the export timestamp. Flagged in REVIEW_QUEUE.
    ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
    lookup 404s. Use the code the app gives its `FormDefinition`.
-5. **START HERE. Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
+5. **PAUSED HERE. Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
    filer's attestation (the field already exists; treat `joint` as the
    taxpayer's) and warn when a W-2's tips are excluded.
 6. **Form 8863 line-7 lockout** — currently `any()`, so one student's box makes
@@ -265,11 +264,12 @@ a comment pointing at the behaviour tests: `test_form_w2g_diagnostics_leg` and
 exact code set will fail on every new rule — expect it and update it with a
 pointer, never by loosening the assertion.**
 
-### ▶ THE PAUSED SCREEN SWEEP — resume at **Form 6251 (AMT)**
-29 of ~39 1040 screens are converted. Remaining (the count was re-measured in
+### ▶ THE SCREEN SWEEP — **ACTIVE AGAIN (s146). Resume at Form 8615.**
+**30 of ~39** 1040 screens are converted (unit 26, Form 6251 / AMT, shipped
+`1436cf1`). Remaining (the count was re-measured in
 s137 by mapping every `activeTab` to its section component **file** and checking
 each for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
+**8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
 **8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
 **prior-year / tax-summary** views · the estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
@@ -336,6 +336,20 @@ lane — ~12 more, none started. Ken's call when to take them.**
    sent a non-line to an AcroForm map and an IRS5329 document. Check how a dict
    is CONSUMED before extending it; s144's split rides its own serializer field
    and a test pins that it stays out.
+16. ⚠⚠ **A SCREEN THAT FETCHES ITS OWN DATA HAS TWO STATES A PROP-BASED TEST
+   CANNOT SEE**: the envelope it did not unwrap, and the moment before the data
+   arrives. s146 shipped both bugs into the live app and the vitest suite stayed
+   green through each. Run the screen; then test what the run found.
+17. ⚠ **`undefined` (loading) AND `{ready:false}` (answered: not applicable) ARE
+   DIFFERENT STATES.** Collapsing them made a computable return say "Form 6251
+   does not apply" for the length of the fetch — long enough to screenshot, and
+   it read as a verdict. Waiting for INPUTS to exist is not waiting for the DATA
+   behind them (the screenshot tool's settle went 900ms → 1900ms for this).
+18. ⚠ **WHEN A DEFECT CANNOT BE DETECTED, SAY SO INSTEAD OF PRETENDING TO
+   DETECT IT.** Unit 26's zero-cannot-override trap fires on every return by
+   construction — a `default=0` non-nullable field has no untouched state — so
+   the screen STATES the trap. My first draft flagged it per-cell and was wrong
+   on every return.
 15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
    DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
    behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
@@ -402,6 +416,19 @@ change. **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s146 gates (unit 26 — Form 6251 / AMT):** NEW `tests/test_amt_face_s146.py`
+**7** (revert-tested — collapsing the null line 11 into "0.00" failed 2) · NEW
+`slateForm6251Screen.test.tsx` **13** · flow assertions **521** (baseline
+exactly) · the 6251 / amt_face bands **587** · vitest **1129/1129** · tsc **46 =
+baseline**. **LIVE-PROVEN** on the demo QA return (AMTI 94,560 → exemption 88,100
+→ excess 6,460 → TMT 1,485 against a regular tax of 12,204 → no AMT) with the
+demo data **verified UNCHANGED, 892/892 rows — this unit wrote NOTHING**.
+⚠⚠ **TWO OF THE THREE BUGS IN THIS UNIT WERE MINE AND ONLY THE LIVE RUN FOUND
+THEM** — the unit tests pass the face in as a prop, so neither the missing
+`{"data": ...}` unwrap nor the collapsed loading state was reachable from a test.
+Both now have tests. **A fetch-backed screen needs a live pass; a vitest suite
+over its props is not a substitute.**
 
 **s145 gates (all green, re-run them if you touch these modules):** new
 `tests/test_backlog_leg2_item4_8863_election.py` **12** · flow assertions **521**
