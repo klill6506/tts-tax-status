@@ -1,13 +1,15 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 142 (Ken's backlog redirect: **LEG 1 —
-diagnostics only — is COMPLETE**. Three commits on `slate-ui`, no deploy:
-`2ed5eff` Schedule 1-A diagnostics (7 rules where there were ZERO),
-`42eb851` the two Form 5329 fixes, `d991b50` the s137 five + two severity
-promotions. **12 new diagnostics, 2 promotions, 1 dual-awareness rebuild, 71
-new tests, no compute change, no migration.** Next: **LEG 2** — the compute
-fixes with real dollars, each needing an RS spec fetch, the flow-assertion
-gate and a Ken deploy.)*
+*Last updated: 2026-07-30, session 143 (**LEG 2 items 1 and 2 are COMPLETE** —
+`4c76624` on `slate-ui`, pushed, **no deploy**. The stale QBI deduction on 1040
+line 13 is cleared when the last §199A source goes (it was also being
+TRANSMITTED — a new finding), and the `disengage()`-guarded-on-`!= ZERO` family
+is fixed at its root. **8 new tests, every fix revert-tested, no migration, no
+seed change, no client change.** Prior session 142 closed **LEG 1** —
+diagnostics only — in `2ed5eff` / `42eb851` / `d991b50`: 12 new diagnostics, 2
+severity promotions, 1 dual-awareness rebuild, 71 tests. Next: **LEG 2 item 3**,
+the Form 5329 SIMPLE-rate blend. ⚠ **Item 4 is NOT next** — see the LEG 2 list;
+it turned out to need a Ken ruling first.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -16,7 +18,7 @@ gate and a Ken deploy.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **LEG 2 of Ken's 2026-07-30 backlog: the compute fixes.**
+## ▶ RESUME HERE — **LEG 2 item 3: the Form 5329 SIMPLE-rate blend.**
 
 Ken's redirect stands: *"You can fix those items first and then go back to the
 screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
@@ -26,20 +28,44 @@ screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
 — read the entry before touching code; each carries its engine proof and my
 recommendation.
 
-### ▶ LEG 2 — compute fixes with real dollars. **START HERE.**
+### ▶ LEG 2 — compute fixes with real dollars. **ITEM 3 IS NEXT.**
 Each one needs the RS spec fetched first (the CLAUDE.md gate), the
 flow-assertion gate run after (`pytest tests/test_flow_assertions.py -v`), and
 a **Ken deploy**. Diagnostics now EXIST for four of the five, so the wrong
 number is at least loud while the compute fix is pending.
-1. **The stale QBI deduction on 1040 line 13** (s139, chip `task_8000a11e`) —
-   $859 understated on the proof return. Blank line 13 in `compute_8995_db`'s
-   not-engaged branch (`write_line_13`'s `is_overridden` guard already protects
-   a real direct entry). **Do this one first** — smallest change, clearest
-   proof, and `D_8995_STALE` (s142) already reports it.
-2. **Sweep the `disengage()`-guarded-on-`!= ZERO` family** while in there (s138)
-   — item 1 is that family with money attached; a `disengage()` cannot clear a
-   "0" it wrote itself.
-3. **Form 5329 Part I: blend the SIMPLE rate** (s141) — split line 1 into its
+1. ✅ **DONE (s143, `4c76624`) — the stale QBI deduction on 1040 line 13**
+   (s139, chip `task_8000a11e`), $859 understated. `compute_8995_db`'s
+   not-engaged branch now blanks line 13 via `write_line_13("")`, which pops
+   `values["13"]` so the 14/15 reflow recovers the taxable income; the
+   `is_overridden` guard still protects a real direct entry, because line 13 is
+   a **computed** line (`seed_1040`: `is_computed=True`) and a typed figure IS
+   an override. RS `R-8995-L15` makes line 13a the Form 8995 line-15 figure, so
+   with no line 15 the line is blank.
+   ⚠⚠ **NEW FINDING — it was an E-FILE defect too, not previously logged.**
+   1040 line 13 maps to `QualifiedBusinessIncomeDedAmt` (`builder.py`
+   `LINE_ORDER`), and `builder.py` OMITS a blank line from the XML while
+   emitting a stored one. The stale figure was therefore **transmitted** as a
+   real QBI deduction with the Form 8995 rows blanked — a deduction claimed
+   with no supporting form behind it.
+2. ✅ **DONE (s143, `4c76624`) — the `disengage()`-guarded-on-`!= ZERO` family**
+   (s138). **The root cause was narrower than the backlog assumed and is now
+   fixed at BOTH ends.** `compute_8863_db` wrote the nonrefundable credit to
+   Schedule 3 line 3 UNCONDITIONALLY while the refundable half five lines up
+   already wrote `""` at zero — so a student whose credit came to nothing
+   (MFS-barred / phased out / no qualifying expenses) stored a literal `"0"`,
+   and the `!= ZERO` guard then refused to clear the one value the engaged path
+   could write. Now: blank at zero on the way IN, and "is anything stored" on
+   the way OUT.
+   ⚠ The same guard was hardened in `compute_1116` / `compute_8960` /
+   `compute_2210`, but there it was **LATENT ONLY** — each already writes `""`
+   or disengages outright when its amount is `<= 0`, and
+   `test_sibling_modules_never_write_a_zero_feeder` **pins that as a fact**
+   rather than assuming it, so a future edit that starts writing a zero is
+   caught. Every guard now detects the change through the write itself, so an
+   already-blank row costs nothing and does not fire a pointless
+   `compute_sch_2/3` reflow. No dollar moves — a blank and a "0" sum
+   identically.
+3. **Form 5329 Part I: blend the SIMPLE rate** (s141) — **START HERE.** Split line 1 into its
    SIMPLE and non-SIMPLE components in `owner_early_distributions` (the 1099-R
    codes already distinguish them), apportion the line-2 exception across the
    two, blend 25%/10%. $7,500–$15,000 overstated today; `D_RET_007` (s142) now
@@ -48,10 +74,35 @@ number is at least loud while the compute fix is pending.
    correct law puts the app AHEAD of the spec. Flag it loudly in the commit and
    in `REVIEW_QUEUE.md` — do NOT quietly diverge, and do not wait either: Ken
    has authorised the fix.
-4. **Form 8863: one student cannot take BOTH credits** (s138) — have compute
-   drop the LLC expenses for any student whose AOTC is allowed. $800 on the
+4. **Form 8863: one student cannot take BOTH credits** (s138) — $800 on the
    proof return. `D_8863_DUAL_STUDENT` is now an **error** (s142) so it blocks
-   in the meantime.
+   in the meantime. ⚠⚠ **NOT BUILT IN s143, DELIBERATELY — this one needs a Ken
+   ruling first, and the backlog's one-line framing ("drop the LLC expenses for
+   any student whose AOTC is allowed") hides the question.** Two findings from
+   the s143 spec fetch:
+   - **The RS spec carries the same defect.** `R-8863-LLC` says outright
+     *"L10 = Σ student LLC adjusted expenses"* with no §25A(c)(2)(A) exclusion,
+     and `compute_8863_db` line 261 implements exactly that. The spec KNOWS the
+     rule — it has a **warning** diagnostic for "a student cannot take both" —
+     but never carries it as a COMPUTATION. Same shape as item 3's R-5329-02:
+     implementing the law puts the app AHEAD of the spec, so it must be flagged
+     loudly, not quietly diverged.
+   - **It is an ELECTION, not an automatic disallowance.** §25A(c)(2)(A) bars
+     the LLC for a student only *"if the taxpayer **elects** to have [the AOTC]
+     apply with respect to such individual"*. So "drop the LLC whenever the AOTC
+     is allowed" imposes an election the preparer may not have made. **My
+     recommendation:** treat a nonzero `aotc_expenses` on an AOTC-eligible
+     student AS the election (the model already separates `aotc_expenses` from
+     `llc_expenses`, so entering $0 AOTC is how a preparer chooses LLC-only) and
+     drop that student from the line-10 sum, with a diagnostic naming the
+     student and the dollars either way. That is defensible and near-always
+     favourable — both credits share the 2025 MAGI phaseout band (80–90k /
+     160–180k) and the AOTC is worth up to $2,500 per student and 40%
+     refundable vs the LLC's $2,000 per RETURN — **but it is Ken's call, because
+     it silently picks one credit over another.**
+   - ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
+     lookup 404s. The s142 `SCH_1A` lesson, second occurrence: a guessed-key
+     404 is NOT "no spec"; use the code the app gives its `FormDefinition`.
 5. **Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
    filer's attestation (the field already exists; treat `joint` as the
    taxpayer's) and warn when a W-2's tips are excluded.
@@ -242,6 +293,21 @@ lane — ~12 more, none started. Ken's call when to take them.**
 8. ⚠⚠ **A DIAGNOSTIC IS NOT A COMPUTE FIX.** Every LEG 1 rule makes a wrong
    number loud; four of them sit on top of defects that are still live in LEG 2.
    Say so in the message so the preparer knows to refigure by hand.
+9. ⚠⚠ **FOLLOW THE DEFECTIVE LINE INTO E-FILE, not just print.** Item 1 looked
+   like a wrong printed number; `builder.py`'s `LINE_ORDER` made it a wrong
+   TRANSMITTED number, because the builder omits a blank line from the XML but
+   emits a stored one. Grep `LINE_ORDER` / the mappers for any line you fix.
+10. ⚠⚠ **FIX A ZERO-RESIDUE DEFECT AT THE WRITE, NOT ONLY AT THE CLEAR-UP.**
+   Item 2's clear-up guard was the symptom; the cause was a sibling write that
+   stored `"0"` where every other module stored `""`. When two writes in the SAME
+   function disagree (8863 lines 290 vs 295), that is the bug.
+11. ⚠ **A "sweep the family" instruction still needs the family AUDITED.** Three
+   of item 2's four modules turned out to be latent, not defective — reporting
+   them as four live bugs would have been false. Pin the reason each sibling is
+   safe in a test so the claim survives.
+12. ⚠ **THE REVERT IS THE TEST.** A passing test proves nothing until you have
+   watched it fail. Each of s143's three fixes was reverted and the right tests
+   failed; one revert also proved the trip-wire, not just the behaviour test.
 
 ## Dev QA recipe (proven again this session)
 preview_start django-demo + vite · demo QA return
@@ -263,6 +329,11 @@ preview_start django-demo + vite · demo QA return
 - ⚠ **The Rule Studio key for Schedule 1-A is `SCH_1A`** — `1040_SCH1A`,
   `SCH1A`, `1040S1A` and `1040_SCH_1A` all 404. A guessed-key 404 is NOT "no
   spec"; try the code the app uses for its `FormDefinition`.
+  **SECOND OCCURRENCE (s143): Form 8863's key is `FORM_8863`, not `8863`** —
+  the bare form number 404s with `{"error":"No spec found for form '8863'"}`
+  while `FORM_8863` returns the full spec. Form 8995's key IS the bare `8995`,
+  so there is no single convention — **always try the `FormDefinition.code`
+  the app itself uses.**
 - ⚠ **Finding `details` money should be quantized** — `compute_5329`'s line dict
   holds un-quantized rate products, so `0.06 × 7000.00` serialises as
   `'420.0000'`. `DecimalField` reads come back at 2 dp, so a test asserting
@@ -278,12 +349,24 @@ preview_start django-demo + vite · demo QA return
   `-p tsconfig.renderer.json`.
 
 **Build rules in force:** selective `git add` only — NEVER `git add .` (parallel
-work still unstaged: `server/apps/returns/views.py`, `tb_import.py`,
-`tests/test_tb_import.py`, `server/scripts/create_ar_cutover_clients.py`;
-⚠ also never `git stash` here) · no merge/deploy without Ken · at deploy:
-migrate (diagnostics 0005) + **`seed_rules` on BOTH DBs** (s142's 12 new rules +
-the D_5329_003 / D_8863_DUAL_STUDENT severity promotions, plus the earlier
-D_W2_ family + MATH_BALANCE_SHEET description).
+work STILL unstaged and untouched by s143: `server/apps/returns/views.py`,
+`tb_import.py`, `tests/test_tb_import.py`,
+`server/scripts/create_ar_cutover_clients.py`; ⚠ also never `git stash` here) ·
+no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
+**`seed_rules` on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
+D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
+MATH_BALANCE_SHEET description). **s143 adds NO migration and NO seed change** —
+it is compute-only, so it needs nothing at deploy beyond the push.
+
+**s143 gates (all green, re-run them if you touch these modules):** new
+`tests/test_backlog_leg2_compute.py` **8** · flow assertions **521** (baseline
+exactly) · Topic 8 / 8995 bands **166** · 8863 / 1116 bands **86** · 8960 / 2210
+bands **119**. Every fix was **revert-tested** — reverting the line-13 write
+failed 2, the 8863 write 1, the 8863 guard 2 (behaviour test + source
+trip-wire).
+⚠ **The source trip-wires strip comment lines** (`_code_only`) because this
+session's own comments QUOTE the retired snippets to explain them — a raw
+`inspect.getsource` match fires on the explanation, not on a regression.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
 switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
@@ -314,16 +397,26 @@ the shared Supabase DB caution is the one true-production constraint.
    unbuilt** and Schedule C now exists — the deferral reason is stale.
 8. **(s140, minor) Only two line-22 vehicle rows print** while line 23 sums them
    all — the same overflow gap as Form 2441's `[:3]`. One shared mechanism.
-9. **(s139) A stale QBI deduction on 1040 line 13** — $859 understated. **Now
-   DIAGNOSED** (D_8995_STALE, s142). LEG 2 item 1. Chip `task_8000a11e`.
+9. ✅ **CLOSED (s143, `4c76624`) — the stale QBI deduction on 1040 line 13.**
+   Diagnosed s142 (`D_8995_STALE`), FIXED s143. Also found to be an e-file
+   defect (transmitted as `QualifiedBusinessIncomeDedAmt` with no Form 8995).
+   Chip `task_8000a11e` can close.
 10. **(s139) Should `eic_self_employed` be DERIVED rather than asked?** The
    unanswered default silently costs $4,328–$7,152 and no diagnostic covers it.
 11. **(s139, minor) Three seeded `1040_EIC` rows are never written.**
 12. **(s138) Form 8863 lets ONE student take BOTH education credits** — $800,
-   live-proven. **Now an ERROR** (s142); the compute fix is LEG 2 item 4.
+   live-proven. **Now an ERROR** (s142); the compute fix is LEG 2 item 4 and
+   **s143 escalated it to needing Ken's ruling first** — the RS spec's
+   `R-8863-LLC` carries the same defect, and §25A(c)(2)(A) is an ELECTION, so
+   the fix silently picks one credit over another. Recommendation in the LEG 2
+   item-4 entry above.
 13. **(s138) The Form 8863 line-7 lockout is global but keyed per student.**
-14. **(s138, minor) `compute_8863_db.disengage()` cannot clear a "0" it wrote
-   itself** — same shape likely in the other `!= ZERO`-guarded disengage paths.
+14. ✅ **CLOSED (s143, `4c76624`) — `compute_8863_db.disengage()` cannot clear a
+   "0" it wrote itself.** Fixed at the root (the unconditional write) as well as
+   at the guard. The other three `!= ZERO`-guarded paths (`compute_1116` /
+   `compute_8960` / `compute_2210`) were **audited and were latent only** — each
+   already writes `""` or disengages when its amount is `<= 0`; hardened anyway
+   and that fact is now pinned by a test.
 15. **(s138) Form 8962 has NO 100%-of-FPL eligibility floor** — engine-proven, a
    full premium tax credit at 66% of FPL, where §36B(c)(1)(A) is 100–400%.
 16. **(s138) Form 2441 deems BOTH spouses for the same months** — engine-proven
