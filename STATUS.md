@@ -1,15 +1,16 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 143 (**LEG 2 items 1 and 2 are COMPLETE** —
-`4c76624` on `slate-ui`, pushed, **no deploy**. The stale QBI deduction on 1040
-line 13 is cleared when the last §199A source goes (it was also being
-TRANSMITTED — a new finding), and the `disengage()`-guarded-on-`!= ZERO` family
-is fixed at its root. **8 new tests, every fix revert-tested, no migration, no
-seed change, no client change.** Prior session 142 closed **LEG 1** —
-diagnostics only — in `2ed5eff` / `42eb851` / `d991b50`: 12 new diagnostics, 2
-severity promotions, 1 dual-awareness rebuild, 71 tests. Next: **LEG 2 item 3**,
-the Form 5329 SIMPLE-rate blend. ⚠ **Item 4 is NOT next** — see the LEG 2 list;
-it turned out to need a Ken ruling first.)*
+*Last updated: 2026-07-30, session 144 (**LEG 2 item 3 is COMPLETE** — `0800455`
+on `slate-ui`, **no deploy**. Form 5329 Part I line 4 is now a genuine 25%/10%
+blend: the 25% rides the code-S SIMPLE slice of line 3 and 10% the rest, per
+i5329 "Line 4". The s141 proof case falls from **13,000 to 5,500**. **17 new
+tests, all three fixes revert-tested, LIVE-PROVEN on the demo QA return and
+reverted with ZERO drift, no migration.** ⚠ The app is now knowingly AHEAD of
+`R-5329-02` — flagged in REVIEW_QUEUE, not silently diverged. ⚠ **Seed change:
+the D_RET_007 description** — `seed_rules` at deploy. Prior s143 closed LEG 2
+items 1+2 (`4c76624`); s142 closed LEG 1 (`2ed5eff`/`42eb851`/`d991b50`). Next:
+**LEG 2 item 5**, the Schedule 1-A tips owner filter. ⚠ **Item 4 is still NOT
+next** — it needs a Ken ruling first, see the LEG 2 list.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -18,7 +19,8 @@ it turned out to need a Ken ruling first.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **LEG 2 item 3: the Form 5329 SIMPLE-rate blend.**
+## ▶ RESUME HERE — **LEG 2 item 5: the Schedule 1-A tips owner filter.**
+*(Item 4 is BLOCKED on Ken's ruling — read its entry before assuming it is next.)*
 
 Ken's redirect stands: *"You can fix those items first and then go back to the
 screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
@@ -28,7 +30,7 @@ screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
 — read the entry before touching code; each carries its engine proof and my
 recommendation.
 
-### ▶ LEG 2 — compute fixes with real dollars. **ITEM 3 IS NEXT.**
+### ▶ LEG 2 — compute fixes with real dollars. **ITEM 5 IS NEXT.**
 Each one needs the RS spec fetched first (the CLAUDE.md gate), the
 flow-assertion gate run after (`pytest tests/test_flow_assertions.py -v`), and
 a **Ken deploy**. Diagnostics now EXIST for four of the five, so the wrong
@@ -65,15 +67,32 @@ number is at least loud while the compute fix is pending.
    already-blank row costs nothing and does not fire a pointless
    `compute_sch_2/3` reflow. No dollar moves — a blank and a "0" sum
    identically.
-3. **Form 5329 Part I: blend the SIMPLE rate** (s141) — **START HERE.** Split line 1 into its
-   SIMPLE and non-SIMPLE components in `owner_early_distributions` (the 1099-R
-   codes already distinguish them), apportion the line-2 exception across the
-   two, blend 25%/10%. $7,500–$15,000 overstated today; `D_RET_007` (s142) now
-   warns about it per owner.
-   ⚠⚠ **The RS spec's R-5329-02 carries the same shortcut**, so implementing the
-   correct law puts the app AHEAD of the spec. Flag it loudly in the commit and
-   in `REVIEW_QUEUE.md` — do NOT quietly diverge, and do not wait either: Ken
-   has authorised the fix.
+3. ✅ **DONE (s144, `0800455`) — Form 5329 Part I blends the SIMPLE rate.**
+   `part_i_line4` is the ONE helper; `compute_5329_full` AND
+   `compute_retirement.compute_5329_part_i` (the pre-dual helper the
+   FA-1040-5329 flow assertions exercise) both delegate to it, so the two
+   engines cannot drift. `owner_early_distributions` now returns the code-S
+   SUBTOTAL and `owner_inputs` passes it as `f5329_line1_simple_portion`.
+   **`or has_s` is GONE** — a code-S document rates its OWN slice and the
+   `simple_25pct` checkbox is the preparer's whole-line assertion, so both
+   controls finally mean something (this also closed s141 defect 5).
+   The s141 proof case: **13,000 → 5,500**; the worse one 25,125 → 10,125.
+   ⚠⚠ **The app is now AHEAD of `R-5329-02`, deliberately.** The spec was
+   fetched live and diffed against `server/specs/5329_spec.json` — identical
+   but for the export timestamp, so the shortcut is still in the spec. Flagged
+   in `REVIEW_QUEUE.md`, in the module docstring and in the commit.
+   ⚠ **THE ONE JUDGMENT CALL — line 2 is apportioned PRO RATA**, and it is
+   Ken-flaggable (worth up to $750 on a 50k return against the alternatives).
+   The form carries one un-attributed exception figure and i5329 is silent on
+   the allocation. Written up in REVIEW_QUEUE; pinned by
+   `test_line_2_is_apportioned_pro_rata` so a change would be deliberate. The
+   Form 8915-F QDD waiver rides the same pro rata (i5329 exempts a QDD from
+   BOTH rates and 8915-F never says which distribution it came from).
+   ⚠ **`part_i_split` is a NEW read-only serializer field, NOT a `computed_lines`
+   key** — the renderer and the MeF extract iterate that dict by LINE NUMBER and
+   the IRS form has no line for the split. Pinned by a test.
+   ⚠ **D_RET_007's seeded DESCRIPTION changed** → `seed_rules` at deploy. Its
+   message no longer says "refigure by hand"; it reports the two bases.
 4. **Form 8863: one student cannot take BOTH credits** (s138) — $800 on the
    proof return. `D_8863_DUAL_STUDENT` is now an **error** (s142) so it blocks
    in the meantime. ⚠⚠ **NOT BUILT IN s143, DELIBERATELY — this one needs a Ken
@@ -103,7 +122,7 @@ number is at least loud while the compute fix is pending.
    - ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
      lookup 404s. The s142 `SCH_1A` lesson, second occurrence: a guessed-key
      404 is NOT "no spec"; use the code the app gives its `FormDefinition`.
-5. **Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
+5. **START HERE. Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
    filer's attestation (the field already exists; treat `joint` as the
    taxpayer's) and warn when a W-2's tips are excluded.
 6. **Form 8863 line-7 lockout** — currently `any()`, so one student's box makes
@@ -308,6 +327,23 @@ lane — ~12 more, none started. Ken's call when to take them.**
 12. ⚠ **THE REVERT IS THE TEST.** A passing test proves nothing until you have
    watched it fail. Each of s143's three fixes was reverted and the right tests
    failed; one revert also proved the trip-wire, not just the behaviour test.
+   s144 did the same for all three of its fixes (10 / 4 / 1 failures).
+13. ⚠⚠ **WHEN ONE RULE HAS TWO IMPLEMENTATIONS, MAKE THE SECOND DELEGATE.**
+   s144 found `compute_retirement.compute_5329_part_i` carrying its own copy of
+   the line-4 rate — dead in production but alive in the flow assertions, so a
+   fix to one would have left the gate asserting the old law. It now calls the
+   shared `part_i_line4`. (s143's lesson was the same shape one level down: two
+   writes in the SAME function disagreeing.)
+14. ⚠⚠ **A NEW COMPUTED FIGURE NEEDS A HOME THAT ITS CONSUMERS DO NOT ITERATE.**
+   `compute_5329_form_lines` is keyed by LINE NUMBER and the renderer and the
+   MeF extract loop over every key, so adding `simple_base` to it would have
+   sent a non-line to an AcroForm map and an IRS5329 document. Check how a dict
+   is CONSUMED before extending it; s144's split rides its own serializer field
+   and a test pins that it stays out.
+15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
+   DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
+   behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
+   saying what it used to assert — that is the audit trail.
 
 ## Dev QA recipe (proven again this session)
 preview_start django-demo + vite · demo QA return
@@ -334,6 +370,15 @@ preview_start django-demo + vite · demo QA return
   while `FORM_8863` returns the full spec. Form 8995's key IS the bare `8995`,
   so there is no single convention — **always try the `FormDefinition.code`
   the app itself uses.**
+- ⚠ **`slate_screen_screenshots.mjs` takes the RAIL LABEL, not the form name** —
+  Form 5329's is **`Add'l Taxes`** (`IndividualNav.tsx` line ~142), and a wrong
+  label fails as a bare 30s `TimeoutError` at the second `waitForFunction` with
+  no hint. Grep `IndividualNav.tsx` for the tab id first.
+- ⚠ **The Rule Studio key for Form 5329 IS the bare `5329`** (unlike `SCH_1A`
+  and `FORM_8863`) — third data point that there is no convention. Fetching it
+  live and diffing against the cached `specs/*.json` takes one command and is
+  worth doing every time: s144's diff was clean but for the export timestamp,
+  which is what made "the spec still carries the shortcut" a fact, not a memory.
 - ⚠ **Finding `details` money should be quantized** — `compute_5329`'s line dict
   holds un-quantized rate products, so `0.06 × 7000.00` serialises as
   `'420.0000'`. `DecimalField` reads come back at 2 dp, so a test asserting
@@ -349,23 +394,30 @@ preview_start django-demo + vite · demo QA return
   `-p tsconfig.renderer.json`.
 
 **Build rules in force:** selective `git add` only — NEVER `git add .` (parallel
-work STILL unstaged and untouched by s143: `server/apps/returns/views.py`,
+work STILL unstaged and untouched by s143/s144: `server/apps/returns/views.py`,
 `tb_import.py`, `tests/test_tb_import.py`,
 `server/scripts/create_ar_cutover_clients.py`; ⚠ also never `git stash` here) ·
 no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
 **`seed_rules` on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
-MATH_BALANCE_SHEET description). **s143 adds NO migration and NO seed change** —
-it is compute-only, so it needs nothing at deploy beyond the push.
+MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description**). s143
+added no migration and no seed change. **s144 adds NO migration but DOES change
+one seeded description (D_RET_007)** — `seed_rules` must run.
 
-**s143 gates (all green, re-run them if you touch these modules):** new
-`tests/test_backlog_leg2_compute.py` **8** · flow assertions **521** (baseline
-exactly) · Topic 8 / 8995 bands **166** · 8863 / 1116 bands **86** · 8960 / 2210
-bands **119**. Every fix was **revert-tested** — reverting the line-13 write
-failed 2, the 8863 write 1, the 8863 guard 2 (behaviour test + source
-trip-wire).
-⚠ **The source trip-wires strip comment lines** (`_code_only`) because this
-session's own comments QUOTE the retired snippets to explain them — a raw
+**s144 gates (all green, re-run them if you touch these modules):** new
+`tests/test_backlog_leg2_item3_5329_blend.py` **17** · flow assertions **521**
+(baseline exactly) · Topic 5 / 5329 / diagnostics bands **87** · retirement +
+render + e-file bands **220** (1 skipped) · vitest **1116/1116** (+2) · tsc
+**46 = baseline**. All three fixes **revert-tested** — reverting the blend
+failed 10, the `or has_s` removal 4, the shared-helper delegation 1.
+**LIVE-PROVEN** on the demo QA return (line 4 = 5,500, the blend note, D_RET_007
+naming both bases) and the seed **REVERTED with ZERO drift**, ORM-verified
+892/892 FormFieldValue rows. Side-by-sides in `Design/screenshots/`.
+
+**s143 gates (unchanged):** `tests/test_backlog_leg2_compute.py` **8** · Topic 8
+/ 8995 **166** · 8863 / 1116 **86** · 8960 / 2210 **119**.
+⚠ **The source trip-wires strip comment lines** (`_code_only`) because those
+sessions' own comments QUOTE the retired snippets to explain them — a raw
 `inspect.getsource` match fires on the explanation, not on a regression.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
@@ -380,8 +432,13 @@ the shared Supabase DB caution is the one true-production constraint.
    employer half is derived, the occupation half uncovered); D_SCH1A_004
    narrowed to the near-miss band because Part V is derived, not claimed.
    Recommendations in REVIEW_QUEUE. **Blocks nothing — the leg is shipped.**
-2. **(s141) Form 5329 charges the 25% SIMPLE rate on the WHOLE of line 3.**
-   $7,500–$15,000 overstated. R-5329-02 carries the same shortcut. LEG 2 item 3.
+2. ✅ **CLOSED (s144, `0800455`) — Form 5329 charged the 25% SIMPLE rate on the
+   WHOLE of line 3.** Fixed as a real blend (13,000 → 5,500 on the proof case).
+   **Two things replace it in the queue:** (a) 🔴 **Rule Studio must correct
+   `R-5329-02`** — the app is now ahead of its spec, deliberately, and the spec
+   needs the blend plus a fact for the code-S slice of line 1; (b) 🟡 **the
+   pro-rata apportionment of line 2 is my judgment call** and Ken may want a
+   second preparer field instead. Both written up in REVIEW_QUEUE.
 3. **(s140) Schedule 1-A is never transmitted while 1040 line 13b is.** Needs a
    `build_schedule1a` against `IRS1040Schedule1A.xsd`. Until then a return
    claiming these deductions is paper-only. **The only thing still holding the
@@ -450,7 +507,11 @@ the shared Supabase DB caution is the one true-production constraint.
     while both of those legs were empty. **s142 closed the diagnostics half**
     (the row is annotated); the e-file half is LEG 3 item 9. Neither
     **STATE_REFUND** nor **FORM 5329** has a row at all, though every leg exists.
-    The table needs those two columns.
+    The table needs those two columns. ⚠ **s144 deliberately did NOT open a
+    Form 5329 row** even though it worked the compute leg: without the two
+    missing columns a new row could only be recorded as all-green, which is the
+    exact SCH_1A mistake this item exists to stop. Add the columns first, then
+    both rows.
 
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's uncommitted
@@ -458,6 +519,12 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s144 wrote to the demo QA return and REVERTED it.** Two synthetic 1099-Rs
+  (`QA144 Fidelity 401(k)` code 1 / 50,000 and `QA144 SIMPLE IRA` code S /
+  2,000) plus one `Form5329` row were created to live-prove the blend, then
+  deleted with `compute_return(tr)` re-run. **Zero drift, ORM-verified: 892 of
+  892 FormFieldValue rows identical to the pre-write baseline**, the original
+  TRS 1099-R intact, no Form5329 rows left. The at-rest figures below still hold.
 - ⚠ Demo QA return (`bc270846…`) carries synthetic review data ON PURPOSE —
   s127 1099-R (TRS $24,000) + s128 1099-INT ($1,250/$300/$50 W/H) + 1099-DIV
   ($800/$600/$150) + SS box 5 $21,600.
