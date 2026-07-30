@@ -1,17 +1,17 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 146 (**THE SCREEN SWEEP IS BACK ON, and unit
-26 — Form 6251 / AMT — is SHIPPED** (`1436cf1` on `slate-ui`, no deploy). Ken:
-*"Let's get back to the redesign unless this is pressing."* The remaining backlog
-item 5 is NOT pressing (nothing is in front of clients until Jan 2027 and the
-defect is already visible on the Sch 1-A screen), so it waits. **30 of ~39
-screens converted; the sweep resumes at Form 8615.** Earlier the same day: LEG 2
-item 3 (`0800455`, the Form 5329 25%/10% blend, 13,000 → 5,500) and item 4
-(`3850e2d`, Ken's education-credit election ruling, $800). ⚠⚠ **The app is now
-knowingly AHEAD of THREE specs** — `R-5329-02`, `R-8863-LLC` and Schedule 1-A —
-all flagged in REVIEW_QUEUE as ONE pattern for the RS session. ⚠ **At deploy:
-`seed_rules` on BOTH DBs** (s144's D_RET_007 description + s145's
-D_8863_DUAL_STUDENT severity). **No migration anywhere in s144/145/146.**)*
+*Last updated: 2026-07-30, session 147 (**sweep unit 27 — Form 8615, the kiddie
+tax — is SHIPPED** (`1c0fcc1` on `slate-ui`, pushed, no deploy). **31 of ~39
+screens converted; the sweep resumes at Form 1116.** No migration, no seed
+change, no server change — `compute_8615_db` already persisted the whole face.
+⚠⚠ **Form 8615's tracker row said "UNIT FULLY COMPLETE" and it is not true**:
+there is NO e-file leg at all, the render leg leaves the printed form's whole
+parent header blank, and line 1 misses most kinds of unearned income (proven
+$1,767 and $1,217 understated). All four findings are in `REVIEW_QUEUE.md` and
+the tracker row is annotated. The rule/diagnostic backlog is still PAUSED at
+LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules` obligation still stands**
+— s144's D_RET_007 description + s145's D_8863_DUAL_STUDENT severity, on BOTH
+DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -20,14 +20,20 @@ D_8863_DUAL_STUDENT severity). **No migration anywhere in s144/145/146.**)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8615 (unit 27).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 1116 (unit 28).**
 
-Ken redirected back to the redesign on 2026-07-30 (s146) after item 4 closed:
-*"Let's get back to the redesign unless this is pressing."* **The rule/diagnostic
-backlog is PAUSED mid-LEG-2, at item 5** (the Schedule 1-A tips owner filter) —
-it is a real overstatement but not pressing: nothing is in front of clients until
-January 2027 and the unit-24 screen already flags it by employer name. Ken
-directs when it resumes.
+Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
+redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
+mid-LEG-2, at item 5** (the Schedule 1-A tips owner filter) — a real
+overstatement, but not pressing: nothing is in front of clients until January
+2027 and the unit-24 screen already flags it by employer name. Ken directs when
+it resumes.
+
+**s147 added four items to the backlog** (all written up in `REVIEW_QUEUE.md`
+with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missing
+`IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
+cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
+form at a time (third occurrence). They are listed in the legs below.
 
 **LEG 1 is done.** Every item below is written up in full in `REVIEW_QUEUE.md`
 — read the entry before touching code; each carries its engine proof and my
@@ -122,7 +128,17 @@ number is at least loud while the compute fix is pending.
    taxpayer's) and warn when a W-2's tips are excluded.
 6. **Form 8863 line-7 lockout** — currently `any()`, so one student's box makes
    the WHOLE return's AOTC nonrefundable. Key it per student.
-7. **`scha_gambling_winnings`: derive it or keep asking?** — `D_W2G_LOSS_CAP`
+7. **(s147) Form 8615 line 1 counts only interest + dividends + capital gain.**
+   `_source_child_amounts` = 1040 2b + 3b + max(0, 7). i8615 (fetched live) counts
+   ALL unearned income — rents, royalties, pensions/annuities, taxable SS, taxable
+   scholarships, unemployment, alimony, **trust beneficiary income** — and directs
+   a child with no earned income to enter **AGI**. Engine-proven **$1,767** and
+   **$1,217** understated on two returns, and `child_unearned_income` is
+   `read_only_fields`, so there is no override to escape with. A minor who is a
+   trust beneficiary is exactly what §1(g) exists to reach. REVIEW_QUEUE has the
+   recommendation (AGI shortcut + the Child's Unearned Income Worksheet;
+   RED-defer the Alternate Worksheet cases).
+8. **`scha_gambling_winnings`: derive it or keep asking?** — `D_W2G_LOSS_CAP`
    (s142) now reports the disagreement in both directions, but the underlying
    question (should the §165(d) cap simply BE the W-2G box-1 sum plus
    `other_gambling_winnings`?) is still Ken's call. Recommendation: derive it,
@@ -144,6 +160,15 @@ number is at least loud while the compute fix is pending.
 10. **Form 2441 tax-exempt provider e-file mapping** (s138) — the extract raises
    without a 9-digit TIN; i2441 wants the literal "Tax-Exempt" in column (c).
 
+11. **(s147) `build_irs8615`** — there is NO `IRS8615` builder in `apps/efile/`
+   and no IRS8615 element in the `ReturnData1040.xsd` sequence, while Form 8615
+   line 18 overwrites 1040 line 16 and line 16 transmits as `TaxAmt`. **The s140
+   Schedule 1-A finding's SECOND OCCURRENCE** — scope it WITH item 9, not
+   separately. Until then a kiddie-tax return is paper-only.
+12. **(s147) Form 8615's parent header** — boxes A (parent's name), B (parent's
+   SSN) and C (parent's filing status) all print blank. **Box C is render-only,
+   the data is already stored**; A and B need two model fields → a migration.
+
 ### ▶ LEG 4 — bigger, Ken-scoped. Confirm before starting.
 11. **ONE shared overflow-statement mechanism** — three forms silently truncate
    printed rows: Schedule 1-A line 22 `[:2]` (line 23 still sums all) and Form
@@ -156,122 +181,37 @@ number is at least loud while the compute fix is pending.
    §1.36B-2(b)(6) safe-harbour case from the no-APTC case (not an error).
 15. **Form 2441 both-spouses deeming** — $1,920 vs $0, against an explicit IRS
    instruction the RS spec never carries. Needs an RS decision first.
+17. **(s147) ONE ruling on the year-keyed-constant fallback, not a fourth
+   discovery.** `TABLE.get(year, DEFAULT)` / `TABLE.get(year) or TABLE[FALLBACK]`
+   over year-keyed constants has now been found three times — s142's
+   `PY_STD_DEDUCTION` (live, D_SR_UNPINNED_YEAR), s146's four Form 6251 AMT tables
+   (live, $18,141), s147's Form 8615 threshold (latent: 2025 and 2026 carry the
+   same $1,350/$2,700, so no dollars move today). **Sweep the engine for the
+   pattern and rule once — skip the unpinned year and diagnose it — instead of
+   finding it a fourth time.**
 16. **`eic_self_employed`: derive or keep asking?** (s139) — the unanswered
    default costs $4,328–$7,152. My recommendation was to default it True when
    the return carries a Schedule C / F / SE K-1 with an `_overridden` companion.
    **Ken's ruling still needed** before building.
 
-### ✅ LEG 1 — COMPLETE (s142). What shipped, and what to know about it.
+### ✅ LEG 1 — COMPLETE (s142), 12 diagnostics across three commits
+(`2ed5eff` new `rules_sch_1a.py` · `42eb851` the two Form 5329 fixes · `d991b50`
+the s137 five + two severity corrections). **Full write-up moved to
+`STATUS_ARCHIVE.md` (s147) — read it there when you touch these rules.** What
+still matters here: four of the twelve sit on TOP of defects that are still open
+in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
+**five registry trip-wires were re-baselined** — a trip-wire that pins an exact
+code set fails on every new rule, so update it with a pointer, never by loosening
+the assertion.
 
-**`2ed5eff` — NEW `apps/diagnostics/rules_sch_1a.py`.** Schedule 1-A had NO
-diagnostics at all; `compute_sch_1a`'s own docstring deferred D_SCH1A_001..006
-to "when the 1040 diagnostics framework exists", and that framework has existed
-for a long time. All six specced rules plus **`D_SCH1A_NO_DOB`**, the one with
-the money on it and the one the spec has no entry for: a valid-SSN filer with
-no `date_of_birth` while line 35 > 0. **Live-proven READ-ONLY on the demo QA
-return at rest** (its NULL date_of_birth is deliberate) — line 35 = 4,826,
-line 37 = 0, the rule reports $4,826 forfeited, and the other six correctly
-stay silent. Zero writes.
-- ⚠⚠ **THE SPEC'S CONDITIONS CANNOT FIRE AS WRITTEN, AND THAT IS THE FINDING.**
-  D_SCH1A_001/002 are specced as `filing_status == 'mfs' AND tips_deduction > 0`
-  (and the SSN equivalent), but compute already short-circuits Parts II/III/V to
-  zeros in exactly those states — so the deduction is structurally incapable of
-  exceeding zero and, read literally, both rules are **dead code**. Every rule
-  is therefore written against the **INPUTS**: what the preparer needs to be
-  told is that the entries are being silently discarded. Severities unchanged.
-- ⚠ **Two spec facts have no model field.** `tips_occupation_on_irs_list` is
-  conflated with the non-SSTB test in the one boolean
-  `tips_eligible_for_deduction` (so D_SCH1A_003 is a *superset* — correct either
-  way). `tips_multiple_employers_or_occupations` is absent entirely, so
-  D_SCH1A_006 **derives** the employer half from the tipped W-2s; the
-  multiple-OCCUPATION half is not derivable and is not covered.
-- ⚠ **D_SCH1A_004 is deliberately narrowed** to the 12-month near-miss band.
-  Nothing here is an affirmative senior *claim* — Part V is derived from
-  `date_of_birth` — so the literal condition would fire on every filer under 65
-  whose MAGI leaves line 35 above zero. All four points are in `REVIEW_QUEUE.md`
-  for the next Rule Studio session.
-- ⚠ The line-4a **$176,100** threshold is the year's social security wage base
-  and is **pinned per year (2025 only)**. Years absent from the map SKIP
-  D_SCH1A_005 rather than reuse a stale base — the s137 PY_STD_DEDUCTION lesson,
-  applied prospectively.
-
-**`42eb851` — the two Form 5329 fixes.**
-- **D_5329_003 warning → ERROR.** The conservative blank-value default STAYS
-  (the engine must not guess an account value); what changes is that the
-  preparer can no longer file past it. The message now names the tax per account
-  and states outright that **an explicit 0 is a DIFFERENT answer from a blank**
-  — the distinction nothing on screen made. `_EXCESS_PARTS` grew a fourth
-  element, the 6%-tax line, so the quantification reads the engine's own number.
-- **D_RET_007 rebuilt DUAL-AWARE** through `_f5329_state`. It read the
-  deprecated `Taxpayer.f5329_simple_25pct` scalar plus a return-wide code-S
-  scan, so a preparer who ticked the per-owner box with no code-S document got
-  the 25% rate **silently, from the one check built to catch exactly that**. It
-  now reports per owner and names WHICH of the two independent causes engaged
-  the rate — they are kept apart in the state dict *because compute ORs them*,
-  which is precisely why an unticked box can sit on a return taxed at 25%.
-  Severity stays `info` (the backlog authorised the dual fix, not a promotion).
-
-**`d991b50` — the s137 five + two severity corrections.** Each was proven
-against the engine's pure functions first (a throwaway probe, no browser), and
-each names its dollars in the message.
-- **`D_SR_5E_BLANK` (error)** — a blank prior-year Schedule A line 5e untaxes
-  the WHOLE state refund. `worksheet_2a` reads the entire 5d as capped away, so
-  any refund at or below that returns (0, 0). Engine-proven: a $3,000 refund
-  with 5d = $12,000 / 5e = $10,000 puts **$1,000** on Schedule 1 line 1; blank
-  the 5e and it is **$0**. D_SR_INCOMPLETE checks 5d and line 17 but not 5e.
-- **`D_W2G_LOSS_CAP` (error)** — the §165(d) cap reads
-  `scha_gambling_winnings`, a preparer field, not the winnings the return
-  reports (W-2G box 1 + `other_gambling_winnings`, which are what reach
-  Schedule 1 line 8b). Both directions are wrong and nothing reconciles them:
-  a blank/low cap makes `min(losses, 0)` = 0 and the whole deduction vanishes;
-  a high cap allows losses above the ceiling. The rule reports which direction
-  and how much.
-- **`D_8889_FAMILY_ZERO` (error)** — Form 8889 line 6 is a genuine THREE-state
-  cap: blank takes the full line 5 limit, a number is this filer's share, and an
-  explicit **0** asserts the whole family limit went to the spouse, driving lines
-  8/12/13 and the deduction to $0 (the s137 $8,550 → $0 swing).
-- **`D_SR_AGE_BLIND_COUNT` (warning)** — `py_standard_deduction` multiplies the
-  per-box amount by the count with **no ceiling** while Form 1040 line 12d has
-  only four boxes. Engine-proven (2024, single): 4 = $22,400, 5 = $24,350,
-  12 = $38,000. An inflated prior-year standard deduction makes worksheet line 8
-  too low, so LESS of the refund is taxable — an **understatement**.
-- **`D_SR_UNPINNED_YEAR` (warning)** — `PY_STD_DEDUCTION.get(refund_year,
-  PY_STD_DEDUCTION[2024])` is a FALLBACK, not an error, and only 2024/2025 are
-  pinned. A TY2027 return quietly figures the §111 benefit test against the 2024
-  amounts. Engine-proven: the same inputs gave **$500** taxable on 2025
-  constants and **$1,000** on the 2024 fallback. No overlap with
-  D_SR_TY2026_INTERIM.
-- **`D_8863_DUAL_STUDENT` warning → ERROR** — §25A(c)(2)(A) does not allow one
-  student to take both credits and compute does not enforce it, so the same
-  $4,000 earned an extra $800 on the s138 proof return. The compute fix is LEG 2
-  item 4 and is still open, which is exactly why this has to block.
-- **`D_8995_STALE` (error, NEW, no spec entry)** — the pair to LEG 2 item 1.
-  Fires only when line 13 > 0, is **not** overridden (`write_line_13` already
-  protects a genuine direct entry) and `qbi_engaged` is False. What is left can
-  only be residue.
-
-**Live read-only check on the demo QA return at rest: all nine of s142's new or
-changed rules report ZERO findings** (0 W-2G, 0 HSA accounts, 0 education
-students, all `sr_*` facts at defaults, blank 8995 rows) — no false positives.
-**Zero writes to the demo data this session.**
-
-⚠ **Five existing registry trip-wires were updated** to the new sets, each with
-a comment pointing at the behaviour tests: `test_form_w2g_diagnostics_leg` and
-`test_form8889_diagnostics_leg` (both gained an `_ERROR` set),
-`test_topic8_diagnostics_leg` + `test_topic8_compute_leg` +
-`test_w2_unit2_diagnostics` (Schedule C family 21 → 22), and
-`test_form8863_diagnostics_leg` (severity). **A registry trip-wire that pins an
-exact code set will fail on every new rule — expect it and update it with a
-pointer, never by loosening the assertion.**
-
-### ▶ THE SCREEN SWEEP — **ACTIVE AGAIN (s146). Resume at Form 8615.**
-**30 of ~39** 1040 screens are converted (unit 26, Form 6251 / AMT, shipped
-`1436cf1`). Remaining (the count was re-measured in
-s137 by mapping every `activeTab` to its section component **file** and checking
-each for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
-**8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
-**prior-year / tax-summary** views · the estimates/extension/e-file cards.
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 1116.**
+**31 of ~39** 1040 screens are converted (unit 27, Form 8615 / kiddie tax,
+shipped `1c0fcc1`). Remaining (the count was re-measured in s137 by mapping every
+`activeTab` to its section component **file** and checking each for a `NEW_UI`
+gate — do it that way, never by scanning FormEditor alone):
+**1116** ≈273 · **8880** ≈156 · **8960** ≈119 · **5695** · **1040-X** · the
+**state/GA** tab · the **prior-year / tax-summary** views · the
+estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
 rows AND per-owner forms, **InputRow worksheets** for facts cards (screenbar
@@ -350,6 +290,32 @@ lane — ~12 more, none started. Ken's call when to take them.**
    construction — a `default=0` non-nullable field has no untouched state — so
    the screen STATES the trap. My first draft flagged it per-cell and was wrong
    on every return.
+19. ⚠⚠ **A FORM'S TRACKER ROW SAYING "UNIT FULLY COMPLETE" IS A CLAIM, NOT A
+   FACT.** Form 8615's row was tagged complete with all six legs ✅ — and it has
+   NO e-file leg at all, an incomplete render leg (the printed form's whole parent
+   header is blank), and a compute leg that misses most kinds of unearned income.
+   That is the SECOND form to prove open item 31 (SCH_1A was the first). **Audit
+   the legs the tracker has no column for — `ls apps/efile/`, grep the builder's
+   document sequence, read the field map for the header rows — before believing a
+   green line.**
+20. ⚠⚠ **A "NOT YET SUPPORTED" NOTICE OUTLIVES THE FEATURE IT DESCRIBED.** The
+   8615 screen told preparers that qualified dividends and net capital gain defer
+   to manual preparation; the engine built that path on 2026-06-24 and retired
+   `D_8615_008` the same day. Second occurrence (s136's SS lump-sum said the same
+   about a feature computed months earlier). **When a screen names a limitation,
+   check the limitation still exists** — a preparer following stale copy works by
+   hand a form the software already figured.
+21. ⚠ **THE LIVE RUN STILL EARNS ITS KEEP ON A SCREEN THAT FETCHES NOTHING.**
+   Unit 27 is prop-based, so s146's two fetch traps could not occur — and the
+   live run still found copy a prop test could not: with line 18 equal to line 17
+   the note read "$17,425 against $17,425", which is true and useless, and that is
+   the §1(g)-floor case where the preparer most needs telling that §1(g) added
+   nothing. Run it, then test what the run found.
+22. ⚠ **A LABEL INTERPOLATED INTO `new RegExp(...)` NEEDS ESCAPING.**
+   `slate_screen_screenshots.mjs` took the rail label verbatim, so
+   "Kiddie Tax (8615)" became a capture group and searched for "Kiddie Tax 8615"
+   — a bare 30s TimeoutError with no hint. FIXED in the script (it escapes now),
+   so pass the label VERBATIM from `IndividualNav.tsx`.
 15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
    DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
    behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
@@ -383,7 +349,11 @@ preview_start django-demo + vite · demo QA return
 - ⚠ **`slate_screen_screenshots.mjs` takes the RAIL LABEL, not the form name** —
   Form 5329's is **`Add'l Taxes`** (`IndividualNav.tsx` line ~142), and a wrong
   label fails as a bare 30s `TimeoutError` at the second `waitForFunction` with
-  no hint. Grep `IndividualNav.tsx` for the tab id first.
+  no hint. Grep `IndividualNav.tsx` for the tab id first. ⚠ **s147 FIXED the
+  metacharacter half of this trap**: the label is interpolated into
+  `new RegExp(...)`, so `Kiddie Tax (8615)` was a capture group matching
+  "Kiddie Tax 8615" — nothing. The script now escapes it, so **pass the label
+  VERBATIM from `IndividualNav.tsx`**, parentheses and all.
 - ⚠ **The Rule Studio key for Form 5329 IS the bare `5329`** (unlike `SCH_1A`
   and `FORM_8863`) — third data point that there is no convention. Fetching it
   live and diffing against the cached `specs/*.json` takes one command and is
@@ -412,10 +382,26 @@ no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
 MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
-change. **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+change. **s146 and s147 add neither a migration nor a seed change** (s147 makes
+no server change at all — the only server-side file it touches is the
+`specs/8615_spec.json` mirror, refreshed from the live RS export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s147 gates (unit 27 — Form 8615 / kiddie tax):** NEW
+`slateForm8615Screen.test.tsx` **18** (revert-tested — restoring the QDCGT lie
+failed exactly the 2 tests that pin it) · the five 8615 server legs **63** · flow
+assertions **521** (baseline exactly) · vitest **1157/1157** · tsc **46 =
+baseline**. ⚠ **The vitest baseline is 1139, not the 1129 s146 recorded** —
+measured directly by re-running with the new file excluded. **LIVE-PROVEN** on
+the demo QA return with a synthetic kiddie-tax scenario (line 1 = 25,950 →
+line 5 = 23,250 → line 9 = 27,896 → line 18 = 17,425 → 1040 line 16 = 17,425),
+every on-screen ƒx cell matching the ORM. **Demo writes REVERTED and ORM-verified
+ZERO DRIFT: 892 of 892 FormFieldValue rows identical**, the Form8615 row deleted,
+the 1099-INT restored to 1,250.00. **No migration, no seed change, no server
+change** — `compute_8615_db` already persisted the whole face, so unlike unit 26
+nothing needed an endpoint.
 
 **s146 gates (unit 26 — Form 6251 / AMT):** NEW `tests/test_amt_face_s146.py`
 **7** (revert-tested — collapsing the null line 11 into "0.00" failed 2) · NEW
@@ -430,42 +416,26 @@ THEM** — the unit tests pass the face in as a prop, so neither the missing
 Both now have tests. **A fetch-backed screen needs a live pass; a vitest suite
 over its props is not a substitute.**
 
-**s145 gates (all green, re-run them if you touch these modules):** new
-`tests/test_backlog_leg2_item4_8863_election.py` **12** · flow assertions **521**
-(baseline exactly) · the 8863 / Topic 8 / Schedule 3 / MeF-1040 bands **298**.
-**Both fixes revert-tested** — restoring the all-students LLC sum failed 4
-(3 in the new suite + the severity trip-wire's line-10 assertion), and reverting
-`aotc_elected` to the NAIVE reading Ken rejected ("drop the LLC whenever the AOTC
-is allowed") failed 3, including the escape-hatch test.
-⚠⚠ **THE FIRST DRAFT OF THE NEW SUITE COULD NOT SEE ITS OWN REGRESSION.** Its
-`_sums()` helper re-derived the two bases with `aotc_elected` instead of reading
-what `compute_8863_db` wrote, so reverting the compute fix left every test in the
-file passing — only the older trip-wire caught it. It now runs a real
-`compute_return` and reads FORM_8863 lines 1 and 10. **A test that
-re-implements the thing it tests is blind by construction** (the s143
-"a delete-the-source test can hide its own effect" lesson, second occurrence).
-
-**s144 gates (all green, re-run them if you touch these modules):** new
-`tests/test_backlog_leg2_item3_5329_blend.py` **17** · flow assertions **521**
-(baseline exactly) · Topic 5 / 5329 / diagnostics bands **87** · retirement +
-render + e-file bands **220** (1 skipped) · vitest **1116/1116** (+2) · tsc
-**46 = baseline**. All three fixes **revert-tested** — reverting the blend
-failed 10, the `or has_s` removal 4, the shared-helper delegation 1.
-**LIVE-PROVEN** on the demo QA return (line 4 = 5,500, the blend note, D_RET_007
-naming both bases) and the seed **REVERTED with ZERO drift**, ORM-verified
-892/892 FormFieldValue rows. Side-by-sides in `Design/screenshots/`.
-
-**s143 gates (unchanged):** `tests/test_backlog_leg2_compute.py` **8** · Topic 8
-/ 8995 **166** · 8863 / 1116 **86** · 8960 / 2210 **119**.
-⚠ **The source trip-wires strip comment lines** (`_code_only`) because those
-sessions' own comments QUOTE the retired snippets to explain them — a raw
-`inspect.getsource` match fires on the explanation, not on a regression.
+**s143 / s144 / s145 gates — moved to `STATUS_ARCHIVE.md` (s147).** Re-run them
+if you touch Form 8863, Form 5329, the retirement modules or the MeF-1040 band;
+each block records the exact suites, the counts and what each revert proved.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
 switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0a. **(s147) Form 8615 line 1 counts only interest + dividends + capital gain**
+   while i8615 counts all unearned income and tells a no-earned-income child to
+   enter AGI. **$1,767 / $1,217 understated, engine-proven; the cell is
+   read-only.** LEG 2 item 7.
+0b. **(s147) Form 8615 is never transmitted but its tax is** (no `IRS8615`
+   builder). **The s140 Schedule 1-A finding's second occurrence — scope the two
+   together.** LEG 3 item 11.
+0c. **(s147) The printed Form 8615's parent header is blank** (boxes A/B/C).
+   Box C is render-only; A/B need a migration. LEG 3 item 12.
+0d. **(s147) Rule the year-keyed-constant fallback ONCE**, across the engine —
+   third occurrence of the shape. LEG 4 item 17.
 1. **(s142) The Schedule 1-A RS spec needs four corrections** — 001/002 specced
    against a value compute structurally zeroes (dead code as written);
    `tips_occupation_on_irs_list` has no model field (conflated into one
@@ -563,6 +533,12 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s147 wrote to the demo QA return and REVERTED it.** One synthetic
+  `Form8615` row (applies + MFJ parent, TI 150,000 / tax 23,000) and the
+  `InterestIncome` box 1 raised 1,250 → 25,000 to clear the $2,700 threshold, to
+  live-prove the computed face; both undone with `compute_return(tr)` re-run.
+  **Zero drift, ORM-verified 892 of 892 FormFieldValue rows identical** to the
+  pre-write baseline. The at-rest figures below still hold.
 - ⚠ **s144 wrote to the demo QA return and REVERTED it.** Two synthetic 1099-Rs
   (`QA144 Fidelity 401(k)` code 1 / 50,000 and `QA144 SIMPLE IRA` code S /
   2,000) plus one `Form5329` row were created to live-prove the blend, then
