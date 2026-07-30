@@ -1,17 +1,21 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 147 (**sweep unit 27 — Form 8615, the kiddie
-tax — is SHIPPED** (`1c0fcc1` on `slate-ui`, pushed, no deploy). **31 of ~39
-screens converted; the sweep resumes at Form 1116.** No migration, no seed
-change, no server change — `compute_8615_db` already persisted the whole face.
-⚠⚠ **Form 8615's tracker row said "UNIT FULLY COMPLETE" and it is not true**:
-there is NO e-file leg at all, the render leg leaves the printed form's whole
-parent header blank, and line 1 misses most kinds of unearned income (proven
-$1,767 and $1,217 understated). All four findings are in `REVIEW_QUEUE.md` and
-the tracker row is annotated. The rule/diagnostic backlog is still PAUSED at
-LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules` obligation still stands**
-— s144's D_RET_007 description + s145's D_8863_DUAL_STUDENT severity, on BOTH
-DBs.)*
+*Last updated: 2026-07-30, session 148 (**sweep unit 28 — Form 1116, the
+foreign tax credit — is SHIPPED** (`19e92b1` on `slate-ui`, pushed, no deploy).
+**32 of ~39 screens converted; the sweep resumes at Form 8880.** No migration,
+no seed change, no server change — `compute_1116_db` already published the
+whole 31-row face to FormFieldValue; the only server-side file touched is the
+`specs/1116_spec.json` mirror (refreshed from the live RS export — the cached
+copy carried mojibake in every non-ASCII char; semantic diff = zero). ⚠⚠ **The
+1116 tracker entry said "all 7 legs green" and it is not true** — no e-file leg
+(no `IRS1116` builder; a FULL-path FTC return is paper-only, the missing-
+document shape's 4th occurrence) and an incomplete render leg (the printed
+Part II's mandatory Paid/Accrued box, the i1116-directed "1099 taxes" in
+column (l), the (q)–(t) breakdown, and header box h all blank). THIRD form to
+prove open item 31. Findings in `REVIEW_QUEUE.md`; tracker annotated. The
+rule/diagnostic backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the
+earlier `seed_rules` obligation still stands** — s144's D_RET_007 description
++ s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -20,7 +24,7 @@ DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 1116 (unit 28).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8880 (unit 29).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -34,6 +38,14 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s148 added three more** (REVIEW_QUEUE, engine-verified): the missing
+`build_irs1116` (full path only — the §904(j) paths legitimately transmit no
+1116) → **LEG 3**, scoped WITH items 9/11 as one "missing MeF documents" work
+item; the printed Part II render gaps (Paid/Accrued box, "1099 taxes" in (l),
+(q)–(t), box h) → **LEG 3**; and the `ADJ_EXCEPTION_TI` year fallback — the
+**FOURTH** occurrence of the shape, which strengthens LEG 4 item 17 (rule once,
+engine-wide) rather than adding a new item.
 
 **LEG 1 is done.** Every item below is written up in full in `REVIEW_QUEUE.md`
 — read the entry before touching code; each carries its engine proof and my
@@ -168,6 +180,18 @@ number is at least loud while the compute fix is pending.
 12. **(s147) Form 8615's parent header** — boxes A (parent's name), B (parent's
    SSN) and C (parent's filing status) all print blank. **Box C is render-only,
    the data is already stored**; A and B need two model fields → a migration.
+13. **(s148) `build_irs1116`** — no `IRS1116` builder while Schedule 3 line 1
+   transmits as `ForeignTaxCreditAmt`. **Emit ONLY on path "full"** — the
+   §904(j) election and auto de minimis paths legitimately file no Form 1116.
+   The missing-document shape's **4th occurrence** — scope WITH items 9/11 as
+   ONE "missing MeF documents" work item. Until then a full-path FTC return is
+   paper-only.
+14. **(s148) Form 1116's printed Part II** — check (j) Paid (cash-basis
+   default; no accrual election exists in the app), print "1099 taxes" in
+   column (l) when `additional_foreign_tax` is 0 (i1116 verbatim), fill the
+   (q)–(t) withheld-at-source breakdown the engine already has per-document,
+   and decide box h "Resident of" (constant "United States" or a small field —
+   Ken's call). Render-only except a possible box-h field.
 
 ### ▶ LEG 4 — bigger, Ken-scoped. Confirm before starting.
 11. **ONE shared overflow-statement mechanism** — three forms silently truncate
@@ -181,14 +205,14 @@ number is at least loud while the compute fix is pending.
    §1.36B-2(b)(6) safe-harbour case from the no-APTC case (not an error).
 15. **Form 2441 both-spouses deeming** — $1,920 vs $0, against an explicit IRS
    instruction the RS spec never carries. Needs an RS decision first.
-17. **(s147) ONE ruling on the year-keyed-constant fallback, not a fourth
+17. **(s147, +s148) ONE ruling on the year-keyed-constant fallback, not a fifth
    discovery.** `TABLE.get(year, DEFAULT)` / `TABLE.get(year) or TABLE[FALLBACK]`
-   over year-keyed constants has now been found three times — s142's
+   over year-keyed constants has now been found **FOUR** times — s142's
    `PY_STD_DEDUCTION` (live, D_SR_UNPINNED_YEAR), s146's four Form 6251 AMT tables
-   (live, $18,141), s147's Form 8615 threshold (latent: 2025 and 2026 carry the
-   same $1,350/$2,700, so no dollars move today). **Sweep the engine for the
-   pattern and rule once — skip the unpinned year and diagnose it — instead of
-   finding it a fourth time.**
+   (live, $18,141), s147's Form 8615 threshold (latent), s148's Form 1116
+   `ADJ_EXCEPTION_TI` (latent; D_1116_007 covers only year==2026, never an
+   unpinned year). **Sweep the engine for the pattern and rule once — skip the
+   unpinned year and diagnose it — instead of finding it a fifth time.**
 16. **`eic_self_employed`: derive or keep asking?** (s139) — the unanswered
    default costs $4,328–$7,152. My recommendation was to default it True when
    the return carries a Schedule C / F / SE K-1 with an `_overridden` companion.
@@ -204,12 +228,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 1116.**
-**31 of ~39** 1040 screens are converted (unit 27, Form 8615 / kiddie tax,
-shipped `1c0fcc1`). Remaining (the count was re-measured in s137 by mapping every
-`activeTab` to its section component **file** and checking each for a `NEW_UI`
-gate — do it that way, never by scanning FormEditor alone):
-**1116** ≈273 · **8880** ≈156 · **8960** ≈119 · **5695** · **1040-X** · the
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 8880.**
+**32 of ~39** 1040 screens are converted (unit 28, Form 1116 / foreign tax
+credit, shipped `19e92b1`). Remaining (the count was re-measured in s137 by
+mapping every `activeTab` to its section component **file** and checking each
+for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
+**8880** ≈156 · **8960** ≈119 · **5695** · **1040-X** · the
 **state/GA** tab · the **prior-year / tax-summary** views · the
 estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
@@ -305,6 +329,14 @@ lane — ~12 more, none started. Ken's call when to take them.**
    about a feature computed months earlier). **When a screen names a limitation,
    check the limitation still exists** — a preparer following stale copy works by
    hand a form the software already figured.
+23. ⚠⚠ **A SEEDED LINE'S `is_computed` FLAG DESCRIBES THE LINE, NOT THE VALUE'S
+   AUTHOR.** SCH_3 line 1 is seeded `is_computed=False` because a preparer may
+   key it directly (the manual-FTC escape hatch) — yet the ENGINE writes it on
+   every 1116 path. A client screen asking "did the engine write this?" must
+   key off **`!is_overridden`** (every manual save sets `is_overridden=True`,
+   views.py:2678), never off `is_computed`. s148's live run caught the auto
+   de minimis pill reading "Not engaged" with $250 sitting on the line — the
+   vitest fixture had assumed `is_computed=True` and passed.
 21. ⚠ **THE LIVE RUN STILL EARNS ITS KEEP ON A SCREEN THAT FETCHES NOTHING.**
    Unit 27 is prop-based, so s146's two fetch traps could not occur — and the
    live run still found copy a prop test could not: with line 18 equal to line 17
@@ -382,12 +414,34 @@ no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
 MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
-change. **s146 and s147 add neither a migration nor a seed change** (s147 makes
-no server change at all — the only server-side file it touches is the
-`specs/8615_spec.json` mirror, refreshed from the live RS export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+change. **s146, s147 and s148 add neither a migration nor a seed change** (s147
+and s148 make no server change at all — each touches only its spec mirror,
+`specs/8615_spec.json` / `specs/1116_spec.json`, refreshed from the live RS
+export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s148 gates (unit 28 — Form 1116 / foreign tax credit):** NEW
+`slateForm1116Screen.test.tsx` **26** (revert-tested — restoring the MFJ-only
+ceiling failed exactly the QSS test that pins the fix) · the four 1116 server
+legs **49** · flow assertions **521** (baseline exactly) · vitest **1183/1183**
+(1157 + 26) · tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return, BOTH
+paths: auto de minimis ($250 foreign tax on the 1099-DIV → Sch 3 line 1 = 250,
+pill + D_1116_001 note) and the full limitation (1a 25,000 → 3a 15,750 auto →
+3f 0.2644 → 7 20,836 → 18 78,810 → 19 0.2644 → 21 3,227 → 24/27/32/33/35 = 650
+= Sch 3 line 1), **all 31 on-screen ƒx cells ORM-matched**, and the PATCH lane
+proven live (L2 = 100 through the screen reflowed L7 20,836 → 20,736
+server-side). **Demo writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892
+FormFieldValue rows identical** (the 31 blank FORM_1116 FFV shells
+`_backfill_values` created were deleted after value-checking `{''}`), the
+Form1116 row deleted, `foreign_tax_paid` NULL restored on both 1099s.
+⚠ **THE LIVE RUN CAUGHT A BUG THE SUITE COULD NOT** (again): SCH_3 line 1 is
+seeded `is_computed=False` (the manual-FTC escape hatch), so the pill keyed off
+`is_computed` read "Not engaged" with $250 sitting on the line. A seeded line's
+`is_computed` describes the LINE, not the value's author — **engine-written =
+`!is_overridden`** (every manual field save sets `is_overridden=True`,
+views.py:2678). Fixed, and the fixture now mirrors the seeded truth.
 
 **s147 gates (unit 27 — Form 8615 / kiddie tax):** NEW
 `slateForm8615Screen.test.tsx` **18** (revert-tested — restoring the QDCGT lie
@@ -419,12 +473,22 @@ over its props is not a substitute.**
 **s143 / s144 / s145 gates — moved to `STATUS_ARCHIVE.md` (s147).** Re-run them
 if you touch Form 8863, Form 5329, the retirement modules or the MeF-1040 band;
 each block records the exact suites, the counts and what each revert proved.
+*(s146's block stays above because its fetch-trap lesson is still the freshest
+statement of the live-pass rule for fetch-backed screens.)*
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
 switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0e. **(s148) Form 1116 is never transmitted but the FULL-path credit is** (no
+   `IRS1116` builder; the §904(j) paths legitimately file none). **4th
+   occurrence of the missing-document shape — scope with items 0b/3 as ONE
+   work item.** LEG 3 item 13.
+0f. **(s148) The printed Form 1116's Part II needs hand-finishing** — the
+   mandatory Paid/Accrued box, "1099 taxes" in column (l) (i1116 verbatim),
+   the (q)–(t) breakdown, box h "Resident of". Render-only except a possible
+   box-h field. LEG 3 item 14.
 0a. **(s147) Form 8615 line 1 counts only interest + dividends + capital gain**
    while i8615 counts all unearned income and tells a no-earned-income child to
    enter AGI. **$1,767 / $1,217 understated, engine-proven; the cell is
@@ -533,6 +597,15 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s148 wrote to the demo QA return and REVERTED it.** The 1099-DIV's
+  `foreign_tax_paid` was set 250 then 650 and one `Form1116` row created
+  (passive / Germany / 25,000; plus `definitely_related` 100 written LIVE
+  through the screen to prove the PATCH lane) to live-prove both credit paths;
+  all undone — row deleted, `foreign_tax_paid` back to NULL, `compute_return`
+  re-run, and the 31 blank FORM_1116 FFV shells `_backfill_values` created were
+  deleted after checking their values were all `''`. **Zero drift, ORM-verified
+  892 of 892 FormFieldValue rows identical** to the pre-write baseline. The
+  at-rest figures below still hold.
 - ⚠ **s147 wrote to the demo QA return and REVERTED it.** One synthetic
   `Form8615` row (applies + MFJ parent, TI 150,000 / tax 23,000) and the
   `InterestIncome` box 1 raised 1,250 → 25,000 to clear the $2,700 threshold, to

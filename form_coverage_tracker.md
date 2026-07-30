@@ -2882,6 +2882,20 @@
 > RED-defers (8 D_1116_*): non-passive, above-exception QD, Form 2555, carryover→Sch B, exotic. **RESUME = React
 > `Form1116Section` tab (Form8615Section precedent) → then tag `1040-form-1116-complete`.** RS `acf4078` / tts
 > `9ec9f79`(seed)..`a1f522a`(assertions).
+> **SLATE 2026-07-30 (s148, sweep unit 28)** — `SlateForm1116Screen` (the s132 singleton; no server change; the
+> engine's 31-row FORM_1116 face published as ƒx cells from `field_values`, form_code-scoped). ⚠⚠ **"ALL 7 LEGS
+> GREEN" IS NOT TRUE AND THIS ROW IS THE THIRD PROOF OF THE MISSING-COLUMNS ITEM** (SCH_1A, 8615, now 1116 —
+> STATUS open item 31): **(a) NO E-FILE LEG** — no `IRS1116` builder while Schedule 3 line 1 transmits as
+> `ForeignTaxCreditAmt`; correct on the §904(j) paths (no 1116 is due), but a FULL-path return is PAPER-ONLY
+> (4th occurrence of the missing-document shape). **(b) RENDER LEG INCOMPLETE** — `f1116_2025.py` maps neither
+> Part II checkbox (j) Paid/(k) Accrued ("you must check one" on the face), prints nothing in column (l) where
+> i1116 directs "1099 taxes" for 1099-reported tax, fills only the (u) total with (q)–(t) blank, and leaves
+> header box h "Resident of" empty. **(c) LATENT** — `ADJ_EXCEPTION_TI` falls back to the 2026 table for
+> unpinned years and D_1116_007 covers only year==2026 (the year-fallback shape's 4th occurrence → LEG 4 item
+> 17). Presentation fix shipped: the §904(j) ceiling copy now honors QSS = $600 (legacy keyed off MFJ alone).
+> Constants re-verified vs live i1116 ($20,000; $394,600/$197,300). Live-proven both paths on the demo QA
+> return (auto $250; full face 25,000 → L7 20,836 → L19 0.2644 → L24/L35 650 = Sch 3 L1), all 31 on-screen ƒx
+> cells ORM-matched, PATCH lane proven (L2 reflow 20,836→20,736), demo REVERTED to zero drift (892/892).
 
 > **2026-06-25 -- Form 5329 FULL (Parts I-IX) ★★ UNIT COMPLETE -- tag `1040-5329-full-complete`** (Ken chose
 > FULL form + DUAL taxpayer/spouse). Additional Taxes on Qualified Plans: Part I early-distribution 10%/25%
