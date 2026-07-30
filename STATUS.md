@@ -1,12 +1,13 @@
-# TTS Tax App — STATUS (current state only)
+# TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-29, session 140 (bespoke-screen sweep unit 24: SCHEDULE
-1-A, the four temporary OBBBA additional deductions — tips §70201, overtime
-§70202, car loan interest §70203/§163(h)(4), the enhanced senior deduction
-§70103 → 1040 line 13b. Live-proven end-to-end and fully reverted. TWELVE real
-defects — including a blank date of birth that silently discards a
-$6,000–$12,000 senior deduction with NO diagnostic anywhere, and a schedule
-whose total is e-filed while the schedule itself is never transmitted.)*
+*Last updated: 2026-07-30, session 141 (bespoke-screen sweep unit 25: FORM 5329,
+Additional Taxes on Qualified Plans, Parts I-IX -> Schedule 2 line 8.
+Live-proven end-to-end and fully reverted. SIX real defects - headed by the
+SIMPLE 25% rate being charged on the WHOLE of line 3 instead of the SIMPLE
+portion, which overstated the tax by $7,500 on the QA return and $15,000 on a
+larger one. **This unit made ONE additive, read-only SERVER change** - the
+form's own arithmetic was not published by any API, which is why the legacy
+screen re-implemented the entire engine.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -15,137 +16,114 @@ whose total is e-filed while the schedule itself is never transmitted.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — the bespoke-screen sweep continues at **Form 5329**
+## ▶ RESUME HERE - the bespoke-screen sweep continues at **Form 6251 (AMT)**
 
-**s140 shipped unit 24 on `slate-ui` (no deploy): `886d9ef`**
+**s141 shipped unit 25 on `slate-ui` (no deploy): `820bb2f`**
 
-Remaining 1040 screens (~11 of ~39; the count was re-measured in s137 by
+Remaining 1040 screens (~10 of ~39; the count was re-measured in s137 by
 mapping every `activeTab` to its section component **file** and checking each
-for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**5329** ≈278 · **6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
+for a `NEW_UI` gate - do it that way, never by scanning FormEditor alone):
+**6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
 **8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
 **prior-year / tax-summary** views · the estimates/extension/e-file cards.
-Most are small worksheet singletons now that the paradigms are settled.
 **The business-entity screens (1120-S / 1065 shareholders, partners, balance
 sheets, allocations, 7203, page-1 income/deductions) are a SEPARATE unscoped
-lane — ~12 more, none started. Ken's call when to take them.**
+lane - ~12 more, none started. Ken's call when to take them.**
 
-### Unit 24 — Schedule 1-A (OBBBA additional deductions)
-A **singleton screenbar** hosting three paradigms that NEST: InputRow
-worksheets for the Part II/III return-level facts, **PayerTable** for the Part
-IV line-22 vehicle rows (identity = the serializer-validated VIN, the two
-statutory attestations in the expansion), a bare **`.slate-asstable`** over the
-two filers for Part V (which has NO inputs of its own — the birth dates live on
-Taxpayer Info and the SSN flags on Credits & 8812, so it is annotated, not
-edited, here), and the whole computed face from the server's own **SCH_1A** rows
-as locked ƒx cells. Four different phaseout thresholds, three different caps and
-two OPPOSITE rounding directions are never re-implemented on the client; a
-threshold table shows all four parts at once. Presentation only — the server was
-untouched.
+### Unit 25 - Form 5329 (additional taxes on qualified plans)
+**DOCUMENT TABS per owner** - here the ruling is literal: taxpayer and spouse
+each file a separate Form 5329, printed as its own copy and transmitted as its
+own e-file document. Inside a tab the nine parts are InputRow worksheets, the
+five excess-contribution parts share one generated block, and the computed face
+renders from the server's own per-owner line dict as locked fx cells.
 
-- ⚠⚠⚠ **DEFECT — a BLANK date of birth silently discards the whole senior
-  deduction, and nothing in the app warns.** `_born_before(None, cutoff)` is
-  False, so an unentered DOB is indistinguishable from "under 65".
-  Engine-proven on identical returns (single, 70 years old, AGI 80,000): line 35
-  computes **5,700 either way**, but 36a / 37 / 38 and 1040 line 13b go
-  **5,700 → 0** when the DOB is blank. MFJ with two seniors at AGI 140,000:
-  **12,000 → 6,000** on one blank spouse DOB. The per-person amount on line 35
-  still PRINTS, so the filed page shows the deduction as available and $0 as
-  claimed. Direction: **UNDERSTATEMENT** — the client overpays.
-  **Live-proven on the demo QA return with no seeding at all**: its taxpayer
-  carries `date_of_birth = NULL`, so the screen opened showing MAGI 94,560,
-  line 35 **4,826** available per person, line 37 **0**, line 38 **0** — the
-  error fired by name on first paint (1 of the 8 demo-DB taxpayers is NULL).
-  → REVIEW_QUEUE (a diagnostic, and consider deriving nothing — just ask).
-- ⚠⚠ **DEFECT — MFJ tips over-inclusion: the W-2 OWNER is ignored.** Line 4a
-  sums box 7 across **every** W-2 as soon as *either* filer attests a qualified
-  occupation. `W2Income.owner` EXISTS on the model (it drives the per-owner
-  box-12 derive) but `_compute_part_ii_tips` never reads it, and its comment
-  claiming the field doesn't exist yet is **stale**. Engine-proven, MFJ AGI
-  120,000 with a spouse W-2 (`owner="spouse"`) carrying 10,000 of box 7 tips:
-  taxpayer-attests-only → line 4a 10,000, deduction **10,000** — identical to
-  both attesting. Mirror case identical. Direction: **OVERSTATEMENT**.
-- ⚠⚠ **DEFECT — Schedule 1-A has NO DIAGNOSTICS AT ALL.** All six specced ones
-  (`D_SCH1A_001..006`, two of them **errors** — MFS claiming, and claiming with
-  no valid SSN) are unimplemented; there is no `rules_sch_1a.py` among the
-  80-odd rules modules. Georgia's `rules_ga500.py` DOES police tips and overtime
-  (D_GA500_013/015) while the federal form that creates the deduction is
-  unpoliced. → REVIEW_QUEUE.
-- ⚠⚠ **DEFECT — the schedule is never transmitted, but its total is.** 1040 line
-  13b maps to `TotalAdditionalDeductionsAmt` (`builder.py:93`) and is e-filed,
-  yet no `IRS1040Schedule1A` document is built — a grep of `apps/efile` for
-  sch_1a / 1040s1a / QPVLI / overtime / senior returns **nothing**, while
-  Schedules 1, 2, 3, A, B, D, E, 8812 and EIC all have builders. Engine-proven
-  case: a single filer with tips 4,000 + OT 5,000 + car 3,000 + age 75 e-files
-  **17,700** on line 13b with no supporting schedule. → REVIEW_QUEUE; the screen
-  says to file on paper.
-- ⚠⚠ **DEFECT — tips from more than one employer produce a form that breaks its
-  own instruction.** The line 4 face text: *"If you received tips as an employee
-  with respect to employment with more than one employer, enter -0- on lines 4a
-  and 4b and see the instructions to determine the amount to enter on line 4c."*
-  Engine-proven with two W-2s (6,000 + 4,000): 4a **10,000** / 4b 0 / 4c 10,000.
-  The spec's own R-TIPS-01 is annotated "(single employer)" and D_SCH1A_006
-  exists for exactly this — unbuilt.
-- ⚠ **DEFECT — the W-2 box 5 special case is ignored.** Line 4a: *"see the
-  instructions if Form W-2, box 5 is more than $176,100."* `medicare_wages` is
-  already on W2Income, so this is checkable from data we hold; D_SCH1A_005
-  unbuilt. Engine-proven: box 5 200,000 with 9,000 of tips is taken at face value.
-- ⚠ **DEFECT — both Part IV attestations default to TRUE.** Adding a row with
-  nothing but a VIN and an amount claims the deduction on seven statutory
-  conditions nobody affirmed. Live-proven: the POST body was
-  `{"vin":"1HGCM82633A004352","total_interest_paid":"0"}` and the created row
-  came back with **both boxes ticked**. ORM-proven cost: a $1,200 vehicle moves
-  13b 0 → 1,200, taxable income 78,810 → 77,610, tax 12,204 → 11,940, amount
-  owed 10,151 → **9,876** — **$275 of tax** on an unaffirmed attestation.
-  Compare `tips_eligible_for_deduction`, which defaults **False**, and the RS
-  spec, which gives both car attestations a **null** default.
-- ⚠ **DEFECT — vehicles 3+ vanish from the printed form while line 23 still sums
-  them.** `render_sch_1a` takes `CarLoanVehicle.objects.filter(...)[:2]`.
-  Engine-proven with three rows (1,200 + 900 + 700): line 23 **2,800** against a
-  printed 22a+22b of **2,100** — a filed page that contradicts itself. The form
-  routes >2 VINs to a statement page that isn't built.
-- ⚠ **DEFECT — MFS zeroes three of the four parts, and Part IV survives.**
-  Identical facts, engine-proven: MFS total **3,000** vs single **17,700**.
-  Legacy flagged MFS on tips only, mentioned it in the overtime prose, and said
-  nothing for Parts IV or V. Verified against the form face: the **Part IV
-  caution carries NO joint-return requirement** while II, III and V all read
-  "If married, you must file jointly to claim this deduction."
-- ⚠ **DEFECT — the screen showed NO computed result at all**, and Parts I, V and
-  VI were absent from it entirely — no MAGI, no cap, no phaseout, no per-part
-  deduction, no total, and no sign of a $6,000-per-person senior deduction whose
-  only inputs live on two other screens.
-- ⚠ **DEFECT — the car-loan phaseout rounds UP × $200** — the opposite direction
-  and double the rate of tips/overtime. Engine-proven: AGI 100,050 (fifty dollars
-  over) → line 28 = 1, line 29 = **200**. A $200 cliff at every $1,000 boundary.
-- ⚠ **DEFECT — the self-employment limit on tips (spec R-TIPS-10) is unbuilt**
-  and its stated reason — "awaits Schedule C" — is stale, Schedule C having been
-  fully modelled since sweep unit 3. A self-employed filer's tips deduction can
-  exceed the business's net income. → REVIEW_QUEUE.
-- ⚠ Caught by the LIVE run, not by reading: the threshold table printed
-  **"phaseout starts 0"** for tips, because the tips/overtime short-circuits
-  return a dict of zeros that includes the threshold row itself. A disengagement
-  artifact shown as a number is wrong guidance (the s136 lesson) — the cell now
-  shows an em dash and the constant is still never re-derived on the client.
+⚠ **ONE SERVER CHANGE, additive and read-only**:
+`Form5329Serializer.computed_lines` / `.computed_total` now expose the SAME
+`compute_5329_form_lines` dict the diagnostics, the renderer and the MeF extract
+already consume. It was necessary, not cosmetic: `compute_5329_db` persists only
+the TAXPAYER's Part I lines 1-4 to FormFieldValue and Schedule 2 line 8 holds
+BOTH owners combined, so **no API published this form's arithmetic at all** and
+the legacy screen re-implemented all seven part formulas itself. The sweep's
+standing ruling (units 17 and 19) is to RETIRE client re-implementations, not
+carry them forward. No migration; 7 new server tests; the 91 existing
+Topic-5/5329 tests still pass.
 
-**Gates at s140 close:** vitest **1089/1089** (+39) · tsc **46 = baseline** ·
-side-by-sides committed
-(`Design/slate-phase2-screenshots/{legacy,slate}-sch1a.png`) · every QA write
-**200/201/204** (POST 201 · 2 vehicle PATCH 200 · 6 taxpayer PATCH 200 ·
-DELETE 204) · demo QA writes reverted to the exact s139 baseline with **ZERO
-drift**, ORM-verified line by line (1040 11/12/13/13b/15/16/18/19/20/24/27/33/37,
-0 vehicles, all 8 Sch 1-A facts at defaults re-read from the DB, print blockers
-empty, Sch 3 L2 and 1040 1e blank). The console `403 /api/v1/me/` and
-`404 …/prior-year/` are the pre-login identity probe and a return with no prior
-year — checked in the server log, not defects.
+- ⚠⚠⚠ **DEFECT - the 25% SIMPLE rate is charged on the WHOLE of line 3.** The
+  Part I caution on the form face: *"If any part of the amount on line 3 was a
+  distribution from a SIMPLE IRA, you may have to include 25% of **that
+  amount** on line 4 instead of 10%."* 25% belongs on the SIMPLE portion only.
+  `compute_5329_full` carries ONE boolean and multiplies the entire line 3 by it,
+  and the boolean is auto-set from **any** code-S 1099-R
+  (`bool(row.simple_25pct) or has_s`). Engine-proven: a 50,000 code-1 early
+  401(k) distribution alongside a 2,000 code-S SIMPLE distribution -> line 4 =
+  25% x 52,000 = **13,000** where the form's blend is 10% x 50,000 + 25% x 2,000
+  = **5,500** - **$7,500 overstated**. A smaller SIMPLE slice is worse:
+  100,000 + 500 -> **25,125 vs 10,125**, $15,000 overstated. Live-proven on the
+  demo QA return through the real API (line 1 52,000 / line 3 52,000 / line 4
+  13,000, Schedule 2 line 8 23,420, balance due 47,024). Direction:
+  **OVERSTATEMENT**. The RS spec's R-5329-02 carries the same simplification, so
+  this is **FLAGGED, never silently fixed** -> REVIEW_QUEUE.
+- ⚠⚠ **DEFECT - a blank 12/31 account value taxes the FULL excess, and an
+  explicit 0 taxes nothing.** The six `*_value` caps are the only nullable fields
+  on the form and `_excess_part` reads None as "no smaller-of cap".
+  **Live-proven on one cell, three states, all through the real API:** a 7,000
+  traditional-IRA excess with the value at 3,000 -> **180** of tax; explicit 0 ->
+  **0**; cleared to null -> **420**. So the natural way to say "I don't have the
+  year-end value" costs the client money, typing 0 silently asserts an emptied
+  account, and nothing on screen distinguished them. Six parts blank at once ->
+  1,398. D_5329_003 is only a **warning**.
+- ⚠⚠ **DEFECT - the screen re-implemented the engine and displayed a number
+  that is not the 5329 tax.** `previewIItoIX` duplicated all seven formulas and
+  deliberately excluded Part I, then labelled the result "Parts II-IX preview".
+  Engine-proven: Part I 2,000 + Parts II-IX 2,920 = an owner total of **4,920**,
+  and the screen showed **2,920**. There was also no line 1/3/4 display at all,
+  no per-part result, no owner total, and no Schedule 2 line 8.
+- ⚠⚠ **DEFECT - the Part IX correction-window row is worth 15 points of tax and
+  the screen never said so.** SECURE 2.0 sec. 302 charges 10% when the shortfall
+  is corrected inside the correction window and 25% otherwise. Engine-proven: the
+  same 40,000 shortfall costs **4,000** on line 52a and **10,000** on line 52b -
+  a 6,000 swing on which row it is keyed to. The legacy labels named the rows but
+  never defined the window or the stake. D_5329_004 is only **info**.
+- ⚠ **DEFECT - the SIMPLE checkbox can read FALSE while the engine applies
+  25%.** A code-S 1099-R forces the rate regardless of the box, so the screen
+  showed an unticked box on a return being taxed at 2.5x the displayed rate.
+  Live-confirmed on the QA return.
+- ⚠ **DEFECT - D_RET_007, the ONE diagnostic that says "verify the rate
+  applied", is not dual-aware.** It reads the DEPRECATED
+  `Taxpayer.f5329_simple_25pct` scalar and the 1099-R codes - never the per-owner
+  `Form5329.simple_25pct` row field, though `_f5329_state` in the same module is
+  dual-aware. A preparer who ticks the box on the dual model with no code-S
+  document gets the 25% silently, from the one check built to catch exactly that.
+- ⚠ Also surfaced at the cell that causes it: an exception amount keyed on the
+  owner with no early distribution (stranded - the 10% is charged in full on the
+  other owner's form, D_5329_001), an exception amount with **no exception
+  number** (the form requires it and nothing checked), an invalid exception
+  number (D_RET_006), Part II line 6 above line 5 (D_5329_002), and a spouse
+  form on a non-joint return.
+- ⚠ **Two defects in my OWN screen, caught by its tests and its live run:** six
+  excess parts shared one `aria-label` per cell ("12/31/2025 account value") -
+  ambiguous to a screen reader and to `getByLabelText` alike - and the blank-cap
+  ERROR PROSE was generic too, so six identical-looking errors could not be told
+  apart. Every per-part label and message now names its account.
 
-**Next action: continue the sweep at Form 5329**, then 6251, 8615, 1116, 8880,
+**Gates at s141 close:** vitest **1114/1114** (+25) · tsc **46 = baseline**
+· NEW server tests `test_5329_computed_lines_s141.py` **7/7** · the 91
+existing Topic-5 / 5329 / seed-leg tests still green · side-by-sides committed
+(`Design/slate-phase2-screenshots/{legacy,slate}-f5329.png`) · every QA write
+**200** (3 x PATCH `tira_value` - "3000", "0", then `null`) · demo QA seed
+reverted to the exact s140 baseline with **ZERO drift**, ORM-verified line by
+line (1040 11/12/13/13b/15/16/18/19/20/23/24/27/33/37, Sch 2 line 8 = 0,
+0 Form5329 rows, only the original TRS 1099-R, print blockers empty, and the
+Sch 1-A at-rest rows unchanged at 35 = 4,826 / 37 = 0 / 38 = 0).
+
+**Next action: continue the sweep at Form 6251 (AMT)**, then 8615, 1116, 8880,
 8960, 5695, 1040-X, the state tab, and the estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
-keyed by row id, **DocumentTabs + worksheet** for card stacks AND per-filed-form
-rows, **InputRow worksheets** for facts cards (screenbar header for singletons),
-**the asset register** for computed sub-schedule grids, a bare
-**`.slate-asstable`** for a grid with no add row (a derived row set, a nested
-replace-all list, or an EXISTING record set this screen only annotates —
+keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
+rows AND per-owner forms, **InputRow worksheets** for facts cards (screenbar
+header for singletons), **the asset register** for computed sub-schedule grids, a
+bare **`.slate-asstable`** for a grid with no add row (a derived row set, a
+nested replace-all list, or an EXISTING record set this screen only annotates -
 including a two-row taxpayer/spouse table); paradigms may NEST; multi-section
 tabs share ONE `.slate-screen` at the call site; screenshots per screen; live QA
 writes reverted.
@@ -315,7 +293,8 @@ the shared Supabase DB caution is the one true-production constraint.
 29. *(s126)* Sch B 3a/3b detail tables entry gap; 5 unbuilt Sch B runners.
 30. **(s136)** Replace-all nested lists (8915-F item C) remain vulnerable to
     out-of-order server arrival of two overlapping PATCHes.
-31. **(s137, bookkeeping)** Neither **STATE_REFUND** nor the sweep's other
+31. **(s137, bookkeeping)** Neither **STATE_REFUND** nor **FORM 5329** (s141 —
+    it is covered only in prose blocks) nor the sweep's other
     worksheet pseudo-forms have rows in `form_coverage_tracker.md`, though their
     spec/compute/render/diagnostic/test legs all exist. **(s140) The opposite
     problem on SCH_1A**: it HAS a row, tagged `1040-sch1a-complete` with every
