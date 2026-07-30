@@ -1,21 +1,24 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 148 (**sweep unit 28 — Form 1116, the
-foreign tax credit — is SHIPPED** (`19e92b1` on `slate-ui`, pushed, no deploy).
-**32 of ~39 screens converted; the sweep resumes at Form 8880.** No migration,
-no seed change, no server change — `compute_1116_db` already published the
-whole 31-row face to FormFieldValue; the only server-side file touched is the
-`specs/1116_spec.json` mirror (refreshed from the live RS export — the cached
-copy carried mojibake in every non-ASCII char; semantic diff = zero). ⚠⚠ **The
-1116 tracker entry said "all 7 legs green" and it is not true** — no e-file leg
-(no `IRS1116` builder; a FULL-path FTC return is paper-only, the missing-
-document shape's 4th occurrence) and an incomplete render leg (the printed
-Part II's mandatory Paid/Accrued box, the i1116-directed "1099 taxes" in
-column (l), the (q)–(t) breakdown, and header box h all blank). THIRD form to
-prove open item 31. Findings in `REVIEW_QUEUE.md`; tracker annotated. The
-rule/diagnostic backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the
-earlier `seed_rules` obligation still stands** — s144's D_RET_007 description
-+ s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
+*Last updated: 2026-07-30, session 149 (**sweep unit 29 — Form 8880, the
+Saver's Credit — is SHIPPED** (`5180ce9` on `slate-ui`, pushed, no deploy). **33 of ~39
+screens converted; the sweep resumes at Form 8960.** No migration, no seed
+change, no server change — `compute_8880_db` already publishes the whole
+18-row FORM_8880 face to FormFieldValue; the spec mirror diffed clean against
+the live RS export (timestamp only). ⚠⚠ **A LIVE MFJ COMPUTE DEFECT, PRICED
+AT $1,000:** line 4 must carry BOTH spouses' testing-period distributions in
+BOTH columns (the face + i8880 + §25B(d)(2)(C)) and the engine subtracts each
+column's own entry only — the overstated credit prints AND e-files (8880 is
+the rare form with every leg built, `build_irs8880` included). Plus the
+Credit Limit Worksheet misses Schedule 3 lines 6d/6l (direct-entry-reachable;
+the 8911/8936 sibling reads include them). Both → LEG 2 items 9/10; the RS
+spec carries the arithmetic but not the statutory rule — the 4th form in that
+pattern. FIFTH year-fallback occurrence (SAVERS_AGI_TIERS, latent). ABLE-
+contribution copy fixed on the screen (the face includes ABLE; the legacy
+label said IRA only). Findings in `REVIEW_QUEUE.md`. The rule/diagnostic
+backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier
+`seed_rules` obligation still stands** — s144's D_RET_007 description +
+s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,7 +27,7 @@ earlier `seed_rules` obligation still stands** — s144's D_RET_007 description
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8880 (unit 29).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8960 (unit 30).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -38,6 +41,15 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s149 added two compute items and two notes** (REVIEW_QUEUE, engine-verified
+with the pure-function price): the Form 8880 MFJ line-4 both-columns rule →
+**LEG 2 item 9** ($1,000 overstatement on the max case; prints and e-files);
+the Credit Limit Worksheet's missing Schedule 3 6d/6l subtraction → **LEG 2
+item 10**; the FIFTH year-fallback occurrence (`SAVERS_AGI_TIERS`, latent) →
+LEG 4 item 17 strengthened again; and a minor render/e-file note (an
+engaged-but-zero 8880 prints and transmits against the face's own "stop").
+FORM_8880 also has NO tracker row at all — open item 31's list grows.
 
 **s148 added three more** (REVIEW_QUEUE, engine-verified): the missing
 `build_irs1116` (full path only — the §904(j) paths legitimately transmit no
@@ -155,6 +167,20 @@ number is at least loud while the compute fix is pending.
    question (should the §165(d) cap simply BE the W-2G box-1 sum plus
    `other_gambling_winnings`?) is still Ken's call. Recommendation: derive it,
    with an `_overridden` companion.
+9. **(s149) Form 8880 line 4 must carry BOTH spouses' distributions in BOTH
+   columns on MFJ** (face + i8880 + §25B(d)(2)(C); the didn't-file-jointly
+   exception is preparer-applied). `compute_8880_column` subtracts each
+   column's own entry only — **$1,000 overstated on the priced max case**, and
+   it prints (`render_8880`) and transmits (`build_irs8880`). The RS spec's
+   `R-8880-CONTRIB` lacks the rule (4th spec-divergence form — one RS
+   conversation). No existing test pins the wrong MFJ arithmetic by name. The
+   Slate screen instructs combined entry meanwhile. REVIEW_QUEUE has the
+   recommendation.
+10. **(s149) Form 8880's Credit Limit Worksheet must also subtract Schedule 3
+   lines 6d and 6l** (2025 i8880 verbatim: "lines 1 through 3, 6d, and 6l");
+   `compute_8880_db` reads 1/2/3 only while the 8911/8936 sibling reads
+   include 6d/6l. Both are seeded direct-entry lines, so it is reachable
+   today. The Slate screen warns live when 6d/6l hold a value.
 
 ### ▶ LEG 3 — needs a migration or an e-file builder. Stage; Ken pulls the trigger.
 8. **`CarLoanVehicle.vehicle_qualifies` / `.loan_qualifies` → `default=False`**
@@ -228,12 +254,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 8880.**
-**32 of ~39** 1040 screens are converted (unit 28, Form 1116 / foreign tax
-credit, shipped `19e92b1`). Remaining (the count was re-measured in s137 by
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 8960.**
+**33 of ~39** 1040 screens are converted (unit 29, Form 8880 / Saver's
+Credit, shipped this session). Remaining (the count was re-measured in s137 by
 mapping every `activeTab` to its section component **file** and checking each
 for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**8880** ≈156 · **8960** ≈119 · **5695** · **1040-X** · the
+**8960** ≈119 · **5695** · **1040-X** · the
 **state/GA** tab · the **prior-year / tax-summary** views · the
 estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
@@ -337,6 +363,19 @@ lane — ~12 more, none started. Ken's call when to take them.**
    views.py:2678), never off `is_computed`. s148's live run caught the auto
    de minimis pill reading "Not engaged" with $250 sitting on the line — the
    vitest fixture had assumed `is_computed=True` and passed.
+24. ⚠⚠ **A COLUMN INSTRUCTION ON THE FORM FACE IS ARITHMETIC, NOT COMMENTARY.**
+   Form 8880 line 4's margin text — "If married filing jointly, include both
+   spouses' amounts in both columns" — changes line 5's subtrahend, and the RS
+   spec carried the per-column formula without it (the 4th spec that keeps the
+   arithmetic and drops the statutory rule). Read the column headers and
+   margin instructions as formula; price the difference with the engine's own
+   pure function before writing it up ($1,000 here, in one probe).
+25. ⚠ **A WORKSHEET'S LINE LIST IS A SPEC — DIFF THE COMPUTE'S LIST AGAINST IT
+   VERBATIM, THEN GREP THE SIBLINGS.** The 8880 CLW read subtracts Sch 3
+   1/2/3 and its comment names 6c/6g/6h — lines the 2025 worksheet does not
+   list — while missing the 6d/6l it does. `compute_8911` and `compute_8936`
+   already carry the right list, which turned "is this right?" into "the
+   outlier is wrong" in one grep.
 21. ⚠ **THE LIVE RUN STILL EARNS ITS KEEP ON A SCREEN THAT FETCHES NOTHING.**
    Unit 27 is prop-based, so s146's two fetch traps could not occur — and the
    live run still found copy a prop test could not: with line 18 equal to line 17
@@ -422,6 +461,25 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s149 gates (unit 29 — Form 8880 / Saver's Credit):** NEW
+`slateForm8880Screen.test.tsx` **24** (revert-tested — restoring the IRA-only
+line-1 label failed exactly the 2 tests that key the ABLE copy) · the four
+8880 server legs **43** (untouched — this unit changes no server file) · flow
+assertions **521** (baseline exactly) · vitest **1207/1207** (1183 + 24) · tsc
+**46 = baseline**. **LIVE-PROVEN** on the demo QA return through the screen's
+own facts lane: `f8880_you_ira` set to 2,000 IN the Slate screen → the PATCH
+landed and the engine published all 18 FORM_8880 rows (1a 2,000 → 7 2,000 →
+8 94,560 → 9 0.00 → 11 12,204 → 12 0 → SCH_3 line 4 "0"), **all 18 on-screen
+ƒx cells ORM-matched**, the "No credit" pill + the AGI-over note fired, and
+the CLW warning stayed correctly silent (no 6d/6l). The revert ALSO proved the
+blank-commit lane (blank → "0" via the hook's normalize → disengage blanked
+all 18 rows). **Demo writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892
+FormFieldValue rows identical** (the 18 blank FORM_8880 shells deleted after
+value-checking `{''}`, `compute_return` re-run, facts back to defaults).
+⚠ The live run surfaced the engaged-zero print/transmit note (REVIEW_QUEUE
+minor) — the form's own face says "stop" when line 9 is zero, yet the zero
+face prints and an IRS8880 attaches.
+
 **s148 gates (unit 28 — Form 1116 / foreign tax credit):** NEW
 `slateForm1116Screen.test.tsx` **26** (revert-tested — restoring the MFJ-only
 ceiling failed exactly the QSS test that pins the fix) · the four 1116 server
@@ -457,30 +515,25 @@ the 1099-INT restored to 1,250.00. **No migration, no seed change, no server
 change** — `compute_8615_db` already persisted the whole face, so unlike unit 26
 nothing needed an endpoint.
 
-**s146 gates (unit 26 — Form 6251 / AMT):** NEW `tests/test_amt_face_s146.py`
-**7** (revert-tested — collapsing the null line 11 into "0.00" failed 2) · NEW
-`slateForm6251Screen.test.tsx` **13** · flow assertions **521** (baseline
-exactly) · the 6251 / amt_face bands **587** · vitest **1129/1129** · tsc **46 =
-baseline**. **LIVE-PROVEN** on the demo QA return (AMTI 94,560 → exemption 88,100
-→ excess 6,460 → TMT 1,485 against a regular tax of 12,204 → no AMT) with the
-demo data **verified UNCHANGED, 892/892 rows — this unit wrote NOTHING**.
-⚠⚠ **TWO OF THE THREE BUGS IN THIS UNIT WERE MINE AND ONLY THE LIVE RUN FOUND
-THEM** — the unit tests pass the face in as a prop, so neither the missing
-`{"data": ...}` unwrap nor the collapsed loading state was reachable from a test.
-Both now have tests. **A fetch-backed screen needs a live pass; a vitest suite
-over its props is not a substitute.**
-
-**s143 / s144 / s145 gates — moved to `STATUS_ARCHIVE.md` (s147).** Re-run them
-if you touch Form 8863, Form 5329, the retirement modules or the MeF-1040 band;
-each block records the exact suites, the counts and what each revert proved.
-*(s146's block stays above because its fetch-trap lesson is still the freshest
-statement of the live-pass rule for fetch-backed screens.)*
+**s143 / s144 / s145 / s146 gates — moved to `STATUS_ARCHIVE.md` (s143–145 by
+s147; s146 by s149).** Re-run them if you touch Form 8863, Form 5329, Form
+6251, the retirement modules or the MeF-1040 band; each block records the
+exact suites, the counts and what each revert proved. s146's fetch-trap lesson
+survives as Method items 16/17 — a fetch-backed screen needs a live pass.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
 switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0g. **(s149) Form 8880 overstates the MFJ Saver's Credit** — line 4 must carry
+   both spouses' distributions in both columns and the engine subtracts each
+   column's own entry only. **$1,000 priced max case; prints AND e-files.**
+   LEG 2 item 9; the RS spec needs the rule (4th spec-divergence form).
+0h. **(s149) The 8880 Credit Limit Worksheet misses Schedule 3 6d/6l**
+   (direct-entry-reachable; the 8911/8936 sibling reads include them). LEG 2
+   item 10. Plus a minor: an engaged-but-zero 8880 prints and transmits
+   against the face's own "stop".
 0e. **(s148) Form 1116 is never transmitted but the FULL-path credit is** (no
    `IRS1116` builder; the §904(j) paths legitimately file none). **4th
    occurrence of the missing-document shape — scope with items 0b/3 as ONE
@@ -597,27 +650,18 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
-- ⚠ **s148 wrote to the demo QA return and REVERTED it.** The 1099-DIV's
-  `foreign_tax_paid` was set 250 then 650 and one `Form1116` row created
-  (passive / Germany / 25,000; plus `definitely_related` 100 written LIVE
-  through the screen to prove the PATCH lane) to live-prove both credit paths;
-  all undone — row deleted, `foreign_tax_paid` back to NULL, `compute_return`
-  re-run, and the 31 blank FORM_1116 FFV shells `_backfill_values` created were
-  deleted after checking their values were all `''`. **Zero drift, ORM-verified
-  892 of 892 FormFieldValue rows identical** to the pre-write baseline. The
-  at-rest figures below still hold.
-- ⚠ **s147 wrote to the demo QA return and REVERTED it.** One synthetic
-  `Form8615` row (applies + MFJ parent, TI 150,000 / tax 23,000) and the
-  `InterestIncome` box 1 raised 1,250 → 25,000 to clear the $2,700 threshold, to
-  live-prove the computed face; both undone with `compute_return(tr)` re-run.
+- ⚠ **s149 wrote to the demo QA return and REVERTED it.** `f8880_you_ira` was
+  set to 2,000 THROUGH the Slate screen (the facts-lane live proof), engaging
+  the 18-row FORM_8880 face; then blanked through the screen (the blank→"0"
+  lane proof), disengaging it. The 18 blank FFV shells `_backfill_values`
+  created were deleted after value-checking `{''}` and `compute_return` re-run.
   **Zero drift, ORM-verified 892 of 892 FormFieldValue rows identical** to the
   pre-write baseline. The at-rest figures below still hold.
-- ⚠ **s144 wrote to the demo QA return and REVERTED it.** Two synthetic 1099-Rs
-  (`QA144 Fidelity 401(k)` code 1 / 50,000 and `QA144 SIMPLE IRA` code S /
-  2,000) plus one `Form5329` row were created to live-prove the blend, then
-  deleted with `compute_return(tr)` re-run. **Zero drift, ORM-verified: 892 of
-  892 FormFieldValue rows identical to the pre-write baseline**, the original
-  TRS 1099-R intact, no Form5329 rows left. The at-rest figures below still hold.
+- ⚠ **s144 / s147 / s148 each wrote to the demo QA return and REVERTED it**
+  (s144: two synthetic 1099-Rs + a Form5329 row; s147: a Form8615 row + the
+  1099-INT raised to 25,000; s148: `foreign_tax_paid` 250/650 + a Form1116 row
+  + 31 blank FFV shells deleted). Every one closed at **zero drift,
+  ORM-verified 892 of 892 rows identical**; full detail in `STATUS_ARCHIVE.md`.
 - ⚠ Demo QA return (`bc270846…`) carries synthetic review data ON PURPOSE —
   s127 1099-R (TRS $24,000) + s128 1099-INT ($1,250/$300/$50 W/H) + 1099-DIV
   ($800/$600/$150) + SS box 5 $21,600.
