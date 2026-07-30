@@ -16,19 +16,112 @@ screen re-implemented the entire engine.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE - the bespoke-screen sweep continues at **Form 6251 (AMT)**
+## ▶ RESUME HERE — **KEN REDIRECTED 2026-07-30: clear the accumulated RULE / DIAGNOSTIC / E-FILE backlog FIRST, then return to the screen sweep.**
 
-**s141 shipped unit 25 on `slate-ui` (no deploy): `820bb2f`**
+Ken's words: *"You can fix those items first and then go back to the screens."*
+The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form 6251 (AMT)**
+once this backlog is clear — see "The paused screen sweep" below. This is a
+sequence change, so it is recorded in `BUILD_ORDER.md` too; nothing is silent.
 
-Remaining 1040 screens (~10 of ~39; the count was re-measured in s137 by
-mapping every `activeTab` to its section component **file** and checking each
-for a `NEW_UI` gate - do it that way, never by scanning FormEditor alone):
+**s141 shipped unit 25 on `slate-ui` (no deploy): `820bb2f`. Nothing below is started.**
+
+### ▶ THE BACKLOG, in the order to do it
+Every item is written up in full in `REVIEW_QUEUE.md` — read the entry before
+touching code; each carries its engine proof and my recommendation.
+
+**LEG 1 — diagnostics only. No compute change, no migration. Safest, highest
+value per hour, and it lands the single best check in the queue.**
+1. **NEW `apps/diagnostics/rules_sch_1a.py`** — Schedule 1-A has NO diagnostics
+   at all. Implement the six specced ones: D_SCH1A_001 MFS claiming (**error**),
+   002 no valid SSN (**error**), 003 tips occupation off the IRS list, 005 W-2
+   box 5 > $176,100, 006 tips across multiple employers (warnings), 004 senior
+   born on/after the cutoff (warning). **Then add the one the spec does NOT
+   have and that matters most: a filer with NO `date_of_birth` on a return where
+   SCH_1A line 35 > 0** — a warning, not an error (a genuinely-under-65 filer
+   must not be nagged). That is the $6,000–$12,000 silent loss.
+2. **D_5329_003 → `error`** when an excess part has a total above zero and its
+   12/31 account value is blank. The conservative default stays; the client
+   should not overpay for a figure that is on a statement they already have.
+3. **D_RET_007 → route through `_f5329_state`** so it is dual-aware and reports
+   per owner (it currently reads only the deprecated `Taxpayer` scalar).
+4. **The s137 five** — seed as errors: a blank prior-year Sch A **5e** (untaxes
+   a whole state refund), the **§165(d) gambling cap** not following the W-2G
+   documents, an explicit **$0 `family_allocation`** (zeroes the HSA deduction);
+   as warnings: an **age/blind box count above 4**, and a tax year with no
+   `PY_STD_DEDUCTION` entry silently using **2024** constants.
+5. **Severity corrections:** D_8863_DUAL_STUDENT → error; add "a QBI deduction
+   with no QBI source" (pairs with LEG 2 item 7).
+⚠ **Every new/changed diagnostic must be seeded on BOTH DBs at deploy**
+(`seed_rules`) — the s109b lesson: severity lives in two places.
+
+**LEG 2 — compute fixes with real dollars. Each needs the RS spec fetched first
+(CLAUDE.md gate), the flow-assertion gate run after, and a Ken deploy.**
+6. **The stale QBI deduction on 1040 line 13** (s139, chip `task_8000a11e`) —
+   $859 understated on the proof return; blank line 13 in `compute_8995_db`'s
+   not-engaged branch (`write_line_13`'s `is_overridden` guard already protects a
+   real direct entry). **Do this one first** — smallest change, clearest proof.
+7. **Sweep the `disengage()`-guarded-on-`!= ZERO` family** while in there (s138)
+   — item 6 is that family with money attached; a `disengage()` cannot clear a
+   "0" it wrote itself.
+8. **Form 5329 Part I: blend the SIMPLE rate** (s141) — split line 1 into its
+   SIMPLE and non-SIMPLE components in `owner_early_distributions` (the 1099-R
+   codes already distinguish them), apportion the line-2 exception across the
+   two, blend 25%/10%. $7,500–$15,000 overstated today.
+   ⚠⚠ **The RS spec's R-5329-02 carries the same shortcut**, so implementing the
+   correct law puts the app AHEAD of the spec. Flag it loudly in the commit and
+   in `REVIEW_QUEUE.md` for Ken's next Rule Studio session — do NOT quietly
+   diverge, and do not wait either: Ken has authorised the fix.
+9. **Form 8863: one student cannot take BOTH credits** (s138) — have compute
+   drop the LLC expenses for any student whose AOTC is allowed. $800 on the
+   proof return.
+10. **Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
+   filer's attestation (the field already exists; treat `joint` as the
+   taxpayer's) and warn when a W-2's tips are excluded.
+11. **Form 8863 line-7 lockout** — currently `any()`, so one student's box makes
+   the WHOLE return's AOTC nonrefundable. Key it per student.
+
+**LEG 3 — needs a migration or an e-file builder. Stage; Ken pulls the trigger.**
+12. **`CarLoanVehicle.vehicle_qualifies` / `.loan_qualifies` → `default=False`**
+   (s140) — $275 of tax on the proof return from seven conditions nobody
+   affirmed. **A migration, and existing rows keep their stored True** — decide
+   with Ken whether to backfill or leave history alone, and add a diagnostic for
+   a row carrying interest with either attestation unticked.
+13. **`build_schedule1a`** against the 2025 `IRS1040Schedule1A.xsd` (s140) —
+   1040 line 13b transmits as `TotalAdditionalDeductionsAmt` with **no
+   supporting schedule**; every sibling has a builder. Until it lands, a return
+   claiming these deductions is paper-only. Note the Part IV line-22 rows come
+   from `CarLoanVehicle`, not FormFieldValues.
+14. **Form 2441 tax-exempt provider e-file mapping** (s138) — the extract raises
+   without a 9-digit TIN; i2441 wants the literal "Tax-Exempt" in column (c).
+
+**LEG 4 — bigger, Ken-scoped. Confirm before starting.**
+15. **ONE shared overflow-statement mechanism** — three forms silently truncate
+   printed rows: Form 5329's siblings aside, it is Schedule 1-A line 22 `[:2]`
+   (line 23 still sums all) and Form 2441's `[:3]` twice. Worth one mechanism,
+   not three.
+16. **Form 5329 Part IX waiver** — attach a statement and pay nothing. The
+   common outcome, and the model cannot express it at all.
+17. **R-TIPS-10, the §224 SE gross-income limit** — derive from the Schedule C
+   the tips came from rather than adding two preparer facts.
+18. **Form 8962: a 100%-of-FPL floor** as a **warning** that distinguishes the
+   §1.36B-2(b)(6) safe-harbour case from the no-APTC case (not an error).
+19. **Form 2441 both-spouses deeming** — $1,920 vs $0, against an explicit IRS
+   instruction the RS spec never carries. Needs an RS decision first.
+20. **`eic_self_employed`: derive or keep asking?** (s139) — the unanswered
+   default costs $4,328–$7,152. My recommendation was to default it True when
+   the return carries a Schedule C / F / SE K-1 with an `_overridden` companion.
+   **Ken's ruling still needed** before building.
+
+### ▶ THE PAUSED SCREEN SWEEP — resume at **Form 6251 (AMT)**
+29 of ~39 1040 screens are converted. Remaining (the count was re-measured in
+s137 by mapping every `activeTab` to its section component **file** and checking
+each for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
 **6251** ≈264 · **8615** ≈259 · **1116** ≈273 · **8880** ≈156 ·
 **8960** ≈119 · **5695** · **1040-X** · the **state/GA** tab · the
 **prior-year / tax-summary** views · the estimates/extension/e-file cards.
 **The business-entity screens (1120-S / 1065 shareholders, partners, balance
 sheets, allocations, 7203, page-1 income/deductions) are a SEPARATE unscoped
-lane - ~12 more, none started. Ken's call when to take them.**
+lane — ~12 more, none started. Ken's call when to take them.**
 
 ### Unit 25 - Form 5329 (additional taxes on qualified plans)
 **DOCUMENT TABS per owner** - here the ruling is literal: taxpayer and spouse
@@ -116,7 +209,7 @@ line (1040 11/12/13/13b/15/16/18/19/20/23/24/27/33/37, Sch 2 line 8 = 0,
 0 Form5329 rows, only the original TRS 1099-R, print blockers empty, and the
 Sch 1-A at-rest rows unchanged at 35 = 4,826 / 37 = 0 / 38 = 0).
 
-**Next action: continue the sweep at Form 6251 (AMT)**, then 8615, 1116, 8880,
+**Next action (superseded by Ken's 2026-07-30 redirect — see ▶ RESUME HERE at the top: the rule/diagnostic/e-file backlog comes first): the sweep would have continued at Form 6251 (AMT)**, then 8615, 1116, 8880,
 8960, 5695, 1040-X, the state tab, and the estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
