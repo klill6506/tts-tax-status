@@ -1,24 +1,27 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 149 (**sweep unit 29 — Form 8880, the
-Saver's Credit — is SHIPPED** (`5180ce9` on `slate-ui`, pushed, no deploy). **33 of ~39
-screens converted; the sweep resumes at Form 8960.** No migration, no seed
-change, no server change — `compute_8880_db` already publishes the whole
-18-row FORM_8880 face to FormFieldValue; the spec mirror diffed clean against
-the live RS export (timestamp only). ⚠⚠ **A LIVE MFJ COMPUTE DEFECT, PRICED
-AT $1,000:** line 4 must carry BOTH spouses' testing-period distributions in
-BOTH columns (the face + i8880 + §25B(d)(2)(C)) and the engine subtracts each
-column's own entry only — the overstated credit prints AND e-files (8880 is
-the rare form with every leg built, `build_irs8880` included). Plus the
-Credit Limit Worksheet misses Schedule 3 lines 6d/6l (direct-entry-reachable;
-the 8911/8936 sibling reads include them). Both → LEG 2 items 9/10; the RS
-spec carries the arithmetic but not the statutory rule — the 4th form in that
-pattern. FIFTH year-fallback occurrence (SAVERS_AGI_TIERS, latent). ABLE-
-contribution copy fixed on the screen (the face includes ABLE; the legacy
-label said IRA only). Findings in `REVIEW_QUEUE.md`. The rule/diagnostic
-backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier
-`seed_rules` obligation still stands** — s144's D_RET_007 description +
-s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
+*Last updated: 2026-07-30, session 150 (**sweep unit 30 — Form 8960, the Net
+Investment Income Tax — is SHIPPED** (`1484f80` on `slate-ui`, pushed, no deploy). **34 of
+~39 screens converted; the sweep resumes at Form 5695.** No migration, no
+seed change, no server change — `compute_8960_db` already publishes the
+6-row FORM_8960 face to FormFieldValue; the spec mirror diffed clean against
+the live RS export (timestamp only). ⚠⚠ **THE DIAGNOSTICS ARE BLIND TO THE
+ENGINE'S RENTAL AUTO-FEED, PRICED AT $608:** `rules_8960._f8960` claims to
+mirror `compute_8960_db` but predates the Schedule 1 line-5 auto-feed — on
+the priced return the engine charges $608 of NIIT while D_8960_NII_LOSS says
+"no §1411 tax applies", and a rental-only return silences all five
+diagnostics (D_8960_RENTAL is additionally gated on the override fact, so it
+never fires on the auto-fed return it exists for). Plus a render/e-file gap:
+line 3 (annuities) and line 5b (excluded gain) feed line 8 but vanish from
+BOTH the printed face and the IRS8960 XML, and the arithmetic lines
+5d/9d/11/14/15 print blank. Plus spec gaps (5c, Part II line 10, the three
+election checkboxes; the 9d misnumbering). The Slate screen states each at
+its cell; findings in `REVIEW_QUEUE.md`. The legacy 4a lie — presenting the
+rental cell as a plain entry when it overrides the auto-feed and kills the
+automatic 4b back-out — is FIXED on the Slate screen and revert-tested. The
+rule/diagnostic backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the
+earlier `seed_rules` obligation still stands** — s144's D_RET_007
+description + s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -27,7 +30,7 @@ s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 8960 (unit 30).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 5695 (unit 31).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -41,6 +44,15 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s150 added one diagnostics item, one render/e-file item and one spec item**
+(REVIEW_QUEUE, engine-verified with the pure-function price): the
+`rules_8960._f8960` auto-feed blindness ($608 charged while D_8960_NII_LOSS
+says no tax; total silence on a rental-only return) → **LEG 2 item 11**
+(diagnostics-lane, the LEG 1 shape); the vanishing 8960 lines 3/5b + the
+blank arithmetic lines 5d/9d/11/14/15 in print AND XML → **LEG 3 item 15**,
+scoped with the other render gaps; the unmodeled 5c / line 10 / election
+checkboxes + the 9d misnumbering → the standing RS spec-corrections agenda.
 
 **s149 added two compute items and two notes** (REVIEW_QUEUE, engine-verified
 with the pure-function price): the Form 8880 MFJ line-4 both-columns rule →
@@ -181,6 +193,13 @@ number is at least loud while the compute fix is pending.
    `compute_8880_db` reads 1/2/3 only while the 8911/8936 sibling reads
    include 6d/6l. Both are seeded direct-entry lines, so it is reachable
    today. The Slate screen warns live when 6d/6l hold a value.
+11. **(s150) `rules_8960._f8960` must resolve rental the way the engine does**
+   (Schedule 1 line 5 fallback + the `schedule_e_non_1411_income` back-out),
+   and `d_8960_rental` must key off the RESOLVED 4a amount, not the override
+   fact. Diagnostics-lane, no compute dollars — but the wrong guidance is
+   priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a
+   rental-only return silences all five rules. The Slate screen carries the
+   classification guidance at the 4a cell meanwhile.
 
 ### ▶ LEG 3 — needs a migration or an e-file builder. Stage; Ken pulls the trigger.
 8. **`CarLoanVehicle.vehicle_qualifies` / `.loan_qualifies` → `default=False`**
@@ -218,6 +237,14 @@ number is at least loud while the compute fix is pending.
    (q)–(t) withheld-at-source breakdown the engine already has per-document,
    and decide box h "Resident of" (constant "United States" or a small field —
    Ken's call). Render-only except a possible box-h field.
+15. **(s150) Form 8960's filed copy — print/transmit lines 3 and 5b, and fill
+   the arithmetic lines 5d/9d/11/14/15.** `render_8960`, the field map
+   (which has NO entry for line 3), and `_extract_f8960` move in one pass —
+   they are value-for-value by design. 5b prints NEGATIVE (the face's
+   "Combine lines 5a through 5c"); 14/15 are pure functions of stored data.
+   Until then a filed line 8 with annuities or excluded gain does not foot
+   from its own rows, on paper AND in the XML. Render/extract only — no
+   migration.
 
 ### ▶ LEG 4 — bigger, Ken-scoped. Confirm before starting.
 11. **ONE shared overflow-statement mechanism** — three forms silently truncate
@@ -254,12 +281,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 8960.**
-**33 of ~39** 1040 screens are converted (unit 29, Form 8880 / Saver's
-Credit, shipped this session). Remaining (the count was re-measured in s137 by
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 5695.**
+**34 of ~39** 1040 screens are converted (unit 30, Form 8960 / NIIT, shipped
+this session). Remaining (the count was re-measured in s137 by
 mapping every `activeTab` to its section component **file** and checking each
 for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**8960** ≈119 · **5695** · **1040-X** · the
+**5695** · **1040-X** · the
 **state/GA** tab · the **prior-year / tax-summary** views · the
 estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
@@ -370,6 +397,15 @@ lane — ~12 more, none started. Ken's call when to take them.**
    arithmetic and drops the statutory rule). Read the column headers and
    margin instructions as formula; price the difference with the engine's own
    pure function before writing it up ($1,000 here, in one probe).
+26. ⚠⚠ **A "MIRRORS X" DOCSTRING IS A CLAIM WITH A DATE ON IT.**
+   `rules_8960._f8960` says it mirrors `compute_8960_db`'s input resolution —
+   it did, until the engine gained the Schedule 1 line-5 rental auto-feed and
+   nobody re-read the mirror. When an engine grows a NEW input source, grep
+   for every module that re-derives its inputs (diagnostics recomputes,
+   render fns, e-file extracts) and re-verify each one; the render and
+   extract had been updated, the diagnostics had not. The screen's live run
+   did not catch this one — the pure-function probe did, because the audit
+   diffed the two input resolutions side by side.
 25. ⚠ **A WORKSHEET'S LINE LIST IS A SPEC — DIFF THE COMPUTE'S LIST AGAINST IT
    VERBATIM, THEN GREP THE SIBLINGS.** The 8880 CLW read subtracts Sch 3
    1/2/3 and its comment names 6c/6g/6h — lines the 2025 worksheet does not
@@ -453,13 +489,38 @@ no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
 MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
-change. **s146, s147 and s148 add neither a migration nor a seed change** (s147
-and s148 make no server change at all — each touches only its spec mirror,
-`specs/8615_spec.json` / `specs/1116_spec.json`, refreshed from the live RS
-export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+change. **s146, s147, s148 and s150 add neither a migration nor a seed change**
+(s147 and s148 touch only their spec mirrors, refreshed from the live RS
+export; **s150 makes no server change at all** — the 8960 spec mirror was
+already current, diffed clean against the live export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s150 gates (unit 30 — Form 8960 / Net Investment Income Tax):** NEW
+`slateForm8960Screen.test.tsx` **22** (revert-tested — restoring the legacy
+plain-entry 4a shape failed exactly the 3 tests that pin the fix: the two
+contract-3 tests + the four-override-notes count) · the five 8960 server
+suites **39** (untouched — this unit changes no server file) · flow
+assertions **521** (baseline exactly) · vitest **1229/1229** (1207 + 22) ·
+tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return through the
+screen's own facts lane (`scripts/qa_unit30.mjs`, the qa_unit25 template):
+the demo 1099-INT raised to 250,000 by ORM (the s147 precedent) engaged the
+face — 8 = 250,950 → 12 = 250,950 → 13 = 343,310 → 16 = 143,310 (MAGI excess
+binds) → 17 = 5,446 = SCH_2 line 12 = 1040 line 23, **all five on-screen ƒx
+cells ORM-matched and locked**, pill "NIIT $5,446", the 2b auto note showing
+the live $250,000. Then 9b = 120,000 keyed IN the screen (PATCH 200
+`{"e8960_state_tax_allocable":"120000"}`) flipped the §1411 binding side
+server-side — 12 = 130,950 → 16 = 130,950 → 17 = 4,976 — and blanking the
+cell committed the hook's normalize (`"0"`), returning the face to 5,446.
+Console 403/404s verified PRE-EXISTING (`/api/v1/me/` pre-login + the known
+`prior-year/` 404), not the screen's. **Demo writes REVERTED and
+ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows identical** (the 6
+blank FORM_8960 shells `_backfill_values` created were deleted after
+value-checking `{''}`, the 1099-INT restored to 1,250.00, `compute_return`
+re-run). The disengaged screen states the correct why-not (MAGI $94,560 ≤
+the $200,000 single threshold, D_8960_BELOW_THRESH's copy) with every auto
+note carrying the live at-rest figure ($1,250 / $800 / $0 / $150).
 
 **s149 gates (unit 29 — Form 8880 / Saver's Credit):** NEW
 `slateForm8880Screen.test.tsx` **24** (revert-tested — restoring the IRA-only
@@ -501,31 +562,26 @@ seeded `is_computed=False` (the manual-FTC escape hatch), so the pill keyed off
 `!is_overridden`** (every manual field save sets `is_overridden=True`,
 views.py:2678). Fixed, and the fixture now mirrors the seeded truth.
 
-**s147 gates (unit 27 — Form 8615 / kiddie tax):** NEW
-`slateForm8615Screen.test.tsx` **18** (revert-tested — restoring the QDCGT lie
-failed exactly the 2 tests that pin it) · the five 8615 server legs **63** · flow
-assertions **521** (baseline exactly) · vitest **1157/1157** · tsc **46 =
-baseline**. ⚠ **The vitest baseline is 1139, not the 1129 s146 recorded** —
-measured directly by re-running with the new file excluded. **LIVE-PROVEN** on
-the demo QA return with a synthetic kiddie-tax scenario (line 1 = 25,950 →
-line 5 = 23,250 → line 9 = 27,896 → line 18 = 17,425 → 1040 line 16 = 17,425),
-every on-screen ƒx cell matching the ORM. **Demo writes REVERTED and ORM-verified
-ZERO DRIFT: 892 of 892 FormFieldValue rows identical**, the Form8615 row deleted,
-the 1099-INT restored to 1,250.00. **No migration, no seed change, no server
-change** — `compute_8615_db` already persisted the whole face, so unlike unit 26
-nothing needed an endpoint.
-
-**s143 / s144 / s145 / s146 gates — moved to `STATUS_ARCHIVE.md` (s143–145 by
-s147; s146 by s149).** Re-run them if you touch Form 8863, Form 5329, Form
-6251, the retirement modules or the MeF-1040 band; each block records the
-exact suites, the counts and what each revert proved. s146's fetch-trap lesson
-survives as Method items 16/17 — a fetch-backed screen needs a live pass.
+**s143 / s144 / s145 / s146 / s147 gates — moved to `STATUS_ARCHIVE.md`
+(s143–145 by s147; s146 by s149; s147 by s150).** Re-run them if you touch
+Form 8863, Form 5329, Form 6251, Form 8615, the retirement modules or the
+MeF-1040 band; each block records the exact suites, the counts and what each
+revert proved. s146's fetch-trap lesson survives as Method items 16/17 — a
+fetch-backed screen needs a live pass.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
 switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0i. **(s150) The Form 8960 diagnostics are blind to the engine's rental
+   auto-feed** — $608 of NIIT charged while D_8960_NII_LOSS says no tax
+   applies; a rental-only return silences all five rules. LEG 2 item 11
+   (diagnostics-lane).
+0j. **(s150) The filed Form 8960 omits lines 3/5b while line 8 includes
+   them** (print AND XML — the line 8 does not foot), and the arithmetic
+   lines 5d/9d/11/14/15 print blank. LEG 3 item 15. Plus the spec gaps
+   (5c / line 10 / election checkboxes; 9d misnumbered) → RS agenda.
 0g. **(s149) Form 8880 overstates the MFJ Saver's Credit** — line 4 must carry
    both spouses' distributions in both columns and the engine subtracts each
    column's own entry only. **$1,000 priced max case; prints AND e-files.**
@@ -636,8 +692,9 @@ the shared Supabase DB caution is the one true-production constraint.
     column and no E-FILE column**, so no form's all-green line can be trusted.
     The SCH_1A row is the live proof: it was tagged complete with every leg ✅
     while both of those legs were empty. **s142 closed the diagnostics half**
-    (the row is annotated); the e-file half is LEG 3 item 9. Neither
-    **STATE_REFUND** nor **FORM 5329** has a row at all, though every leg exists.
+    (the row is annotated); the e-file half is LEG 3 item 9. **STATE_REFUND**,
+    **FORM 5329**, **FORM 8880** (s149) and **FORM 8960** (s150) have no row at
+    all, though every leg exists for each.
     The table needs those two columns. ⚠ **s144 deliberately did NOT open a
     Form 5329 row** even though it worked the compute leg: without the two
     missing columns a new row could only be recorded as all-green, which is the
@@ -650,6 +707,15 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s150 wrote to the demo QA return and REVERTED it.** The 1099-INT was
+  raised to 250,000 by ORM (+`compute_return`) to engage the NIIT, and
+  `e8960_state_tax_allocable` was keyed to 120,000 THROUGH the Slate screen
+  (the facts-lane live proof), then blanked through the screen (the
+  blank→"0" lane proof). The 6 blank FORM_8960 FFV shells `_backfill_values`
+  created were deleted after value-checking `{''}`, the 1099-INT restored to
+  1,250.00 and `compute_return` re-run. **Zero drift, ORM-verified 892 of
+  892 FormFieldValue rows identical** to the pre-write baseline. The at-rest
+  figures below still hold.
 - ⚠ **s149 wrote to the demo QA return and REVERTED it.** `f8880_you_ira` was
   set to 2,000 THROUGH the Slate screen (the facts-lane live proof), engaging
   the 18-row FORM_8880 face; then blanked through the screen (the blank→"0"
