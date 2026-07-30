@@ -1,16 +1,20 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 144 (**LEG 2 item 3 is COMPLETE** — `0800455`
-on `slate-ui`, **no deploy**. Form 5329 Part I line 4 is now a genuine 25%/10%
-blend: the 25% rides the code-S SIMPLE slice of line 3 and 10% the rest, per
-i5329 "Line 4". The s141 proof case falls from **13,000 to 5,500**. **17 new
-tests, all three fixes revert-tested, LIVE-PROVEN on the demo QA return and
-reverted with ZERO drift, no migration.** ⚠ The app is now knowingly AHEAD of
-`R-5329-02` — flagged in REVIEW_QUEUE, not silently diverged. ⚠ **Seed change:
-the D_RET_007 description** — `seed_rules` at deploy. Prior s143 closed LEG 2
-items 1+2 (`4c76624`); s142 closed LEG 1 (`2ed5eff`/`42eb851`/`d991b50`). Next:
-**LEG 2 item 5**, the Schedule 1-A tips owner filter. ⚠ **Item 4 is still NOT
-next** — it needs a Ken ruling first, see the LEG 2 list.)*
+*Last updated: 2026-07-30, session 145 (**LEG 2 items 3 AND 4 are COMPLETE** on
+`slate-ui`, **no deploy**. Item 3 (`0800455`): Form 5329 Part I line 4 is a
+genuine 25%/10% blend — the s141 proof case falls **13,000 → 5,500**; 17 tests,
+three reverts, live-proven on the demo return and reverted with ZERO drift.
+Item 4: **KEN RULED on the education-credit election** — a nonzero AOTC amount
+on an eligible student IS the §25A(c)(2)(A) election, so that student leaves the
+Form 8863 line-10 LLC base and the same $4,000 can no longer earn both credits
+($800 on the proof return); `D_8863_DUAL_STUDENT` is **demoted error → warning**
+because compute now enforces the rule; 12 tests, two reverts; ruling recorded in
+**DECISIONS.md**. ⚠⚠ **The app is now knowingly AHEAD of TWO specs** —
+`R-5329-02` and `R-8863-LLC` — both flagged in REVIEW_QUEUE, neither silently
+diverged. ⚠ **Seed change: the D_RET_007 description AND the D_8863_DUAL_STUDENT
+severity+description** — `seed_rules` on BOTH DBs at deploy. No migration.
+Prior s143 closed LEG 2 items 1+2 (`4c76624`); s142 closed LEG 1. Next: **LEG 2
+item 5**, the Schedule 1-A tips owner filter.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -20,7 +24,7 @@ next** — it needs a Ken ruling first, see the LEG 2 list.)*
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
 ## ▶ RESUME HERE — **LEG 2 item 5: the Schedule 1-A tips owner filter.**
-*(Item 4 is BLOCKED on Ken's ruling — read its entry before assuming it is next.)*
+*(Item 4 is now DONE — Ken ruled on the education-credit election in s145.)*
 
 Ken's redirect stands: *"You can fix those items first and then go back to the
 screens."* The screen sweep is **PAUSED at 29 of ~39** and resumes at **Form
@@ -93,35 +97,27 @@ number is at least loud while the compute fix is pending.
    the IRS form has no line for the split. Pinned by a test.
    ⚠ **D_RET_007's seeded DESCRIPTION changed** → `seed_rules` at deploy. Its
    message no longer says "refigure by hand"; it reports the two bases.
-4. **Form 8863: one student cannot take BOTH credits** (s138) — $800 on the
-   proof return. `D_8863_DUAL_STUDENT` is now an **error** (s142) so it blocks
-   in the meantime. ⚠⚠ **NOT BUILT IN s143, DELIBERATELY — this one needs a Ken
-   ruling first, and the backlog's one-line framing ("drop the LLC expenses for
-   any student whose AOTC is allowed") hides the question.** Two findings from
-   the s143 spec fetch:
-   - **The RS spec carries the same defect.** `R-8863-LLC` says outright
-     *"L10 = Σ student LLC adjusted expenses"* with no §25A(c)(2)(A) exclusion,
-     and `compute_8863_db` line 261 implements exactly that. The spec KNOWS the
-     rule — it has a **warning** diagnostic for "a student cannot take both" —
-     but never carries it as a COMPUTATION. Same shape as item 3's R-5329-02:
-     implementing the law puts the app AHEAD of the spec, so it must be flagged
-     loudly, not quietly diverged.
-   - **It is an ELECTION, not an automatic disallowance.** §25A(c)(2)(A) bars
-     the LLC for a student only *"if the taxpayer **elects** to have [the AOTC]
-     apply with respect to such individual"*. So "drop the LLC whenever the AOTC
-     is allowed" imposes an election the preparer may not have made. **My
-     recommendation:** treat a nonzero `aotc_expenses` on an AOTC-eligible
-     student AS the election (the model already separates `aotc_expenses` from
-     `llc_expenses`, so entering $0 AOTC is how a preparer chooses LLC-only) and
-     drop that student from the line-10 sum, with a diagnostic naming the
-     student and the dollars either way. That is defensible and near-always
-     favourable — both credits share the 2025 MAGI phaseout band (80–90k /
-     160–180k) and the AOTC is worth up to $2,500 per student and 40%
-     refundable vs the LLC's $2,000 per RETURN — **but it is Ken's call, because
-     it silently picks one credit over another.**
-   - ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
-     lookup 404s. The s142 `SCH_1A` lesson, second occurrence: a guessed-key
-     404 is NOT "no spec"; use the code the app gives its `FormDefinition`.
+4. ✅ **DONE (s145) — Form 8863: one student cannot take BOTH credits.**
+   **KEN RULED 2026-07-30: treat the AOTC entry as the §25A(c)(2)(A) election.**
+   A nonzero `aotc_expenses` on an AOTC-eligible student IS the election
+   (`compute_8863.aotc_elected`), and that student is dropped from the line-10
+   LLC base — the two sums are now COMPLEMENTARY, so the same $4,000 can never
+   earn both credits again. Entering $0 AOTC is how a preparer chooses LLC-only;
+   a student who is not AOTC-eligible cannot elect at all, so their LLC expenses
+   stand. The full ruling, and the two alternatives Ken rejected (an explicit
+   per-student election field; leaving compute alone behind a blocking error),
+   are recorded in **DECISIONS.md → Verified Rules — 2025 Tax Year**.
+   ⚠⚠ **`D_8863_DUAL_STUDENT` DEMOTED error → warning.** s142 promoted it only
+   because compute did not enforce the rule; compute enforces it now, so there is
+   nothing left to block — and `warning` is the severity the RS spec carries.
+   The message names the student and the dollars on BOTH sides and says which
+   credit the student was put on, so the election is never silent.
+   → **`seed_rules` at deploy** (severity + description changed).
+   ⚠⚠ **The app is deliberately AHEAD of `R-8863-LLC`**, which still sums every
+   student's LLC expenses. Spec fetched live and diffed against the cached copy
+   — identical but for the export timestamp. Flagged in REVIEW_QUEUE.
+   ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
+   lookup 404s. Use the code the app gives its `FormDefinition`.
 5. **START HERE. Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
    filer's attestation (the field already exists; treat `joint` as the
    taxpayer's) and warn when a W-2's tips are excluded.
@@ -400,9 +396,27 @@ work STILL unstaged and untouched by s143/s144: `server/apps/returns/views.py`,
 no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
 **`seed_rules` on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
-MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description**). s143
-added no migration and no seed change. **s144 adds NO migration but DOES change
-one seeded description (D_RET_007)** — `seed_rules` must run.
+MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
+D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
+change. **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
+(error → warning), which the s109b lesson says lives in TWO places — seed it, do
+not assume the code change is enough.
+
+**s145 gates (all green, re-run them if you touch these modules):** new
+`tests/test_backlog_leg2_item4_8863_election.py` **12** · flow assertions **521**
+(baseline exactly) · the 8863 / Topic 8 / Schedule 3 / MeF-1040 bands **298**.
+**Both fixes revert-tested** — restoring the all-students LLC sum failed 4
+(3 in the new suite + the severity trip-wire's line-10 assertion), and reverting
+`aotc_elected` to the NAIVE reading Ken rejected ("drop the LLC whenever the AOTC
+is allowed") failed 3, including the escape-hatch test.
+⚠⚠ **THE FIRST DRAFT OF THE NEW SUITE COULD NOT SEE ITS OWN REGRESSION.** Its
+`_sums()` helper re-derived the two bases with `aotc_elected` instead of reading
+what `compute_8863_db` wrote, so reverting the compute fix left every test in the
+file passing — only the older trip-wire caught it. It now runs a real
+`compute_return` and reads FORM_8863 lines 1 and 10. **A test that
+re-implements the thing it tests is blind by construction** (the s143
+"a delete-the-source test can hide its own effect" lesson, second occurrence).
 
 **s144 gates (all green, re-run them if you touch these modules):** new
 `tests/test_backlog_leg2_item3_5329_blend.py` **17** · flow assertions **521**
@@ -461,12 +475,15 @@ the shared Supabase DB caution is the one true-production constraint.
 10. **(s139) Should `eic_self_employed` be DERIVED rather than asked?** The
    unanswered default silently costs $4,328–$7,152 and no diagnostic covers it.
 11. **(s139, minor) Three seeded `1040_EIC` rows are never written.**
-12. **(s138) Form 8863 lets ONE student take BOTH education credits** — $800,
-   live-proven. **Now an ERROR** (s142); the compute fix is LEG 2 item 4 and
-   **s143 escalated it to needing Ken's ruling first** — the RS spec's
-   `R-8863-LLC` carries the same defect, and §25A(c)(2)(A) is an ELECTION, so
-   the fix silently picks one credit over another. Recommendation in the LEG 2
-   item-4 entry above.
+12. ✅ **CLOSED (s145) — Form 8863 let ONE student take BOTH education credits.**
+   **Ken ruled: the AOTC entry IS the §25A(c)(2)(A) election** (DECISIONS.md).
+   Compute now drops an elected student from the line-10 LLC base; the
+   diagnostic is back to **warning** and names the dollars on both sides.
+   **What replaces it:** 🔴 **Rule Studio must correct `R-8863-LLC`** and give
+   the election a spec concept — see the s145 REVIEW_QUEUE item, and note the
+   PATTERN there: three forms (5329, 8863, Schedule 1-A) now diverge in the
+   same direction, their specs carrying the arithmetic but not the statutory
+   exception. Worth one conversation, not three tickets.
 13. **(s138) The Form 8863 line-7 lockout is global but keyed per student.**
 14. ✅ **CLOSED (s143, `4c76624`) — `compute_8863_db.disengage()` cannot clear a
    "0" it wrote itself.** Fixed at the root (the unconditional write) as well as
