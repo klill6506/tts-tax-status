@@ -1,33 +1,28 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 157 (**entity sweep unit 37 — the
-Shareholders screen (1120-S) — is SHIPPED** on `slate-ui`, no deploy,
-client-only. The record-table paradigm: PayerTable slim grid (name · TIN ·
-own% · shares BOY/EOY · distributions) + per-row detail worksheet (address,
-capital contributed, health premium, client-link), ownership pill, print
-lanes (all-K-1s / K-1 / 7206), type-to-add, the s153 two-step remove.
-**Unit-37 findings:** (1) ⚠⚠ ENGINE, REVIEW_QUEUE → LEG 2 lane,
-LIVE-PROVEN on the demo return: `views._rollup_distributions` overwrites
-Schedule K line 16d with the rows' distributions sum on EVERY shareholder
-save — no override guard — and imported returns carry the total ONLY on the
-K line (demo: K16d 174,200, rows 0.00; the QA's first POST stomped it to 0;
-`compute_return` does NOT restore it — the rollup is views-only). Fixing a
-NAME TYPO zeroes a filed K line. The Slate screen warns live when 16d
-disagrees with the rows' sum; the 1065_K16d map in the same rollup is DEAD
-(no seeded FormLine). (2) ⚠⚠ FIXED client-side: the legacy SSN input
-force-formatted every TIN as an SSN while the e-file classifies
-ShareholderEIN vs ShareholderSSN by PUNCTUATION alone — a trust/estate
-shareholder (§1361(c)(2)) could never transmit correctly; the Slate TIN
-cell preserves EIN punctuation (XX-XXXXXXX) + EIN hint, live-proven (PATCH
-body carried `58-1234567` verbatim). (3) FIXED: `health_insurance_premium`
-had NO input anywhere while it feeds the issued K-1 box 17 and gates the
-7206 print (s152 shape) — input added in the detail worksheet, 7206 link
-appeared live after keying 12,000. (4) the legacy "also add as officer"
-checkbox lane was DEAD CODE (state, no checkbox, posted blanks) → per-row
-+ Officer cross-create. (5) shareholder `address_line2` is dead END-TO-END
-(no input, K-1 print drops it, e-file omits AddressLine2Txt) → REVIEW_QUEUE
-as one input+render+transmit item; the screen deliberately ships no line-2
-input. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 158 (**entity sweep unit 38 — Partners +
+Allocations (1065) — is SHIPPED** on `slate-ui`, no deploy, client-only.
+Partners = DOCUMENT TABS (a partner's K-1 is a filed form, the s134 ruling)
++ the sectioned worksheet (identity · address · item-J percentages BOY/EOY ·
+GP & distributions with the ƒx 4c total · §1402(a)(13) SE classification ·
+item-K liabilities · item-L capital account); Allocations = the Slate grid.
+**Unit-38 findings:** (1) ⚠ TWO DEAD ALLOCATION CATEGORIES
+(REVIEW_QUEUE): "Distributions" (box 19a is a DIRECT per-partner entry —
+the allocator never reads the override) and "Capital" (no engine consumer
+at all); the legacy grid let preparers key overrides into both believing
+they allocated something. The Slate grid renders only consumed categories
+and flags stored overrides in dead ones. (2) ⚠ the legacy grid's DEFAULT
+cells showed profit_pct for every category while the allocator defaults a
+LOSS amount to loss_pct — the displayed default lied on loss years; the
+Slate grid states the duality (P/L header hints + note). (3) the EOY
+capital cell (item L §705) drops the legacy GREEN/YELLOW text (retired
+convention) for computed-ƒx-with-Ctrl+Enter-override / OVERRIDDEN violet +
+↺ derive — both paired PATCH bodies live-proven verbatim. (4)
+window.confirm partner delete → the s153 two-step lane (4th occurrence).
+(5) verified in passing: the partner 19a + GP rollups carry the SAME
+unguarded stomp shape as s157's K16d (LATENT on the demo 1065 — rows and K
+lines agree) → folded into the 0q family. The rule/diagnostic backlog
+stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -36,7 +31,7 @@ input. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 38 (Partners + Allocations, 1065).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 39 (Form 7203 + shareholder loans, 1120-S).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -46,8 +41,8 @@ mission. ✅ = shipped:
 |---|---|---|
 | ✅ 36 | Client Info + Admin | s156 — both entity editors |
 | ✅ 37 | Shareholders (1120-S) | s157 — record table + detail worksheet |
-| 38 | Partners + Allocations (1065) | **NEXT** |
-| 39 | Form 7203 + shareholder loans (1120-S) | |
+| ✅ 38 | Partners + Allocations (1065) | s158 — document tabs + the allocation grid |
+| 39 | Form 7203 + shareholder loans (1120-S) | **NEXT** |
 | 40 | Income & Deductions (page1) | pure props, both entities |
 | 41 | Schedule L balance sheets + SubSchedulePanel | biggest schedules unit |
 | 42 | Schedule B + Sched K verify | Sch K/8990 already Slate via StandardSection — QA-verify only |
@@ -671,6 +666,42 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s158 gates (entity unit 38 — Partners + Allocations, 1065):** NEW
+`slatePartnersScreen.test.tsx` **16** (both screens; revert-tested TWICE —
+rendering the dead categories as normal rows failed exactly the 2
+dead-category pins; restoring single-click remove failed exactly the
+two-step test) · vitest **1384/1384** (1369 + 15, +1 auto-select pin) · tsc
+**45 = baseline** · no server change. Client: `SlatePartnersScreen`
+(DocumentTabs + worksheet, auto-selects a newly added partner — the W-2 add
+semantics, added after the live run caught the new tab NOT selected) +
+`SlateAllocationsScreen` (consumed-categories-only grid + dead-override
+flag), NEW_UI branches inside PartnersSection (the seq-guarded lanes carried
+as-is) + AllocationsSection, `partnerUsesEin` retyped to a minimal shape so
+both renderings share it, the `.slate-alloc-*` CSS. **LIVE-PROVEN** on the
+demo 1065 `16c8f946` (`scripts/qa_unit38.mjs`, `demo`-user links): 2 tabs +
+three success pills at rest; add → POST 201 → the new tab auto-selected;
+entity-type=trust PATCHed the PAIRED body verbatim
+(`{"entity_type":"trust","is_individual":"false"}`); GP 5,000 → 200; EOY
+Ctrl+Enter override → `{"capital_account_eoy":"12345","capital_eoy_
+overridden":true}` → ↺ derive → `{"capital_eoy_overridden":false}`;
+two-step remove (Keep 0 DELETEs → Confirm 204); Allocations: dead rows
+ABSENT, ordinary override 65 → POST 201 → violet → back to 60.00000 →
+same-as-default DELETE 204. **Demo settle, stated precisely:** all
+substantive values at baseline (partners GP 40k/25k · 0 allocations · K4a/
+4c/line 10 = 65,000 · K1 275,600 · line 22 209,400 · K19a blank) at the
+engine's PROVEN fixpoint (409 rows, hash `a9be55d2…` stable across two
+computes); the row-count delta vs the 363-row baseline is the current
+seed's line set materializing on first open (the s156 shape — 46 rows for
+lines seeded after this return was created, 20 of them engine-computed to
+figures consistent with the pre-existing lines). ⚠ Settle gotchas:
+`FormFieldValue` has NO created_at — you cannot separate "new blank shell"
+from "old row rewritten today" by timestamp; the value-check guard on the
+shell delete correctly ABORTED a wholesale touched-row delete (rows the QA
+round-trip rewrote BACK to baseline values were in the set). When the
+engine has materialized computed rows, prove the fixpoint instead of
+hand-deleting. ⚠ vitest MUST run from `client/` — a repo-root run dies
+"document is not defined" on every test.
+
 **s157 gates (entity unit 37 — Shareholders, 1120-S):** NEW
 `slateShareholdersScreen.test.tsx` **15** (13 view contracts + 2 K16d-warning
 pins; revert-tested TWICE — restoring the legacy force-SSN TIN format failed
@@ -860,6 +891,13 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0s. **(s158) ⚠ Two dead special-allocation categories + the loss-year
+   default display** — "Distributions" (box 19a is direct per-partner) and
+   "Capital" (no consumer) accepted overrides the K-1 never used; the grid's
+   default cells showed profit_pct while a loss amount allocates by
+   loss_pct. Slate renders only consumed categories + states the duality;
+   decide wire-or-drop for the two categories (drop needs a stored-row
+   sweep). The partner 19a/GP rollups share the 0q stomp shape (latent).
 0q. **(s157) ⚠⚠ Any shareholder save zeroes an imported Schedule K line 16d**
    — the distributions rollup re-sums the rows into 16d with no override
    guard, and imported returns hold the total only on the K line (demo:
