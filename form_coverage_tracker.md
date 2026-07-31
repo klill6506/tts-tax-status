@@ -1,5 +1,26 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 167 — BOUNDARY + FORM 8941: SCREEN LEG CONVERTED;
+> the S-corp K-2/K-3 gap CLOSED on the Slate path; the K13g
+> disengage-residue ANNOTATED.** The `entity_boundary` tab (both
+> entities) and the `form_8941` tab (1120-S) are now Slate (unit 47,
+> `SlateEntityBoundaryScreen` / `SlateForm8941Screen` — views over each
+> Section's singleton PATCH lane; live-proven on both demo returns,
+> settle byte-identical, fixpoint proven twice). Two findings: (1) the
+> LEGACY boundary card renders the K-2/K-3 DFE-confirmed checkbox inside
+> its 1065-only block while D_EB_K2K3 fires for BOTH entity types (the
+> 1120-S indicators landed 2026-07-12) — an S corporation with foreign
+> activity had a RED it could not clear from the screen; **fixed on the
+> Slate path** (both entities, per-entity indicator wording, warning
+> gated on the real foreign-activity read), legacy body untouched per
+> the sweep convention. (2) Form 8941's other legs are genuinely full
+> (compute → K13g with the override guard, print, MeF IRS8941, six
+> diagnostics; both RS spec mirrors diffed current) — but the engine
+> only writes K13g while line A is Yes, so DISENGAGING an engaged 8941
+> leaves the stale credit on K13g and the MeF K-1 mapper then refuses
+> the un-sourced value (REVIEW_QUEUE s167, the s143 zero-residue family;
+> the Slate screen states the residue live off the published K13g).
+
 > **2026-07-31 session 166 — ELECTIONS CARDS (2553 / 2848 / 3115): SCREEN
 > LEG CONVERTED ON EVERY MOUNT — and the "39/39 1040 screens complete"
 > claim was short by two.** The three print-first singleton cards are now

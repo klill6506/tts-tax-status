@@ -1,29 +1,29 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 166 (**entity sweep unit 46 — the
-Elections cards, Form 2553 / 2848 / 3115 — is SHIPPED on EVERY mount**
-(`slate-ui`, no deploy, client-only). THREE new Slate views
-(`SlateForm2553Screen` / `SlateForm2848Screen` / `SlateForm3115Screen`)
-as VIEWS over each Section container's own lanes (singleton PATCH +
-child CRUD + print; no second save path); the NEW_UI branch lives
-INSIDE the shared Section components, so the entity elections tab AND
-the 1040's form_2848/form_3115 tabs convert together — **the 1040
-mounts had NO Slate gate while the sweep was recorded 39/39 complete**
-(the s147 claim lesson on the sweep's own count; closed and live-
-verified on the 1040 demo return). The server-derived `analysis`
-rollups (2553 deadline/timeliness/relief/consent scope · 2848 filing
-route/CAF modification/countersign window/URP gate · 3115 DCN/§481(a)/
-period/installments) render as READ-ONLY banners; row deletes are the
-two-step arm lane (the legacy Del links fired instantly with no
-confirm); TIN punctuation preserved verbatim (s157); the 3115
-"blank = derived" DCN/L26 cells keep the legacy placeholder contract
-(NOT the `suggested` state — that stays W-2 3&5 only by ruling). ONE
-`.slate-screen` wraps each tab's stacked cards at the call site (the
-s130 negative-margin rule; the two 1040 call sites gained the wrapper).
-NO engine findings: spec mirrors 2553/2848/3115 diffed identical to
-the live RS exports, render_complete's attach_to_return appends for
-2553/3115 verified in-code, print-first forms have no MeF leg by
-design. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 167 (**entity sweep unit 47 —
+Boundary + Form 8941 — is SHIPPED on both tabs** (`slate-ui`, no
+deploy, client-only). TWO new Slate views (`SlateEntityBoundaryScreen`
+both entities / `SlateForm8941Screen` 1120-S) as VIEWS over each
+Section's singleton PATCH lane (no second save path; single-section
+tabs carry their own `.slate-screen` root, the ScheduleF shape).
+**REAL GAP CLOSED on the Slate path**: the legacy Boundary card
+rendered the K-2/K-3 DFE-confirmed checkbox inside its 1065-only block
+while D_EB_K2K3 fires for BOTH entity types (1120-S indicators K16f/
+K14a since 2026-07-12) — an S-corp with foreign activity had a RED it
+could not clear from the screen; the Slate view renders it for both
+entities with per-entity indicator wording, and the warning is GATED
+on the real foreign-activity read (`slate/entityBoundary.ts`, the
+client mirror of `_foreign_activity`, passed from the call site — on
+a 1065, K14a is a MONEY line, so the helper is form-scoped).
+**ENGINE FINDING → REVIEW_QUEUE s167**: `compute_8941_db` writes K13g
+only while line A is Yes, so DISENGAGING an engaged 8941 leaves the
+stale credit on K13g and the MeF K-1 mapper then refuses the
+un-sourced value (the s143 zero-residue family; the Slate screen
+states the residue live off the published K13g). The 8941's other
+legs are genuinely full (compute/print/MeF IRS8941/6 diagnostics);
+both RS spec mirrors diffed current; the K13g flow pill reads the
+PUBLISHED value only (the s163 k2Published pattern). The
+rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -32,7 +32,7 @@ design. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 47 (Boundary + 8941).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 48 (Extensions + PY Compare + State — the WRAP-UP unit).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -51,8 +51,8 @@ mission. ✅ = shipped:
 | ✅ 44 | Dispositions (entity Sch D) | s164 — both entities; the K7/K8a zero-clear + 1065 wrong-face print → REVIEW_QUEUE |
 | ✅ 45 | Schedule F (entity arm) | s165 — both entities; the method print gap + stale 1099 label + F14 residue → REVIEW_QUEUE |
 | ✅ 46 | Elections: 2553 / 2848 / 3115 | s166 — EVERY mount (entity tab + the two 1040 tabs the 39/39 count missed); no engine findings |
-| 47 | Boundary + 8941 | **NEXT** |
-| 48 | Extensions + PY Compare + State (entity arm) | wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
+| ✅ 47 | Boundary + 8941 | s167 — both tabs; the S-corp DFE gap closed on the Slate path; the K13g disengage-residue → REVIEW_QUEUE |
+| 48 | Extensions + PY Compare + State (entity arm) | **NEXT** — wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
 
 Scoping facts (s156 audit): the Slate CHROME already wraps entity returns
 (bare `NEW_UI`); already-converted-for-entities: Depreciation (entity-aware),
@@ -669,6 +669,59 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s167 gates (entity unit 47 — Boundary + Form 8941, both tabs):** NEW
+`slateBoundary8941Screens.test.tsx` **15** (Boundary: the DFE-on-1120-S
+pin with S-corp indicator wording [THE fix pin] + partnership sections
+absent + the S-corp note; the 1065 twin with 1065 wording + all
+partnership sections; the DFE warning gated on foreignActivity three
+ways [absent→quiet / present+unconfirmed→RED note / present+confirmed→
+the D_EB_DFE_OK-mirror note]; nexus arm → pill count + nested PL 86-272
+reveal + suppression back to green; adjusted-assets money commits
+value-verbatim / blank→null + the ≥$10M pill count; §704(c)/§754 arm +
+patch; `entityForeignActivity` form-scoped both entities [a 1065's
+K14a is MONEY — never read there]; 8941: the published-K13g pill +
+not-engaged pill; the K13g disengage-residue note both ways; the
+D_8941_001/lineC/FTE≥25/line-5-missing mirrors on and off; tri-state
+line A commits yes→true/—→null; money blank→null; counts parseInt;
+marketplace_id + §280C gated on engagement; alt_ein maxLength=10 pin
+[the model's cap — the legacy card had none]; revert-tested TWICE with
+exact pins — re-hiding DFE behind isPartnership failed exactly the two
+DFE pins; dropping the money blank→null failed exactly the commit pin) ·
+vitest **1532/1532** (1517 + 15) · tsc **46 = baseline** · **client-only**
+(no server change; flow assertions n/a; the 8941 + ENTITY_BOUNDARY spec
+mirrors diffed IDENTICAL to the live exports — timestamp only; no
+compute/render modified). Client: the two Slate view files (own
+`.slate-screen` roots — single-section tabs, the ScheduleF shape),
+NEW_UI branches inside EntityBoundarySection / Form8941Section (lanes
+as callbacks), `slate/entityBoundary.ts` (the foreign-activity helper —
+OUTSIDE the lazy screen module so FormEditor imports it statically),
+the two call sites pass `foreignActivity` + `k13gPublished` (the s163
+published-FFV pattern), `.slate-boundary-*` CSS. **LIVE-PROVEN on BOTH
+entities** (`scripts/qa_unit47.mjs` A/B, fresh `demo` links; ⚠ mint
+per PHASE — two pre-minted tokens for the SAME user die because
+redeeming the first BURNS the second [the outstanding-links cap]; the
+s166 cookie-jar gotcha was different users, this one is same-user):
+**A (1120-S WorkNAllDay — carries the ENGAGED ATS-S6 8941)** — K13g
+pill $51,014 at rest off the published FFV · §280C note · all warnings
+quiet · passthrough 0→1000 → PATCH 200 → recompute → pill followed to
+$52,014 → revert → $51,014 · FTE 13→25 → the stop warning fired live +
+K13g followed the engine to 0 → revert → quiet, $51,014 · Boundary:
+DFE present with 16f wording + warning quiet (no foreign activity) +
+partnership rows absent + S-corp note · nexus arm → pill 1 + PL 86-272
+revealed → suppress → green → full revert through the screen.
+**B (1065 Blue Ridge)** — NO 8941 tab in the rail (v1 1120-S only) ·
+partnership sections present · DFE quiet DESPITE K14a=230360 (the
+money-line trap the form-scoped helper dodges) · §704(c) arm/revert ·
+adjusted assets 12,000,000 → pill 1 → blank → `null` in the PATCH
+body. **Settle: BOTH returns BYTE-IDENTICAL to baseline over TWO
+compute passes** (1120-S 359 rows `1491a28e…` · 1065 409 rows
+`067b0033…`; the two QA-created EntityBoundaryAssertion rows verified
+all-default then ORM-deleted — the boundary GET get_or_create CREATES
+a row on tab open; the pre-existing 8941 row diffed NONE against its
+recorded baseline). Screenshots `Design/screens/unit47/` (6, zoomed —
+the first pass caught both screenbar subs squeezing the pill out of
+the bar; shortened and re-proven).
 
 **s166 gates (entity unit 46 — Elections: 2553 / 2848 / 3115, every
 mount):** NEW `slateElectionsScreens.test.tsx` **16** (per card:
