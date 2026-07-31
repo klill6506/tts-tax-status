@@ -1,30 +1,27 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 151 (**sweep unit 31 — Form 5695, the
-Residential Energy Credits — is SHIPPED** (`96f55af` on `slate-ui`, pushed,
-no deploy). **35 of ~39 screens converted; the sweep resumes at Form
-1040-X.** No migration, no seed change, no server change — `compute_5695_db`
-already publishes the 17-row FORM_5695 face to FormFieldValue; the spec
-mirror diffed clean against the live RS export (timestamp only). ⚠⚠ **BOTH
-5695 CREDIT LIMIT WORKSHEETS DIVERGE FROM THE 2025 i5695, PRICED:** the
-engine limits §25D FIRST and subtracts only Schedule 3 lines 1–4; the 2025
-instructions (fetched live, both worksheets read verbatim) run §25C FIRST
-(line 31's CLW: Sch 3 6l/1/2/6d/3/4) and make §25D's line 14 also subtract
-Form 5695 line 32, the CTC (1040 line 19) and Sch 3 6m/6f/6g/6c/6h. Because
-§25D carries forward and §25C does not, the inverted order permanently
-destroys up to $3,200 of carryforward ($1,000 on the priced case), and a
-return with kids overstates Schedule 3 line 5a by up to the CTC ($2,000
-priced — and it TRANSMITS as `ResidentialCleanEnergyCrAmt`; 1040 line 22
-clamps, so the current-year tax hides it). The s110 "simplified CLW"
-deferral, now specified verbatim and priced → LEG 2 item 12. ⚠⚠ Plus the
-FIFTH missing-MeF-document occurrence: **no `build_irs5695`** while Sch 3
-5a/5b transmit and `ReturnData1040.xsd` expects IRS5695 (maxOccurs 2) — a
-claiming return is paper-only (the PRINT leg is complete) → LEG 3 item 16,
-scoped with the other missing documents. Both in `REVIEW_QUEUE.md` with the
-probe numbers. The legacy screen's lie — a "No" gate answer HID the entered
-cost cells while the stored costs kept driving the engine and diagnostics —
-is FIXED on the Slate screen and revert-tested. The rule/diagnostic backlog
-is still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules`
+*Last updated: 2026-07-30, session 152 (**sweep unit 32 — Form 1040-X, the
+amended return — is SHIPPED** (`91cdfb2` on `slate-ui`, pushed, no deploy). **36 of ~39 screens converted; the sweep resumes at the state/GA
+tab.** No migration, no seed change, no server change — `compute_1040x_db`
+has published the whole A/B/C face since 2026-06-25; the spec mirror diffed
+clean against the live RS export (timestamp only). ⚠⚠ **THE LEGACY SCREEN
+NEVER LOADED ITS OWN ROW — THE THIRD s146-ENVELOPE OCCURRENCE, CAUGHT BY
+THE LIVE RUN:** `Form1040XSection.load()` stored `api.get()`'s
+`{ok,status,data}` envelope itself, so `row` was never null and never
+carried the model fields — a permanently blank Part II explanation, a
+"Not captured" baseline and unticked flags, while every PATCH silently
+succeeded. FIXED at the container (both renderings) and pinned by
+`form1040xEnvelope.test.tsx` (revert-tested). ⚠⚠ **The legacy screen also
+showed the stale "compute leg ships later" placeholder face** — five weeks
+after the compute shipped (3rd stale-notice occurrence, the largest) — and
+**five writable amendment facts had NO input anywhere** (lines 6/15/16/18/23;
+the line-18 default-0 claims the original refund AGAIN on any refund-original
+amendment). Both FIXED on the Slate screen, revert-tested. ⚠ Two engine items
+to REVIEW_QUEUE: **deleting the amendment leaves ~61 published FFV rows AND
+`is_amended_return` stuck true** (F8888-020 keeps firing; proven live) → LEG
+2-lane; **an amended 1040 has no transmission path at all** (paper-only;
+stated on screen) → LEG 3, its own item. The rule/diagnostic backlog is
+still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules`
 obligation still stands** — s144's D_RET_007 description + s145's
 D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 
@@ -35,7 +32,7 @@ D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 1040-X (unit 32).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at the state/GA tab (unit 33).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -49,6 +46,17 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s152 added two engine items** (REVIEW_QUEUE, both observed live on the demo
+return): the 1040-X delete residue (~61 published FFV rows survive the
+DELETE and `is_amended_return` stays true, so the F8888-020 amended-refund
+cap keeps blocking a return whose amendment was deleted) → **LEG 2-lane item
+13** (the s143 zero-residue family — fix at the write); the missing
+amended-1040 transmission path (MeF accepts e-filed 1040-X; the app has no
+AmendedReturnInd / amended manifest on the 1040 side) → **LEG 3 item 17,
+scoped SEPARATELY from the missing-documents batch** (a submission-type
+feature). Also noted: the staged 1040-X flow-assertion file carries 0
+assertions — RS has never authored any.
 
 **s151 added one compute item and one e-file item** (REVIEW_QUEUE, both
 engine-verified — the compute one priced with the engine's pure functions in
@@ -216,6 +224,14 @@ number is at least loud while the compute fix is pending.
    priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a
    rental-only return silences all five rules. The Slate screen carries the
    classification guidance at the 4a cell meanwhile.
+13. **(s152) The 1040-X delete residue** — reset `is_amended_return=False` in
+   the DELETE branch of views.py `form_1040x` (mirroring the create side)
+   and make `compute_1040x_db` blank its lines when the `Form1040X` row is
+   gone (it early-returns today, leaving ~61 stale FFV rows). Proven live:
+   after a 204 DELETE the demo return kept 61 rows + the stuck flag, and
+   F8888-020 (the amended-refund cap) stays armed. The s143 zero-residue
+   shape — fix at the write. The Slate screen keys engagement off the row
+   and warns on ghost rows meanwhile.
 12. **(s151) Form 5695's two Credit Limit Worksheets, against the 2025 i5695
    verbatim** — compute §25C FIRST (line 31 = 1040 line 18 − Sch 3
    [6l,1,2,6d,3,4]), then §25D (line 14 = line 18 − Sch 3 [1,2,6d,3,4] −
@@ -275,6 +291,15 @@ number is at least loud while the compute fix is pending.
    Until then a filed line 8 with annuities or excluded gain does not foot
    from its own rows, on paper AND in the XML. Render/extract only — no
    migration.
+17. **(s152) The amended-1040 transmission path** — MeF accepts e-filed Form
+   1040-X, and the app cannot transmit one: no AmendedReturnInd /
+   superseding indicator on the 1040 side (the 1120-S mapper has one), no
+   amended manifest handling. **A submission-type feature — scope SEPARATELY
+   from the missing-documents batch** (items 9/11/13/16). Until then a
+   1040-X prints (render complete, appends to the package) and paper-files
+   per D_1040X_006; the Slate screen states it. When the compute is next
+   touched, also author the first 1040-X flow assertions in RS (the staged
+   file holds 0).
 16. **(s151) `build_irs5695`** — no IRS5695 builder while Schedule 3 lines
    5a/5b transmit (`ResidentialCleanEnergyCrAmt` / `EgyEffcntHmImprvCrAmt`)
    and `ReturnData1040.xsd` line 1382 expects `IRS5695` (maxOccurs 2 — the
@@ -322,13 +347,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 1040-X.**
-**35 of ~39** 1040 screens are converted (unit 31, Form 5695 / Residential
-Energy Credits, shipped this session). Remaining (the count was re-measured in
-s137 by mapping every `activeTab` to its section component **file** and
-checking each for a `NEW_UI` gate — do it that way, never by scanning
-FormEditor alone): **1040-X** · the
-**state/GA** tab · the **prior-year / tax-summary** views · the
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the state/GA tab.**
+**36 of ~39** 1040 screens are converted (unit 32, Form 1040-X / the amended
+return, shipped this session). Remaining (the count was re-measured in s137
+by mapping every `activeTab` to its section component **file** and checking
+each for a `NEW_UI` gate — do it that way, never by scanning FormEditor
+alone): the **state/GA** tab · the **prior-year / tax-summary** views · the
 estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
@@ -464,6 +488,18 @@ lane — ~12 more, none started. Ken's call when to take them.**
    "Kiddie Tax (8615)" became a capture group and searched for "Kiddie Tax 8615"
    — a bare 30s TimeoutError with no hint. FIXED in the script (it escapes now),
    so pass the label VERBATIM from `IndividualNav.tsx`.
+28. ⚠⚠ **THE ENVELOPE TRAP LIVES IN CONTAINERS TOO — AUDIT EVERY RAW `get()`
+   CALL WHEN CONVERTING A FETCH-BACKED SECTION.** `api.get()` resolves to an
+   `{ok, status, data}` envelope; `Form1040XSection.load()` stored the
+   envelope itself, so the legacy screen NEVER loaded its persisted row
+   (blank explanation, "Not captured" baseline, unticked flags) while every
+   PATCH succeeded — invisible on the legacy screen precisely because that
+   screen had no state that DEPENDED on the row reading true. Third
+   occurrence (s146's two were in a Slate screen); the container's data
+   path needs its own test (`form1040xEnvelope.test.tsx` — mock `get`,
+   assert the persisted row SURFACES), because the prop-based Slate suite
+   structurally cannot see it. The live run caught it; the vitest suite was
+   green throughout.
 27. ⚠⚠ **A STATED DEFERRAL IS NOT A PRICED ONE — RE-READ OLD DEFERRAL LISTS
    AGAINST THE CURRENT-YEAR INSTRUCTIONS.** s110 logged "the Credit Limit
    Worksheet ordering is still the v1 simplified available-tax limit" as a
@@ -541,12 +577,42 @@ MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
 change. **s146, s147, s148 and s150 add neither a migration nor a seed change**
 (s147 and s148 touch only their spec mirrors, refreshed from the live RS
-export; **s150 and s151 make no server change at all** — the 8960 and 5695
-spec mirrors were already current, each diffed clean against the live
-export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+export; **s150, s151 and s152 make no server change at all** — the 8960,
+5695 and 1040-X spec mirrors were already current, each diffed clean against
+the live export; s152's fixes are client-side only, in the shared
+Form1040XSection container). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s152 gates (unit 32 — Form 1040-X / amended return):** NEW
+`slateForm1040XScreen.test.tsx` **20** (revert-tested TWICE — restoring the
+legacy placeholder face failed the 2 contract-2/6 tests; keying engagement
+off FFV rows failed the contract-4 ghost test) + NEW
+`form1040xEnvelope.test.tsx` **3** (revert-tested — restoring the
+envelope-stored row failed the persisted-row test) · the 1040-X server legs
+**14** (untouched) · flow assertions **521** (baseline exactly) · vitest
+**1280/1280** (1257 + 23) · tsc **45** (⚠ ONE BELOW the 46 baseline — the
+typed envelope unwrap in `Form1040XSection.load()` removed a pre-existing
+error; no new errors, none in the unit's files). **LIVE-PROVEN** on the demo
+QA return through the screen's own lanes (`scripts/qa_unit32.mjs`): at rest
+"Not engaged" + the GHOST warning live (the first run's DELETE had left the
+residue — finding 3 observed in production shape); baseline captured through
+the screen (POST 200); `overpayment_on_original` = 2,450 keyed IN the screen
+CREATED the amendment (PATCH 201) — the A/B/C grid published (A = C =
+94,560 AGI / 12,204 total tax, B = 0), outcome 17 = 2,450 → 19 = 0 → 20 =
+12,204, pill "Owe $12,204", the paper-only + Part-II-blank warnings live;
+`amount_paid_with_original` = 500 reflowed server-side (17 = 2,950 → 19 =
+500 → 20 = 11,704); the explanation committed on blur (PATCH 200) and
+cleared the warning; DELETE 204 → the ghost warning again. ⚠ **The first QA
+run FAILED against the pre-fix container** (pill "Prepare manually" at rest,
+`baseline_captured` never true) — that failure IS what exposed the envelope
+bug; the suite had stayed green because the Slate view is prop-based. **Demo
+writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows
+identical** (the 61 ghost 1040-X rows deleted — they CARRY values by the
+residue defect, so scope-checked by FormDefinition, not value-checked; the
+AsFiledBaseline row deleted; `is_amended_return` reset; `compute_return`
+re-run).
 
 **s151 gates (unit 31 — Form 5695 / Residential Energy Credits):** NEW
 `slateForm5695Screen.test.tsx` **28** (revert-tested — restoring the legacy
@@ -602,27 +668,8 @@ re-run). The disengaged screen states the correct why-not (MAGI $94,560 ≤
 the $200,000 single threshold, D_8960_BELOW_THRESH's copy) with every auto
 note carrying the live at-rest figure ($1,250 / $800 / $0 / $150).
 
-**s149 gates (unit 29 — Form 8880 / Saver's Credit):** NEW
-`slateForm8880Screen.test.tsx` **24** (revert-tested — restoring the IRA-only
-line-1 label failed exactly the 2 tests that key the ABLE copy) · the four
-8880 server legs **43** (untouched — this unit changes no server file) · flow
-assertions **521** (baseline exactly) · vitest **1207/1207** (1183 + 24) · tsc
-**46 = baseline**. **LIVE-PROVEN** on the demo QA return through the screen's
-own facts lane: `f8880_you_ira` set to 2,000 IN the Slate screen → the PATCH
-landed and the engine published all 18 FORM_8880 rows (1a 2,000 → 7 2,000 →
-8 94,560 → 9 0.00 → 11 12,204 → 12 0 → SCH_3 line 4 "0"), **all 18 on-screen
-ƒx cells ORM-matched**, the "No credit" pill + the AGI-over note fired, and
-the CLW warning stayed correctly silent (no 6d/6l). The revert ALSO proved the
-blank-commit lane (blank → "0" via the hook's normalize → disengage blanked
-all 18 rows). **Demo writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892
-FormFieldValue rows identical** (the 18 blank FORM_8880 shells deleted after
-value-checking `{''}`, `compute_return` re-run, facts back to defaults).
-⚠ The live run surfaced the engaged-zero print/transmit note (REVIEW_QUEUE
-minor) — the form's own face says "stop" when line 9 is zero, yet the zero
-face prints and an IRS8880 attaches.
-
-**s143 / s144 / s145 / s146 / s147 gates — moved to `STATUS_ARCHIVE.md`
-(s143–145 by s147; s146 by s149; s147 by s150).** Re-run them if you touch
+**s143 / s144 / s145 / s146 / s147 / s148 / s149 gates — moved to `STATUS_ARCHIVE.md`
+(s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152).** Re-run them if you touch
 Form 8863, Form 5329, Form 6251, Form 8615, the retirement modules or the
 MeF-1040 band; each block records the exact suites, the counts and what each
 revert proved. s146's fetch-trap lesson survives as Method items 16/17 — a
@@ -633,6 +680,15 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0m. **(s152) Deleting a 1040-X amendment leaves two ghosts** — ~61 published
+   FFV rows survive the DELETE and `is_amended_return` stays true, so
+   F8888-020 (the amended-refund cap) keeps blocking. Proven live. LEG
+   2-lane item 13 (the zero-residue family).
+0n. **(s152) An amended 1040 cannot be transmitted at all** — no
+   AmendedReturnInd / amended manifest on the 1040 side while MeF accepts
+   e-filed 1040-X. Paper-only, stated on screen. LEG 3 item 17, scoped
+   SEPARATELY from the missing-documents batch. RS also has zero 1040-X
+   flow assertions.
 0k. **(s151) Both Form 5695 Credit Limit Worksheets diverge from the 2025
    i5695** — ordering inverted (the form runs §25C first; the engine runs
    §25D first and destroys up to $3,200 of carryforward — $1,000 priced) and
@@ -780,6 +836,14 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s152 wrote to the demo QA return and REVERTED it.** Baseline POST +
+  amendment create/PATCHes/DELETE all through the app lanes; the QA
+  deliberately left the delete residue standing long enough to OBSERVE it
+  (61 ghost 1040-X FFV rows + `is_amended_return` true), then the revert
+  deleted the ghost rows (scope-checked by the 1040-X FormDefinition — they
+  carry values by the residue defect, so no blank-check applies), deleted
+  the AsFiledBaseline row, reset the flag and re-ran `compute_return`.
+  **Zero drift, ORM-verified 892 of 892 FormFieldValue rows identical.**
 - ⚠ **s151 wrote to the demo QA return and REVERTED it.** Every write went
   THROUGH the Slate screen's facts lane (solar 20,000 → +insulation 4,000 →
   solar 60,000 → both blanked to "0"); no ORM raise was needed. The 17 blank

@@ -2929,6 +2929,17 @@
 > cascade/missing-baseline). `render_1040x` (f1040x AcroForm, appended in the package) + 8 `D_1040X_*` + 6
 > `FA-1040X`. Full suite 343 passed; flow gate 313→319. Open: Form1040XSection UI shows placeholders (wire to the
 > computed FFVs); Part I deps recap + line 22/23 split = v1 blanks. RS `957a9d6` / tts `460abad`..`6a84ee0`.
+> ⚠⚠ **s152 (unit 32, Slate screen) closed the placeholder item and found THREE more:** (1) the container NEVER
+> UNWRAPPED the api envelope — `row` was the `{ok,status,data}` wrapper, so the legacy screen showed a permanently
+> blank explanation / "Not captured" baseline / unticked flags since ship while every PATCH silently succeeded
+> (3rd s146-envelope occurrence; FIXED at the container + pinned by `form1040xEnvelope.test.tsx`); (2) five
+> writable amendment facts (lines 6/15/16/18/23) had NO input anywhere — the line-18 default-0 claims the original
+> refund AGAIN on any refund-original amendment (FIXED: the Slate screen surfaces all five); (3) DELETE
+> `/form-1040x/` leaves ~61 published FFV rows AND `is_amended_return` stuck true (the F8888-020 amended cap keeps
+> firing) — proven live on the demo return; REVIEW_QUEUE s152, LEG 2-lane. Also: an amended 1040 has NO
+> transmission path at all (MeF accepts e-filed 1040-X; the screen states paper-only) → REVIEW_QUEUE s152, its own
+> LEG 3 item, NOT the missing-documents batch. `SlateForm1040XScreen` renders the engine's face; engagement keys
+> off the /form-1040x/ ROW, never the FFV rows.
 
 > **2026-06-25 -- GA Form 500 (Georgia Individual) IN PROGRESS** -- the FIRST state individual return.
 > RS spec SEEDED + EXPORTED (500_spec.json: 75 facts / 20 rules / 76 lines / 12 diag / 12 tests / 12 FA;
