@@ -1,27 +1,32 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 150 (**sweep unit 30 — Form 8960, the Net
-Investment Income Tax — is SHIPPED** (`1484f80` on `slate-ui`, pushed, no deploy). **34 of
-~39 screens converted; the sweep resumes at Form 5695.** No migration, no
-seed change, no server change — `compute_8960_db` already publishes the
-6-row FORM_8960 face to FormFieldValue; the spec mirror diffed clean against
-the live RS export (timestamp only). ⚠⚠ **THE DIAGNOSTICS ARE BLIND TO THE
-ENGINE'S RENTAL AUTO-FEED, PRICED AT $608:** `rules_8960._f8960` claims to
-mirror `compute_8960_db` but predates the Schedule 1 line-5 auto-feed — on
-the priced return the engine charges $608 of NIIT while D_8960_NII_LOSS says
-"no §1411 tax applies", and a rental-only return silences all five
-diagnostics (D_8960_RENTAL is additionally gated on the override fact, so it
-never fires on the auto-fed return it exists for). Plus a render/e-file gap:
-line 3 (annuities) and line 5b (excluded gain) feed line 8 but vanish from
-BOTH the printed face and the IRS8960 XML, and the arithmetic lines
-5d/9d/11/14/15 print blank. Plus spec gaps (5c, Part II line 10, the three
-election checkboxes; the 9d misnumbering). The Slate screen states each at
-its cell; findings in `REVIEW_QUEUE.md`. The legacy 4a lie — presenting the
-rental cell as a plain entry when it overrides the auto-feed and kills the
-automatic 4b back-out — is FIXED on the Slate screen and revert-tested. The
-rule/diagnostic backlog is still PAUSED at LEG 2 item 5. ⚠ **At deploy the
-earlier `seed_rules` obligation still stands** — s144's D_RET_007
-description + s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
+*Last updated: 2026-07-30, session 151 (**sweep unit 31 — Form 5695, the
+Residential Energy Credits — is SHIPPED** (`96f55af` on `slate-ui`, pushed,
+no deploy). **35 of ~39 screens converted; the sweep resumes at Form
+1040-X.** No migration, no seed change, no server change — `compute_5695_db`
+already publishes the 17-row FORM_5695 face to FormFieldValue; the spec
+mirror diffed clean against the live RS export (timestamp only). ⚠⚠ **BOTH
+5695 CREDIT LIMIT WORKSHEETS DIVERGE FROM THE 2025 i5695, PRICED:** the
+engine limits §25D FIRST and subtracts only Schedule 3 lines 1–4; the 2025
+instructions (fetched live, both worksheets read verbatim) run §25C FIRST
+(line 31's CLW: Sch 3 6l/1/2/6d/3/4) and make §25D's line 14 also subtract
+Form 5695 line 32, the CTC (1040 line 19) and Sch 3 6m/6f/6g/6c/6h. Because
+§25D carries forward and §25C does not, the inverted order permanently
+destroys up to $3,200 of carryforward ($1,000 on the priced case), and a
+return with kids overstates Schedule 3 line 5a by up to the CTC ($2,000
+priced — and it TRANSMITS as `ResidentialCleanEnergyCrAmt`; 1040 line 22
+clamps, so the current-year tax hides it). The s110 "simplified CLW"
+deferral, now specified verbatim and priced → LEG 2 item 12. ⚠⚠ Plus the
+FIFTH missing-MeF-document occurrence: **no `build_irs5695`** while Sch 3
+5a/5b transmit and `ReturnData1040.xsd` expects IRS5695 (maxOccurs 2) — a
+claiming return is paper-only (the PRINT leg is complete) → LEG 3 item 16,
+scoped with the other missing documents. Both in `REVIEW_QUEUE.md` with the
+probe numbers. The legacy screen's lie — a "No" gate answer HID the entered
+cost cells while the stored costs kept driving the engine and diagnostics —
+is FIXED on the Slate screen and revert-tested. The rule/diagnostic backlog
+is still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules`
+obligation still stands** — s144's D_RET_007 description + s145's
+D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,7 +35,7 @@ description + s145's D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 5695 (unit 31).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at Form 1040-X (unit 32).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -44,6 +49,17 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s151 added one compute item and one e-file item** (REVIEW_QUEUE, both
+engine-verified — the compute one priced with the engine's pure functions in
+a probe): the Form 5695 Credit Limit Worksheet divergence (§25C-first
+ordering + the missing CTC / Sch 3 line-6 subtractions; $1,000 of §25D
+carryforward destroyed on case A, $2,000 of Sch 3 5a overstated-and-
+transmitted on the CTC case) → **LEG 2 item 12**; the missing `build_irs5695`
+(5th missing-MeF-document occurrence) → **LEG 3 item 16**, scoped WITH items
+9/11/13 as the one "missing MeF documents" work item. The tracker's all-green
+5695 row is annotated (the THIRD form proving open item 31 — the row was
+green while the e-file leg does not exist).
 
 **s150 added one diagnostics item, one render/e-file item and one spec item**
 (REVIEW_QUEUE, engine-verified with the pure-function price): the
@@ -200,6 +216,20 @@ number is at least loud while the compute fix is pending.
    priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a
    rental-only return silences all five rules. The Slate screen carries the
    classification guidance at the 4a cell meanwhile.
+12. **(s151) Form 5695's two Credit Limit Worksheets, against the 2025 i5695
+   verbatim** — compute §25C FIRST (line 31 = 1040 line 18 − Sch 3
+   [6l,1,2,6d,3,4]), then §25D (line 14 = line 18 − Sch 3 [1,2,6d,3,4] −
+   Form 5695 line 32 − 1040 line 19 (CTC) − Sch 3 [6m,6f,6g,6c,6h]). The
+   engine's §25D-first order + lines-1–4-only subtraction destroys up to
+   $3,200 of §25D carryforward (priced $1,000) and overstates a
+   CTC-return's Sch 3 5a by up to the CTC (priced $2,000; transmits; 1040
+   line 22 clamps so current-year tax hides it). Every needed input is
+   computed before `compute_5695_db` runs. The RS spec carries the same
+   simplified limit → the standing spec-corrections agenda. The Slate screen
+   warns at the l14/l31 cells only when the divergence is live (live-proven).
+   The `qa_unit31` flip case (solar 60,000 + insulation 4,000, demo return)
+   is a ready regression: engine l15 12,204 / l16 5,796 / l32 0; the form
+   gives l32 1,200 first.
 
 ### ▶ LEG 3 — needs a migration or an e-file builder. Stage; Ken pulls the trigger.
 8. **`CarLoanVehicle.vehicle_qualifies` / `.loan_qualifies` → `default=False`**
@@ -245,6 +275,17 @@ number is at least loud while the compute fix is pending.
    Until then a filed line 8 with annuities or excluded gain does not foot
    from its own rows, on paper AND in the XML. Render/extract only — no
    migration.
+16. **(s151) `build_irs5695`** — no IRS5695 builder while Schedule 3 lines
+   5a/5b transmit (`ResidentialCleanEnergyCrAmt` / `EgyEffcntHmImprvCrAmt`)
+   and `ReturnData1040.xsd` line 1382 expects `IRS5695` (maxOccurs 2 — the
+   two-home case the app deliberately does not model; one document
+   suffices). **The 5th missing-document occurrence — scope WITH items
+   9/11/13 as the ONE "missing MeF documents" work item.** §25C(h) makes the
+   QM ID numbers a condition of the §25C credit and they live ON the form,
+   so an e-filed §25C claim without it is structurally disallowable. The
+   print leg is complete (v2 field map fills the whole face); until the
+   builder lands a claiming return is paper-only. The Slate screen states
+   the gap whenever the face is engaged.
 
 ### ▶ LEG 4 — bigger, Ken-scoped. Confirm before starting.
 11. **ONE shared overflow-statement mechanism** — three forms silently truncate
@@ -281,12 +322,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 5695.**
-**34 of ~39** 1040 screens are converted (unit 30, Form 8960 / NIIT, shipped
-this session). Remaining (the count was re-measured in s137 by
-mapping every `activeTab` to its section component **file** and checking each
-for a `NEW_UI` gate — do it that way, never by scanning FormEditor alone):
-**5695** · **1040-X** · the
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at Form 1040-X.**
+**35 of ~39** 1040 screens are converted (unit 31, Form 5695 / Residential
+Energy Credits, shipped this session). Remaining (the count was re-measured in
+s137 by mapping every `activeTab` to its section component **file** and
+checking each for a `NEW_UI` gate — do it that way, never by scanning
+FormEditor alone): **1040-X** · the
 **state/GA** tab · the **prior-year / tax-summary** views · the
 estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
@@ -423,6 +464,15 @@ lane — ~12 more, none started. Ken's call when to take them.**
    "Kiddie Tax (8615)" became a capture group and searched for "Kiddie Tax 8615"
    — a bare 30s TimeoutError with no hint. FIXED in the script (it escapes now),
    so pass the label VERBATIM from `IndividualNav.tsx`.
+27. ⚠⚠ **A STATED DEFERRAL IS NOT A PRICED ONE — RE-READ OLD DEFERRAL LISTS
+   AGAINST THE CURRENT-YEAR INSTRUCTIONS.** s110 logged "the Credit Limit
+   Worksheet ordering is still the v1 simplified available-tax limit" as a
+   stated boundary and it sat there sounding cosmetic; reading the 2025
+   i5695's two worksheets VERBATIM turned it into a $1,000/$2,000 defect
+   with an inverted credit ordering. Related: **a worksheet that subtracts a
+   SIBLING form's line is an ordering statement** (line 14 subtracts line 32
+   → §25C computes first), and ordering is arithmetic wherever one credit
+   carries forward and the other dies.
 15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
    DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
    behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
@@ -491,11 +541,41 @@ MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
 change. **s146, s147, s148 and s150 add neither a migration nor a seed change**
 (s147 and s148 touch only their spec mirrors, refreshed from the live RS
-export; **s150 makes no server change at all** — the 8960 spec mirror was
-already current, diffed clean against the live export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+export; **s150 and s151 make no server change at all** — the 8960 and 5695
+spec mirrors were already current, each diffed clean against the live
+export). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s151 gates (unit 31 — Form 5695 / Residential Energy Credits):** NEW
+`slateForm5695Screen.test.tsx` **28** (revert-tested — restoring the legacy
+hide-on-denial shape failed exactly the 2 contract-2 tests that pin the fix) ·
+the four 5695 server legs **67** (untouched — this unit changes no server
+file) · flow assertions **521** (baseline exactly) · vitest **1257/1257**
+(1229 + 28) · tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return
+entirely through the screen's own facts lane (`scripts/qa_unit31.mjs` +
+`qa_unit31b.mjs`, no ORM pre-raise needed — line-18 tax is 12,204): at rest
+DISENGAGED (neutral pill + engage copy); solar = 20,000 keyed IN the screen
+(PATCH 200 `{"e5695_solar_electric":"20000"}`) engaged §25D — l1_5 20,000 →
+6b 6,000 → 13 6,000 → 14 12,204 → 15 6,000 (credit side binds) → 16 0, ƒx
+cells locked, pill "Credits $6,000", the e-file-gap and blank-address
+warnings live; insulation = 4,000 engaged §25C — 28/30 1,200 → 31 6,204 → 32
+1,200, pill "Credits $7,200", the Section A gate-open warning live
+(17a/b/c); solar = 60,000 **FLIPPED the binding side** (the s150 ruling) —
+13 18,000 → 15 12,204 (tax binds) → 16 5,796 CF; §25C squeezed to 0 with
+l30 = 1,200 → the CLW-ORDERING warning, the §25C excess-lost note and the
+$5,796 carryforward note all fired live, every cell ORM-matched (17-row
+FORM_5695 + SCH_3 5a 12,204/5b "" + 1040 line 20 12,204/22 0). Blanking both
+cells committed the hook's normalize ("0") and disengaged the face. ⚠ The
+part-1 script died at the post-flip reload (`.slate-root` 30s timeout — the
+in-process recompute holding the single-threaded dev server, open item 22);
+the flipped state was ORM-verified and the run finished in `qa_unit31b.mjs`
+off a fresh magic link. Console errors = the known pre-existing set (403
+`/api/v1/me/` pre-login + the `prior-year/` 404s). **Demo writes REVERTED
+and ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows identical** (the
+17 blank FORM_5695 shells `_backfill_values` created were deleted after
+value-checking `{''}`, facts back to defaults, `compute_return` re-run).
 
 **s150 gates (unit 30 — Form 8960 / Net Investment Income Tax):** NEW
 `slateForm8960Screen.test.tsx` **22** (revert-tested — restoring the legacy
@@ -541,27 +621,6 @@ value-checking `{''}`, `compute_return` re-run, facts back to defaults).
 minor) — the form's own face says "stop" when line 9 is zero, yet the zero
 face prints and an IRS8880 attaches.
 
-**s148 gates (unit 28 — Form 1116 / foreign tax credit):** NEW
-`slateForm1116Screen.test.tsx` **26** (revert-tested — restoring the MFJ-only
-ceiling failed exactly the QSS test that pins the fix) · the four 1116 server
-legs **49** · flow assertions **521** (baseline exactly) · vitest **1183/1183**
-(1157 + 26) · tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return, BOTH
-paths: auto de minimis ($250 foreign tax on the 1099-DIV → Sch 3 line 1 = 250,
-pill + D_1116_001 note) and the full limitation (1a 25,000 → 3a 15,750 auto →
-3f 0.2644 → 7 20,836 → 18 78,810 → 19 0.2644 → 21 3,227 → 24/27/32/33/35 = 650
-= Sch 3 line 1), **all 31 on-screen ƒx cells ORM-matched**, and the PATCH lane
-proven live (L2 = 100 through the screen reflowed L7 20,836 → 20,736
-server-side). **Demo writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892
-FormFieldValue rows identical** (the 31 blank FORM_1116 FFV shells
-`_backfill_values` created were deleted after value-checking `{''}`), the
-Form1116 row deleted, `foreign_tax_paid` NULL restored on both 1099s.
-⚠ **THE LIVE RUN CAUGHT A BUG THE SUITE COULD NOT** (again): SCH_3 line 1 is
-seeded `is_computed=False` (the manual-FTC escape hatch), so the pill keyed off
-`is_computed` read "Not engaged" with $250 sitting on the line. A seeded line's
-`is_computed` describes the LINE, not the value's author — **engine-written =
-`!is_overridden`** (every manual field save sets `is_overridden=True`,
-views.py:2678). Fixed, and the fixture now mirrors the seeded truth.
-
 **s143 / s144 / s145 / s146 / s147 gates — moved to `STATUS_ARCHIVE.md`
 (s143–145 by s147; s146 by s149; s147 by s150).** Re-run them if you touch
 Form 8863, Form 5329, Form 6251, Form 8615, the retirement modules or the
@@ -574,6 +633,17 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0k. **(s151) Both Form 5695 Credit Limit Worksheets diverge from the 2025
+   i5695** — ordering inverted (the form runs §25C first; the engine runs
+   §25D first and destroys up to $3,200 of carryforward — $1,000 priced) and
+   the subtraction lists are short (no CTC, no Sch 3 6c/6d/6f/6g/6h/6l/6m —
+   $2,000 of Sch 3 5a overstated-and-transmitted on the priced CTC case).
+   LEG 2 item 12; the RS spec needs the same correction.
+0l. **(s151) Form 5695 is never transmitted while its credits are** (no
+   `build_irs5695`; `ReturnData1040.xsd` expects IRS5695). **5th occurrence
+   of the missing-document shape — scope with 0b/0e/3 as ONE work item.**
+   LEG 3 item 16. The §25C(h) QM ID numbers live on the form, so an e-filed
+   §25C claim without it is structurally disallowable.
 0i. **(s150) The Form 8960 diagnostics are blind to the engine's rental
    auto-feed** — $608 of NIIT charged while D_8960_NII_LOSS says no tax
    applies; a rental-only return silences all five rules. LEG 2 item 11
@@ -699,7 +769,10 @@ the shared Supabase DB caution is the one true-production constraint.
     Form 5329 row** even though it worked the compute leg: without the two
     missing columns a new row could only be recorded as all-green, which is the
     exact SCH_1A mistake this item exists to stop. Add the columns first, then
-    both rows.
+    both rows. ⚠⚠ **s151: the FORM 5695 row is the THIRD live proof** — five
+    green legs while the e-file leg does not exist (no builder) and the
+    compute leg's CLWs diverge from the 2025 instructions; the row is now
+    annotated in place.
 
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's uncommitted
@@ -707,6 +780,13 @@ the shared Supabase DB caution is the one true-production constraint.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
+- ⚠ **s151 wrote to the demo QA return and REVERTED it.** Every write went
+  THROUGH the Slate screen's facts lane (solar 20,000 → +insulation 4,000 →
+  solar 60,000 → both blanked to "0"); no ORM raise was needed. The 17 blank
+  FORM_5695 FFV shells `_backfill_values` created were deleted after
+  value-checking `{''}` and `compute_return` re-run. **Zero drift,
+  ORM-verified 892 of 892 FormFieldValue rows identical** to the pre-write
+  baseline. The at-rest figures below still hold.
 - ⚠ **s150 wrote to the demo QA return and REVERTED it.** The 1099-INT was
   raised to 250,000 by ORM (+`compute_return`) to engage the NIIT, and
   `e8960_state_tax_allocable` was keyed to 120,000 THROUGH the Slate screen
