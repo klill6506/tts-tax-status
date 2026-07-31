@@ -1,32 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 156 (**⚡ THE BUSINESS-ENTITY SCREEN LANE
-IS OPEN — Ken directed it over resuming the backlog. Unit 36 (Client Info +
-Admin, both entity editors) is SHIPPED** on `slate-ui`, no deploy,
-client-only but for two additive a11y/bug fixes (StateSelect gains an
-optional `ariaLabel`; InfoSection's entity autosave gains a dirty-ref
-guard). The lane was SCOPED first (the s137 method, via an Explore agent
-over FormEditor's tab→component map): ~13 units, listed under RESUME HERE —
-the Slate chrome already wraps entity returns; Depreciation / 8824 / Sched
-K's StandardSection body / the 8990 fallback are ALREADY Slate for
-entities; the State tab's `NEW_UI && isIndividual` gate is the lane's
-explicit last unit. **Unit-36 findings:** (1) ⚠⚠ the legacy InfoSection
-PATCHed the ENTITY with unchanged data ~800ms after every tab open — the
-initial GET's setEntity satisfied the autosave effect's guard (a
-stale-clobber window against another session's concurrent edit); FIXED at
-the container with a dirty-ref, pinned by a mocked-api container test,
-revert-tested, live-proven (idle 2.5s → 0 PATCHes). (2) ⚠⚠ ENGINE, not
-fixed (sweep units are presentation-only), REVIEW_QUEUE + LEG 2 lane: a
-1065 officer's compensation is written to line 7 "Other Income (Loss)" by
-`compute.aggregate_officer_compensation` (bare line "7") while
-`views._rollup_officer_compensation` targets `1065_L9` (line 9 Salaries) —
-the s144 two-implementations shape, worse: they DISAGREE on the
-destination. Engine-proven $50,000 → line 7 = 50,000 → line 8 Total Income
-= 50,000; plus the delete residue (line 7 stays stale forever after the
-last officer dies — the s143 zero-residue shape). The Slate 1065 Officers
-card STATES it. (3) officer delete was window.confirm → the s153 two-step
-lane; "also add as shareholder" became a per-row + Shareholder action.
-The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 157 (**entity sweep unit 37 — the
+Shareholders screen (1120-S) — is SHIPPED** on `slate-ui`, no deploy,
+client-only. The record-table paradigm: PayerTable slim grid (name · TIN ·
+own% · shares BOY/EOY · distributions) + per-row detail worksheet (address,
+capital contributed, health premium, client-link), ownership pill, print
+lanes (all-K-1s / K-1 / 7206), type-to-add, the s153 two-step remove.
+**Unit-37 findings:** (1) ⚠⚠ ENGINE, REVIEW_QUEUE → LEG 2 lane,
+LIVE-PROVEN on the demo return: `views._rollup_distributions` overwrites
+Schedule K line 16d with the rows' distributions sum on EVERY shareholder
+save — no override guard — and imported returns carry the total ONLY on the
+K line (demo: K16d 174,200, rows 0.00; the QA's first POST stomped it to 0;
+`compute_return` does NOT restore it — the rollup is views-only). Fixing a
+NAME TYPO zeroes a filed K line. The Slate screen warns live when 16d
+disagrees with the rows' sum; the 1065_K16d map in the same rollup is DEAD
+(no seeded FormLine). (2) ⚠⚠ FIXED client-side: the legacy SSN input
+force-formatted every TIN as an SSN while the e-file classifies
+ShareholderEIN vs ShareholderSSN by PUNCTUATION alone — a trust/estate
+shareholder (§1361(c)(2)) could never transmit correctly; the Slate TIN
+cell preserves EIN punctuation (XX-XXXXXXX) + EIN hint, live-proven (PATCH
+body carried `58-1234567` verbatim). (3) FIXED: `health_insurance_premium`
+had NO input anywhere while it feeds the issued K-1 box 17 and gates the
+7206 print (s152 shape) — input added in the detail worksheet, 7206 link
+appeared live after keying 12,000. (4) the legacy "also add as officer"
+checkbox lane was DEAD CODE (state, no checkbox, posted blanks) → per-row
++ Officer cross-create. (5) shareholder `address_line2` is dead END-TO-END
+(no input, K-1 print drops it, e-file omits AddressLine2Txt) → REVIEW_QUEUE
+as one input+render+transmit item; the screen deliberately ships no line-2
+input. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -35,7 +36,7 @@ The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 37 (Shareholders, 1120-S).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 38 (Partners + Allocations, 1065).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -44,8 +45,8 @@ mission. ✅ = shipped:
 | Unit | Tab(s) | Notes |
 |---|---|---|
 | ✅ 36 | Client Info + Admin | s156 — both entity editors |
-| 37 | Shareholders (1120-S) | record-table paradigm — **NEXT** |
-| 38 | Partners + Allocations (1065) | |
+| ✅ 37 | Shareholders (1120-S) | s157 — record table + detail worksheet |
+| 38 | Partners + Allocations (1065) | **NEXT** |
 | 39 | Form 7203 + shareholder loans (1120-S) | |
 | 40 | Income & Deductions (page1) | pure props, both entities |
 | 41 | Schedule L balance sheets + SubSchedulePanel | biggest schedules unit |
@@ -670,6 +671,31 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s157 gates (entity unit 37 — Shareholders, 1120-S):** NEW
+`slateShareholdersScreen.test.tsx` **15** (13 view contracts + 2 K16d-warning
+pins; revert-tested TWICE — restoring the legacy force-SSN TIN format failed
+exactly the 2 EIN pins; restoring single-click remove failed exactly the
+two-step test) · vitest **1369/1369** (1354 + 15) · tsc **45 = baseline** ·
+no server change (the K16d finding is REPORTED, not fixed; flow assertions
+n/a). Client changes: `SlateShareholdersScreen` (record table + detail
+worksheet + `formatShareholderTin`), the NEW_UI branch inside
+ShareholdersSection (shared `openPdf` lane for K-1/all-K-1s/7206), the
+`k16dPublished` prop threaded from the render site for the stomp warning.
+**LIVE-PROVEN** on the demo 1120-S `bbe88483` (`scripts/qa_unit37.mjs`,
+`demo`-user magic links): at rest the ownership pill reads 100.00% success
+AND the K16d warning is live ($174,200 vs $0); type-to-add → POST 201; the
+EIN commit PATCHed `{"ssn":"58-1234567"}` VERBATIM + the EIN hint rendered;
+premium 12,000 → PATCH 200 → the 7206 link appeared; two-step remove (Keep
+→ 0 DELETEs; Confirm → 204). **The stomp finding was proven BY the QA
+itself**: the first POST zeroed K16d 174,200 → 0, and the ORM restore
+survived a full `compute_return` (the rollup is views-only). **Zero drift
+ORM-verified: FFV 359 rows, hash `7bd3e674…` IDENTICAL; both demo
+shareholders untouched; K16d restored 174,200.** Screenshot pair
+`Design/screens/unit37/`. ⚠ Session gotcha (re-learned as a QA-script rule):
+judge an entity PATCH by polling for its RESPONSE up to 90s — the rollup +
+recompute run inside the response and a fixed 1.2s sleep reads "no PATCH"
+(the s130 tens-of-seconds lesson, now encoded in `waitNet`).
+
 **s156 gates (entity unit 36 — Client Info + Admin):** NEW
 `slateEntityInfoScreen.test.tsx` **15** (12 view contracts across BOTH new
 screens + 2 mocked-api container tests + 1 a11y/variant; the s152 rule that
@@ -834,6 +860,18 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0q. **(s157) ⚠⚠ Any shareholder save zeroes an imported Schedule K line 16d**
+   — the distributions rollup re-sums the rows into 16d with no override
+   guard, and imported returns hold the total only on the K line (demo:
+   174,200 → 0 on a single POST, live-proven; compute does NOT restore it).
+   Fix = respect `is_overridden` + skip when the split was never entered,
+   plus a diagnostic asking for the split. The Slate screen warns live.
+   Also: the rollup's `1065_K16d` map is dead (no seeded line) — fix with
+   0p, the same dual-map shape. LEG 2 lane.
+0r. **(s157) ⚠ Shareholder address line 2 is dead end-to-end** — no input,
+   the printed K-1 drops it (the 1041 sibling includes it), the e-file omits
+   AddressLine2Txt though MeF allows it. One small input+render+transmit
+   item. LEG 3.
 0p. **(s156) ⚠⚠ A 1065 officer's compensation is recorded as INCOME** — the
    two officer rollups disagree on the destination (`views` → line 9
    Salaries; `compute` → bare line "7", which on the 1065 is **Other Income
