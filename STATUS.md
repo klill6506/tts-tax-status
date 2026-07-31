@@ -1,42 +1,35 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 161 (**entity sweep unit 41 — Schedule L
-balance sheets + M-1 + M-2 + SubSchedulePanel, BOTH entities — is SHIPPED**
-on `slate-ui`, no deploy, client-only. Bespoke Slate screen over THREE
-carried legacy lanes: the ONE debounced FFV lane, the LineItemDetail
-sub-schedule lane (extracted VERBATIM into the shared
-`slate/lineItemDetails.ts` hook — the legacy SubSchedulePanel now delegates,
-`_key` identity + pendingCreates contracts intact) and the populate-BOY
-lane. Face structure is ONE shared implementation
-(`slate/entityScheduleL.ts`: schedLGroup/faces/dividers + the data-driven
-`buildM1Layout` + M-2 shape + tie/total helpers) — the legacy
-ScheduleLSection/BalanceSheetsSection delegate. Screen states, from the RS
-specs (all six fetched + diffed): BOY/EOY balance pills off the PUBLISHED
-totals (LIVE on the demo 1120-S — genuinely $361,052 out EOY), the
-Sch B Q11/Q4 small-entity exemption, the 1065 capital tie L23d↔M2_9, the
-M-1↔M-2 net-income tie, the 1120-S retained↔ΣM2_8 tie. **Unit-41
-findings:** (1) ⚠⚠ the legacy M-1 layout hardcoded 1120-S keys, so a
-1065's rows M1_3..M1_9 NEVER RENDERED (10 of 12 rows invisible) —
-`buildM1Layout` is the fix and legacy delegates, so both renderings heal;
-QA-proven live (12/12 rows on Blue Ridge). (2) ⚠⚠ `SUBSCHEDULE_CONFIG` has
-NO "L22" entry, so 1065 Other-liabilities detail rows save but never roll
-up and never recompute — a two-line views.py fix DEFERRED because views.py
-is the parallel TB-import session's in-flight file (REVIEW_QUEUE; the
-Slate panel warns). (3) ⚠ the line-details rollup is the 0q stomp family's
-third member: a plain imported parent dies on the first detail save and
-delete-all leaves "0" (REVIEW_QUEUE, priced by family history). Spec
-diffs: 1065_L status approved→draft, 1065_M1 one citation string — both
-cosmetic, mirrors refreshed. **SAME SESSION, Ken-directed off-spine: the
-FORM-VIEW PANE now FOLLOWS THE ACTIVE SCREEN** — `slate/formViewPage.ts`
-maps screen→page of the primary form's render (pages VERIFIED against the
-2025 template faces: 1120-S Sch B/K/L = p2/p3/p4; 1065 = p2/p5/p6; 1040
-payments/preparer = p2; 1041 Sch B/G = p2; everything else p.1), the pane
-tab label carries the page, a screen change re-renders from CACHED bytes
-(ONE render-pdf POST per fresh payload — ⚠ pdfjs DETACHES the buffer it's
-given, so getDocument gets a copy), out-of-range pages clamp to 1
-(template-drift safety). Ken ratified the pane itself as optional-only —
-the Hide/F6 toggle is untouched. The rule/diagnostic backlog stays PAUSED
-at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 162 (**entity sweep unit 42 — Schedule B
+"Other Information" + Sched K verify, BOTH entities — is SHIPPED** on
+`slate-ui`, no deploy, client-only. NEW bespoke question-list screen
+`SlateEntityScheduleBScreen` over the seeded `sched_b` rows, view-only over
+ScheduleBSection on the ONE generic FFV onChange lane. Legacy semantics
+carried verbatim: B14b/B16b hide unless their 1099 parent answers Yes,
+underscore detail keys indent numberless, booleans tri-state (blank ≠ No),
+the server-auto-answered questions (1120-S B11 per RS 1120S_SCHB R006 ·
+1065 B4 per RS 1065_B R-B4-AUTO) render DERIVED (ƒx-auto chip + tint)
+until a click overrides. The 1065 PR-designation block got its own headed
+section with the R-B33-PR §6221(b) note (Yes → Sch B-2 total; No → PR
+required). **Unit-42 findings, BOTH FIXED IN-SESSION:** (1) ⚠⚠ the 1065's
+**Form 8990 tab was UNREACHABLE in the Slate chrome** — the LeftRail
+renders ONLY grouped tabIds and `ENTITY_NAV_GROUPS_1065` never listed
+`f8990` (the s114 "invisible until the nav names it" shape one level up;
+the legacy horizontal row still showed it, so nothing ever erred). Fixed
+by naming it in the Schedules group + a structural pin
+(`navGroupsCoverTabs.test.ts`) that fails when ANY entity tab id lacks a
+nav-group home or a group names a dead tab. (2) ⚠ the 1065's **B1
+entity-type box was FREE TEXT on the legacy tab** — `FIELD_CHOICES
+["1065:B1"]` existed but only StandardSection's FieldInput consulted it,
+so the preparer had to type the raw RS token; the Slate screen takes
+`choicesFor` from the container and renders a real select (the ONE choices
+copy — no fork). Sch K verified live on both demo entities (already Slate
+via SlateStandardSection): 1120-S K1 547,502 / K16d 174,200 · 1065 K1
+275,600, read-only; the 1065 f8990 tab renders 45 Slate face rows
+post-fix. Both Schedule B RS specs fetched + diffed: 1120S_SCHB
+authority-citation metadata only, 1065_B timestamp only — mirrors
+refreshed, both cosmetic. The rule/diagnostic backlog stays PAUSED at
+LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -45,7 +38,7 @@ at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 42 (Schedule B + Sched K verify — Sch K/8990 already Slate via StandardSection; QA-verify + convert Schedule B).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 43 (Rental / Form 8825 — the entity twin of Schedule E; Slate landed only on the 1040 twin).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -59,8 +52,8 @@ mission. ✅ = shipped:
 | ✅ 39 | Form 7203 + shareholder loans (1120-S) | s159 — document tabs over the engine-face endpoint |
 | ✅ 40 | Income & Deductions (page1) | s160 — both entities, shared grouping module |
 | ✅ 41 | Schedule L + M-1 + M-2 + SubSchedulePanel | s161 — both entities, shared face module + shared detail hook |
-| 42 | Schedule B + Sched K verify | **NEXT** — Sch K/8990 already Slate via StandardSection — QA-verify only |
-| 43 | Rental (8825) | entity twin of Sch E |
+| ✅ 42 | Schedule B + Sched K verify | s162 — both entities; the f8990 nav-drop + B1 free-text gaps fixed |
+| 43 | Rental (8825) | **NEXT** — entity twin of Sch E |
 | 44 | Dispositions (entity Sch D) | |
 | 45 | Schedule F (entity arm) | pure props |
 | 46 | Elections: 2553 / 2848 / 3115 | three files, ~1,670 ln |
@@ -682,6 +675,49 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s162 gates (entity unit 42 — Schedule B + Sched K verify, both
+entities):** NEW `slateEntityScheduleBScreen.test.tsx` **13** (both
+entities' question rows, conditional B14b/B16b, derived B11/B4 states,
+the B1 choices select, "true"/"false" commits on the ONE lane, PR-block
+notes, raw integer commits; revert-tested TWICE — killing the choicesFor
+lookup failed exactly the B1-select pin; removing the conditional hides
+failed exactly the two hide pins) · NEW `navGroupsCoverTabs.test.ts` **3**
+(coverage both directions: every entity tab id grouped + no group names a
+dead tab; revert-tested — removing f8990 from the group failed exactly
+the 1065-coverage pin; ⚠ the restore sed hit the 1120-S group's IDENTICAL
+tabIds line and the dead-entry pin caught the stray f8990 immediately —
+the pin proved itself both ways in one session) · vitest **1464/1464**
+(1448 + 16; ⚠ the recorded 1444 baseline was STALE — commit `fedb04c`'s
+own message says 1448, measure-don't-inherit) · tsc **46 = baseline** (⚠
+a repo-root `npx tsc` silently finds no compiler and greps 0 — run from
+`client/`) · **client-only** (no server change; flow assertions n/a; both
+spec mirrors refreshed, diffs cosmetic). Client: `SlateEntityScheduleBScreen`
+(question-list layout: `.slate-schbrow` num/question/answer columns,
+1120-S Q1/2a/2b read-only header block off TaxReturn facts, derived
+`.slate-select.is-derived` tint + `.slate-schbrow-auto` chip, OVERRIDDEN
+MicroFlag on an overridden B11/B4, PR/DI headed sections), the NEW_UI
+branch inside ScheduleBSection (passes `choicesFor` from FIELD_CHOICES),
+`f8990` added to ENTITY_NAV_GROUPS_1065's Schedules group, the four nav
+consts exported for the pin, the `.slate-schb*` CSS. **LIVE-PROVEN on
+BOTH entities** (`scripts/qa_unit42.mjs` A/B, fresh `demo` links; full
+green re-run END-TO-END after the f8990 fix): **A (1120-S WorkNAllDay)** —
+Q1 Accrual read-only · Q2a 321900 · B11 derived (auto chip + tint, No) ·
+B14b hidden (B14a=No) · B3 No→Yes→No PATCH 200 ×2 · Sch K K1 547,502 +
+K16d 174,200 read-only, zero writes. **B (1065 Blue Ridge)** — B1 a real
+select with the RS tokens · B4 derived · B16b hidden · PR + DI sections ·
+Q33-unanswered shows neither note · 67 rows · B1 ""→domestic_llc→""
+PATCH 200 ×2 · Sch K K1 275,600 · f8990 45 face rows. The form-view pane
+followed to 1120-S p.2 / 1065 p.2 (the s161b map, observed live).
+**Settle: BOTH returns BYTE-IDENTICAL to the pre-QA baseline** — the only
+QA residue was `is_overridden` false→true on the two probed rows (every
+manual save sets it); ORM-restored, `compute_return` re-run, full-FFV
+diff NONE on both (fixpoint proven — the recompute moved nothing).
+Screenshots `Design/screens/unit42/` (6, zoomed per the s161 lesson — no
+layout defects). ⚠ Session gotchas: a sed restore of a tabIds list hits
+EVERY line with the same literal — grep both groups after; the scratchpad
+mint variant needs SERVER_DIR pinned absolute (the relative derivation
+walks from the scratchpad and dies).
+
 **s161 gates (entity unit 41 — Schedule L + M-1 + M-2 + SubSchedulePanel,
 both entities):** NEW `slateEntityScheduleLScreen.test.tsx` **21** (screen
 contracts + shared-module contracts incl. two mocked-api detail-panel
@@ -1155,6 +1191,11 @@ the shared Supabase DB caution is the one true-production constraint.
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's uncommitted
   work UNSTAGED. Never stage/stash/`git add .`.
+- ⚠ **s162 wrote to BOTH demo entity returns and self-reverted:** 1120-S B3
+  No→Yes→No and 1065 B1 blank→domestic_llc→blank, all through the screen's
+  own FFV lane; the only residue (`is_overridden` true on those two rows)
+  was ORM-restored + recomputed. **Full-FFV diff vs the pre-QA baseline:
+  NONE on both returns (1120-S 359 rows · 1065 409 rows), fixpoint proven.**
 - ✅ **The demo GA-500 duplicate is RESOLVED (Ken ruled, s153 close-out):**
   the stale `e27ab39c` was deleted by ORM (153 rows, verified nothing else
   cascaded; federal + surviving hashes unchanged); `a129a7e2` (auto-synced,
