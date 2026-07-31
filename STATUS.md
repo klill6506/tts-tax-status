@@ -1,34 +1,36 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 164 (**entity sweep unit 44 —
-Dispositions / entity Schedule D, BOTH entities — is SHIPPED** on
-`slate-ui`, no deploy, client-only. NEW bespoke screen
-`SlateEntityDispositionsScreen` — the entity twin of s130's
-SlateScheduleDScreen on the same PayerTable slim grid: type-to-add
-REPLACES the legacy eager-POST placeholder (the typed description IS the
-create payload; Disposition.description is blank=True so
-requireFirstColumn is off), per-field PATCH lanes verbatim, gain/(loss)
-frozen (serializer read-only @property), TERM as the entity ST/LT
-classifier (aggregate_schedule_d sums by term — never the 8949 box), date
-cells freeze to "Various" with the expansion toggles nulling the date,
-the 8949-box select keeps its only-when-!is_4797 gate, the B2-14
-capital-only ruling + the legacy is_4797 banner/one-way Convert lane
-carried verbatim, window.confirm → the two-step arm lane (7th). 1120-S:
-the band pairs rows' ST/LT nets with PUBLISHED K7/K8a and warns on
-disagreement (suppressed to info when Form 8824 rows exist — the line
-5/12 feeds legitimately fold in). 1065: the no-flow statement renders on
-any rows. **Unit-44 engine findings → REVIEW_QUEUE s164:** (1) ⚠
-`aggregate_schedule_d` zeroes PLAIN K7/K8a BEFORE its rows-exist check
-(compute.py:1601–1602 / 1625) — the 0q family's 5th member; overrides
-survive. (2) ⚠⚠ **a 1065 with capital dispositions prints the 1120-S
-Schedule D face** — render 3c2 (renderer.py:14205) has no form gate,
-`render_schedule_d` hardcodes `f1120ssd`, and `f1065sd_2025.py` is an
-unmapped stub — while its rows feed NO K line (the deliberate 1065
-aggregation guard, already DEFERRAL_AUDIT); the tab was fully enterable
-on a 1065 with zero indication. The Slate screen warns/states both. ⚠ QA
-gotcha re-proven: input values are NOT textContent — read description
-cells via `input.value`, never `body.textContent` (two false FAILs). The
-rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 165 (**entity sweep unit 45 —
+Schedule F, the entity arm, BOTH entities — is SHIPPED** on `slate-ui`,
+no deploy, client-only. NEW bespoke screen `SlateEntityScheduleFScreen`
+— pure props over the seeded `sched_f` FFV rows on the ONE debounced
+FFV lane + the B2-3 manual-PY lane (the THIRD 1040-twin pair where the
+arms ride different storage: the 1040 farm is a per-farm model, the
+entity farm is FFV rows). Computed F1c/F9/F33/F34 locked ƒx; F14
+engine-owned ONLY while a Depreciation-worksheet asset flows to
+Schedule F (the page-1 B2-4 treatment + open-worksheet jump); tri-state
+header booleans (s162 idiom); FH_METHOD became a Cash/Accrual select
+writing canonical tokens (unrecognized stored values surfaced, never
+blanked); the flow band states 1120-S F34→K10 (separately stated) vs
+1065 F34→page-1 line 5→K1 + K-1 14a/14b, warns when the published
+downstream line disagrees (live on the demo 1120-S: K10 override 10,000
+over an empty farm, keyed 07-13), and states the 1120-S e-file refusal
+(nonzero K-1 box 10 has no modeled code — keys on the EFFECTIVE K10,
+override included). **Unit-45 findings → REVIEW_QUEUE s165:** (1) ⚠ the
+accounting-method box CAN NEVER PRINT — `render_schedule_f`
+(renderer.py:5649) maps only a boolean-typed FH_METHOD to the Cash box,
+nothing emits FH_METHOD_ACCRUAL, seeds type it TEXT; (2) ⚠ the
+FH_1099_RECEIVED seed label asks the pre-2023 "applicable subsidy"
+question while its checkbox prints into 2025 line F (payments requiring
+Form 1099) — the screen shows the FACE label (s154 precedent) and warns
+on stored answers; (3) ⚠ F14 delete-residue — compute.py:1199 writes
+F14 only when the total is NONZERO, so deleting the last farm asset
+leaves the stale engine figure in F33/F34 (page-1's write four lines up
+is unconditional = the correct pattern; audit the 8825/C/1040-farm
+truthy gates with it); (4) minor — at-risk 36a/36b are a map-only stub.
+No RS spec exists for the entity sched_f set (all key guesses 404; the
+F-formulas live in the SCH_K-cited compute blocks). The rule/diagnostic
+backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,7 +39,7 @@ rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 45 (Schedule F — the entity arm; pure props).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 46 (Elections: 2553 / 2848 / 3115 — three files, ~1,670 ln).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -54,8 +56,8 @@ mission. ✅ = shipped:
 | ✅ 42 | Schedule B + Sched K verify | s162 — both entities; the f8990 nav-drop + B1 free-text gaps fixed |
 | ✅ 43 | Rental (8825) | s163 — both entities; the K2 rollup stomp + 21/22a input gap → REVIEW_QUEUE |
 | ✅ 44 | Dispositions (entity Sch D) | s164 — both entities; the K7/K8a zero-clear + 1065 wrong-face print → REVIEW_QUEUE |
-| 45 | Schedule F (entity arm) | **NEXT** — pure props |
-| 46 | Elections: 2553 / 2848 / 3115 | three files, ~1,670 ln |
+| ✅ 45 | Schedule F (entity arm) | s165 — both entities; the method print gap + stale 1099 label + F14 residue → REVIEW_QUEUE |
+| 46 | Elections: 2553 / 2848 / 3115 | **NEXT** — three files, ~1,670 ln |
 | 47 | Boundary + 8941 | |
 | 48 | Extensions + PY Compare + State (entity arm) | wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
 
@@ -674,6 +676,57 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s165 gates (entity unit 45 — Schedule F, the entity arm, both
+entities):** NEW `slateEntityScheduleFScreen.test.tsx` **14** (computed
+locked-ƒx vs plain-never-violet, the F14 engine-owned-only-with-assets
+gate + the open-worksheet jump, money commits keyed by FormLine id, the
+tri-state boolean contract, the Cash/Accrual select + unrecognized-value
+surfacing + the accrual hard warning, the 2025 face 1099 label + the
+stored-answer re-verify warning, PY manual "L:F2" commits + imported
+tint, the per-entity flow-note wording, the disagreement note both ways,
+the e-file boundary keyed on the EFFECTIVE K10 [published override
+included — never 1065, never zero], the loss-year at-risk note, the
+blank state; revert-tested TWICE with exact pins — flattening the F14
+gate to is_computed failed exactly the F14 pin; reverting faceLabel to
+the seed label failed exactly the 1099-label pin) · vitest **1501/1501**
+(1487 + 14) · tsc **46 = baseline** · **client-only** (no server change;
+flow assertions n/a; NO RS spec exists for the entity sched_f set — all
+key guesses 404 — so nothing to mirror; no compute/render was modified).
+Client: `SlateEntityScheduleFScreen` (screenbar pills off published
+F9/F34, farm-info header, Part I full-width, Part II two-column, summary
+band, the five stated findings), the NEW_UI branch inside
+ScheduleFSection (AdminSection shape; legacy body untouched), the call
+site passes formCode + hasSchedFAssets (flow_to === "sched_f") +
+flowPublished (K10 / 1065 line "5", form-code-scoped) + the pyManual
+lane + onOpenDepreciation, `.slate-entschf-*` CSS (entp1 column
+template). **LIVE-PROVEN on BOTH entities** (`scripts/qa_unit45.mjs`
+A/B, fresh `demo` links via the recreated scratchpad mint): **A (1120-S
+WorkNAllDay, farm tab EMPTY but K10 holds a 10,000 preparer override
+keyed 07-13)** — at rest: no pill, the disagreement note LIVE (10,000 vs
+0 — the exact case the note exists for), the e-file boundary LIVE off
+the override, the 2025 face 1099 label, F9 locked · F2 = 50,000 → PATCH
+200 → F9/F34 recomputed to 50,000 live (input.value, not textContent),
+pill appeared, the disagreement re-priced (K10 override SURVIVES the
+recompute — engine-correct) · FH_METHOD "Cash" PATCH · PY L:F2 12345
+set → null delete · full revert through the screen. **B (1065 Blue
+Ridge, read-only)** — flow note names page-1 line 5 + boxes 14a/14b, NO
+e-file boundary, no disagreement (0 = 0), F33 locked. **Settle: BOTH
+returns BYTE-IDENTICAL to baseline** (1120-S 359 rows `c412fe07…` ·
+1065 409 rows `a3c22390…`), with TWO recoveries: (1) the FFV lane's
+every-save-flags defect left `is_overridden=True` on the two probed
+blank rows (F2, FH_METHOD) — ORM-restored, the ONLY hand restoration;
+(2) the settle hash initially differed because MY recompute refreshed
+three engine lines (page-1 4, K7, K15b) the parallel session's 16:30–
+16:59 demo-DB writes had left mid-flight — compute_return run TWICE
+returned the EXACT baseline hash both times (fixpoint proven, nothing
+hand-restored — the s156 rule). Screenshots `Design/screens/unit45/`
+(4, zoomed — no clipping; the warning notes wear the AA yellow ink, not
+a fill). ⚠ Session gotchas: a scratchpad .mjs cannot resolve
+puppeteer-core — run one-off puppeteer scripts from inside the repo
+tree; `git log --name-only a63dbce..origin/main` printing nothing was
+the ANSWER (slate-ui already contained main — verify with `git
+merge-base`), not a failed command.
 
 **s164 gates (entity unit 44 — Dispositions / entity Schedule D, both
 entities):** NEW `slateEntityDispositionsScreen.test.tsx` **9**

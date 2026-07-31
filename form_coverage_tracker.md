@@ -1,5 +1,27 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 165 — ENTITY SCHEDULE F: SCREEN LEG CONVERTED, two
+> header defects + the F14 delete-residue ANNOTATED.** The entity farm tab
+> is now Slate for BOTH entities (unit 45, `SlateEntityScheduleFScreen` —
+> the seeded sched_f FFV rows over the ONE debounced lane + the B2-3
+> manual-PY lane; live-proven on both demo returns, settle byte-identical,
+> fixpoint proven twice). Do NOT read the entity Schedule F's render leg
+> as green on the header: (1) the accounting-method box (line C) **can
+> never print** — `render_schedule_f` maps only a boolean-typed FH_METHOD
+> to the Cash box and nothing ever emits FH_METHOD_ACCRUAL, while the
+> seeds type it TEXT (REVIEW_QUEUE s165); (2) the FH_1099_RECEIVED seed
+> label still asks the pre-2023 "applicable subsidy" question while its
+> checkbox prints into the 2025 line F 1099-payments question — a stored
+> answer responds to the wrong question (REVIEW_QUEUE s165; the screen
+> shows the 2025 face label and warns). Compute residue: the F14
+> depreciation feed writes only when nonzero, so deleting the last
+> Schedule-F-flowing asset leaves a stale engine F14 in F33/F34 forever
+> (REVIEW_QUEUE s165). The at-risk line 36 boxes are a map-only stub (no
+> seed/input). E-file: an 1120-S with a nonzero K10 (farm or override)
+> deliberately REFUSES to build (box-10 code unmodeled, builder_1120s) —
+> the screen states it live; the demo 1120-S's overridden K10 = 10,000
+> over an empty farm is the live case.
+
 > **2026-07-31 session 164 — ENTITY SCHEDULE D (DISPOSITIONS): SCREEN LEG
 > CONVERTED, the K7/K8a zero-clear + the 1065 wrong-face print ANNOTATED.**
 > The entity dispositions tab is now Slate for BOTH entities (unit 44,
