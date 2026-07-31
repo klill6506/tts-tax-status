@@ -1,5 +1,20 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 164 — ENTITY SCHEDULE D (DISPOSITIONS): SCREEN LEG
+> CONVERTED, the K7/K8a zero-clear + the 1065 wrong-face print ANNOTATED.**
+> The entity dispositions tab is now Slate for BOTH entities (unit 44,
+> `SlateEntityDispositionsScreen` — PayerTable slim grid, type-to-add, the
+> B2-14 capital-only ruling + is_4797 banner/Convert lane carried; live-
+> proven on both demo returns, settle byte-identical). Do NOT read entity
+> Schedule D coverage as green beyond the 1120-S row lanes: (1)
+> `aggregate_schedule_d` zeroes PLAIN K7/K8a before its rows-exist check —
+> an imported Schedule K line 7/8a without per-row detail dies on the
+> first recompute (REVIEW_QUEUE s164, 0q family); (2) **a 1065 with
+> capital dispositions prints the 1120-S Schedule D face** (render 3c2
+> unguarded + `f1065sd_2025.py` is an unmapped stub) while its rows feed
+> no K line (the deliberate 1065 aggregation guard, DEFERRAL_AUDIT) —
+> both REVIEW_QUEUE s164; the Slate screen warns/states live.
+
 > **2026-07-31 session 163 — FORM 8825 (ENTITY SIDE): SCREEN LEG CONVERTED,
 > two K2 ownership defects + one input gap ANNOTATED.** The entity rental
 > tab is now Slate for BOTH entities (unit 43, `SlateEntityRentalScreen` —
