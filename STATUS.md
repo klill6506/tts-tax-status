@@ -1,35 +1,34 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 163 (**entity sweep unit 43 — Rental /
-Form 8825, BOTH entities — is SHIPPED** on `slate-ui`, no deploy,
-client-only. NEW bespoke screen `SlateEntityRentalScreen` — the entity
-twin of s131's SlateScheduleEScreen: DocumentTabs per property over the
-two-column InputRow worksheet, view-only over RentalPropertiesSection's
-FOUR legacy lanes carried verbatim (the property REST CRUD, the Schedule A
-(Form 8825) other-deduction child CRUD, the depreciation-worksheet feed
-set, and the manual-PY lane — "R:<propId>:<field>" keys through the shared
-PyCell, which grew additive `storeKey`/`ariaLabel` props). Legacy
-semantics verbatim: money commits raw, days `parseInt||0`, line 14 locks
-ƒx when worksheet-fed, the unclassified "other" row shows only when
-nonzero, add defaults type 8; window.confirm → the s153 two-step arm lane
-(6th). Computed 2c/17/18/19 render locked ƒx per RS 8825
-R005/R006/R001/R002; the summary band computes 20a/20b/23 (R003) with the
-flows-to-K2 note. **Unit-43 engine findings, all → REVIEW_QUEUE s163
-(views.py untouched — the parallel TB-import session's file):** (1) ⚠⚠
-`_rollup_rental_to_k2` = **the K16d stomp family on Schedule K line 2,
-worse** — it forces `is_overridden=False` on every rental save (strips the
-very flag compute would respect) AND its formula drops lines 21/22a that
-`aggregate_rental_income` includes (the two-implementations shape,
-disagreeing on the FORMULA); the screen warns live on a published-K2
-disagreement. (2) ⚠ `aggregate_rental_income` zeroes a PLAIN K2 before
-early-returning on a no-rentals return (compute.py:1660) — the 0q
-family's 4th member; compounds with (1). (3) ⚠ 8825 lines 21/22a have
-**no input lane anywhere** (engine/print/e-file read FFVs no seed
-creates) — the screen states it. Also: the `mint_magic_link.py` script
-HARDCODES user `dev` (the demo mint is a scratchpad variant — recreate it
-per s156; a dev-user session 404s the demo returns and reads as "Failed
-to load tax return"). The rule/diagnostic backlog stays PAUSED at LEG 2
-item 5.)*
+*Last updated: 2026-07-31, session 164 (**entity sweep unit 44 —
+Dispositions / entity Schedule D, BOTH entities — is SHIPPED** on
+`slate-ui`, no deploy, client-only. NEW bespoke screen
+`SlateEntityDispositionsScreen` — the entity twin of s130's
+SlateScheduleDScreen on the same PayerTable slim grid: type-to-add
+REPLACES the legacy eager-POST placeholder (the typed description IS the
+create payload; Disposition.description is blank=True so
+requireFirstColumn is off), per-field PATCH lanes verbatim, gain/(loss)
+frozen (serializer read-only @property), TERM as the entity ST/LT
+classifier (aggregate_schedule_d sums by term — never the 8949 box), date
+cells freeze to "Various" with the expansion toggles nulling the date,
+the 8949-box select keeps its only-when-!is_4797 gate, the B2-14
+capital-only ruling + the legacy is_4797 banner/one-way Convert lane
+carried verbatim, window.confirm → the two-step arm lane (7th). 1120-S:
+the band pairs rows' ST/LT nets with PUBLISHED K7/K8a and warns on
+disagreement (suppressed to info when Form 8824 rows exist — the line
+5/12 feeds legitimately fold in). 1065: the no-flow statement renders on
+any rows. **Unit-44 engine findings → REVIEW_QUEUE s164:** (1) ⚠
+`aggregate_schedule_d` zeroes PLAIN K7/K8a BEFORE its rows-exist check
+(compute.py:1601–1602 / 1625) — the 0q family's 5th member; overrides
+survive. (2) ⚠⚠ **a 1065 with capital dispositions prints the 1120-S
+Schedule D face** — render 3c2 (renderer.py:14205) has no form gate,
+`render_schedule_d` hardcodes `f1120ssd`, and `f1065sd_2025.py` is an
+unmapped stub — while its rows feed NO K line (the deliberate 1065
+aggregation guard, already DEFERRAL_AUDIT); the tab was fully enterable
+on a 1065 with zero indication. The Slate screen warns/states both. ⚠ QA
+gotcha re-proven: input values are NOT textContent — read description
+cells via `input.value`, never `body.textContent` (two false FAILs). The
+rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -38,7 +37,7 @@ item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 44 (Dispositions — the entity Schedule D arm; Slate landed only on the 1040 twin).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 45 (Schedule F — the entity arm; pure props).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -54,8 +53,8 @@ mission. ✅ = shipped:
 | ✅ 41 | Schedule L + M-1 + M-2 + SubSchedulePanel | s161 — both entities, shared face module + shared detail hook |
 | ✅ 42 | Schedule B + Sched K verify | s162 — both entities; the f8990 nav-drop + B1 free-text gaps fixed |
 | ✅ 43 | Rental (8825) | s163 — both entities; the K2 rollup stomp + 21/22a input gap → REVIEW_QUEUE |
-| 44 | Dispositions (entity Sch D) | **NEXT** |
-| 45 | Schedule F (entity arm) | pure props |
+| ✅ 44 | Dispositions (entity Sch D) | s164 — both entities; the K7/K8a zero-clear + 1065 wrong-face print → REVIEW_QUEUE |
+| 45 | Schedule F (entity arm) | **NEXT** — pure props |
 | 46 | Elections: 2553 / 2848 / 3115 | three files, ~1,670 ln |
 | 47 | Boundary + 8941 | |
 | 48 | Extensions + PY Compare + State (entity arm) | wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
@@ -675,6 +674,50 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s164 gates (entity unit 44 — Dispositions / entity Schedule D, both
+entities):** NEW `slateEntityDispositionsScreen.test.tsx` **9**
+(type-to-add payload, per-field money commits with the "0" clearValue +
+the frozen gain cell, the term-driven ST/LT band excluding is_4797 rows
+BOTH sides, the Various freeze/toggle pair, the 8949-box !is_4797 gate +
+banner/Convert lane, value-or-null basis overrides + checkbox/NIIT
+commits, the two-step remove with the Keep-disarms pin, the 1120-S
+K7/K8a mismatch warning three ways [agree/disagree/8824-present], the
+1065 no-flow statement + never-a-K-lane; revert-tested TWICE with exact
+pins — including one revert that came back GREEN and exposed a fixture
+blind spot: the 4797 exclusion was only pinned on the LT side, so the
+fixture gained a SHORT is_4797 row before the revert failed correctly;
+and one INERT revert — the k7Num is1065 null-out is a redundant layer
+behind the JSX ternary, so the honest revert targets the TERNARY) ·
+vitest **1487/1487** (1478 + 9) · tsc **46 = baseline** · **client-only**
+(no server change; flow assertions n/a; the SCHD_1120S spec mirror
+refreshed from the live export — authority-source excerpts only, rules/
+line_map/diagnostics/tests byte-identical). Client:
+`SlateEntityDispositionsScreen` (PayerTable + expansion worksheet +
+band/warnings; EXPLICIT widths on every column — the native date inputs'
+intrinsic width squeezed the unsized currency columns into clipped
+slivers, caught by ZOOMING the QA screenshot, the s161 lesson again),
+the NEW_UI branch inside DispositionsSection (type-to-add POST with the
+legacy defaults; the Slate delete lane skips window.confirm), the ladder
+call site passes formCode + K7/K8a published (1120-S ONLY — a 1065's K7
+means royalties) + hasLikeKind, `DispositionRow` exported.
+**LIVE-PROVEN on BOTH entities** (`scripts/qa_unit44.mjs` A/B, fresh
+`demo` links via the scratchpad mint): **A (1120-S WorkNAllDay, 1
+existing ST row)** — at rest: "110 shares Americus" + frozen gain 78,649
++ the flow note reading published K7 78,649, NO warning · type-to-add
+POST 201 · price/basis PATCH 200 → frozen gain 6,000 AND published K8a
+followed to 6,000 live · AMT basis set→null · box → E · Various commits
+{flag true, date null} in ONE body · Keep disarms (zero DELETEs) →
+confirm DELETE → Americus intact, K8a recomputed back to 0. **B (1065
+Blue Ridge)** — empty state, NO K lane · add → the no-flow warning
+appears · two-step delete → restored, warning gone. **Settle: BOTH
+returns BYTE-IDENTICAL to baseline** (1120-S 359 rows `c88da788…`, 1
+disposition, K7 78,649 · 1065 409 rows `0959535b…`, 0 rows) — proven
+TWICE (the QA ran twice for the width fix). Screenshots
+`Design/screens/unit44/` (6, zoomed). ⚠ QA gotchas: input values are NOT
+textContent (s156, re-proven — the first run's two FAILs were probe
+bugs, read `input.value`); a too-narrow PayerTable currency cell clips
+silently — screenshot-zoom every new grid.
 
 **s163 gates (entity unit 43 — Rental / Form 8825, both entities):** NEW
 `slateEntityRentalScreen.test.tsx` **14** (verbatim money + parseInt-days
