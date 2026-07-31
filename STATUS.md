@@ -1,28 +1,34 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 158 (**entity sweep unit 38 — Partners +
-Allocations (1065) — is SHIPPED** on `slate-ui`, no deploy, client-only.
-Partners = DOCUMENT TABS (a partner's K-1 is a filed form, the s134 ruling)
-+ the sectioned worksheet (identity · address · item-J percentages BOY/EOY ·
-GP & distributions with the ƒx 4c total · §1402(a)(13) SE classification ·
-item-K liabilities · item-L capital account); Allocations = the Slate grid.
-**Unit-38 findings:** (1) ⚠ TWO DEAD ALLOCATION CATEGORIES
-(REVIEW_QUEUE): "Distributions" (box 19a is a DIRECT per-partner entry —
-the allocator never reads the override) and "Capital" (no engine consumer
-at all); the legacy grid let preparers key overrides into both believing
-they allocated something. The Slate grid renders only consumed categories
-and flags stored overrides in dead ones. (2) ⚠ the legacy grid's DEFAULT
-cells showed profit_pct for every category while the allocator defaults a
-LOSS amount to loss_pct — the displayed default lied on loss years; the
-Slate grid states the duality (P/L header hints + note). (3) the EOY
-capital cell (item L §705) drops the legacy GREEN/YELLOW text (retired
-convention) for computed-ƒx-with-Ctrl+Enter-override / OVERRIDDEN violet +
-↺ derive — both paired PATCH bodies live-proven verbatim. (4)
-window.confirm partner delete → the s153 two-step lane (4th occurrence).
-(5) verified in passing: the partner 19a + GP rollups carry the SAME
-unguarded stomp shape as s157's K16d (LATENT on the demo 1065 — rows and K
-lines agree) → folded into the 0q family. The rule/diagnostic backlog
-stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 159 (**entity sweep unit 39 — Form 7203 +
+shareholder loans (1120-S) — is SHIPPED** on `slate-ui`, no deploy. Form
+7203 = DOCUMENT TABS per shareholder (a 7203 is a per-shareholder filed
+form) over **the ENGINE's OWN face**: a NEW read-only endpoint
+`GET /tax-returns/<id>/form-7203-face/<sh_id>/`
+(`apps/returns/form7203_face.py`, the amt_face precedent — kept OUT of
+views.py, which carries the parallel session's work) publishes
+`compute_7203`'s dict verbatim, so screen = print by construction; the
+legacy tab's THIRD implementation of the basis math (client re-sum: K3
+where the engine reads K3c, no Part III, no depletion) is retired behind
+the flag. **Unit-39 findings:** (1) ⚠⚠ ENGINE (REVIEW_QUEUE → LEG 2 lane,
+probe-priced): `compute_7203` Part I maps 3g=K7-only / 3h=K8a and NEVER
+reads K9 — the printed §1231 row shows the LT capital gain and a §1231 gain
+never increases stock basis (probe: line 10 = 0 vs 30,000 correct, plus a
+$15,000 phantom capital gain via the face's line-6>5 note); Part III got
+the symmetric fix 2026-06-30, Part I was left behind. The Slate screen
+warns only when K8a/K9 is live (s151 rule). (2) loan lines 21/22
+(debt_basis_boy / new_loans_increasing_basis) had NO input anywhere — debt
+basis was structurally $0 from the UI and Part III column (d) could never
+fire (the s155 unsatisfiable shape); first inputs shipped. (3) same for the
+SEVEN suspended-loss carryover fields (Part III column (b)) — first inputs
+shipped. (4) the legacy loans panel never refreshed the parent while the
+server recomputed K16e on every loan save (s155 finding-1 shape) — the
+Slate lane refreshes. (5) window.confirm loan delete → two-step (5th).
+(6) >3 loans silently dropped from the print — the screen states the
+3-column cap. Also: **origin/main MERGED into slate-ui at boot**
+(`c6bf8eb` — the A/R flag + cutover script + SSO session fix; one trivial
+add/add conflict in vite-env.d.ts union-resolved). The rule/diagnostic
+backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -31,7 +37,7 @@ stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 39 (Form 7203 + shareholder loans, 1120-S).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 40 (Income & Deductions, page1 — both entities).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -42,8 +48,8 @@ mission. ✅ = shipped:
 | ✅ 36 | Client Info + Admin | s156 — both entity editors |
 | ✅ 37 | Shareholders (1120-S) | s157 — record table + detail worksheet |
 | ✅ 38 | Partners + Allocations (1065) | s158 — document tabs + the allocation grid |
-| 39 | Form 7203 + shareholder loans (1120-S) | **NEXT** |
-| 40 | Income & Deductions (page1) | pure props, both entities |
+| ✅ 39 | Form 7203 + shareholder loans (1120-S) | s159 — document tabs over the engine-face endpoint |
+| 40 | Income & Deductions (page1) | **NEXT** — pure props, both entities |
 | 41 | Schedule L balance sheets + SubSchedulePanel | biggest schedules unit |
 | 42 | Schedule B + Sched K verify | Sch K/8990 already Slate via StandardSection — QA-verify only |
 | 43 | Rental (8825) | entity twin of Sch E |
@@ -641,9 +647,11 @@ preview_start django-demo + vite · demo QA return
   `-p tsconfig.renderer.json`.
 
 **Build rules in force:** selective `git add` only — NEVER `git add .` (parallel
-work STILL unstaged and untouched by s143/s144: `server/apps/returns/views.py`,
-`tb_import.py`, `tests/test_tb_import.py`,
-`server/scripts/create_ar_cutover_clients.py`; ⚠ also never `git stash` here) ·
+work STILL unstaged and untouched: `server/apps/returns/views.py` (modified),
+`server/apps/returns/tb_import.py`, `server/tests/test_tb_import.py`;
+`create_ar_cutover_clients.py` is now TRACKED via the s159 main merge — the
+untracked duplicate was byte-identical and was replaced by the merge's copy;
+⚠ also never `git stash` here) ·
 no merge/deploy without Ken · ✅ **the migrate + seed deploy step is DONE
 (2026-07-30, Ken-directed): diagnostics 0005 applied on PROD and `seed_rules`
 run + verified on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
@@ -665,6 +673,48 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s159 gates (entity unit 39 — Form 7203 + shareholder loans, 1120-S):**
+NEW `slateForm7203Screen.test.tsx` **15** (13 view contracts + 2 mocked-api
+container tests per the s152 rule; revert-tested TWICE — restoring
+single-click loan remove failed exactly the two-step test; storing the face
+ENVELOPE failed exactly the 2 container tests) · NEW server
+`test_form_7203_face_endpoint.py` **6/6** (the-endpoint-IS-compute_7203
+contract, loan-column order, 1120-S gate, anon 403, cross-firm 404, unknown
+shareholder 404; ⚠ baseline Decimals must be read DB-refreshed — 2dp) ·
+7203 server band **45/45** (compute 33 + acroform + endpoint; no compute
+change, flow assertions n/a) · vitest **1408/1408** (= 1384 + 15 new + 9
+from the MERGED A/R tests) · tsc **46 = the NEW baseline** (was 45; the +1
+is `ArFlag.tsx` from merged main commit `c7c313f` — the A/R lane's error,
+NOT this unit's; unit-39 files contribute 0). **SERVER CHANGE, deliberately
+small**: the read-only face endpoint + urls.py wiring — NO migration, NO
+seed change, NO compute change; returns/views.py untouched (parallel
+session's file). Client: `SlateForm7203Screen` (DocumentTabs + the Part I
+face as ƒx-noOverride cells + entered cells for lines 1/2/6/8b + the
+suspended-loss inputs + per-loan cards with the engine calc grid + Part
+III table), the NEW_UI branch inside Form7203Section (face fetch with
+envelope unwrap + stale-while-revalidate, loans CRUD refreshing the
+parent, shared print lane), `onGoToShareholders` cross-link (the add
+affordance navigates — shareholders are created on their own tab).
+**LIVE-PROVEN** on the demo 1120-S `bbe88483` (`scripts/qa_unit39.mjs`,
+`demo`-user links): at rest 2 tabs, ownership pill, line 4/15 VERBATIM
+equal to the face GET's payload (291,957.00 / 250,763.50), the engine
+warning correctly ABSENT (K8a=0, K9=0 — warn-when-live), no-loans note;
+stock basis 10,000 → PATCH 200 → the face REFETCHED and line 15 moved to
+260,763.50 (+10,000 exactly); loan add POST 201 → column (a) chip → the
+NEW line-21 debt-basis input PATCHed live → repayments 1,000 → the engine
+calc grid (18=5,000 / 20=4,000 / 26=1,000); two-step remove (arm + Keep =
+0 DELETEs; Confirm = 204); basis reverted through the screen. Console
+errors = the known pre-existing set. **Zero drift ORM-verified: FFV 359
+rows, hash `4d0c9e29…` IDENTICAL before/after; both shareholders at
+baseline; 0 loans; K16d restored 174,200** (⚠ the QA's shareholder PATCHes
+stomp K16d every run — the s157 0q defect, still open; `clean39.py`
+restores exactly as s157's cleanup did; budget a cleanup run after ANY
+failed mid-run). Screenshots `Design/screens/unit39/` (atrest · basis ·
+loan). ⚠ Session gotchas: a loan add/refetch UNMOUNTS the card briefly —
+QA keyField must wait-and-retry across the gap; multi-line `poetry run
+python -c` from Bash can exit 0 with NO output — write the probe to a file
+and run the file.
 
 **s158 gates (entity unit 38 — Partners + Allocations, 1065):** NEW
 `slatePartnersScreen.test.tsx` **16** (both screens; revert-tested TWICE —
@@ -825,61 +875,7 @@ py_manual_values keys — cleared; py-manual writes touch no FFV and trigger
 no compute). Screenshots `Design/screens/unit34/` (atrest · manualpy ·
 faceless · imported).
 
-**s153 gates (unit 33 — the State Returns launcher / state-GA tab):** NEW
-`slateStateReturnsScreen.test.tsx` **23** (revert-tested TWICE — restoring
-the legacy business-entity refresh tooltip failed the contract-3 copy test;
-restoring the legacy map-by-state-code + `split("-")` row shape failed the
-3 buildStateRows tests that pin findings 5/6) · flow assertions untouched
-(no server change — verify by `git status`: server tree clean but for the
-parallel session's pre-existing files) · vitest **1303/1303** (1280 + 23) ·
-tsc **45 = baseline** (s152's level). **LIVE-PROVEN** on the demo QA return
-(`scripts/qa_unit33.mjs`): at rest BOTH GA-500 duplicates render as their
-own rows with the "Duplicate GA returns" pill, the duplicate error note,
-the GA auto-sync note, the overwrite warning and the derived 4-state
-footer (screenshot `unit33_duplicates.png`); an SC1040 created through the
-picker (POST 201) landed on the SOUTH CAROLINA row with Open/Refresh/Remove
-(finding 6's mapping, live), the picker dropped to AL/NC; **Open navigated
-to the SC1040's own editor**; the remove lane proved TWO-STEP live (arm →
-Keep disarmed with no DELETE; arm → Confirm issued DELETE 204) and the SC
-row returned to the picker. Console errors = the known pre-existing set
-(403 `/api/v1/me/` pre-login + the `prior-year/` 404s). **Demo writes
-self-reverting and ORM-verified ZERO DRIFT: federal 892-row FFV hash
-IDENTICAL (`c8edf9c4…`), both GA-500 FFV hashes IDENTICAL, state-return
-count back to 2** — the only writes were the QA's own SC1040, created and
-removed through the screen itself. The GA duplicate pair was deliberately
-not touched during QA; **at the close-out Ken ruled and the stale copy was
-deleted by ORM** (verified: only its 153 rows; all other hashes unchanged).
-
-**s152 gates (unit 32 — Form 1040-X / amended return):** NEW
-`slateForm1040XScreen.test.tsx` **20** (revert-tested TWICE — restoring the
-legacy placeholder face failed the 2 contract-2/6 tests; keying engagement
-off FFV rows failed the contract-4 ghost test) + NEW
-`form1040xEnvelope.test.tsx` **3** (revert-tested — restoring the
-envelope-stored row failed the persisted-row test) · the 1040-X server legs
-**14** (untouched) · flow assertions **521** (baseline exactly) · vitest
-**1280/1280** (1257 + 23) · tsc **45** (⚠ ONE BELOW the 46 baseline — the
-typed envelope unwrap in `Form1040XSection.load()` removed a pre-existing
-error; no new errors, none in the unit's files). **LIVE-PROVEN** on the demo
-QA return through the screen's own lanes (`scripts/qa_unit32.mjs`): at rest
-"Not engaged" + the GHOST warning live (the first run's DELETE had left the
-residue — finding 3 observed in production shape); baseline captured through
-the screen (POST 200); `overpayment_on_original` = 2,450 keyed IN the screen
-CREATED the amendment (PATCH 201) — the A/B/C grid published (A = C =
-94,560 AGI / 12,204 total tax, B = 0), outcome 17 = 2,450 → 19 = 0 → 20 =
-12,204, pill "Owe $12,204", the paper-only + Part-II-blank warnings live;
-`amount_paid_with_original` = 500 reflowed server-side (17 = 2,950 → 19 =
-500 → 20 = 11,704); the explanation committed on blur (PATCH 200) and
-cleared the warning; DELETE 204 → the ghost warning again. ⚠ **The first QA
-run FAILED against the pre-fix container** (pill "Prepare manually" at rest,
-`baseline_captured` never true) — that failure IS what exposed the envelope
-bug; the suite had stayed green because the Slate view is prop-based. **Demo
-writes REVERTED and ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows
-identical** (the 61 ghost 1040-X rows deleted — they CARRY values by the
-residue defect, so scope-checked by FormDefinition, not value-checked; the
-AsFiledBaseline row deleted; `is_amended_return` reset; `compute_return`
-re-run).
-
-**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 / s151 gates — moved to `STATUS_ARCHIVE.md`
+**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 / s151 / s152 / s153 gates — moved to `STATUS_ARCHIVE.md`
 (s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152; s150 by s153; s151 by s155).** Re-run them if you touch
 Form 8863, Form 5329, Form 6251, Form 8615, the 8960 family, the retirement
 modules or the MeF-1040 band; each block records the exact suites, the counts

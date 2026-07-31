@@ -1,5 +1,20 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 159 — FORM 7203 (ENTITY SIDE): COMPUTE-LEG DEFECT
+> ANNOTATION, screen leg converted.** The entity-side Form 7203 compute
+> (`apps/tts_forms/compute_7203.py`, feeds the courtesy print for the
+> shareholder's 1040 — no e-file leg by design) carries a **Part I mapping
+> defect**: 3g = K7 only, 3h = K8a (prints the LT capital gain on the
+> §1231 row), and **K9 is never read — a §1231 gain gives no stock-basis
+> increase** (probe-priced: line 10 = 0 vs 30,000 correct + a $15,000
+> phantom Schedule-D gain; REVIEW_QUEUE s159, LEG 2 lane). Part III was
+> fixed for the symmetric bug 2026-06-30; Part I was left behind. Do not
+> read the 7203's compute leg as green until that lands. The screen leg is
+> now Slate (unit 39): the NEW read-only `/form-7203-face/<sh_id>/`
+> endpoint publishes the engine's dict; loan lines 21/22 and the seven
+> suspended-loss carryovers got their FIRST inputs (debt basis and Part
+> III columns (b)/(d) were unreachable from the UI before).
+
 > **2026-07-28 session 126g — 1065 FIVE-DECIMAL PARTNER PERCENTAGES — K-1
 > ITEM J PRECISION** (QA Batch-001 1065 brief item 9, **THE LAST — the
 > brief is COMPLETE 9/9**; **migrations 0222-0226 STAGED, NOT applied**;
