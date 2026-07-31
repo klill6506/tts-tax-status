@@ -36,7 +36,7 @@ decision now that both sweep lanes are complete.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY LANE IS COMPLETE (13/13). Idle — Ken directs: resume the backlog (LEG 2 item 5), or the Slate-default decision (both sweep lanes done).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY LANE IS COMPLETE (13/13), and `slate-ui` is MERGED TO MAIN (Ken-directed 2026-07-31: fast-forward `be82b22`→`aaf0743`, 132 commits; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF so the live app is visually unchanged).** Idle — Ken directs: resume the backlog (LEG 2 item 5), the flag-default flip, or the remaining Slate stragglers (1041 editor · state-return editor interiors · other suite apps).
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
