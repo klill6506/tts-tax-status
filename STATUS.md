@@ -1,29 +1,32 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 152 (**sweep unit 32 — Form 1040-X, the
-amended return — is SHIPPED** (`91cdfb2` on `slate-ui`, pushed, no deploy). **36 of ~39 screens converted; the sweep resumes at the state/GA
-tab.** No migration, no seed change, no server change — `compute_1040x_db`
-has published the whole A/B/C face since 2026-06-25; the spec mirror diffed
-clean against the live RS export (timestamp only). ⚠⚠ **THE LEGACY SCREEN
-NEVER LOADED ITS OWN ROW — THE THIRD s146-ENVELOPE OCCURRENCE, CAUGHT BY
-THE LIVE RUN:** `Form1040XSection.load()` stored `api.get()`'s
-`{ok,status,data}` envelope itself, so `row` was never null and never
-carried the model fields — a permanently blank Part II explanation, a
-"Not captured" baseline and unticked flags, while every PATCH silently
-succeeded. FIXED at the container (both renderings) and pinned by
-`form1040xEnvelope.test.tsx` (revert-tested). ⚠⚠ **The legacy screen also
-showed the stale "compute leg ships later" placeholder face** — five weeks
-after the compute shipped (3rd stale-notice occurrence, the largest) — and
-**five writable amendment facts had NO input anywhere** (lines 6/15/16/18/23;
-the line-18 default-0 claims the original refund AGAIN on any refund-original
-amendment). Both FIXED on the Slate screen, revert-tested. ⚠ Two engine items
-to REVIEW_QUEUE: **deleting the amendment leaves ~61 published FFV rows AND
-`is_amended_return` stuck true** (F8888-020 keeps firing; proven live) → LEG
-2-lane; **an amended 1040 has no transmission path at all** (paper-only;
-stated on screen) → LEG 3, its own item. The rule/diagnostic backlog is
-still PAUSED at LEG 2 item 5. ⚠ **At deploy the earlier `seed_rules`
-obligation still stands** — s144's D_RET_007 description + s145's
-D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
+*Last updated: 2026-07-30, session 153 (**sweep unit 33 — the State Returns
+launcher (the state/GA tab) — is SHIPPED** (`44cc0e1` on `slate-ui`, pushed,
+no deploy). **37 of ~39 screens
+converted; the sweep resumes at the prior-year / tax-summary views.** No
+migration, no seed change, no server change — client-only (the view, the
+shared `stateReturnRows.ts` row-builder, the StateSection container's Slate
+branch + remove lane). ⚠⚠ **THE DEMO RETURN CARRIES TWO GA-500s — THE
+AUTO-ATTACH RACE, PROVEN: created 195 ms apart, disagreeing on 16 lines (GA
+tax $3,332 vs $2,906, GA AGI 94,560 vs 68,000).** The legacy panel keyed its
+rows by STATE CODE (last-write-wins over a newest-first list), so it showed
+ONLY the STALE copy while `_auto_sync_ga500` (`.first()` = newest) fed the
+other and `render_complete` printed BOTH into the client package. FIXED on
+the Slate screen: one row PER RETURN, a duplicate warning naming which copy
+the sync feeds, and a two-step **Remove** lane over the existing DELETE
+endpoint (state returns are hidden from the Return Manager — a duplicate
+previously had NO removal path). Engine item → REVIEW_QUEUE (no uniqueness
+constraint; the find-or-create race) → **LEG 3 item 18**; **the demo pair is
+LEFT STANDING as the live proof — Ken decides which copy dies.** Also FIXED:
+`split("-")[0]` state-code parsing (a created SC1040 listed under a raw
+"SC1040" row while SC still offered a 409-ing Create), the business-entity
+"balance sheet, Schedule K" refresh tooltip on individual rows, the
+undocumented overwrite-including-overrides refresh semantics + the GA-vs-
+SC/AL/NC sync asymmetry, and the stale GA/SC-only footer (now derived from
+the supported map). The rule/diagnostic backlog is still PAUSED at LEG 2
+item 5. ⚠ **At deploy the earlier `seed_rules` obligation still stands** —
+s144's D_RET_007 description + s145's D_8863_DUAL_STUDENT severity, on BOTH
+DBs.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -32,7 +35,7 @@ D_8863_DUAL_STUDENT severity, on BOTH DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at the state/GA tab (unit 33).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at the prior-year / tax-summary views (unit 34).**
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -46,6 +49,15 @@ with their engine proofs): Form 8615's line-1 sourcing → **LEG 2**; the missin
 `IRS8615` e-file builder and the blank parent header → **LEG 3**; and a
 cross-cutting recommendation to stop fixing the unpinned-year-constant shape one
 form at a time (third occurrence). They are listed in the legs below.
+
+**s153 added one engine item** (REVIEW_QUEUE, live-proven on the demo return):
+duplicate state returns — no uniqueness constraint on (federal_return,
+form_definition) and `_auto_sync_ga500`'s find-or-create is not atomic; the
+demo pair's 195 ms spacing IS the race, the printed package includes both
+copies ($426 of GA tax apart), and `create_state_return`'s 409 check has the
+same window → **LEG 3 item 18** (a conditional unique constraint + the
+locked find-or-create + Ken's call on which demo copy dies through the new
+Remove lane).
 
 **s152 added two engine items** (REVIEW_QUEUE, both observed live on the demo
 return): the 1040-X delete residue (~61 published FFV rows survive the
@@ -300,6 +312,15 @@ number is at least loud while the compute fix is pending.
    per D_1040X_006; the Slate screen states it. When the compute is next
    touched, also author the first 1040-X flow assertions in RS (the staged
    file holds 0).
+18. **(s153) Duplicate state returns — a conditional unique constraint on
+   (federal_return, form_definition) + a locked find-or-create in
+   `_auto_sync_ga500`** (and the same window in `create_state_return`). The
+   demo pair (195 ms apart, $426 of GA tax apart, both in the printed
+   package) is the live proof and is LEFT STANDING until Ken picks the
+   surviving copy — the Slate launcher's new Remove lane is how to clear it
+   (keep `a129a7e2` — newest, auto-synced; remove `e27ab39c` — stale, AGI
+   68,000, RIE blank). A migration; the constraint must decide what happens
+   to EXISTING duplicates first.
 16. **(s151) `build_irs5695`** — no IRS5695 builder while Schedule 3 lines
    5a/5b transmit (`ResidentialCleanEnergyCrAmt` / `EgyEffcntHmImprvCrAmt`)
    and `ReturnData1040.xsd` line 1382 expects `IRS5695` (maxOccurs 2 — the
@@ -347,13 +368,14 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the state/GA tab.**
-**36 of ~39** 1040 screens are converted (unit 32, Form 1040-X / the amended
-return, shipped this session). Remaining (the count was re-measured in s137
-by mapping every `activeTab` to its section component **file** and checking
-each for a `NEW_UI` gate — do it that way, never by scanning FormEditor
-alone): the **state/GA** tab · the **prior-year / tax-summary** views · the
-estimates/extension/e-file cards.
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the prior-year / tax-summary views.**
+**37 of ~39** 1040 screens are converted (unit 33, the State Returns
+launcher, shipped this session — gated `NEW_UI && isIndividual`; the entity
+editors' State tab keeps the legacy panel for the business lane). Remaining
+(the count was re-measured in s137 by mapping every `activeTab` to its
+section component **file** and checking each for a `NEW_UI` gate — do it
+that way, never by scanning FormEditor alone): the **prior-year /
+tax-summary** views · the estimates/extension/e-file cards.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
 rows AND per-owner forms, **InputRow worksheets** for facts cards (screenbar
@@ -509,6 +531,17 @@ lane — ~12 more, none started. Ken's call when to take them.**
    SIBLING form's line is an ordering statement** (line 14 subtracts line 32
    → §25C computes first), and ordering is arithmetic wherever one credit
    carries forward and the other dies.
+29. ⚠⚠ **A PANEL THAT KEYS RECORDS BY A DERIVED, NON-UNIQUE KEY HIDES ITS
+   DUPLICATES.** The legacy State panel mapped `stateReturnMap[stateCode] =
+   sr` — last-write-wins over a newest-first list — so the demo return's two
+   GA-500s rendered as ONE row (the stale one), while the auto-sync fed the
+   other and the print package included both. When converting any panel that
+   maps records by a derived key, ask what happens when two records share the
+   key — and note the ORM PROBE found this pair, not the browser: probing the
+   data a launcher launches into is part of auditing the launcher. (Related:
+   the derived key itself was wrong for 3 of 4 states — `split("-")[0]` only
+   parses the GA-* family. A derivation that happens to work for the most
+   common case survives for years.)
 15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
    DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
    behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
@@ -577,13 +610,38 @@ MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
 D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
 change. **s146, s147, s148 and s150 add neither a migration nor a seed change**
 (s147 and s148 touch only their spec mirrors, refreshed from the live RS
-export; **s150, s151 and s152 make no server change at all** — the 8960,
-5695 and 1040-X spec mirrors were already current, each diffed clean against
-the live export; s152's fixes are client-side only, in the shared
-Form1040XSection container). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+export; **s150, s151, s152 and s153 make no server change at all** — the
+8960, 5695 and 1040-X spec mirrors were already current, each diffed clean
+against the live export; s152's fixes are client-side only, in the shared
+Form1040XSection container; s153 is client-only — the launcher view, the
+`stateReturnRows.ts` builder and StateSection's Slate branch + remove lane). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s153 gates (unit 33 — the State Returns launcher / state-GA tab):** NEW
+`slateStateReturnsScreen.test.tsx` **23** (revert-tested TWICE — restoring
+the legacy business-entity refresh tooltip failed the contract-3 copy test;
+restoring the legacy map-by-state-code + `split("-")` row shape failed the
+3 buildStateRows tests that pin findings 5/6) · flow assertions untouched
+(no server change — verify by `git status`: server tree clean but for the
+parallel session's pre-existing files) · vitest **1303/1303** (1280 + 23) ·
+tsc **45 = baseline** (s152's level). **LIVE-PROVEN** on the demo QA return
+(`scripts/qa_unit33.mjs`): at rest BOTH GA-500 duplicates render as their
+own rows with the "Duplicate GA returns" pill, the duplicate error note,
+the GA auto-sync note, the overwrite warning and the derived 4-state
+footer (screenshot `unit33_duplicates.png`); an SC1040 created through the
+picker (POST 201) landed on the SOUTH CAROLINA row with Open/Refresh/Remove
+(finding 6's mapping, live), the picker dropped to AL/NC; **Open navigated
+to the SC1040's own editor**; the remove lane proved TWO-STEP live (arm →
+Keep disarmed with no DELETE; arm → Confirm issued DELETE 204) and the SC
+row returned to the picker. Console errors = the known pre-existing set
+(403 `/api/v1/me/` pre-login + the `prior-year/` 404s). **Demo writes
+self-reverting and ORM-verified ZERO DRIFT: federal 892-row FFV hash
+IDENTICAL (`c8edf9c4…`), both GA-500 FFV hashes IDENTICAL, state-return
+count back to 2** — the only writes were the QA's own SC1040, created and
+removed through the screen itself. **The GA duplicate pair was deliberately
+NOT touched** — it is the standing live proof for LEG 3 item 18.
 
 **s152 gates (unit 32 — Form 1040-X / amended return):** NEW
 `slateForm1040XScreen.test.tsx` **20** (revert-tested TWICE — restoring the
@@ -643,36 +701,11 @@ and ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows identical** (the
 17 blank FORM_5695 shells `_backfill_values` created were deleted after
 value-checking `{''}`, facts back to defaults, `compute_return` re-run).
 
-**s150 gates (unit 30 — Form 8960 / Net Investment Income Tax):** NEW
-`slateForm8960Screen.test.tsx` **22** (revert-tested — restoring the legacy
-plain-entry 4a shape failed exactly the 3 tests that pin the fix: the two
-contract-3 tests + the four-override-notes count) · the five 8960 server
-suites **39** (untouched — this unit changes no server file) · flow
-assertions **521** (baseline exactly) · vitest **1229/1229** (1207 + 22) ·
-tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return through the
-screen's own facts lane (`scripts/qa_unit30.mjs`, the qa_unit25 template):
-the demo 1099-INT raised to 250,000 by ORM (the s147 precedent) engaged the
-face — 8 = 250,950 → 12 = 250,950 → 13 = 343,310 → 16 = 143,310 (MAGI excess
-binds) → 17 = 5,446 = SCH_2 line 12 = 1040 line 23, **all five on-screen ƒx
-cells ORM-matched and locked**, pill "NIIT $5,446", the 2b auto note showing
-the live $250,000. Then 9b = 120,000 keyed IN the screen (PATCH 200
-`{"e8960_state_tax_allocable":"120000"}`) flipped the §1411 binding side
-server-side — 12 = 130,950 → 16 = 130,950 → 17 = 4,976 — and blanking the
-cell committed the hook's normalize (`"0"`), returning the face to 5,446.
-Console 403/404s verified PRE-EXISTING (`/api/v1/me/` pre-login + the known
-`prior-year/` 404), not the screen's. **Demo writes REVERTED and
-ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows identical** (the 6
-blank FORM_8960 shells `_backfill_values` created were deleted after
-value-checking `{''}`, the 1099-INT restored to 1,250.00, `compute_return`
-re-run). The disengaged screen states the correct why-not (MAGI $94,560 ≤
-the $200,000 single threshold, D_8960_BELOW_THRESH's copy) with every auto
-note carrying the live at-rest figure ($1,250 / $800 / $0 / $150).
-
-**s143 / s144 / s145 / s146 / s147 / s148 / s149 gates — moved to `STATUS_ARCHIVE.md`
-(s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152).** Re-run them if you touch
-Form 8863, Form 5329, Form 6251, Form 8615, the retirement modules or the
-MeF-1040 band; each block records the exact suites, the counts and what each
-revert proved. s146's fetch-trap lesson survives as Method items 16/17 — a
+**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 gates — moved to `STATUS_ARCHIVE.md`
+(s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152; s150 by s153).** Re-run them if you touch
+Form 8863, Form 5329, Form 6251, Form 8615, the 8960 family, the retirement
+modules or the MeF-1040 band; each block records the exact suites, the counts
+and what each revert proved. s146's fetch-trap lesson survives as Method items 16/17 — a
 fetch-backed screen needs a live pass.
 
 **KEN CLARIFIED (2026-07-28): the tax app is TESTING until January 2027.** He
@@ -680,6 +713,13 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0o. **(s153) The demo return holds TWO GA-500s that disagree by $426 of GA
+   tax, and nothing prevents duplicates** (no uniqueness constraint; the
+   auto-attach race — 195 ms apart, proven). The printed package includes
+   both. The Slate launcher now shows both with a Remove lane; **Ken picks
+   the surviving copy** (recommend keep `a129a7e2`, the auto-synced one) and
+   rules on the constraint (LEG 3 item 18). Also flag: the Remove lane is
+   new UI over the existing DELETE endpoint — say so if unwanted.
 0m. **(s152) Deleting a 1040-X amendment leaves two ghosts** — ~61 published
    FFV rows survive the DELETE and `is_amended_return` stays true, so
    F8888-020 (the amended-refund cap) keeps blocking. Proven live. LEG
@@ -833,6 +873,14 @@ the shared Supabase DB caution is the one true-production constraint.
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's uncommitted
   work UNSTAGED. Never stage/stash/`git add .`.
+- ⚠⚠ **The demo QA return's TWO GA-500 state returns are a LIVE PROOF (s153,
+  LEG 3 item 18) — do NOT remove either without Ken's ruling.** `a129a7e2`
+  (newest, auto-synced, GA tax 3,332) vs `e27ab39c` (stale, GA tax 2,906,
+  RIE blank). FFV hashes recorded in the s153 gates block.
+- ⚠ **s153 wrote to the demo DB and self-reverted through the screen:** one
+  SC1040 created via the picker (POST 201) and removed via the new Remove
+  lane (DELETE 204). ORM-verified zero drift — federal 892-row hash and both
+  GA-500 hashes identical, state-return count back to 2.
 - ⚠ **Demo DB drift:** diagnostics migration 0005 applied to the DEMO DB only —
   prod applies at Ken's deploy (additive, safe). **`seed_rules` has been run on
   the DEMO DB for all of s142's rules; PROD seeds at Ken's deploy.**
