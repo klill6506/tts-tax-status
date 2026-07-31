@@ -1,33 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 160 (**entity sweep unit 40 — Income &
-Deductions (page1), BOTH entities — is SHIPPED** on `slate-ui`, no deploy,
-client-only. Bespoke screen over the ONE debounced FFV lane + the B2-3
-manual-PY lane (shared `PyCell`, extracted from the s154 screen): Income +
-1125-A COGS side by side, deductions alphabetical with the B2-5 meals block
-and used-only free-form rows (+ add affordance), B2-6 hidden lines omitted,
-the engine's Total Deductions / OBI as the summary band + pills. The
-grouping logic is ONE shared implementation (`slate/entityPage1.ts`) that
-BOTH renderings call — the legacy useMemo now delegates. **Unit-40
-findings:** (1) ⚠ the officer-rollup STOMP surfaces on THIS screen too —
-`_rollup_officer_compensation` overwrites 1120-S line 7 / 1065 line 9
-unguarded on every officer save while the page-1 cell is plain entry (the
-0q family); the Slate screen warns when the line disagrees with the
-officers' sum (LIVE on the demo 1065: line 9 = 96,000 vs 0 officers). (2)
-⚠ the 1125-A boundary: methods (iii)–(vi) + questions 9b–9e exist in the
-print field map but have NO seed/inputs/render mapping — LIFO / §263A
-inexpressible end-to-end; an unrecognized A9a prints NO method box
-(REVIEW_QUEUE → LEG 3; the screen states it and surfaces unrecognized
-values). (3) ⚠⚠ OBSERVED, unexplained, written up honestly in
-REVIEW_QUEUE: the demo 1120-S's page-1 totals (20/21/22) sat 123,384 out
-of foot with their own inputs through multiple compute passes, then a
-later identical pass corrected them (proven fixpoint now; a hand-staled 21
-re-corrects in one pass; duplicate-lines/memo/override causes ruled out;
-unattributed 08:32 UTC demo-DB writes noted — the parallel TB-import
-session's test bed). Recommendation queued: a pass-end footing invariant.
-(4) the 1065 dual-destination note (s156) renders on the 1065 variant when
-officer comp exists. The rule/diagnostic backlog stays PAUSED at LEG 2
-item 5.)*
+*Last updated: 2026-07-31, session 161 (**entity sweep unit 41 — Schedule L
+balance sheets + M-1 + M-2 + SubSchedulePanel, BOTH entities — is SHIPPED**
+on `slate-ui`, no deploy, client-only. Bespoke Slate screen over THREE
+carried legacy lanes: the ONE debounced FFV lane, the LineItemDetail
+sub-schedule lane (extracted VERBATIM into the shared
+`slate/lineItemDetails.ts` hook — the legacy SubSchedulePanel now delegates,
+`_key` identity + pendingCreates contracts intact) and the populate-BOY
+lane. Face structure is ONE shared implementation
+(`slate/entityScheduleL.ts`: schedLGroup/faces/dividers + the data-driven
+`buildM1Layout` + M-2 shape + tie/total helpers) — the legacy
+ScheduleLSection/BalanceSheetsSection delegate. Screen states, from the RS
+specs (all six fetched + diffed): BOY/EOY balance pills off the PUBLISHED
+totals (LIVE on the demo 1120-S — genuinely $361,052 out EOY), the
+Sch B Q11/Q4 small-entity exemption, the 1065 capital tie L23d↔M2_9, the
+M-1↔M-2 net-income tie, the 1120-S retained↔ΣM2_8 tie. **Unit-41
+findings:** (1) ⚠⚠ the legacy M-1 layout hardcoded 1120-S keys, so a
+1065's rows M1_3..M1_9 NEVER RENDERED (10 of 12 rows invisible) —
+`buildM1Layout` is the fix and legacy delegates, so both renderings heal;
+QA-proven live (12/12 rows on Blue Ridge). (2) ⚠⚠ `SUBSCHEDULE_CONFIG` has
+NO "L22" entry, so 1065 Other-liabilities detail rows save but never roll
+up and never recompute — a two-line views.py fix DEFERRED because views.py
+is the parallel TB-import session's in-flight file (REVIEW_QUEUE; the
+Slate panel warns). (3) ⚠ the line-details rollup is the 0q stomp family's
+third member: a plain imported parent dies on the first detail save and
+delete-all leaves "0" (REVIEW_QUEUE, priced by family history). Spec
+diffs: 1065_L status approved→draft, 1065_M1 one citation string — both
+cosmetic, mirrors refreshed. The rule/diagnostic backlog stays PAUSED at
+LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -36,7 +36,7 @@ item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 41 (Schedule L balance sheets + SubSchedulePanel — the biggest schedules unit).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 42 (Schedule B + Sched K verify — Sch K/8990 already Slate via StandardSection; QA-verify + convert Schedule B).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -49,8 +49,8 @@ mission. ✅ = shipped:
 | ✅ 38 | Partners + Allocations (1065) | s158 — document tabs + the allocation grid |
 | ✅ 39 | Form 7203 + shareholder loans (1120-S) | s159 — document tabs over the engine-face endpoint |
 | ✅ 40 | Income & Deductions (page1) | s160 — both entities, shared grouping module |
-| 41 | Schedule L balance sheets + SubSchedulePanel | **NEXT** — biggest schedules unit |
-| 42 | Schedule B + Sched K verify | Sch K/8990 already Slate via StandardSection — QA-verify only |
+| ✅ 41 | Schedule L + M-1 + M-2 + SubSchedulePanel | s161 — both entities, shared face module + shared detail hook |
+| 42 | Schedule B + Sched K verify | **NEXT** — Sch K/8990 already Slate via StandardSection — QA-verify only |
 | 43 | Rental (8825) | entity twin of Sch E |
 | 44 | Dispositions (entity Sch D) | |
 | 45 | Schedule F (entity arm) | pure props |
@@ -672,6 +672,52 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s161 gates (entity unit 41 — Schedule L + M-1 + M-2 + SubSchedulePanel,
+both entities):** NEW `slateEntityScheduleLScreen.test.tsx` **21** (screen
+contracts + shared-module contracts incl. two mocked-api detail-panel
+tests; revert-tested TWICE — restoring the legacy hardcoded M-1 key lists
+failed exactly the two 1065-drop pins; unlocking computed cells failed
+exactly the field-state pin) · `schedL1065FaceNumbers.test.tsx` re-green
+(its FV type now derives from ScheduleLSection's props — unit 41 narrowed
+isSchedL1065Face's parameter to the shared SchedLFieldLike) · vitest
+**1444/1444** (1423 + 21) · tsc **46 = baseline** · **client-only** (no
+server change; flow assertions n/a; the two 1065 spec mirrors refreshed
+from the live RS export — cosmetic diffs only). Client:
+`SlateEntityScheduleLScreen` (Sch L table with face chips/dividers/detail
+toggles + balance pills off the PUBLISHED totals + tie warnings + the
+exemption note + populate-BOY with inline status; M-1 per
+`buildM1Layout`; M-2 by seed shape — 1065 rows vs the AAA grid), the
+SHARED `slate/entityScheduleL.ts` face module (schedLGroup/isBOY/
+SCHED_L_1065_FACE/isSchedL1065Face MOVED here; buildSchedLGroups,
+buildM1Layout — detection order M1_10→M1_3a→M1_9 since the 1120 C-corp
+seed also carries M1_9; m2Shape; totals/tie/exemption helpers), the
+SHARED `slate/lineItemDetails.ts` hook (SubSchedulePanel's lane verbatim:
+`_key` identity, pendingCreates, ?fresh_return=1; legacy delegates), the
+NEW_UI branch inside BalanceSheetsSection (formCode/taxYear threaded from
+the call site), the `.slate-schl-*` CSS (⚠ the natural .slate-field width
+overflows a 116px grid column under the ✕ — constrain width:100% per
+cell, caught by ZOOMING the screenshot, invisible at full-page scale).
+**LIVE-PROVEN on BOTH entities** (`scripts/qa_unit41.mjs` A/B, fresh
+`demo` links; `--only-b` flag for B-only reruns): **A (1120-S
+WorkNAllDay)** — the EOY out-of-balance pill LIVE on real data ($361,052:
+L15d 3,589,195 vs L27d 3,228,143) with the BOY pill correctly absent
+(foots at 4,688,476), L15d locked ƒx, M-1 shape 1120s, AAA M-2 table, no
+exemption note (B11=false), retained tie correctly quiet (L24d =
+ΣM2_8 = 1,724,175); L6 detail: 4 saved rows load in sync (BOY $56,254 ·
+EOY $52,491, no warning) → probe row "QA PROBE" POST 201 → EOY 500 PATCH
+200 → L6d ROLLED UP live to 52,991 and the pill moved to $361,552 → ✕
+DELETE 204 → L6d back to 52,491, pill back to $361,052. **B (1065 Blue
+Ridge)** — ALL 12 M-1 rows render (the legacy screen showed 2), M-2
+capital table, no pills on the all-zero Sch L, the L22 detail opens with
+4 blank local rows and fires ONLY the GET; zero writes (⚠ the read-only
+assertion must whitelist POST /render-pdf/ — the FormViewPane's preview
+render — and POST /auth/magic-link/redeem/). Console errors = the known
+pre-existing set. **Settle: BOTH returns BYTE-IDENTICAL to the morning
+baseline after TWO full QA passes** (1120-S 359 rows hash `c8765c72…` +
+23 LineItemDetail rows; 1065 409 rows hash `1d7db3b7…`) — the rollup
+restore is exact because the surviving rows re-sum to the prior published
+values; no fixpoint pass needed, no s160-anomaly recurrence observed.
 
 **s160 gates (entity unit 40 — Income & Deductions / page1, both entities):**
 NEW `slateEntityPage1Screen.test.tsx` **15** (12 view contracts + 3 on the
