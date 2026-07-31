@@ -26,8 +26,17 @@ Slate panel warns). (3) ⚠ the line-details rollup is the 0q stomp family's
 third member: a plain imported parent dies on the first detail save and
 delete-all leaves "0" (REVIEW_QUEUE, priced by family history). Spec
 diffs: 1065_L status approved→draft, 1065_M1 one citation string — both
-cosmetic, mirrors refreshed. The rule/diagnostic backlog stays PAUSED at
-LEG 2 item 5.)*
+cosmetic, mirrors refreshed. **SAME SESSION, Ken-directed off-spine: the
+FORM-VIEW PANE now FOLLOWS THE ACTIVE SCREEN** — `slate/formViewPage.ts`
+maps screen→page of the primary form's render (pages VERIFIED against the
+2025 template faces: 1120-S Sch B/K/L = p2/p3/p4; 1065 = p2/p5/p6; 1040
+payments/preparer = p2; 1041 Sch B/G = p2; everything else p.1), the pane
+tab label carries the page, a screen change re-renders from CACHED bytes
+(ONE render-pdf POST per fresh payload — ⚠ pdfjs DETACHES the buffer it's
+given, so getDocument gets a copy), out-of-range pages clamp to 1
+(template-drift safety). Ken ratified the pane itself as optional-only —
+the Hide/F6 toggle is untouched. The rule/diagnostic backlog stays PAUSED
+at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -718,6 +727,23 @@ baseline after TWO full QA passes** (1120-S 359 rows hash `c8765c72…` +
 23 LineItemDetail rows; 1065 409 rows hash `1d7db3b7…`) — the rollup
 restore is exact because the surviving rows re-sum to the prior published
 values; no fixpoint pass needed, no s160-anomaly recurrence observed.
+
+**s161 gates addendum (the form-view page-follow, Ken-directed off-spine):**
+NEW `slate/formViewPage.ts` (the verified screen→page map + fallback-1
+resolver) · FormViewPane: `activeTab` prop, PdfPage with byte cache +
+clamp; SlateEditorChrome threads `activeTab` (one line) · extended
+`formViewPane.test.tsx` **13** (4 new: the verified map · label+requested
+page · cached-bytes/no-second-POST · the numPages clamp; revert-tested —
+forcing the resolver back to 1 failed exactly the three follow pins while
+the clamp pin correctly survived) · vitest **1448/1448** (1444 + 4) · tsc
+**46 = baseline** · client-only. LIVE-PROVEN read-only
+(`scripts/qa_formview_follow.mjs`, fresh `demo` links): 1120-S page1→p.1,
+Sch L→p.4 (screenshot shows the FILLED balance-sheet page beside the
+grid), Sch K→p.3, Sch B→p.2 with ZERO extra render-pdf POSTs on screen
+changes; 1065 Sch L→p.6, Sch K→p.5. Console errors = the known set.
+⚠ Year-rollover note: the page map is a FACE FACT — re-verify per year
+with the template refresh (the clamp only degrades gracefully, it does
+not re-map).
 
 **s160 gates (entity unit 40 — Income & Deductions / page1, both entities):**
 NEW `slateEntityPage1Screen.test.tsx` **15** (12 view contracts + 3 on the
