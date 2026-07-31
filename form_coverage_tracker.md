@@ -1,5 +1,22 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 166 — ELECTIONS CARDS (2553 / 2848 / 3115): SCREEN
+> LEG CONVERTED ON EVERY MOUNT — and the "39/39 1040 screens complete"
+> claim was short by two.** The three print-first singleton cards are now
+> Slate (unit 46, `SlateForm2553Screen` / `SlateForm2848Screen` /
+> `SlateForm3115Screen` — views over each Section container's own lanes;
+> the server-derived `analysis` rollups render read-only; row deletes
+> gained the two-step arm lane the legacy Del links never had). The
+> conversion lives INSIDE the shared Section components, so the entity
+> elections tab AND the 1040's form_2848 / form_3115 tabs all convert at
+> once — **the 1040 mounts had NO Slate gate while the sweep was recorded
+> complete** (the s147 a-tracker-row-is-a-claim lesson, proven again on
+> the sweep's own count; fixed by this unit, verified live on the 1040
+> demo return). No engine findings: the RS spec mirrors (2553/2848/3115)
+> diffed identical to the live exports, render_complete's
+> attach_to_return integration for 2553/3115 was verified in-code, and
+> these forms are deliberately print-only (no MeF leg).
+
 > **2026-07-31 session 165 — ENTITY SCHEDULE F: SCREEN LEG CONVERTED, two
 > header defects + the F14 delete-residue ANNOTATED.** The entity farm tab
 > is now Slate for BOTH entities (unit 45, `SlateEntityScheduleFScreen` —

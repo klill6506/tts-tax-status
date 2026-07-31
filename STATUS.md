@@ -1,36 +1,29 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 165 (**entity sweep unit 45 —
-Schedule F, the entity arm, BOTH entities — is SHIPPED** on `slate-ui`,
-no deploy, client-only. NEW bespoke screen `SlateEntityScheduleFScreen`
-— pure props over the seeded `sched_f` FFV rows on the ONE debounced
-FFV lane + the B2-3 manual-PY lane (the THIRD 1040-twin pair where the
-arms ride different storage: the 1040 farm is a per-farm model, the
-entity farm is FFV rows). Computed F1c/F9/F33/F34 locked ƒx; F14
-engine-owned ONLY while a Depreciation-worksheet asset flows to
-Schedule F (the page-1 B2-4 treatment + open-worksheet jump); tri-state
-header booleans (s162 idiom); FH_METHOD became a Cash/Accrual select
-writing canonical tokens (unrecognized stored values surfaced, never
-blanked); the flow band states 1120-S F34→K10 (separately stated) vs
-1065 F34→page-1 line 5→K1 + K-1 14a/14b, warns when the published
-downstream line disagrees (live on the demo 1120-S: K10 override 10,000
-over an empty farm, keyed 07-13), and states the 1120-S e-file refusal
-(nonzero K-1 box 10 has no modeled code — keys on the EFFECTIVE K10,
-override included). **Unit-45 findings → REVIEW_QUEUE s165:** (1) ⚠ the
-accounting-method box CAN NEVER PRINT — `render_schedule_f`
-(renderer.py:5649) maps only a boolean-typed FH_METHOD to the Cash box,
-nothing emits FH_METHOD_ACCRUAL, seeds type it TEXT; (2) ⚠ the
-FH_1099_RECEIVED seed label asks the pre-2023 "applicable subsidy"
-question while its checkbox prints into 2025 line F (payments requiring
-Form 1099) — the screen shows the FACE label (s154 precedent) and warns
-on stored answers; (3) ⚠ F14 delete-residue — compute.py:1199 writes
-F14 only when the total is NONZERO, so deleting the last farm asset
-leaves the stale engine figure in F33/F34 (page-1's write four lines up
-is unconditional = the correct pattern; audit the 8825/C/1040-farm
-truthy gates with it); (4) minor — at-risk 36a/36b are a map-only stub.
-No RS spec exists for the entity sched_f set (all key guesses 404; the
-F-formulas live in the SCH_K-cited compute blocks). The rule/diagnostic
-backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 166 (**entity sweep unit 46 — the
+Elections cards, Form 2553 / 2848 / 3115 — is SHIPPED on EVERY mount**
+(`slate-ui`, no deploy, client-only). THREE new Slate views
+(`SlateForm2553Screen` / `SlateForm2848Screen` / `SlateForm3115Screen`)
+as VIEWS over each Section container's own lanes (singleton PATCH +
+child CRUD + print; no second save path); the NEW_UI branch lives
+INSIDE the shared Section components, so the entity elections tab AND
+the 1040's form_2848/form_3115 tabs convert together — **the 1040
+mounts had NO Slate gate while the sweep was recorded 39/39 complete**
+(the s147 claim lesson on the sweep's own count; closed and live-
+verified on the 1040 demo return). The server-derived `analysis`
+rollups (2553 deadline/timeliness/relief/consent scope · 2848 filing
+route/CAF modification/countersign window/URP gate · 3115 DCN/§481(a)/
+period/installments) render as READ-ONLY banners; row deletes are the
+two-step arm lane (the legacy Del links fired instantly with no
+confirm); TIN punctuation preserved verbatim (s157); the 3115
+"blank = derived" DCN/L26 cells keep the legacy placeholder contract
+(NOT the `suggested` state — that stays W-2 3&5 only by ruling). ONE
+`.slate-screen` wraps each tab's stacked cards at the call site (the
+s130 negative-margin rule; the two 1040 call sites gained the wrapper).
+NO engine findings: spec mirrors 2553/2848/3115 diffed identical to
+the live RS exports, render_complete's attach_to_return appends for
+2553/3115 verified in-code, print-first forms have no MeF leg by
+design. The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -39,7 +32,7 @@ backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 46 (Elections: 2553 / 2848 / 3115 — three files, ~1,670 ln).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 47 (Boundary + 8941).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -57,8 +50,8 @@ mission. ✅ = shipped:
 | ✅ 43 | Rental (8825) | s163 — both entities; the K2 rollup stomp + 21/22a input gap → REVIEW_QUEUE |
 | ✅ 44 | Dispositions (entity Sch D) | s164 — both entities; the K7/K8a zero-clear + 1065 wrong-face print → REVIEW_QUEUE |
 | ✅ 45 | Schedule F (entity arm) | s165 — both entities; the method print gap + stale 1099 label + F14 residue → REVIEW_QUEUE |
-| 46 | Elections: 2553 / 2848 / 3115 | **NEXT** — three files, ~1,670 ln |
-| 47 | Boundary + 8941 | |
+| ✅ 46 | Elections: 2553 / 2848 / 3115 | s166 — EVERY mount (entity tab + the two 1040 tabs the 39/39 count missed); no engine findings |
+| 47 | Boundary + 8941 | **NEXT** |
 | 48 | Extensions + PY Compare + State (entity arm) | wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
 
 Scoping facts (s156 audit): the Slate CHROME already wraps entity returns
@@ -676,6 +669,51 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s166 gates (entity unit 46 — Elections: 2553 / 2848 / 3115, every
+mount):** NEW `slateElectionsScreens.test.tsx` **16** (per card:
+not-started Start lane + no print button, the read-only analysis
+banner + print lane; 2553 field commits keyed by field + conditional
+fiscal year-end + Part II only-when-analysis-requires + consent-cell
+commits with TIN punctuation VERBATIM + the two-step row remove [Keep
+disarms with zero deletes]; 2848 the modified-CAF warning keyed off the
+ANALYSIS not the checkboxes, rep commits + the autofilled pill off the
+flag, autofill/add lanes + two-step rep remove, the URP block only on a
+designation-h rep + the >4-reps overflow note, the conditional
+sign-a-return reason select; 3115 the derived DCN/L26 placeholders with
+blank→null / typed→figure commits, Schedule E only on a depreciation
+change / Schedule A only on overall-method with the 2h read, the three
+advisory notes keyed off the analysis; revert-tested TWICE with exact
+pins — instant-fire delete failed exactly the two two-step pins;
+keying the CAF warning off the checkboxes failed exactly the
+analysis-key pin) · vitest **1517/1517** (1501 + 16) · tsc **46 =
+baseline** · **client-only** (no server change; the 2553/2848/3115 RS
+spec mirrors diffed IDENTICAL to the live exports — no refresh needed;
+no compute/render modified). Client: the three Slate view files
+(bare-section roots — ONE `.slate-screen` wraps at each call site, the
+s130 rule; `RowRemove` exported from the 2553 view and shared), NEW_UI
+branches inside Form2553Section / Form2848Section / Form3115Section
+(every lane passed as a callback), the entity elections + 1040
+form_2848/form_3115 call-site wrappers, the `.slate-checkgrid` /
+rep-block / matter-row / f3115-pair CSS. **LIVE-PROVEN in three
+incognito phases** (`scripts/qa_unit46.mjs`; ⚠ NEW GOTCHA: phases as
+different USERS [demo vs dev] in one browser share the cookie jar and
+the later magic-login COLLIDES — `browser.createBrowserContext()` per
+phase, and `QA_PHASE=C` reruns one phase): **A (1120-S)** — all three
+cards not-started at rest · 2553 start PATCH → the §1362(b) banner with
+the derived deadline · consent POST → TIN PATCH carried `58-1234567`
+verbatim → Keep disarmed with zero DELETEs → confirm DELETEd · 3115
+start → category=depreciation → Schedule E appeared → taken 10,000 /
+allowable 24,000 → the banner RE-DERIVED §481(a) to −14,000 with the
+1-year period SERVER-side · 2848 start → route banner → matter
+POST/PATCH → two-step DELETE. **B (1065)** — NO 2553 card on a
+partnership; 2848 + 3115 not-started; zero writes. **C (1040
+`bc270846`, dev link)** — both 1040 mounts render the Slate cards (the
+39/39 gap closed). **Settle: ALL THREE returns BYTE-IDENTICAL to
+baseline** (1120-S `c412fe07…` · 1065 `a3c22390…` · 1040 `e2b3b635…`)
+after the ORM cleanup of the three probe singletons (they have NO UI
+delete lane by design — children already DELETEd through the screen)
++ one recompute. Screenshots `Design/screens/unit46/` (5, zoomed).
 
 **s165 gates (entity unit 45 — Schedule F, the entity arm, both
 entities):** NEW `slateEntityScheduleFScreen.test.tsx` **14** (computed
