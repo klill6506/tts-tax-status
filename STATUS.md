@@ -1,34 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 159 (**entity sweep unit 39 — Form 7203 +
-shareholder loans (1120-S) — is SHIPPED** on `slate-ui`, no deploy. Form
-7203 = DOCUMENT TABS per shareholder (a 7203 is a per-shareholder filed
-form) over **the ENGINE's OWN face**: a NEW read-only endpoint
-`GET /tax-returns/<id>/form-7203-face/<sh_id>/`
-(`apps/returns/form7203_face.py`, the amt_face precedent — kept OUT of
-views.py, which carries the parallel session's work) publishes
-`compute_7203`'s dict verbatim, so screen = print by construction; the
-legacy tab's THIRD implementation of the basis math (client re-sum: K3
-where the engine reads K3c, no Part III, no depletion) is retired behind
-the flag. **Unit-39 findings:** (1) ⚠⚠ ENGINE (REVIEW_QUEUE → LEG 2 lane,
-probe-priced): `compute_7203` Part I maps 3g=K7-only / 3h=K8a and NEVER
-reads K9 — the printed §1231 row shows the LT capital gain and a §1231 gain
-never increases stock basis (probe: line 10 = 0 vs 30,000 correct, plus a
-$15,000 phantom capital gain via the face's line-6>5 note); Part III got
-the symmetric fix 2026-06-30, Part I was left behind. The Slate screen
-warns only when K8a/K9 is live (s151 rule). (2) loan lines 21/22
-(debt_basis_boy / new_loans_increasing_basis) had NO input anywhere — debt
-basis was structurally $0 from the UI and Part III column (d) could never
-fire (the s155 unsatisfiable shape); first inputs shipped. (3) same for the
-SEVEN suspended-loss carryover fields (Part III column (b)) — first inputs
-shipped. (4) the legacy loans panel never refreshed the parent while the
-server recomputed K16e on every loan save (s155 finding-1 shape) — the
-Slate lane refreshes. (5) window.confirm loan delete → two-step (5th).
-(6) >3 loans silently dropped from the print — the screen states the
-3-column cap. Also: **origin/main MERGED into slate-ui at boot**
-(`c6bf8eb` — the A/R flag + cutover script + SSO session fix; one trivial
-add/add conflict in vite-env.d.ts union-resolved). The rule/diagnostic
-backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 160 (**entity sweep unit 40 — Income &
+Deductions (page1), BOTH entities — is SHIPPED** on `slate-ui`, no deploy,
+client-only. Bespoke screen over the ONE debounced FFV lane + the B2-3
+manual-PY lane (shared `PyCell`, extracted from the s154 screen): Income +
+1125-A COGS side by side, deductions alphabetical with the B2-5 meals block
+and used-only free-form rows (+ add affordance), B2-6 hidden lines omitted,
+the engine's Total Deductions / OBI as the summary band + pills. The
+grouping logic is ONE shared implementation (`slate/entityPage1.ts`) that
+BOTH renderings call — the legacy useMemo now delegates. **Unit-40
+findings:** (1) ⚠ the officer-rollup STOMP surfaces on THIS screen too —
+`_rollup_officer_compensation` overwrites 1120-S line 7 / 1065 line 9
+unguarded on every officer save while the page-1 cell is plain entry (the
+0q family); the Slate screen warns when the line disagrees with the
+officers' sum (LIVE on the demo 1065: line 9 = 96,000 vs 0 officers). (2)
+⚠ the 1125-A boundary: methods (iii)–(vi) + questions 9b–9e exist in the
+print field map but have NO seed/inputs/render mapping — LIFO / §263A
+inexpressible end-to-end; an unrecognized A9a prints NO method box
+(REVIEW_QUEUE → LEG 3; the screen states it and surfaces unrecognized
+values). (3) ⚠⚠ OBSERVED, unexplained, written up honestly in
+REVIEW_QUEUE: the demo 1120-S's page-1 totals (20/21/22) sat 123,384 out
+of foot with their own inputs through multiple compute passes, then a
+later identical pass corrected them (proven fixpoint now; a hand-staled 21
+re-corrects in one pass; duplicate-lines/memo/override causes ruled out;
+unattributed 08:32 UTC demo-DB writes noted — the parallel TB-import
+session's test bed). Recommendation queued: a pass-end footing invariant.
+(4) the 1065 dual-destination note (s156) renders on the 1065 variant when
+officer comp exists. The rule/diagnostic backlog stays PAUSED at LEG 2
+item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,7 +36,7 @@ backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 40 (Income & Deductions, page1 — both entities).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 41 (Schedule L balance sheets + SubSchedulePanel — the biggest schedules unit).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -49,8 +48,8 @@ mission. ✅ = shipped:
 | ✅ 37 | Shareholders (1120-S) | s157 — record table + detail worksheet |
 | ✅ 38 | Partners + Allocations (1065) | s158 — document tabs + the allocation grid |
 | ✅ 39 | Form 7203 + shareholder loans (1120-S) | s159 — document tabs over the engine-face endpoint |
-| 40 | Income & Deductions (page1) | **NEXT** — pure props, both entities |
-| 41 | Schedule L balance sheets + SubSchedulePanel | biggest schedules unit |
+| ✅ 40 | Income & Deductions (page1) | s160 — both entities, shared grouping module |
+| 41 | Schedule L balance sheets + SubSchedulePanel | **NEXT** — biggest schedules unit |
 | 42 | Schedule B + Sched K verify | Sch K/8990 already Slate via StandardSection — QA-verify only |
 | 43 | Rental (8825) | entity twin of Sch E |
 | 44 | Dispositions (entity Sch D) | |
@@ -674,6 +673,46 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s160 gates (entity unit 40 — Income & Deductions / page1, both entities):**
+NEW `slateEntityPage1Screen.test.tsx` **15** (12 view contracts + 3 on the
+SHARED grouping function; revert-tested TWICE — restoring violet-on-plain-
+overridden failed exactly the s154-rule field-state pin; making the meals
+tier-switch COPY instead of MOVE failed exactly the one-FFV-lane pin) ·
+vitest **1423/1423** (1408 + 15) · tsc **46 = baseline** · **client-only**
+(no server change; flow assertions n/a). Client: `SlateEntityPage1Screen`
+(+ `SlateMealsBlock`), the SHARED `slate/entityPage1.ts` grouping module
+(constants + `buildDeductionGroups` — the legacy IncomeDeductionsSection
+now DELEGATES to it; one implementation, two renderings), `PyCell`
+extracted to `slate/components/PyCell.tsx` (s154's screen now imports it —
+its 15 tests re-run green), the NEW_UI branch inside
+IncomeDeductionsSection, the `officers` prop threaded from the call site
+for the stomp warning, the `.slate-entp1-*` CSS (slim 128/96px value/PY
+columns — two grids sit side by side). **LIVE-PROVEN on BOTH entities**
+(`scripts/qa_unit40.mjs` A/B, one fresh `demo` link each): **A (1120-S)** —
+stomp warning correctly ABSENT (officers' 161,698 == line 7), OBI pill =
+the engine's 547,502, line 6 locked ƒx, the used free-form row (Fuel
+21,123) shown with unused pairs hidden, A9a=Cost + the boundary note;
+"+ Other deduction" → D_FREE2 "QA PROBE"/500 keyed → ONE debounced PATCH
+/fields/ 200 → OBI pill moved to 547,002 → blanked both → OBI back to
+547,502; PY line 8: 999111 → PATCH /py-manual/ 200 → blank → null-delete
+200. **B (1065)** — the stomp warning LIVE ("Line 9 currently holds
+$96,000 … rows total $0"), the dual-destination note correctly absent
+(0 officers), OBI pill = 275,600; no writes. Console errors = the known
+pre-existing set. **Settle: the 1065 BYTE-IDENTICAL (409 rows, hash
+`5672ced7…`); the 1120-S at the engine's PROVEN fixpoint (`cb6e4935…`
+stable across two computes) with every INPUT row at baseline** — the
+probe rows value-and-flag restored; the only delta vs the morning baseline
+is the engine's own totals refresh (20/21/22 + their K/L/M cascade), the
+s156 settle shape, PLUS the anomaly written up in REVIEW_QUEUE (the
+morning values had sat out of foot with their own inputs through several
+passes — mechanism unresolved, invariant recommended; unattributed 08:32
+UTC demo-DB writes noted). ⚠ Session gotchas: a single-use magic link
+minted from the WRONG cwd leaves the previous (burned) token in the file —
+the QA then dies at `.slate-root`; poetry needs `server/` as cwd. A QA
+script's success `console.log` after a `waitFor` MUST branch on the
+returned boolean — two unconditional logs printed success lines directly
+under their own FAILs this session.
+
 **s159 gates (entity unit 39 — Form 7203 + shareholder loans, 1120-S):**
 NEW `slateForm7203Screen.test.tsx` **15** (13 view contracts + 2 mocked-api
 container tests per the s152 rule; revert-tested TWICE — restoring
@@ -846,36 +885,7 @@ PS 5.1 `Get-Content`/`Set-Content` round-trips a no-BOM UTF-8 source as
 ANSI and mangles every multi-byte char — the screen file had to be fully
 rewritten; never regex-edit a UTF-8 source through PowerShell here.
 
-**s154 gates (unit 34 — the Tax Summary screen / tax_summary tab):** NEW
-`slateTaxSummaryScreen.test.tsx` **15** (13 screen + 2 priorYearFace;
-revert-tested TWICE — restoring the generic is_overridden→violet mapping
-failed exactly the 2 field-state tests that pin findings 3/4; restoring the
-verbatim pyLookup pass-through failed the faceLineValues test that pins
-finding 1) · no server change (verified by `git status`: server tree clean
-but for the parallel session's pre-existing files; flow assertions not
-required) · vitest **1318/1318** (1303 + 15) · tsc **45 = baseline**.
-**LIVE-PROVEN** on the demo QA return in three phases
-(`scripts/qa_unit34.mjs A|B|C`, one fresh magic link each): **A (no PYR)** —
-owe pill "Owe $10,151" (the server's line 37), the five real band titles,
-the manual-PY hint, lines 38/7 render ƒx `is-computed` readOnly (engine-
-authored 397/150), the 1b–1h group closed; then the 1040's FIRST manual-PY
-entry: 88,000 keyed into line 9's PY cell → PATCH /py-manual/ 200 →
-persisted after reload with Δ +7%. **B (ORM-created FACELESS proforma
-snapshot, underscore keys only)** — the faceless note fires, the hint
-suppressed, NO phantom PY values, the manual 88,000 still shadows.
-**C (snapshot face-keyed 9=91,000/24=11,000/33=2,000)** — line 24 shows
-imported 11,000 with the reference tint + Δ +11%, manual 88,000 still wins
-on line 9; blanking the manual cell PATCHed null and revealed 91,000
-(persisted, Δ +4%). Console errors = the known pre-existing set (403
-`/api/v1/me/` pre-login; the `prior-year/` 404s disappear once a snapshot
-exists). **Demo writes REVERTED and ORM-verified ZERO DRIFT: FFV 892 rows,
-hash `5820bba2…` IDENTICAL before/after** (the QA's only server writes were
-its own PYR row — deleted by source tag `sherpa_proforma_qa34` — and the
-py_manual_values keys — cleared; py-manual writes touch no FFV and trigger
-no compute). Screenshots `Design/screens/unit34/` (atrest · manualpy ·
-faceless · imported).
-
-**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 / s151 / s152 / s153 gates — moved to `STATUS_ARCHIVE.md`
+**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 / s151 / s152 / s153 / s154 gates — moved to `STATUS_ARCHIVE.md`
 (s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152; s150 by s153; s151 by s155).** Re-run them if you touch
 Form 8863, Form 5329, Form 6251, Form 8615, the 8960 family, the retirement
 modules or the MeF-1040 band; each block records the exact suites, the counts

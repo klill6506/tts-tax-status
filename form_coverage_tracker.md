@@ -1,5 +1,17 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 160 — FORM 1125-A: INPUT/RENDER BOUNDARY ANNOTATION.**
+> The 1125-A print field map carries all six line-9a valuation-method
+> checkboxes plus 9b/9c/9d/9e (subnormal goods, LIFO adopted, LIFO amounts,
+> §263A) — but only A9a (free text) and A9f are seeded, only Cost/LCM/9f
+> are renderer-mapped, and no screen offers the rest. A LIFO or §263A
+> corporation cannot express its inventory facts end-to-end, and an A9a
+> value outside the two supported strings prints line 9a with NO method box
+> (the Slate page-1 screen now states the boundary and surfaces
+> unrecognized values — unit 40). Do not read the 1125-A as fully covered;
+> the fix (seed lines A9b–A9e + inputs + render mapping) is REVIEW_QUEUE
+> s160, LEG 3.
+
 > **2026-07-31 session 159 — FORM 7203 (ENTITY SIDE): COMPUTE-LEG DEFECT
 > ANNOTATION, screen leg converted.** The entity-side Form 7203 compute
 > (`apps/tts_forms/compute_7203.py`, feeds the courtesy print for the
