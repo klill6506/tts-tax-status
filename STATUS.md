@@ -1,35 +1,35 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 162 (**entity sweep unit 42 — Schedule B
-"Other Information" + Sched K verify, BOTH entities — is SHIPPED** on
-`slate-ui`, no deploy, client-only. NEW bespoke question-list screen
-`SlateEntityScheduleBScreen` over the seeded `sched_b` rows, view-only over
-ScheduleBSection on the ONE generic FFV onChange lane. Legacy semantics
-carried verbatim: B14b/B16b hide unless their 1099 parent answers Yes,
-underscore detail keys indent numberless, booleans tri-state (blank ≠ No),
-the server-auto-answered questions (1120-S B11 per RS 1120S_SCHB R006 ·
-1065 B4 per RS 1065_B R-B4-AUTO) render DERIVED (ƒx-auto chip + tint)
-until a click overrides. The 1065 PR-designation block got its own headed
-section with the R-B33-PR §6221(b) note (Yes → Sch B-2 total; No → PR
-required). **Unit-42 findings, BOTH FIXED IN-SESSION:** (1) ⚠⚠ the 1065's
-**Form 8990 tab was UNREACHABLE in the Slate chrome** — the LeftRail
-renders ONLY grouped tabIds and `ENTITY_NAV_GROUPS_1065` never listed
-`f8990` (the s114 "invisible until the nav names it" shape one level up;
-the legacy horizontal row still showed it, so nothing ever erred). Fixed
-by naming it in the Schedules group + a structural pin
-(`navGroupsCoverTabs.test.ts`) that fails when ANY entity tab id lacks a
-nav-group home or a group names a dead tab. (2) ⚠ the 1065's **B1
-entity-type box was FREE TEXT on the legacy tab** — `FIELD_CHOICES
-["1065:B1"]` existed but only StandardSection's FieldInput consulted it,
-so the preparer had to type the raw RS token; the Slate screen takes
-`choicesFor` from the container and renders a real select (the ONE choices
-copy — no fork). Sch K verified live on both demo entities (already Slate
-via SlateStandardSection): 1120-S K1 547,502 / K16d 174,200 · 1065 K1
-275,600, read-only; the 1065 f8990 tab renders 45 Slate face rows
-post-fix. Both Schedule B RS specs fetched + diffed: 1120S_SCHB
-authority-citation metadata only, 1065_B timestamp only — mirrors
-refreshed, both cosmetic. The rule/diagnostic backlog stays PAUSED at
-LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 163 (**entity sweep unit 43 — Rental /
+Form 8825, BOTH entities — is SHIPPED** on `slate-ui`, no deploy,
+client-only. NEW bespoke screen `SlateEntityRentalScreen` — the entity
+twin of s131's SlateScheduleEScreen: DocumentTabs per property over the
+two-column InputRow worksheet, view-only over RentalPropertiesSection's
+FOUR legacy lanes carried verbatim (the property REST CRUD, the Schedule A
+(Form 8825) other-deduction child CRUD, the depreciation-worksheet feed
+set, and the manual-PY lane — "R:<propId>:<field>" keys through the shared
+PyCell, which grew additive `storeKey`/`ariaLabel` props). Legacy
+semantics verbatim: money commits raw, days `parseInt||0`, line 14 locks
+ƒx when worksheet-fed, the unclassified "other" row shows only when
+nonzero, add defaults type 8; window.confirm → the s153 two-step arm lane
+(6th). Computed 2c/17/18/19 render locked ƒx per RS 8825
+R005/R006/R001/R002; the summary band computes 20a/20b/23 (R003) with the
+flows-to-K2 note. **Unit-43 engine findings, all → REVIEW_QUEUE s163
+(views.py untouched — the parallel TB-import session's file):** (1) ⚠⚠
+`_rollup_rental_to_k2` = **the K16d stomp family on Schedule K line 2,
+worse** — it forces `is_overridden=False` on every rental save (strips the
+very flag compute would respect) AND its formula drops lines 21/22a that
+`aggregate_rental_income` includes (the two-implementations shape,
+disagreeing on the FORMULA); the screen warns live on a published-K2
+disagreement. (2) ⚠ `aggregate_rental_income` zeroes a PLAIN K2 before
+early-returning on a no-rentals return (compute.py:1660) — the 0q
+family's 4th member; compounds with (1). (3) ⚠ 8825 lines 21/22a have
+**no input lane anywhere** (engine/print/e-file read FFVs no seed
+creates) — the screen states it. Also: the `mint_magic_link.py` script
+HARDCODES user `dev` (the demo mint is a scratchpad variant — recreate it
+per s156; a dev-user session 404s the demo returns and reads as "Failed
+to load tax return"). The rule/diagnostic backlog stays PAUSED at LEG 2
+item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -38,7 +38,7 @@ LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 43 (Rental / Form 8825 — the entity twin of Schedule E; Slate landed only on the 1040 twin).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 44 (Dispositions — the entity Schedule D arm; Slate landed only on the 1040 twin).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -53,8 +53,8 @@ mission. ✅ = shipped:
 | ✅ 40 | Income & Deductions (page1) | s160 — both entities, shared grouping module |
 | ✅ 41 | Schedule L + M-1 + M-2 + SubSchedulePanel | s161 — both entities, shared face module + shared detail hook |
 | ✅ 42 | Schedule B + Sched K verify | s162 — both entities; the f8990 nav-drop + B1 free-text gaps fixed |
-| 43 | Rental (8825) | **NEXT** — entity twin of Sch E |
-| 44 | Dispositions (entity Sch D) | |
+| ✅ 43 | Rental (8825) | s163 — both entities; the K2 rollup stomp + 21/22a input gap → REVIEW_QUEUE |
+| 44 | Dispositions (entity Sch D) | **NEXT** |
 | 45 | Schedule F (entity arm) | pure props |
 | 46 | Elections: 2553 / 2848 / 3115 | three files, ~1,670 ln |
 | 47 | Boundary + 8941 | |
@@ -650,8 +650,9 @@ preview_start django-demo + vite · demo QA return
 **Build rules in force:** selective `git add` only — NEVER `git add .` (parallel
 work STILL unstaged and untouched: `server/apps/returns/views.py` (modified),
 `server/apps/returns/tb_import.py`, `server/tests/test_tb_import.py`;
-`create_ar_cutover_clients.py` is now TRACKED via the s159 main merge — the
-untracked duplicate was byte-identical and was replaced by the merge's copy;
+`create_ar_cutover_clients.py` became TRACKED via the s159 main merge and
+`backfill_emails_from_qb.py` via the s163 main merge — each untracked
+duplicate was byte-identical and was replaced by the merge's copy;
 ⚠ also never `git stash` here) ·
 no merge/deploy without Ken · ✅ **the migrate + seed deploy step is DONE
 (2026-07-30, Ken-directed): diagnostics 0005 applied on PROD and `seed_rules`
@@ -674,6 +675,53 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s163 gates (entity unit 43 — Rental / Form 8825, both entities):** NEW
+`slateEntityRentalScreen.test.tsx` **14** (verbatim money + parseInt-days
+commits, the line-14 worksheet-fed lock + open-worksheet action, the four
+locked computed cells, tab switch + add, the two-step remove with the
+Keep-disarms pin, the Schedule A child lane end-to-end incl. the
+A30-description gate + client line 17, the only-when-nonzero unclassified
+row, the "R:" PY store keys with blank-deletes / untouched-never-saves,
+the K2 mismatch warning both ways, the D003 >8-properties note, the A–I
+other-info select; revert-tested TWICE — dropping `storeKey` failed
+exactly the PY-key pin; hardcoding the mismatch guard false failed
+exactly the K2 pin) · vitest **1478/1478** (1464 + 14) · tsc **46 =
+baseline** · **client-only** (no server change; flow assertions n/a; the
+8825 spec mirror diffed against the live export — topic-array order only,
+cosmetic). Client: `SlateEntityRentalScreen` (worksheet + summary band +
+warnings), the NEW_UI branch inside RentalPropertiesSection (Slate delete
+lane skips window.confirm — the two-step lives in the view), the ladder
+call site passes `k2Published` (the K2 FFV, s157-warning pattern) +
+`onOpenDepreciation`, `F8825_EXPENSE_FIELDS` exported WITH face codes
+(renamed from the module-private EXPENSE_FIELDS; codes mirror the
+renderer's `_RENTAL_EXPENSE_LINES` — interest both 8) +
+SCHEDULE_A_CATEGORIES / OTHER_INFO_CODES / RentalOtherDeductionRow
+exported, PyCell + `storeKey`/`ariaLabel` (additive — the L: default and
+both existing consumers untouched), the `.slate-entrental` CSS (78px
+third grid column so the PY cells align; the s161 zoom lesson applied —
+screenshots checked at zoom, no overflow). **LIVE-PROVEN on BOTH
+entities** (`scripts/qa_unit43.mjs` A/B, fresh `demo` links via the
+recreated scratchpad mint): **A (1120-S WorkNAllDay)** — empty state →
+add POST 201 → street/rents 12,000/repairs 2,500 PATCH 200 → computed
+2c/18/19 = 12,000/2,500/9,500 live → summary band carries 23 → NO K2
+warning (rollup in step) → Schedule A: add POST 201, A30 description
+input present, amount PATCH, line 17 = 300, ✕ DELETE → PY set
+`{"key":"R:<id>:rents_received","value":11000}` then blank →
+`value:null` (key deleted) → Keep disarms (zero DELETEs) → confirm
+DELETE → empty state restored. **B (1065 Blue Ridge)** — same lane:
+rents 8,000 / utilities 1,000 → 19 = 7,000 → two-step delete → restored.
+**Settle: BOTH returns BYTE-IDENTICAL to the pre-QA baseline** (1120-S
+359 rows hash `c88da788…` · 1065 409 rows hash `0959535b…`; 0 rental
+rows, K2 '0' un-overridden, zero py-manual residue) — no ORM restoration
+needed; both demo K2s were '0' un-overridden so the stomp probe was
+naturally self-restoring. Screenshots `Design/screens/unit43/` (6). ⚠
+Session gotchas: `scripts/mint_magic_link.py` IGNORES its argv and mints
+for `dev` — the demo mint is a scratchpad file (SERVER_DIR pinned
+absolute); a burned token still lands hash `#/` when a prior session
+cookie survives, so judge login by `/api/v1/me/`'s body, not the hash;
+Windows Python cannot open git-bash `/tmp` paths — pass `C:\…` into
+`open()` even when Bash wrote the file.
 
 **s162 gates (entity unit 42 — Schedule B + Sched K verify, both
 entities):** NEW `slateEntityScheduleBScreen.test.tsx` **13** (both

@@ -1,5 +1,19 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 163 — FORM 8825 (ENTITY SIDE): SCREEN LEG CONVERTED,
+> two K2 ownership defects + one input gap ANNOTATED.** The entity rental
+> tab is now Slate for BOTH entities (unit 43, `SlateEntityRentalScreen` —
+> DocumentTabs per property over the legacy REST CRUD + Schedule A child +
+> manual-PY lanes; live-proven on both demo returns, settle byte-identical).
+> Do NOT read the 8825's input leg as fully green: **lines 21/22a have no
+> input lane anywhere** (engine/print/e-file all read FFVs
+> `8825_L21`/`8825_L22a` that no seed creates — REVIEW_QUEUE s163), and the
+> K2 write has TWO owners that disagree (`views._rollup_rental_to_k2`
+> forces `is_overridden=False` and drops 21/22a; `aggregate_rental_income`
+> zeroes a plain K2 on a no-rentals return — the K16d stomp family +
+> the 0q family, both REVIEW_QUEUE s163). The Slate screen warns live on a
+> published-K2 disagreement and states the 21/22a gap.
+
 > **2026-07-31 session 160 — FORM 1125-A: INPUT/RENDER BOUNDARY ANNOTATION.**
 > The 1125-A print field map carries all six line-9a valuation-method
 > checkboxes plus 9b/9c/9d/9e (subnormal goods, LIFO adopted, LIFO amounts,
