@@ -1,34 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 153 (**sweep unit 33 — the State Returns
-launcher (the state/GA tab) — is SHIPPED** (`44cc0e1` on `slate-ui`, pushed,
-no deploy). **37 of ~39 screens
-converted; the sweep resumes at the prior-year / tax-summary views.** No
-migration, no seed change, no server change — client-only (the view, the
-shared `stateReturnRows.ts` row-builder, the StateSection container's Slate
-branch + remove lane). ⚠⚠ **THE DEMO RETURN CARRIES TWO GA-500s — THE
-AUTO-ATTACH RACE, PROVEN: created 195 ms apart, disagreeing on 16 lines (GA
-tax $3,332 vs $2,906, GA AGI 94,560 vs 68,000).** The legacy panel keyed its
-rows by STATE CODE (last-write-wins over a newest-first list), so it showed
-ONLY the STALE copy while `_auto_sync_ga500` (`.first()` = newest) fed the
-other and `render_complete` printed BOTH into the client package. FIXED on
-the Slate screen: one row PER RETURN, a duplicate warning naming which copy
-the sync feeds, and a two-step **Remove** lane over the existing DELETE
-endpoint (state returns are hidden from the Return Manager — a duplicate
-previously had NO removal path). Engine item → REVIEW_QUEUE (no uniqueness
-constraint; the find-or-create race) → **LEG 3 item 18**; **KEN RULED at the
-close-out: the stale copy is DELETED, the Remove lane stays, and he also
-ruled the eic/gambling derive questions + ratified the 5329 pro-rata
-(DECISIONS.md).** Also FIXED:
-`split("-")[0]` state-code parsing (a created SC1040 listed under a raw
-"SC1040" row while SC still offered a 409-ing Create), the business-entity
-"balance sheet, Schedule K" refresh tooltip on individual rows, the
-undocumented overwrite-including-overrides refresh semantics + the GA-vs-
-SC/AL/NC sync asymmetry, and the stale GA/SC-only footer (now derived from
-the supported map). The rule/diagnostic backlog is still PAUSED at LEG 2
-item 5. ⚠ **At deploy the earlier `seed_rules` obligation still stands** —
-s144's D_RET_007 description + s145's D_8863_DUAL_STUDENT severity, on BOTH
-DBs.)*
+*Last updated: 2026-07-30, session 154 (**sweep unit 34 — the Tax Summary
+screen (tax_summary tab: the seeded 1040 face + the prior-year compare) — is
+SHIPPED** on `slate-ui`, no deploy. **38 of ~39 screens converted; the sweep
+resumes at the estimates/extension/e-file cards.** Client-only: the bespoke
+`SlateTaxSummaryScreen`, the `slate/priorYearFace.ts` pure helpers, the
+FormEditor pyLookup filter + call-site gate, no migration, no seed change,
+no server change. ⚠⚠ **THE 1040 PY-COMPARE LANE WAS DOUBLY BROKEN**: (1) a
+Sherpa-produced prior-year snapshot stores ONLY `_`-prefixed proforma keys
+(no face dollars), yet `pyLookup` passed it verbatim — `hasPY` fired and
+every StandardSection tab grew a PY column of "—"; now underscore-filtered
+at the container and the Slate screen STATES the faceless gap (server-side
+producer fix → REVIEW_QUEUE); (2) the manual-PY lane (B2-3, /py-manual/)
+was UNREACHABLE on a 1040 — no individual tab rendered it; the Slate screen
+adds the 1040's first manual-PY entry (manual shadows imported, blank
+reveals) — **a NEW UI lane, flag to Ken like the s153 Remove lane.** Also
+fixed: engine-authored values on manual-seeded lines 7/29/38 (Sch D/8863/
+2210 writers) now render ƒx-with-override instead of plain entries; plain
+direct-entry lines never paint violet (update_fields sets is_overridden on
+EVERY save — on a plain line it only means "preparer keyed it"; the GENERIC
+face table still has that flaw on other FFV tabs → REVIEW_QUEUE); the page-2
+band titles no longer show raw section codes; line 38's stale "manual until
+Form 2210" label is fixed client-side (seed fix queued). The rule/diagnostic
+backlog is still PAUSED at LEG 2 item 5. ✅ **The `seed_rules` deploy
+obligation is DISCHARGED (2026-07-30, Ken-directed)** — diagnostics 0005
+migrated on PROD (demo already had it) and `seed_rules` run + verified on
+BOTH DBs: all six D_SCH1A rules present, D_RET_007 carries the s144
+two-bases description, D_8863_DUAL_STUDENT is `warning` with the s145
+election description, 767 active rules on each.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,7 +36,14 @@ DBs.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at the prior-year / tax-summary views (unit 34).**
+## ▶ RESUME HERE — **the SCREEN SWEEP, at the estimates/extension/e-file cards (unit 35, the last 1040 unit).**
+
+**s154 added four items to REVIEW_QUEUE** (unit-34 findings, all with proofs):
+the faceless 1040 proforma snapshot (extend `build_1040_snapshot` with face
+dollars — the real PY-compare fix), the `/prior-year/` bare-`.get()` 500 risk,
+the generic face table's violet-on-plain-entry flaw, and the line-38 seed
+label. **Ken-flag at close-out: the manual-PY entry lane** (the 1040's first —
+the endpoint existed since B2-3, no individual tab rendered it).
 
 Ken redirected back to the redesign on 2026-07-30 (s146): *"Let's get back to the
 redesign unless this is pressing."* **The rule/diagnostic backlog stays PAUSED
@@ -370,14 +376,15 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the prior-year / tax-summary views.**
-**37 of ~39** 1040 screens are converted (unit 33, the State Returns
-launcher, shipped this session — gated `NEW_UI && isIndividual`; the entity
-editors' State tab keeps the legacy panel for the business lane). Remaining
-(the count was re-measured in s137 by mapping every `activeTab` to its
-section component **file** and checking each for a `NEW_UI` gate — do it
-that way, never by scanning FormEditor alone): the **prior-year /
-tax-summary** views · the estimates/extension/e-file cards.
+### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the estimates/extension/e-file cards (the last 1040 unit).**
+**38 of ~39** 1040 screens are converted (unit 34, the Tax Summary screen
+with the PY compare, shipped this session — gated `NEW_UI` at the
+tax_summary call site, an individual-only tab; note the PY Compare
+`prior_year` tab is ENTITY-only, so the 1040's prior-year story lives inside
+Tax Summary). Remaining (the count was re-measured in s137 by mapping every
+`activeTab` to its section component **file** and checking each for a
+`NEW_UI` gate — do it that way, never by scanning FormEditor alone): the
+**estimates/extension/e-file cards** (the `payments` tab's PaymentsSection).
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
 rows AND per-owner forms, **InputRow worksheets** for facts cards (screenbar
@@ -605,21 +612,54 @@ preview_start django-demo + vite · demo QA return
 work STILL unstaged and untouched by s143/s144: `server/apps/returns/views.py`,
 `tb_import.py`, `tests/test_tb_import.py`,
 `server/scripts/create_ar_cutover_clients.py`; ⚠ also never `git stash` here) ·
-no merge/deploy without Ken · at deploy: migrate (diagnostics 0005) +
-**`seed_rules` on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
+no merge/deploy without Ken · ✅ **the migrate + seed deploy step is DONE
+(2026-07-30, Ken-directed): diagnostics 0005 applied on PROD and `seed_rules`
+run + verified on BOTH DBs** (s142's 12 new rules + the D_5329_003 /
 D_8863_DUAL_STUDENT severity promotions, plus the earlier D_W2_ family +
-MATH_BALANCE_SHEET description, **plus s144's D_RET_007 description and s145's
-D_8863_DUAL_STUDENT severity+description**). s143 added no migration and no seed
+MATH_BALANCE_SHEET description, plus s144's D_RET_007 description and s145's
+D_8863_DUAL_STUDENT severity+description — nothing outstanding at the next
+deploy). s143 added no migration and no seed
 change. **s146, s147, s148 and s150 add neither a migration nor a seed change**
 (s147 and s148 touch only their spec mirrors, refreshed from the live RS
 export; **s150, s151, s152 and s153 make no server change at all** — the
 8960, 5695 and 1040-X spec mirrors were already current, each diffed clean
 against the live export; s152's fixes are client-side only, in the shared
 Form1040XSection container; s153 is client-only — the launcher view, the
-`stateReturnRows.ts` builder and StateSection's Slate branch + remove lane). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+`stateReturnRows.ts` builder and StateSection's Slate branch + remove lane;
+**s154 is client-only** — the Tax Summary screen, `priorYearFace.ts` and the
+FormEditor pyLookup filter + gate). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s154 gates (unit 34 — the Tax Summary screen / tax_summary tab):** NEW
+`slateTaxSummaryScreen.test.tsx` **15** (13 screen + 2 priorYearFace;
+revert-tested TWICE — restoring the generic is_overridden→violet mapping
+failed exactly the 2 field-state tests that pin findings 3/4; restoring the
+verbatim pyLookup pass-through failed the faceLineValues test that pins
+finding 1) · no server change (verified by `git status`: server tree clean
+but for the parallel session's pre-existing files; flow assertions not
+required) · vitest **1318/1318** (1303 + 15) · tsc **45 = baseline**.
+**LIVE-PROVEN** on the demo QA return in three phases
+(`scripts/qa_unit34.mjs A|B|C`, one fresh magic link each): **A (no PYR)** —
+owe pill "Owe $10,151" (the server's line 37), the five real band titles,
+the manual-PY hint, lines 38/7 render ƒx `is-computed` readOnly (engine-
+authored 397/150), the 1b–1h group closed; then the 1040's FIRST manual-PY
+entry: 88,000 keyed into line 9's PY cell → PATCH /py-manual/ 200 →
+persisted after reload with Δ +7%. **B (ORM-created FACELESS proforma
+snapshot, underscore keys only)** — the faceless note fires, the hint
+suppressed, NO phantom PY values, the manual 88,000 still shadows.
+**C (snapshot face-keyed 9=91,000/24=11,000/33=2,000)** — line 24 shows
+imported 11,000 with the reference tint + Δ +11%, manual 88,000 still wins
+on line 9; blanking the manual cell PATCHed null and revealed 91,000
+(persisted, Δ +4%). Console errors = the known pre-existing set (403
+`/api/v1/me/` pre-login; the `prior-year/` 404s disappear once a snapshot
+exists). **Demo writes REVERTED and ORM-verified ZERO DRIFT: FFV 892 rows,
+hash `5820bba2…` IDENTICAL before/after** (the QA's only server writes were
+its own PYR row — deleted by source tag `sherpa_proforma_qa34` — and the
+py_manual_values keys — cleared; py-manual writes touch no FFV and trigger
+no compute). Screenshots `Design/screens/unit34/` (atrest · manualpy ·
+faceless · imported).
 
 **s153 gates (unit 33 — the State Returns launcher / state-GA tab):** NEW
 `slateStateReturnsScreen.test.tsx` **23** (revert-tested TWICE — restoring
