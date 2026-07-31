@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 168 — THE WRAP-UP TABS (Extensions / PY Compare /
+> State): SCREEN LEG CONVERTED — THE BUSINESS-ENTITY SLATE LANE IS
+> COMPLETE (13/13).** Both entity editors' last three tabs are Slate
+> (unit 48; live-proven on both demo returns, settle byte-identical,
+> fixpoint twice). Findings: (1) the legacy PY-compare table MISLABELED
+> REAL DOLLARS on both entities — 1120-S "K5a/K6 capital gains" showed
+> dividends/royalties (ST=K7, LT=K8a per the seeds), a duplicate L15d
+> row labeled Total Assets "Accounts Payable" (L16d), L9d/L20d wore
+> wrong names, and the 1065 rendered 1120-S-keyed rows throughout ("K11
+> §179" = the 1065's OTHER INCOME) — **fixed for BOTH paths** via the
+> shared slate/entityPyCompare.ts groups (legacy delegates); (2) the
+> legacy Extensions autosave PATCHed /info/ on every tab OPEN (dirty-ref
+> fixed, both paths); (3) REVIEW_QUEUE s168: mutations answering with
+> TaxReturnSerializer run ~37s unprefetched (retrieve-only prefetches) —
+> past the client's 30s bound, so every legacy /info/ save was silently
+> ABORTED client-side while the server applied it; the Slate lane widens
+> its timeout to 120s until the server fix; (4) REVIEW_QUEUE s168:
+> update_info still lacks the row lock its sibling endpoints got.
+
 > **2026-07-31 session 167 — BOUNDARY + FORM 8941: SCREEN LEG CONVERTED;
 > the S-corp K-2/K-3 gap CLOSED on the Slate path; the K13g
 > disengage-residue ANNOTATED.** The `entity_boundary` tab (both
