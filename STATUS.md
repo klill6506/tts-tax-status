@@ -1,29 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 167 (**entity sweep unit 47 —
-Boundary + Form 8941 — is SHIPPED on both tabs** (`slate-ui`, no
-deploy, client-only). TWO new Slate views (`SlateEntityBoundaryScreen`
-both entities / `SlateForm8941Screen` 1120-S) as VIEWS over each
-Section's singleton PATCH lane (no second save path; single-section
-tabs carry their own `.slate-screen` root, the ScheduleF shape).
-**REAL GAP CLOSED on the Slate path**: the legacy Boundary card
-rendered the K-2/K-3 DFE-confirmed checkbox inside its 1065-only block
-while D_EB_K2K3 fires for BOTH entity types (1120-S indicators K16f/
-K14a since 2026-07-12) — an S-corp with foreign activity had a RED it
-could not clear from the screen; the Slate view renders it for both
-entities with per-entity indicator wording, and the warning is GATED
-on the real foreign-activity read (`slate/entityBoundary.ts`, the
-client mirror of `_foreign_activity`, passed from the call site — on
-a 1065, K14a is a MONEY line, so the helper is form-scoped).
-**ENGINE FINDING → REVIEW_QUEUE s167**: `compute_8941_db` writes K13g
-only while line A is Yes, so DISENGAGING an engaged 8941 leaves the
-stale credit on K13g and the MeF K-1 mapper then refuses the
-un-sourced value (the s143 zero-residue family; the Slate screen
-states the residue live off the published K13g). The 8941's other
-legs are genuinely full (compute/print/MeF IRS8941/6 diagnostics);
-both RS spec mirrors diffed current; the K13g flow pill reads the
-PUBLISHED value only (the s163 k2Published pattern). The
-rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 168 (**entity sweep unit 48 — the
+WRAP-UP: Extensions + PY Compare + State — is SHIPPED, and THE
+BUSINESS-ENTITY LANE IS COMPLETE (13/13 units)** (`slate-ui`, no
+deploy, client-only). TWO new Slate views
+(`SlateEntityExtensionsScreen` / `SlateEntityPyCompareScreen`, both
+entities) + the s153 State launcher OPENED to the entity editors
+(`federalFormCode` prop drives per-editor copy; the 1041 keeps legacy).
+**THE HEADLINE AUDIT FIND: the legacy PY-compare table mislabeled real
+dollars on BOTH entities** — 1120-S "K5a ST gain"/"K6 LT gain" showed
+DIVIDENDS/ROYALTIES (seeds: ST=K7, LT=K8a), a duplicate L15d row
+labeled Total Assets as "Accounts Payable", L9d/L20d wore the wrong
+names, and on a 1065 nearly every page-1/K/M-2 row was 1120-S-keyed
+("K11 §179" showed OTHER INCOME). Fixed in the shared
+`slate/entityPyCompare.ts` per-entity groups — the legacy screen
+DELEGATES, so both renderings are correct now. **THREE MORE ENGINE/
+CONTAINER FINDINGS**: (1) the legacy Extensions autosave fired a no-op
+/info/ PATCH 800ms after every tab OPEN (the s156 shape — fixed with a
+dirty ref, cures legacy too); (2) → REVIEW_QUEUE s168: every mutation
+answering with TaxReturnSerializer pays a ~37s UNPREFETCHED
+serialization (the viewset's prefetches are retrieve-only; measured
+37.15s vs the 3.08s GET) — which BLOWS the client's 30s request bound,
+so every legacy /info/ save was ABORTED client-side while the server
+applied it (silent lost-response); the Slate lane widens its timeout
+to 120s until the server fix; (3) → REVIEW_QUEUE s168: update_info
+never got the row lock its sibling endpoints did (the s35 lost-update
+class). The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.
+**NEXT: Ken directs** — the backlog resume, or the Slate-default
+decision now that both sweep lanes are complete.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -32,7 +36,7 @@ rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 48 (Extensions + PY Compare + State — the WRAP-UP unit).**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY LANE IS COMPLETE (13/13). Idle — Ken directs: resume the backlog (LEG 2 item 5), or the Slate-default decision (both sweep lanes done).**
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
@@ -52,7 +56,7 @@ mission. ✅ = shipped:
 | ✅ 45 | Schedule F (entity arm) | s165 — both entities; the method print gap + stale 1099 label + F14 residue → REVIEW_QUEUE |
 | ✅ 46 | Elections: 2553 / 2848 / 3115 | s166 — EVERY mount (entity tab + the two 1040 tabs the 39/39 count missed); no engine findings |
 | ✅ 47 | Boundary + 8941 | s167 — both tabs; the S-corp DFE gap closed on the Slate path; the K13g disengage-residue → REVIEW_QUEUE |
-| 48 | Extensions + PY Compare + State (entity arm) | **NEXT** — wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
+| ✅ 48 | Extensions + PY Compare + State (entity arm) | s168 — LANE COMPLETE; the mislabeled PY table fixed BOTH paths; the 30s-abort/37s-serializer chain + the update_info lock gap → REVIEW_QUEUE |
 
 Scoping facts (s156 audit): the Slate CHROME already wraps entity returns
 (bare `NEW_UI`); already-converted-for-entities: Depreciation (entity-aware),
@@ -669,6 +673,70 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s168 gates (entity unit 48 — Extensions + PY Compare + State, the
+wrap-up):** NEW `slateEntityWrapupScreens.test.tsx` **11** (the
+corrected per-entity PY groups pinned against the seed reality [1120-S
+K7/K8a not K5a/K6, L10d buildings, L16d AP with the duplicate L15d
+GONE, L19d shareholder loans; 1065 K12 §179/K13a/K18c/K19a, the 9–23
+page-1 numbering with guaranteed payments on 10, capital-shape M-2,
+L24d as total L+C, line 7 as OTHER INCOME never officer comp]; the
+Extensions line-6 commit carrying the recomputed line 8 in the SAME
+patch; checkbox/bank-digit commits + the locked balance cell; computed
+page1_tax rows locked ƒx vs entered rows on the FFV lane; the filed
+pill + print lane; the PY screen's corrected rows + change columns +
+the PyCell manual lane [set/shadow/blank-delete/imported-only-never-
+saves] + 1065 groups + the no-import blank state naming the manual
+lane + the interest-trend band) + 2 NEW entity-mode tests in
+`slateStateReturnsScreen.test.tsx` (the sub names the entity form +
+the GA-500 auto-sync note HIDDEN; the entity refresh semantics
+[pull-once + the S5_4/S3_5 apportionment reset] in the warning AND the
+tooltip) · revert-tested TWICE with exact pins (restoring the legacy
+K5a/K6 keys failed exactly the 3 K7-pins; dropping the line-8
+recompute from the line-6 commit failed exactly the same-patch pin) ·
+vitest **1544/1544** (1532 + 12) · tsc **46 = baseline** ·
+**client-only** (no server change; flow assertions n/a; no RS spec —
+these are management/comparison surfaces, not form faces). Client: the
+two Slate view files (own `.slate-screen` roots), the SHARED
+`slate/entityPyCompare.ts` groups module (LEGACY DELEGATES — the s160
+rule; the module header carries the full mislabeled-dollars inventory,
+every key verified against seed_1120s/seed_1065), the NEW_UI branches
+inside TaxPaymentsSection (per-commit /info/ lane with `timeoutMs:
+120_000` + the print lane) and PriorYearSummarySection (formCode
+threaded from the call site), the DIRTY-REF autosave fix in
+TaxPaymentsSection (cures the legacy mount-PATCH too — every legacy
+input marks dirty, the returnData sync clears it), the StateSection
+gate opened to `isIndividual || isPartnership || 1120-S` (the 1041
+keeps legacy), SlateStateReturnsScreen's `federalFormCode` prop +
+per-editor copy, the `.slate-pycompare-*` CSS. **LIVE-PROVEN on BOTH
+entities** (`scripts/qa_unit48.mjs` A/B + SKIP_EXT for the slow /info/
+probes; fresh `demo` links per phase): **A (1120-S WorkNAllDay)** —
+Extensions open fired NO /info/ PATCH (the mount-fire fixed) · line-6
+commit 1000 → ONE PATCH 200 carrying balance_due 1000.00 in the same
+body → the full cycle proven END-TO-END after the 30s-abort fix ·
+staged 2024 PY import → the CORRECTED K7 row shows the imported $5,000
+· manual-PY 95,000 set → blank-DELETE (import revealed) · State
+launcher entity mode (sub names the 1120-S, GA auto-sync note absent)
+→ GA-600S created through the screen (201) → the S5_4/S3_5 warning
+live → Keep disarms (zero DELETEs) → two-step remove (204). **B (1065
+Blue Ridge)** — Extensions open NO PATCH · the PY table renders the
+1065's OWN numbering (line 10 guaranteed payments $40,000) · the
+launcher offers Georgia (Form 700) · ZERO writes. **Settle: staged PY
+rows deleted (tagged QA_UNIT48), filing_states restored to [], headers
+reset, py_manual {}, zero state returns — BOTH returns BYTE-IDENTICAL
+to baseline over TWO compute passes** (1120-S 359 `1491a28e…` · 1065
+409 `067b0033…`). Screenshots `Design/screens/unit48/` (7, zoomed). ⚠
+Session gotchas: the /info/ PATCH round-trip runs 40–120s (the s168
+serializer finding) — QA commit waits at 300s, actions gated on the
+Saving… pill clearing; a puppeteer TRIPLE-CLICK select is unreliable
+(typing PREPENDED to the old value and compounded garbage INTO THE
+DEMO DB across runs — caught by a request-level diagnostic; Ctrl-A is
+deterministic, and a typed EMPTY STRING types nothing — blank via
+Ctrl-A + Backspace); `net::ERR_ABORTED` at exactly 30.0s in a
+request-level log IS the client timeout, not a server error; the
+State/PY tabs are CONDITIONALLY HIDDEN (no filing_states/state
+returns · no PY import) — stage restorable demo data (filing_states +
+a tagged PriorYearReturn) to reach them live.
 
 **s167 gates (entity unit 47 — Boundary + Form 8941, both tabs):** NEW
 `slateBoundary8941Screens.test.tsx` **15** (Boundary: the DFE-on-1120-S
