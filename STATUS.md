@@ -1,33 +1,33 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-30, session 154 (**sweep unit 34 — the Tax Summary
-screen (tax_summary tab: the seeded 1040 face + the prior-year compare) — is
-SHIPPED** on `slate-ui`, no deploy. **38 of ~39 screens converted; the sweep
-resumes at the estimates/extension/e-file cards.** Client-only: the bespoke
-`SlateTaxSummaryScreen`, the `slate/priorYearFace.ts` pure helpers, the
-FormEditor pyLookup filter + call-site gate, no migration, no seed change,
-no server change. ⚠⚠ **THE 1040 PY-COMPARE LANE WAS DOUBLY BROKEN**: (1) a
-Sherpa-produced prior-year snapshot stores ONLY `_`-prefixed proforma keys
-(no face dollars), yet `pyLookup` passed it verbatim — `hasPY` fired and
-every StandardSection tab grew a PY column of "—"; now underscore-filtered
-at the container and the Slate screen STATES the faceless gap (server-side
-producer fix → REVIEW_QUEUE); (2) the manual-PY lane (B2-3, /py-manual/)
-was UNREACHABLE on a 1040 — no individual tab rendered it; the Slate screen
-adds the 1040's first manual-PY entry (manual shadows imported, blank
-reveals) — **a NEW UI lane, flag to Ken like the s153 Remove lane.** Also
-fixed: engine-authored values on manual-seeded lines 7/29/38 (Sch D/8863/
-2210 writers) now render ƒx-with-override instead of plain entries; plain
-direct-entry lines never paint violet (update_fields sets is_overridden on
-EVERY save — on a plain line it only means "preparer keyed it"; the GENERIC
-face table still has that flaw on other FFV tabs → REVIEW_QUEUE); the page-2
-band titles no longer show raw section codes; line 38's stale "manual until
-Form 2210" label is fixed client-side (seed fix queued). The rule/diagnostic
-backlog is still PAUSED at LEG 2 item 5. ✅ **The `seed_rules` deploy
-obligation is DISCHARGED (2026-07-30, Ken-directed)** — diagnostics 0005
-migrated on PROD (demo already had it) and `seed_rules` run + verified on
-BOTH DBs: all six D_SCH1A rules present, D_RET_007 carries the s144
-two-bases description, D_8863_DUAL_STUDENT is `warning` with the s145
-election description, 767 active rules on each.)*
+*Last updated: 2026-07-31, session 155, commit `dd25022` (**sweep unit 35 — Payments & E-File
+(the payments tab: estimates · direct deposit · EFW · other taxes · the six
+singleton forms 9465 / 8888 / 1040-V+ES / 4868 / 8879 / 8878) — is SHIPPED**
+on `slate-ui`, no deploy. ⚡ **THE 1040 BESPOKE-SCREEN SWEEP IS COMPLETE —
+39 of 39 screens.** Client-only: the bespoke `SlatePaymentsScreen` (view +
+`SlatePaymentsContainer` + the ONE generic `useSingletonLane` hook that
+replaces the six legacy cards' private copies of the self-managing-card
+contract), the NEW_UI branch inside PaymentsSection (the facts lane and the
+debounced /info/ bank cluster stay where they were — no second save path),
+no migration, no seed change, no server change. **Findings fixed (all
+revert-tested and live-proven):** (1) ⚠⚠ a Form 4868 edit RECOMPUTES the
+return server-side (Sch 3 line 10 → lines 22/33/37) but the endpoint never
+arms the fresh-return marker and the legacy card never refreshed the parent
+— the editor's face/pill/diagnostics stayed STALE after every extension
+edit; the Slate 4868 lane refreshes after every mutation (live: the owe
+pill flipped to "Balanced" the instant the 4868 landed, no reload; server
+half → REVIEW_QUEUE, minor). (2) ⚠⚠ the JOINT 8878's transmit gate was
+UNSATISFIABLE from the UI — analyze_8878 requires BOTH signature dates on
+MFJ and prints the spouse PIN, and the legacy card rendered NO spouse
+fields; the spouse block now renders (is_joint-gated, the 8879's shape).
+(3) three Form 9465 fields that PRINT and TRANSMIT had no input anywhere
+(request_form_types / tax_years_periods / work_ext — the s152 shape, 3rd
+occurrence). (4) every card's window.confirm Remove → the s153 two-step
+arm/confirm lane. (5) line 26 was a client re-sum of R-PAY-04 (the s138
+two-sums shape) — the Slate cell renders the ENGINE's published 1040 row.
+STATED: the dated-FederalEstimatedPayment/2210 interplay, and the
+other-taxes trio's notice (CHECKED not stale — D_1040_003 still fires RED).
+The rule/diagnostic backlog is still PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -36,7 +36,20 @@ election description, 767 active rules on each.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the SCREEN SWEEP, at the estimates/extension/e-file cards (unit 35, the last 1040 unit).**
+## ▶ RESUME HERE — **the 1040 SCREEN SWEEP IS COMPLETE (39/39). Idle — Ken directs.**
+
+Two lanes are queued and BOTH are Ken's call, per his standing direction:
+1. **The business-entity screens** (~12: 1120-S / 1065 shareholders,
+   partners, balance sheets, allocations, 7203, page-1 income/deductions) —
+   a separate, unscoped lane; never started.
+2. **The rule/diagnostic backlog**, PAUSED mid-LEG-2 at item 5 (the
+   Schedule 1-A tips owner filter). Items 8 and 16 (the two Ken-ruled
+   derives) are ready to build the day it resumes.
+
+**s155 added one item to REVIEW_QUEUE** (minor): `form_4868` PATCH/DELETE
+should arm the fresh-return marker so the client's `?fresh_return=1` kills
+the follow-up GET the new Slate lane issues (the client-side fix already
+covers correctness).
 
 **s154 added four items to REVIEW_QUEUE** (unit-34 findings, all with proofs):
 the faceless 1040 proforma snapshot (extend `build_1040_snapshot` with face
@@ -376,15 +389,12 @@ in LEG 2, the Schedule 1-A spec needs four corrections (open item 1 below), and
 code set fails on every new rule, so update it with a pointer, never by loosening
 the assertion.
 
-### ▶ THE SCREEN SWEEP — **ACTIVE. Resume at the estimates/extension/e-file cards (the last 1040 unit).**
-**38 of ~39** 1040 screens are converted (unit 34, the Tax Summary screen
-with the PY compare, shipped this session — gated `NEW_UI` at the
-tax_summary call site, an individual-only tab; note the PY Compare
-`prior_year` tab is ENTITY-only, so the 1040's prior-year story lives inside
-Tax Summary). Remaining (the count was re-measured in s137 by mapping every
-`activeTab` to its section component **file** and checking each for a
-`NEW_UI` gate — do it that way, never by scanning FormEditor alone): the
-**estimates/extension/e-file cards** (the `payments` tab's PaymentsSection).
+### ✅ THE SCREEN SWEEP — **COMPLETE (s155): all 39 of 39 1040 screens converted.**
+Unit 35 (Payments & E-File — the `payments` tab) shipped this session and
+closed the sweep; the NEW_UI gate lives INSIDE PaymentsSection (the s153
+StateSection shape). The count was verified the s137 way — every
+`activeTab` mapped to its section component file, each checked for a
+`NEW_UI` gate; the payments tab was the last without one.
 Paradigms settled: view-over-container; **PayerTable** for flat record lists
 keyed by row id, **DocumentTabs + worksheet** for card stacks, per-filed-form
 rows AND per-owner forms, **InputRow worksheets** for facts cards (screenbar
@@ -627,10 +637,46 @@ against the live export; s152's fixes are client-side only, in the shared
 Form1040XSection container; s153 is client-only — the launcher view, the
 `stateReturnRows.ts` builder and StateSection's Slate branch + remove lane;
 **s154 is client-only** — the Tax Summary screen, `priorYearFace.ts` and the
-FormEditor pyLookup filter + gate). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
+FormEditor pyLookup filter + gate; **s155 is client-only** — the Payments
+screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
+`scripts/qa_unit35.mjs`). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
+
+**s155 gates (unit 35 — Payments & E-File / the payments tab):** NEW
+`slatePaymentsScreen.test.tsx` **21** (13 view contracts + the container's
+envelope/finding-1 tests — the s152 rule that a container's data path needs
+its OWN mocked-api test; revert-tested TWICE: restoring single-click remove
++ the client line-26 re-sum failed exactly the 4 tests pinning findings 4/5;
+dropping the 4868 `afterMutate` failed exactly the 2 container tests pinning
+finding 1) · no server change (`git status`: server tree clean but for the
+parallel session's pre-existing files; flow assertions not required) ·
+vitest **1339/1339** (1318 + 21) · tsc **45 = baseline** (0 in the unit's
+files). **LIVE-PROVEN** on the demo QA return in two phases
+(`scripts/qa_unit35.mjs A|B`, one fresh magic link each): **A** — at rest
+pill "Owe $10,151", line 26 renders the PUBLISHED row as a locked ƒx cell,
+all six panels disengaged with Start lanes, the D_1040_003 warning live;
+est_payment_q1 = 1,000 keyed through the facts lane → PATCH /taxpayer/ 200 →
+line 26 ƒx = 1,000 and the pill moved to **"Owe $9,081"** (NOT 9,151 — the
+§6654 penalty on line 38 recomputes DOWN with the extra quarter credit;
+engine-derived, my hand-arithmetic was wrong); blanked → "0" → line 26 back
+to 0, pill back to 10,151. **B** — Start 4868 → PATCH 200, the banner
+rendered from res.data (L7 derived 9,754, Sch 3 L10 note) and **the pill
+flipped to "Balanced" with NO reload — finding 1 live**; two-step remove
+proven (arm → confirm visible, 0 DELETEs; Keep → disarmed, 0 DELETEs; arm →
+Confirm → DELETE 204 → pill back to "Owe $10,151"); then the no-compute 8888
+lifecycle (start → acct1 = 100 → the exact-tie error + row-problems +
+F8888-002-03 blocker all fired from the analysis → two-step remove, DELETE
+204). Console errors = the known pre-existing set (403 `/api/v1/me/`
+pre-login + the `prior-year/` 404s). **Demo writes all through the screen's
+own lanes and self-reverting — ORM-verified ZERO DRIFT: FFV 892 rows, hash
+`1dc75fda…` IDENTICAL before/after; all six singleton row counts 0; every
+payments fact and the bank cluster back at defaults.** Screenshots
+`Design/screens/unit35/` (atrest · estq1 · 4868 · 8888). ⚠ Session gotcha:
+PS 5.1 `Get-Content`/`Set-Content` round-trips a no-BOM UTF-8 source as
+ANSI and mangles every multi-byte char — the screen file had to be fully
+rewritten; never regex-edit a UTF-8 source through PowerShell here.
 
 **s154 gates (unit 34 — the Tax Summary screen / tax_summary tab):** NEW
 `slateTaxSummaryScreen.test.tsx` **15** (13 screen + 2 priorYearFace;
@@ -715,37 +761,8 @@ residue defect, so scope-checked by FormDefinition, not value-checked; the
 AsFiledBaseline row deleted; `is_amended_return` reset; `compute_return`
 re-run).
 
-**s151 gates (unit 31 — Form 5695 / Residential Energy Credits):** NEW
-`slateForm5695Screen.test.tsx` **28** (revert-tested — restoring the legacy
-hide-on-denial shape failed exactly the 2 contract-2 tests that pin the fix) ·
-the four 5695 server legs **67** (untouched — this unit changes no server
-file) · flow assertions **521** (baseline exactly) · vitest **1257/1257**
-(1229 + 28) · tsc **46 = baseline**. **LIVE-PROVEN** on the demo QA return
-entirely through the screen's own facts lane (`scripts/qa_unit31.mjs` +
-`qa_unit31b.mjs`, no ORM pre-raise needed — line-18 tax is 12,204): at rest
-DISENGAGED (neutral pill + engage copy); solar = 20,000 keyed IN the screen
-(PATCH 200 `{"e5695_solar_electric":"20000"}`) engaged §25D — l1_5 20,000 →
-6b 6,000 → 13 6,000 → 14 12,204 → 15 6,000 (credit side binds) → 16 0, ƒx
-cells locked, pill "Credits $6,000", the e-file-gap and blank-address
-warnings live; insulation = 4,000 engaged §25C — 28/30 1,200 → 31 6,204 → 32
-1,200, pill "Credits $7,200", the Section A gate-open warning live
-(17a/b/c); solar = 60,000 **FLIPPED the binding side** (the s150 ruling) —
-13 18,000 → 15 12,204 (tax binds) → 16 5,796 CF; §25C squeezed to 0 with
-l30 = 1,200 → the CLW-ORDERING warning, the §25C excess-lost note and the
-$5,796 carryforward note all fired live, every cell ORM-matched (17-row
-FORM_5695 + SCH_3 5a 12,204/5b "" + 1040 line 20 12,204/22 0). Blanking both
-cells committed the hook's normalize ("0") and disengaged the face. ⚠ The
-part-1 script died at the post-flip reload (`.slate-root` 30s timeout — the
-in-process recompute holding the single-threaded dev server, open item 22);
-the flipped state was ORM-verified and the run finished in `qa_unit31b.mjs`
-off a fresh magic link. Console errors = the known pre-existing set (403
-`/api/v1/me/` pre-login + the `prior-year/` 404s). **Demo writes REVERTED
-and ORM-verified ZERO DRIFT: 892 of 892 FormFieldValue rows identical** (the
-17 blank FORM_5695 shells `_backfill_values` created were deleted after
-value-checking `{''}`, facts back to defaults, `compute_return` re-run).
-
-**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 gates — moved to `STATUS_ARCHIVE.md`
-(s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152; s150 by s153).** Re-run them if you touch
+**s143 / s144 / s145 / s146 / s147 / s148 / s149 / s150 / s151 gates — moved to `STATUS_ARCHIVE.md`
+(s143–145 by s147; s146 by s149; s147 by s150; s148 by s151; s149 by s152; s150 by s153; s151 by s155).** Re-run them if you touch
 Form 8863, Form 5329, Form 6251, Form 8615, the 8960 family, the retirement
 modules or the MeF-1040 band; each block records the exact suites, the counts
 and what each revert proved. s146's fetch-trap lesson survives as Method items 16/17 — a
@@ -921,6 +938,12 @@ the shared Supabase DB caution is the one true-production constraint.
   cascaded; federal + surviving hashes unchanged); `a129a7e2` (auto-synced,
   GA tax 3,332) is the sole GA-500. The race/constraint fix stays queued
   (LEG 3 item 18) — the probe data lives in REVIEW_QUEUE.
+- ⚠ **s155 wrote to the demo QA return and self-reverted THROUGH the
+  screen's own lanes** (est_payment_q1 1,000 → blanked-to-"0"; a Form 4868
+  created and two-step-removed; a Form 8888 created, acct1 = 100, two-step-
+  removed). **ORM-verified ZERO DRIFT: FFV 892 rows, hash `1dc75fda…`
+  IDENTICAL before/after; all six payment-singleton row counts 0; every
+  payments fact and the bank cluster at defaults.**
 - ⚠ **s153 wrote to the demo DB and self-reverted through the screen:** one
   SC1040 created via the picker (POST 201) and removed via the new Remove
   lane (DELETE 204). ORM-verified zero drift — federal 892-row hash and both
