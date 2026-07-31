@@ -16,8 +16,10 @@ the Slate screen: one row PER RETURN, a duplicate warning naming which copy
 the sync feeds, and a two-step **Remove** lane over the existing DELETE
 endpoint (state returns are hidden from the Return Manager — a duplicate
 previously had NO removal path). Engine item → REVIEW_QUEUE (no uniqueness
-constraint; the find-or-create race) → **LEG 3 item 18**; **the demo pair is
-LEFT STANDING as the live proof — Ken decides which copy dies.** Also FIXED:
+constraint; the find-or-create race) → **LEG 3 item 18**; **KEN RULED at the
+close-out: the stale copy is DELETED, the Remove lane stays, and he also
+ruled the eic/gambling derive questions + ratified the 5329 pro-rata
+(DECISIONS.md).** Also FIXED:
 `split("-")[0]` state-code parsing (a created SC1040 listed under a raw
 "SC1040" row while SC still offered a 409-ing Create), the business-entity
 "balance sheet, Schedule K" refresh tooltip on individual rows, the
@@ -210,11 +212,11 @@ number is at least loud while the compute fix is pending.
    trust beneficiary is exactly what §1(g) exists to reach. REVIEW_QUEUE has the
    recommendation (AGI shortcut + the Child's Unearned Income Worksheet;
    RED-defer the Alternate Worksheet cases).
-8. **`scha_gambling_winnings`: derive it or keep asking?** — `D_W2G_LOSS_CAP`
-   (s142) now reports the disagreement in both directions, but the underlying
-   question (should the §165(d) cap simply BE the W-2G box-1 sum plus
-   `other_gambling_winnings`?) is still Ken's call. Recommendation: derive it,
-   with an `_overridden` companion.
+8. **`scha_gambling_winnings`: DERIVE it — KEN RULED 2026-07-30 (s153
+   close-out, DECISIONS.md).** The §165(d) cap becomes the W-2G box-1 sum
+   plus `other_gambling_winnings`, with an `_overridden` companion;
+   `D_W2G_LOSS_CAP` stays as the disagreement reporter for overrides.
+   Ready to build when the backlog resumes.
 9. **(s149) Form 8880 line 4 must carry BOTH spouses' distributions in BOTH
    columns on MFJ** (face + i8880 + §25B(d)(2)(C); the didn't-file-jointly
    exception is preparer-applied). `compute_8880_column` subtracts each
@@ -316,11 +318,11 @@ number is at least loud while the compute fix is pending.
    (federal_return, form_definition) + a locked find-or-create in
    `_auto_sync_ga500`** (and the same window in `create_state_return`). The
    demo pair (195 ms apart, $426 of GA tax apart, both in the printed
-   package) is the live proof and is LEFT STANDING until Ken picks the
-   surviving copy — the Slate launcher's new Remove lane is how to clear it
-   (keep `a129a7e2` — newest, auto-synced; remove `e27ab39c` — stale, AGI
-   68,000, RIE blank). A migration; the constraint must decide what happens
-   to EXISTING duplicates first.
+   package) was the live proof; **Ken ruled at the s153 close-out and the
+   stale copy is deleted** — the constraint work remains. A migration; sweep
+   prod for existing duplicates BEFORE adding the constraint (the demo had
+   one — prod may too: `SELECT federal_return_id, form_definition_id,
+   COUNT(*) ... HAVING COUNT(*) > 1`).
 16. **(s151) `build_irs5695`** — no IRS5695 builder while Schedule 3 lines
    5a/5b transmit (`ResidentialCleanEnergyCrAmt` / `EgyEffcntHmImprvCrAmt`)
    and `ReturnData1040.xsd` line 1382 expects `IRS5695` (maxOccurs 2 — the
@@ -353,10 +355,10 @@ number is at least loud while the compute fix is pending.
    `ADJ_EXCEPTION_TI` (latent; D_1116_007 covers only year==2026, never an
    unpinned year). **Sweep the engine for the pattern and rule once — skip the
    unpinned year and diagnose it — instead of finding it a fifth time.**
-16. **`eic_self_employed`: derive or keep asking?** (s139) — the unanswered
-   default costs $4,328–$7,152. My recommendation was to default it True when
-   the return carries a Schedule C / F / SE K-1 with an `_overridden` companion.
-   **Ken's ruling still needed** before building.
+16. **`eic_self_employed`: DERIVE it — KEN RULED 2026-07-30 (s153 close-out,
+   DECISIONS.md).** Default True when the return carries a Schedule C / F /
+   SE K-1, with an `_overridden` companion. Ready to build when the backlog
+   resumes (moves to the LEG 2 lane with item 8, its twin shape).
 
 ### ✅ LEG 1 — COMPLETE (s142), 12 diagnostics across three commits
 (`2ed5eff` new `rules_sch_1a.py` · `42eb851` the two Form 5329 fixes · `d991b50`
@@ -640,8 +642,9 @@ row returned to the picker. Console errors = the known pre-existing set
 self-reverting and ORM-verified ZERO DRIFT: federal 892-row FFV hash
 IDENTICAL (`c8edf9c4…`), both GA-500 FFV hashes IDENTICAL, state-return
 count back to 2** — the only writes were the QA's own SC1040, created and
-removed through the screen itself. **The GA duplicate pair was deliberately
-NOT touched** — it is the standing live proof for LEG 3 item 18.
+removed through the screen itself. The GA duplicate pair was deliberately
+not touched during QA; **at the close-out Ken ruled and the stale copy was
+deleted by ORM** (verified: only its 153 rows; all other hashes unchanged).
 
 **s152 gates (unit 32 — Form 1040-X / amended return):** NEW
 `slateForm1040XScreen.test.tsx` **20** (revert-tested TWICE — restoring the
@@ -713,13 +716,13 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
-0o. **(s153) The demo return holds TWO GA-500s that disagree by $426 of GA
-   tax, and nothing prevents duplicates** (no uniqueness constraint; the
-   auto-attach race — 195 ms apart, proven). The printed package includes
-   both. The Slate launcher now shows both with a Remove lane; **Ken picks
-   the surviving copy** (recommend keep `a129a7e2`, the auto-synced one) and
-   rules on the constraint (LEG 3 item 18). Also flag: the Remove lane is
-   new UI over the existing DELETE endpoint — say so if unwanted.
+0o. **(s153) ✅ PARTLY RESOLVED at the close-out — Ken ruled:** the stale
+   demo GA-500 is deleted (`e27ab39c`), the Remove lane STAYS. What remains
+   open is the ENGINE half only: the uniqueness constraint + the locked
+   find-or-create (LEG 3 item 18 — a migration, staged at Ken's trigger).
+   Ken also ruled `eic_self_employed` DERIVE and `scha_gambling_winnings`
+   DERIVE (both with `_overridden` companions) and RATIFIED the 5329 line-2
+   pro-rata — all five in DECISIONS.md.
 0m. **(s152) Deleting a 1040-X amendment leaves two ghosts** — ~61 published
    FFV rows survive the DELETE and `is_amended_return` stays true, so
    F8888-020 (the amended-refund cap) keeps blocking. Proven live. LEG
@@ -873,10 +876,11 @@ the shared Supabase DB caution is the one true-production constraint.
 ## Active gates
 - **Branch discipline:** `slate-ui` checked out; parallel session's uncommitted
   work UNSTAGED. Never stage/stash/`git add .`.
-- ⚠⚠ **The demo QA return's TWO GA-500 state returns are a LIVE PROOF (s153,
-  LEG 3 item 18) — do NOT remove either without Ken's ruling.** `a129a7e2`
-  (newest, auto-synced, GA tax 3,332) vs `e27ab39c` (stale, GA tax 2,906,
-  RIE blank). FFV hashes recorded in the s153 gates block.
+- ✅ **The demo GA-500 duplicate is RESOLVED (Ken ruled, s153 close-out):**
+  the stale `e27ab39c` was deleted by ORM (153 rows, verified nothing else
+  cascaded; federal + surviving hashes unchanged); `a129a7e2` (auto-synced,
+  GA tax 3,332) is the sole GA-500. The race/constraint fix stays queued
+  (LEG 3 item 18) — the probe data lives in REVIEW_QUEUE.
 - ⚠ **s153 wrote to the demo DB and self-reverted through the screen:** one
   SC1040 created via the picker (POST 201) and removed via the new Remove
   lane (DELETE 204). ORM-verified zero drift — federal 892-row hash and both
