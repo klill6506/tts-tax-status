@@ -1,33 +1,29 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 168 (**entity sweep unit 48 — the
-WRAP-UP: Extensions + PY Compare + State — is SHIPPED, and THE
-BUSINESS-ENTITY LANE IS COMPLETE (13/13 units)** (`slate-ui`, no
-deploy, client-only). TWO new Slate views
-(`SlateEntityExtensionsScreen` / `SlateEntityPyCompareScreen`, both
-entities) + the s153 State launcher OPENED to the entity editors
-(`federalFormCode` prop drives per-editor copy; the 1041 keeps legacy).
-**THE HEADLINE AUDIT FIND: the legacy PY-compare table mislabeled real
-dollars on BOTH entities** — 1120-S "K5a ST gain"/"K6 LT gain" showed
-DIVIDENDS/ROYALTIES (seeds: ST=K7, LT=K8a), a duplicate L15d row
-labeled Total Assets as "Accounts Payable", L9d/L20d wore the wrong
-names, and on a 1065 nearly every page-1/K/M-2 row was 1120-S-keyed
-("K11 §179" showed OTHER INCOME). Fixed in the shared
-`slate/entityPyCompare.ts` per-entity groups — the legacy screen
-DELEGATES, so both renderings are correct now. **THREE MORE ENGINE/
-CONTAINER FINDINGS**: (1) the legacy Extensions autosave fired a no-op
-/info/ PATCH 800ms after every tab OPEN (the s156 shape — fixed with a
-dirty ref, cures legacy too); (2) → REVIEW_QUEUE s168: every mutation
-answering with TaxReturnSerializer pays a ~37s UNPREFETCHED
-serialization (the viewset's prefetches are retrieve-only; measured
-37.15s vs the 3.08s GET) — which BLOWS the client's 30s request bound,
-so every legacy /info/ save was ABORTED client-side while the server
-applied it (silent lost-response); the Slate lane widens its timeout
-to 120s until the server fix; (3) → REVIEW_QUEUE s168: update_info
-never got the row lock its sibling endpoints did (the s35 lost-update
-class). The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.
-**NEXT: Ken directs** — the backlog resume, or the Slate-default
-decision now that both sweep lanes are complete.)*
+*Last updated: 2026-07-31, session 169 (**THE RULE/DIAGNOSTIC BACKLOG
+RESUMED — LEG 2 ITEM 5 IS DONE**: the Schedule 1-A tips owner filter
+(`slate-ui` + main, NO deploy yet). `_compute_part_ii_tips` now
+includes a W-2's box 7 in line 4a only when the W-2's `owner` is an
+ELIGIBLE filer (attested + valid SSN; spouse additionally requires
+MFJ; unknown/legacy owner values → taxpayer per Ken's direction) —
+before, every W-2's tips were summed as soon as EITHER filer attested
+(the s140 engine-proven $10,000 overstatement). The exclusion is never
+silent: D_SCH1A_003/002 already fire per filer, and **NEW rule
+D_SCH1A_007** covers the one state nothing owned — spouse-attributed
+tips on a NON-joint return. The Slate unit-24 screen's DEFECT-1
+overstatement banner became the exclusion note, and its STALE intro
+("no automated review checks yet" — false since s142) was retired.
+Audited the re-derivers: the GA-500 tips pull (views.py) and
+D_GA500_014 were ALREADY per-owner — federal compute was the outlier;
+all three now agree. Live-proven on the demo QA return (attested
+6,000 + spouse-owned 4,000 → 4a 6,000, was 10,000; D_SCH1A_007 names
+the employer; staging fully reverted, baseline re-verified exactly).
+Revert-proven: 5 targeted failures. Gates: flow assertions 521 ·
+pytest sch1a suites 78 · vitest 1546 · tsc at the 46 baseline.
+⚠ **`seed_rules` on BOTH DBs at the next deploy** (new D_SCH1A_007
+row + the D_SCH1A_003 description tweak); no migration.
+**NEXT: LEG 2 item 6** — the Form 8863 line-7 lockout (per-student,
+not `any()`).)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -36,7 +32,7 @@ decision now that both sweep lanes are complete.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG RESUMES AT LEG 2 ITEM 5 (Ken-directed 2026-07-31 end-of-day: "Leg 2 is good").** Item 5 = the Schedule 1-A tips owner filter (line 4a filtered by `W2Income.owner` against each filer's attestation; `joint` = the taxpayer's; warn when a W-2's tips are excluded). Per-item process: fetch the RS spec first (key `SCH_1A`), flow-assertion gate after, Ken deploy. Items 8 and 16 (the Ken-ruled derives) are ready to build in this lane.
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 6** (the Form 8863 line-7 lockout — currently `any()`, so one student's box makes the WHOLE return's AOTC nonrefundable; key it per student). Item 5 (the Schedule 1-A tips owner filter) is ✅ DONE (s169, 2026-07-31). Per-item process: fetch the RS spec first (8863's key is `FORM_8863`), flow-assertion gate after, Ken deploy. Items 8 and 16 (the Ken-ruled derives) are ready to build in this lane.
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -245,9 +241,14 @@ number is at least loud while the compute fix is pending.
    — identical but for the export timestamp. Flagged in REVIEW_QUEUE.
    ⚠ **The RS key for this form is `FORM_8863`, not `8863`** — the form-number
    lookup 404s. Use the code the app gives its `FormDefinition`.
-5. **PAUSED HERE. Schedule 1-A tips: filter line 4a by `W2Income.owner`** against each
-   filer's attestation (the field already exists; treat `joint` as the
-   taxpayer's) and warn when a W-2's tips are excluded.
+5. ✅ **DONE (s169, 2026-07-31) — Schedule 1-A tips: line 4a filtered by
+   `W2Income.owner`** against each filer's eligibility (attestation + SSN;
+   spouse requires MFJ; unknown owner → taxpayer). NEW D_SCH1A_007 warns on
+   spouse-attributed tips on a non-joint return (003/002 already own the
+   other exclusion causes); the unit-24 screen's overstatement banner became
+   the exclusion note and its stale "no diagnostics yet" intro was retired.
+   GA-500's pull + D_GA500_014 audited — already per-owner, now all agree.
+   ⚠ `seed_rules` at deploy (new 007 row + the 003 description).
 6. **Form 8863 line-7 lockout** — currently `any()`, so one student's box makes
    the WHOLE return's AOTC nonrefundable. Key it per student.
 7. **(s147) Form 8615 line 1 counts only interest + dividends + capital gain.**
@@ -674,7 +675,11 @@ screen module, the PaymentsSection NEW_UI branch + `slateBankField`, and
 `scripts/qa_unit35.mjs`). **Neither s144 nor s145 adds a migration, but BOTH change seeded rule
 rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** change
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
-not assume the code change is enough.
+not assume the code change is enough. **s169 adds no migration but DOES change
+seeded rule rows** — the NEW `D_SCH1A_007` registry entry plus the
+`D_SCH1A_003` description tweak — so `seed_rules` must run on BOTH DBs at the
+next deploy (until then the 007 function exists in code but the runner has no
+row to fire it from).
 
 **s168 gates (entity unit 48 — Extensions + PY Compare + State, the
 wrap-up):** NEW `slateEntityWrapupScreens.test.tsx` **11** (the
