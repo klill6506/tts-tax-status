@@ -1,33 +1,32 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 155, commit `dd25022` (**sweep unit 35 — Payments & E-File
-(the payments tab: estimates · direct deposit · EFW · other taxes · the six
-singleton forms 9465 / 8888 / 1040-V+ES / 4868 / 8879 / 8878) — is SHIPPED**
-on `slate-ui`, no deploy. ⚡ **THE 1040 BESPOKE-SCREEN SWEEP IS COMPLETE —
-39 of 39 screens.** Client-only: the bespoke `SlatePaymentsScreen` (view +
-`SlatePaymentsContainer` + the ONE generic `useSingletonLane` hook that
-replaces the six legacy cards' private copies of the self-managing-card
-contract), the NEW_UI branch inside PaymentsSection (the facts lane and the
-debounced /info/ bank cluster stay where they were — no second save path),
-no migration, no seed change, no server change. **Findings fixed (all
-revert-tested and live-proven):** (1) ⚠⚠ a Form 4868 edit RECOMPUTES the
-return server-side (Sch 3 line 10 → lines 22/33/37) but the endpoint never
-arms the fresh-return marker and the legacy card never refreshed the parent
-— the editor's face/pill/diagnostics stayed STALE after every extension
-edit; the Slate 4868 lane refreshes after every mutation (live: the owe
-pill flipped to "Balanced" the instant the 4868 landed, no reload; server
-half → REVIEW_QUEUE, minor). (2) ⚠⚠ the JOINT 8878's transmit gate was
-UNSATISFIABLE from the UI — analyze_8878 requires BOTH signature dates on
-MFJ and prints the spouse PIN, and the legacy card rendered NO spouse
-fields; the spouse block now renders (is_joint-gated, the 8879's shape).
-(3) three Form 9465 fields that PRINT and TRANSMIT had no input anywhere
-(request_form_types / tax_years_periods / work_ext — the s152 shape, 3rd
-occurrence). (4) every card's window.confirm Remove → the s153 two-step
-arm/confirm lane. (5) line 26 was a client re-sum of R-PAY-04 (the s138
-two-sums shape) — the Slate cell renders the ENGINE's published 1040 row.
-STATED: the dated-FederalEstimatedPayment/2210 interplay, and the
-other-taxes trio's notice (CHECKED not stale — D_1040_003 still fires RED).
-The rule/diagnostic backlog is still PAUSED at LEG 2 item 5.)*
+*Last updated: 2026-07-31, session 156 (**⚡ THE BUSINESS-ENTITY SCREEN LANE
+IS OPEN — Ken directed it over resuming the backlog. Unit 36 (Client Info +
+Admin, both entity editors) is SHIPPED** on `slate-ui`, no deploy,
+client-only but for two additive a11y/bug fixes (StateSelect gains an
+optional `ariaLabel`; InfoSection's entity autosave gains a dirty-ref
+guard). The lane was SCOPED first (the s137 method, via an Explore agent
+over FormEditor's tab→component map): ~13 units, listed under RESUME HERE —
+the Slate chrome already wraps entity returns; Depreciation / 8824 / Sched
+K's StandardSection body / the 8990 fallback are ALREADY Slate for
+entities; the State tab's `NEW_UI && isIndividual` gate is the lane's
+explicit last unit. **Unit-36 findings:** (1) ⚠⚠ the legacy InfoSection
+PATCHed the ENTITY with unchanged data ~800ms after every tab open — the
+initial GET's setEntity satisfied the autosave effect's guard (a
+stale-clobber window against another session's concurrent edit); FIXED at
+the container with a dirty-ref, pinned by a mocked-api container test,
+revert-tested, live-proven (idle 2.5s → 0 PATCHes). (2) ⚠⚠ ENGINE, not
+fixed (sweep units are presentation-only), REVIEW_QUEUE + LEG 2 lane: a
+1065 officer's compensation is written to line 7 "Other Income (Loss)" by
+`compute.aggregate_officer_compensation` (bare line "7") while
+`views._rollup_officer_compensation` targets `1065_L9` (line 9 Salaries) —
+the s144 two-implementations shape, worse: they DISAGREE on the
+destination. Engine-proven $50,000 → line 7 = 50,000 → line 8 Total Income
+= 50,000; plus the delete residue (line 7 stays stale forever after the
+last officer dies — the s143 zero-residue shape). The Slate 1065 Officers
+card STATES it. (3) officer delete was window.confirm → the s153 two-step
+lane; "also add as shareholder" became a per-row + Shareholder action.
+The rule/diagnostic backlog stays PAUSED at LEG 2 item 5.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -36,15 +35,42 @@ The rule/diagnostic backlog is still PAUSED at LEG 2 item 5.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **the 1040 SCREEN SWEEP IS COMPLETE (39/39). Idle — Ken directs.**
+## ▶ RESUME HERE — **THE BUSINESS-ENTITY SCREEN LANE, unit 37 (Shareholders, 1120-S).**
 
-Two lanes are queued and BOTH are Ken's call, per his standing direction:
-1. **The business-entity screens** (~12: 1120-S / 1065 shareholders,
-   partners, balance sheets, allocations, 7203, page-1 income/deductions) —
-   a separate, unscoped lane; never started.
-2. **The rule/diagnostic backlog**, PAUSED mid-LEG-2 at item 5 (the
-   Schedule 1-A tips owner filter). Items 8 and 16 (the two Ken-ruled
-   derives) are ready to build the day it resumes.
+**Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
+The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
+mission. ✅ = shipped:
+
+| Unit | Tab(s) | Notes |
+|---|---|---|
+| ✅ 36 | Client Info + Admin | s156 — both entity editors |
+| 37 | Shareholders (1120-S) | record-table paradigm — **NEXT** |
+| 38 | Partners + Allocations (1065) | |
+| 39 | Form 7203 + shareholder loans (1120-S) | |
+| 40 | Income & Deductions (page1) | pure props, both entities |
+| 41 | Schedule L balance sheets + SubSchedulePanel | biggest schedules unit |
+| 42 | Schedule B + Sched K verify | Sch K/8990 already Slate via StandardSection — QA-verify only |
+| 43 | Rental (8825) | entity twin of Sch E |
+| 44 | Dispositions (entity Sch D) | |
+| 45 | Schedule F (entity arm) | pure props |
+| 46 | Elections: 2553 / 2848 / 3115 | three files, ~1,670 ln |
+| 47 | Boundary + 8941 | |
+| 48 | Extensions + PY Compare + State (entity arm) | wrap-up; opens the FormEditor:14152 `NEW_UI && isIndividual` gate |
+
+Scoping facts (s156 audit): the Slate CHROME already wraps entity returns
+(bare `NEW_UI`); already-converted-for-entities: Depreciation (entity-aware),
+Like-Kind 8824, Sched K's body (SlateStandardSection + Noncash), the 1065
+f8990 fallback. Three 1040-twin pairs where Slate landed only on the 1040
+twin: rental/ScheduleE, dispositions/ScheduleD, ScheduleF. Demo QA returns:
+1120-S `bbe88483-0690-4049-86a1-b2fe00822bf3` (WorkNAllDay, 1 officer) ·
+1120-S `7f485239-…` · 1065 `16c8f946-379a-45ab-82d8-d156ad4e0b01` (Blue
+Ridge). ⚠ These belong to **Delvio Demo Firm — mint magic links for the
+`demo` user, not `dev`** (scratchpad mint variant; `dev` 404s on them).
+
+The **rule/diagnostic backlog stays PAUSED mid-LEG-2 at item 5** (the
+Schedule 1-A tips owner filter). Items 8 and 16 (the two Ken-ruled derives)
+are ready to build the day it resumes. **s156 added the 1065 officer-rollup
+defect to the LEG 2 lane** (REVIEW_QUEUE, engine-proven).
 
 **s155 added one item to REVIEW_QUEUE** (minor): `form_4868` PATCH/DELETE
 should arm the fresh-return marker so the client's `?fresh_return=1` kills
@@ -644,6 +670,41 @@ rows** — `seed_rules` must run on both DBs. ⚠ s145's is a **severity** chang
 (error → warning), which the s109b lesson says lives in TWO places — seed it, do
 not assume the code change is enough.
 
+**s156 gates (entity unit 36 — Client Info + Admin):** NEW
+`slateEntityInfoScreen.test.tsx` **15** (12 view contracts across BOTH new
+screens + 2 mocked-api container tests + 1 a11y/variant; the s152 rule that
+a container's data path needs its OWN test; revert-tested TWICE — restoring
+the un-guarded autosave failed exactly the spurious-PATCH container pin;
+restoring single-click remove failed exactly the two-step test) · vitest
+**1354/1354** (1339 + 15) · tsc **45 = baseline** (0 in the unit's files) ·
+no server change (flow assertions n/a; the engine finding is REPORTED, not
+fixed). Client changes: `SlateEntityInfoScreen` + `SlateEntityAdminScreen`
+(slate/screens/), NEW_UI branches inside InfoSection + AdminSection,
+`InfoSection` exported for the container test, the dirty-ref autosave guard
+(fixes legacy too), StateSelect `ariaLabel` (optional, additive), the
+`.slate-link` / `.slate-ptable-actions` / `.slate-adminfee*` CSS.
+**LIVE-PROVEN** on the demo 1120-S `bbe88483` (`scripts/qa_unit36.mjs`, one
+fresh `demo`-user magic link per run): idle 2.5s after open → **0 entity
+PATCHes** (finding 1 live); legal-name edit → PATCH /entities/ 200 →
+blanked back → 200; officer type-to-add → POST 201 → arm → Keep (0
+DELETEs) → arm → Confirm → DELETE 204. Console errors = the known
+pre-existing set. Screenshots `Design/screens/unit36/` (legacy+slate pairs:
+ent-info-1120s · ent-admin-1120s · ent-info-1065 — the 1065 warning and
+partnership labels live). **Demo settle, stated precisely:** the 1065 is
+byte-identical to baseline (363 rows, hash `5e847264…`; the 46 blank
+API-GET backfill shells value-checked `{''}` and deleted — the s148 rule).
+The 1120-S FFV count is unchanged (359) with entity/officers/info fields at
+baseline, but 14 ENGINE-WRITTEN lines (4797/officer-comp/Sch L EOY/K) were
+refreshed from stale values by the first recompute this return has had in
+months — the QA's net data change was zero (a $0 officer added and removed);
+the new state is the engine's proven fixpoint (a second `compute_return`
+changes nothing, hash `7bd3e674…` stable). ⚠ Unit-36 gotchas: the demo
+ENTITY returns belong to Delvio Demo Firm → mint for `demo`, not `dev`; a
+puppeteer wait must never grep `innerText` for a value that renders inside
+an `<input>` (values aren't innerText — key off aria-labels/testids); a
+scratchpad .mjs can't resolve repo node_modules — put QA scripts in
+`scripts/`.
+
 **s155 gates (unit 35 — Payments & E-File / the payments tab):** NEW
 `slatePaymentsScreen.test.tsx` **21** (13 view contracts + the container's
 envelope/finding-1 tests — the s152 rule that a container's data path needs
@@ -773,6 +834,13 @@ switches to Slate when the redesign is FINISHED; everything rides `slate-ui`;
 the shared Supabase DB caution is the one true-production constraint.
 
 ## 🔴 Open judgment calls for Ken (REVIEW_QUEUE — trimmed to live items)
+0p. **(s156) ⚠⚠ A 1065 officer's compensation is recorded as INCOME** — the
+   two officer rollups disagree on the destination (`views` → line 9
+   Salaries; `compute` → bare line "7", which on the 1065 is **Other Income
+   (Loss)**). Engine-proven $50,000 both ways + the delete residue (line 7
+   stays stale forever). Fix = gate the aggregate on 1120-S + blank-not-skip
+   at zero + drop the `1065_L9` mapping; also decide whether a 1065 should
+   have an Officers card at all. LEG 2 lane. The Slate 1065 screen states it.
 0o. **(s153) ✅ PARTLY RESOLVED at the close-out — Ken ruled:** the stale
    demo GA-500 is deleted (`e27ab39c`), the Remove lane STAYS. What remains
    open is the ENGINE half only: the uniqueness constraint + the locked
