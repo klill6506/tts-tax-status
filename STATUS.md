@@ -1,48 +1,52 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9 + 10 DONE — THE TWO
-FORM 8880 DEFECTS SHIPPED TOGETHER** (`976eb08`; they live in the same module
-and the same screen, so splitting them would have meant rewriting the same two
-banners twice). **Item 9 — the MFJ line-4 both-columns rule**: on a joint
-return `compute_8880_lines` now COMBINES both spouses' testing-period
-distributions and puts the combined figure in BOTH columns before either
-subtracts, per the 2025 f8880 face ("If married filing jointly, include both
-spouses' amounts in both columns") and §25B(d)(2)(C); the combine deliberately
-IGNORES the per-person eligibility caution, because that caution zeroes an
-excluded person's CONTRIBUTIONS, not the §25B(d)(2) reduction (pinned:
-a student spouse's distribution still reduces the taxpayer's column). The
-didn't-file-jointly exception stays PREPARER-APPLIED — the model carries no
-prior-year filing-status fact — and it can now only UNDERSTATE the credit, so
-the screen names it and points at the Schedule 3 line-4 override rather than
-pretending to detect it. **Item 10 — the Credit Limit Worksheet**: the
-Schedule 3 subtraction is now the 2025 i8880 list VERBATIM via the new
-`CLW_SCH3_LINES = ("1","2","3","6d","6l")`, the same list `compute_8911` and
-`compute_8936` already carried — the old read took 1/2/3 only while its own
-comment named 6c/6g/6h, lines the 2025 worksheet does not list. ⚠⚠ **BOTH of
-the Slate screen's interim banners were rewritten IN THE SAME COMMIT** (the
-stale-notice rule, now routine): the MFJ note used to instruct the COMBINED
-entry in both cells — which after this fix would DOUBLE-COUNT — and the "Line
-11 is overstated, refigure by hand" warning became a neutral note explaining
-the tightened cap; both vitest contracts were rewritten carrying what they
-used to assert. The app stays deliberately AHEAD of `R-8880-CONTRIB` (live
-export diffed clean against `server/specs/form_8880_spec.json`) — the FOURTH
-spec that keeps a form's arithmetic and drops its statutory rule → the
-standing RS spec-corrections agenda. Revert-proven: 5 targeted failures.
-Live-proven on the demo QA return with a staged MFJ scenario ($2,000 IRA +
-$500 spouse distribution + $150 keyed on Sch 3 6d): line 4a AND 4b = 500,
-line 5a fell 2,000 → 1,500, line 11 = 6,852 = 1040 line 18 (7,002) − 150;
-every QA write was then reverted and the return proved back at its EXACT
-baseline row hash (the 18 blank backfill rows deleted, recomputed, 892 rows /
-`8f7d2c18b57d8bd2`). Gates: FA 521 · 8880 legs 50 (+5) · Sch3+e-file suites
-168 · vitest 1551 (+2) · tsc at the 46 baseline. **NO migration and NO new
-seeded rule this session** — the deploy debt is UNCHANGED: ⚠ **migrate 0227 on
-PROD + `seed_rules` on BOTH DBs, FOUR sessions stacked** (s169 D_SCH1A_007+003
-· s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172 D_W2G_LOSS_CAP
-name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 11** — `rules_8960._f8960` must
-resolve rental the way the engine does (Schedule 1 line-5 fallback + the
-`schedule_e_non_1411_income` back-out) and `d_8960_rental` must key off the
-RESOLVED 4a amount; diagnostics-lane, no compute dollars, but $608 of wrong
-guidance is priced and a rental-only return silences all five rules.)*
+*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9, 10 AND 11 DONE — TWO
+COMMITS.** `976eb08`: the two **Form 8880** defects — the MFJ line-4
+both-columns rule (both spouses' testing-period distributions now combine into
+BOTH columns before either subtracts, per the 2025 face and §25B(d)(2)(C); the
+combine deliberately IGNORES the eligibility caution, which zeroes an excluded
+person's CONTRIBUTIONS, not the §25B(d)(2) reduction) and the Credit Limit
+Worksheet's Schedule 3 list, now the 2025 i8880 verbatim via the new
+`CLW_SCH3_LINES = ("1","2","3","6d","6l")`. `ac20c6a`: **Form 8960** — the
+diagnostics recompute carried a hand-copied mirror of the engine's input
+resolution that predated the Schedule 1 line-5 rental auto-feed, so an auto-fed
+rental return was invisible to all five §1411 rules and D_8960_NII_LOSS
+reported "no §1411 tax applies" on a return the engine was charging; NEW
+`resolve_8960_inputs` is THE ONE resolution both sides call (the s144 delegate
+rule), and D_8960_RENTAL now keys off the RESOLVED 4a — which aligns the app
+WITH its spec, whose condition reads "line 4a rental income is present" (the
+LINE). ⚠⚠ **THE SESSION'S HEADLINE LESSON, EARNED TWICE: AN INTERIM WORKAROUND
+INSTRUCTION IS WORSE THAN A STALE NOTICE — IT TURNS ACTIVELY WRONG THE MOMENT
+ITS FIX LANDS.** The 8880 screen told MFJ preparers to key the COMBINED
+distributions in both cells (after the fix that DOUBLE-COUNTS) and the 8960
+screen said the diagnostics "do not see" the auto-feed (now false). Both were
+rewritten IN THE SAME COMMIT as their fix, with their vitest contracts
+rewritten carrying what they used to assert. **FAMILY AUDIT (the s143
+lesson-11 rule):** `render_8960` and the MeF `_extract_f8960` carry the 3rd and
+4th copies of the 8960 resolution — both READ this session and both CORRECT
+(they were updated when the auto-feed landed), so they are NOT refactored
+(print and e-file are outside the item's scope and right today); their
+agreement is PINNED by a test exercising an auto-fed 4a AND a self-rental 4b
+back-out. Revert-proven: 5 targeted failures on 8880, 4 on 8960 — and the 8960
+anti-drift pin reported `line17 0 != 608`, exactly the figure the s150
+write-up priced. Live-proven on the demo QA return, both times, with every QA
+write reverted and the return proved back at its EXACT baseline row hash (892
+rows / `8f7d2c18b57d8bd2`): the 8880 case showed line 4a AND 4b = 500 with
+line 11 = 6,852 = 1040 line 18 (7,002) − a staged Sch 3 6d credit (150); the
+8960 case showed the engine charging **$5,493** of NIIT with the recompute
+agreeing line-for-line (12 = 252,200, 17 = 5,493) and D_8960_RENTAL naming
+$250,000 and its Schedule 1 line 5 source, where the pre-s173 gate read
+`e8960_rental` = 0.00 and every §1411 check was silent. Gates: FA 521 · 8880
+legs 50 · 8960 suites 43 · 8960-adjacent server suites 151 · Sch3+e-file
+suites 168 · vitest 1553 (+4) · tsc at the 46 baseline. **NO migration and NO
+seeded-rule change all session** — the deploy debt is UNCHANGED: ⚠ **migrate
+0227 on PROD + `seed_rules` on BOTH DBs, FOUR sessions stacked** (s169
+D_SCH1A_007+003 · s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172
+D_W2G_LOSS_CAP name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 12** — Form
+5695's two Credit Limit Worksheets against the 2025 i5695 verbatim (§25C
+computes FIRST; up to $3,200 of §25D carryforward destroyed, priced $1,000,
+and a CTC return's Sch 3 5a overstated by up to the CTC, priced $2,000, which
+transmits). Item 13 (the 1040-X delete residue) follows.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -51,7 +55,7 @@ guidance is priced and a rental-only return silences all five rules.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 11** (`rules_8960._f8960` must resolve rental the way `compute_8960_db` does — the Schedule 1 line-5 fallback plus the `schedule_e_non_1411_income` back-out — and `d_8960_rental` must key off the RESOLVED 4a amount, not the override fact. Diagnostics-lane: no compute dollars move, but the wrong guidance is priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a rental-only return silences all five 8960 rules. Read its REVIEW_QUEUE entry first.) Items 9 + 10 are ✅ DONE (s173, 2026-07-31 — the two Form 8880 defects; see the header paragraph). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7's and now 9/10's held). Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 12** (Form 5695's two Credit Limit Worksheets, against the 2025 i5695 VERBATIM: compute §25C FIRST — line 31 = 1040 line 18 − Sch 3 [6l,1,2,6d,3,4] — then §25D — line 14 = line 18 − Sch 3 [1,2,6d,3,4] − Form 5695 line 32 − 1040 line 19 (CTC) − Sch 3 [6m,6f,6g,6c,6h]. The engine's §25D-first order destroys up to $3,200 of §25D carryforward (priced $1,000) and overstates a CTC return's Sch 3 5a by up to the CTC (priced $2,000; it TRANSMITS). The `qa_unit31` flip case is a ready regression. Read its REVIEW_QUEUE entry first.) Items 9, 10 and 11 are ✅ DONE (s173, 2026-07-31 — the two Form 8880 defects and the Form 8960 resolution mirror; see the header). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7, 9, 10 and 11 all held). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that twice in one session. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -317,13 +321,19 @@ number is at least loud while the compute fix is pending.
    is overstated" warning became a neutral note explaining the tightened cap.
    Live-proven: line 11 = 6,852 = 1040 line 18 (7,002) − a staged Sch 3 6d
    credit (150).
-11. **(s150) `rules_8960._f8960` must resolve rental the way the engine does**
-   (Schedule 1 line 5 fallback + the `schedule_e_non_1411_income` back-out),
-   and `d_8960_rental` must key off the RESOLVED 4a amount, not the override
-   fact. Diagnostics-lane, no compute dollars — but the wrong guidance is
-   priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a
-   rental-only return silences all five rules. The Slate screen carries the
-   classification guidance at the 4a cell meanwhile.
+11. ✅ **DONE (s173, 2026-07-31, `ac20c6a`) — the 8960 diagnostics share the
+   ENGINE's rental resolution.** NEW `resolve_8960_inputs` is THE ONE input
+   resolution; `compute_8960_db` and `rules_8960._f8960` both call it, so the
+   mirror cannot drift again (the s144 delegate rule). `income_present` and
+   D_8960_RENTAL's gate now key off the RESOLVED 4a, not the `e8960_rental`
+   fact — which aligns the app WITH its spec ("line 4a rental income is
+   present" — the LINE), and makes the reminder fire on exactly the auto-fed
+   return it exists for, naming the amount and its source. ⚠ FAMILY AUDITED:
+   `render_8960` and `_extract_f8960` carry the 3rd/4th copies and are both
+   CORRECT (updated when the auto-feed landed) — not refactored, agreement
+   PINNED by a test covering an auto-fed 4a and a self-rental 4b back-out.
+   The screen's "the diagnostics do not see it" banner was rewritten in the
+   same commit. Live: engine NIIT $5,493, recompute agrees line-for-line.
 13. **(s152) The 1040-X delete residue** — reset `is_amended_return=False` in
    the DELETE branch of views.py `form_1040x` (mirroring the create side)
    and make `compute_1040x_db` blank its lines when the `Form1040X` row is
