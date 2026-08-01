@@ -1,47 +1,48 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 172 (**LEG 2 ITEMS 8 + 16 DONE — THE
-TWO KEN-RULED DERIVES SHIPPED TOGETHER** (both rulings 2026-07-30,
-DECISIONS.md; the twin derive-with-override shape). **Item 8 —
-`scha_gambling_winnings` DERIVED**: `derive_gambling_cap` keeps the §165(d)
-cap at Σ W-2G box 1 + `other_gambling_winnings` on every compute unless the
-NEW `scha_gambling_winnings_overridden` (**migration 0227** — applied on the
-DEMO DB this session; **PROD migrates at Ken's deploy**); the serializer
-marks the override on a direct write of the cap (the `_derive_person`
-first-half pattern) and an explicit flag write is the un-override lane; the
-cap came OUT of the Schedule A engage list (a cap alone is not a deduction —
-pinned: winnings-only returns do not auto-engage Sch A); deleting the last
-W-2G RESNAPS the cap (the s143 zero-residue family, at the write); the s137
-proof case heals ($10,000 of losses now deducts $10,000 on line 16, was $0);
-D_W2G_LOSS_CAP reworded to the override-disagreement framing. **Item 16 —
-`eic_self_employed` DERIVED when UNANSWERED**: None routes by the return
-itself — Sch 1 line 3 / line 6 / K-1 box-14A SE, exactly Ken's three named
-sources (NOT L15 alone: clergy-only returns must not flip onto a Worksheet B
-base that cannot source them); the preparer's EXPLICIT answer is the
-override — **the nullable fact's None state IS the not-overridden state, so
-NO new column and NO `eic_engaged` widening** (an answered fact engages the
-whole EIC lane; a derived one must not — pinned; Ken-flagged as the one
-deviation from the ruling's literal "_overridden companion", same semantics);
-the WS-B default base widened L3-only → L3 + L6 + K-1 SE (Pub 596 WS B 1a;
-R-EIC-WSB-SE still says L3-only → RS agenda); NEW **D_EIC_018** (warning)
-reports an explicit No with SE income; the s139 proof heals ($4,328 computed
-with the question unanswered, was $0). All four screens' stale banners
-rewritten (Misc Income's "nothing fills it in automatically" + EIC's "no
-diagnostic covers it" would both have been the stale-notice trap). **ALSO:
-repaired three ROTTED s142-era pins found by the gates** — the s142 test
-file was never updated when s143 fixed the stale-QBI defect and s145 demoted
-D_8863_DUAL_STUDENT (rewritten as belt+brace / current-severity pins with
-notes). Revert-proven: 8 targeted failures. Live-proven on the demo QA
-return: fixpoint, ZERO lines moved (no W-2Gs; EIC not engaged), fresh
-diagnostics clean, both screens' new copy renders. Gates: FA 521 · s172
-suite 11 · s142 repaired 29 · Sch A/W-2G/topic7/input suites 117 · vitest
-1549 (+1) · tsc at the 46 baseline. ⚠ **AT THE NEXT DEPLOY: `migrate`
-(0227, prod) + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169
-D_SCH1A_007+003 · s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172
-D_W2G_LOSS_CAP name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 9** — Form
-8880 line 4 must carry BOTH spouses' distributions in BOTH columns on MFJ
-($1,000 proven; prints AND transmits); item 10 (the 8880 CLW 6d/6l
-subtraction) is its natural companion.)*
+*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9 + 10 DONE — THE TWO
+FORM 8880 DEFECTS SHIPPED TOGETHER** (`976eb08`; they live in the same module
+and the same screen, so splitting them would have meant rewriting the same two
+banners twice). **Item 9 — the MFJ line-4 both-columns rule**: on a joint
+return `compute_8880_lines` now COMBINES both spouses' testing-period
+distributions and puts the combined figure in BOTH columns before either
+subtracts, per the 2025 f8880 face ("If married filing jointly, include both
+spouses' amounts in both columns") and §25B(d)(2)(C); the combine deliberately
+IGNORES the per-person eligibility caution, because that caution zeroes an
+excluded person's CONTRIBUTIONS, not the §25B(d)(2) reduction (pinned:
+a student spouse's distribution still reduces the taxpayer's column). The
+didn't-file-jointly exception stays PREPARER-APPLIED — the model carries no
+prior-year filing-status fact — and it can now only UNDERSTATE the credit, so
+the screen names it and points at the Schedule 3 line-4 override rather than
+pretending to detect it. **Item 10 — the Credit Limit Worksheet**: the
+Schedule 3 subtraction is now the 2025 i8880 list VERBATIM via the new
+`CLW_SCH3_LINES = ("1","2","3","6d","6l")`, the same list `compute_8911` and
+`compute_8936` already carried — the old read took 1/2/3 only while its own
+comment named 6c/6g/6h, lines the 2025 worksheet does not list. ⚠⚠ **BOTH of
+the Slate screen's interim banners were rewritten IN THE SAME COMMIT** (the
+stale-notice rule, now routine): the MFJ note used to instruct the COMBINED
+entry in both cells — which after this fix would DOUBLE-COUNT — and the "Line
+11 is overstated, refigure by hand" warning became a neutral note explaining
+the tightened cap; both vitest contracts were rewritten carrying what they
+used to assert. The app stays deliberately AHEAD of `R-8880-CONTRIB` (live
+export diffed clean against `server/specs/form_8880_spec.json`) — the FOURTH
+spec that keeps a form's arithmetic and drops its statutory rule → the
+standing RS spec-corrections agenda. Revert-proven: 5 targeted failures.
+Live-proven on the demo QA return with a staged MFJ scenario ($2,000 IRA +
+$500 spouse distribution + $150 keyed on Sch 3 6d): line 4a AND 4b = 500,
+line 5a fell 2,000 → 1,500, line 11 = 6,852 = 1040 line 18 (7,002) − 150;
+every QA write was then reverted and the return proved back at its EXACT
+baseline row hash (the 18 blank backfill rows deleted, recomputed, 892 rows /
+`8f7d2c18b57d8bd2`). Gates: FA 521 · 8880 legs 50 (+5) · Sch3+e-file suites
+168 · vitest 1551 (+2) · tsc at the 46 baseline. **NO migration and NO new
+seeded rule this session** — the deploy debt is UNCHANGED: ⚠ **migrate 0227 on
+PROD + `seed_rules` on BOTH DBs, FOUR sessions stacked** (s169 D_SCH1A_007+003
+· s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172 D_W2G_LOSS_CAP
+name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 11** — `rules_8960._f8960` must
+resolve rental the way the engine does (Schedule 1 line-5 fallback + the
+`schedule_e_non_1411_income` back-out) and `d_8960_rental` must key off the
+RESOLVED 4a amount; diagnostics-lane, no compute dollars, but $608 of wrong
+guidance is priced and a rental-only return silences all five rules.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -50,7 +51,7 @@ subtraction) is its natural companion.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 9** (Form 8880 line 4 must carry BOTH spouses' distributions in BOTH columns on MFJ — face + i8880 + §25B(d)(2)(C); `compute_8880_column` subtracts each column's own entry only, $1,000 proven on the max case, and it PRINTS and TRANSMITS; item 10 — the 8880 Credit Limit Worksheet's missing Sch 3 6d/6l subtraction, same module — is its natural companion; read both REVIEW_QUEUE entries first). Items 8 + 16 are ✅ DONE (s172, 2026-07-31 — the two Ken-ruled derives; see the header paragraph). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7's held). Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (see the header).
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 11** (`rules_8960._f8960` must resolve rental the way `compute_8960_db` does — the Schedule 1 line-5 fallback plus the `schedule_e_non_1411_income` back-out — and `d_8960_rental` must key off the RESOLVED 4a amount, not the override fact. Diagnostics-lane: no compute dollars move, but the wrong guidance is priced ($608 charged while D_8960_NII_LOSS says no tax applies) and a rental-only return silences all five 8960 rules. Read its REVIEW_QUEUE entry first.) Items 9 + 10 are ✅ DONE (s173, 2026-07-31 — the two Form 8880 defects; see the header paragraph). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7's and now 9/10's held). Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -295,20 +296,27 @@ number is at least loud while the compute fix is pending.
    serializer marks the override / explicit flag write un-overrides;
    D_W2G_LOSS_CAP reworded (seed_rules). The s137 $0-deduction case heals.
    RS R-SCHA-OTHER still carries the cap as a bare input fact → RS agenda.
-9. **(s149) Form 8880 line 4 must carry BOTH spouses' distributions in BOTH
-   columns on MFJ** (face + i8880 + §25B(d)(2)(C); the didn't-file-jointly
-   exception is preparer-applied). `compute_8880_column` subtracts each
-   column's own entry only — **$1,000 overstated on the priced max case**, and
-   it prints (`render_8880`) and transmits (`build_irs8880`). The RS spec's
-   `R-8880-CONTRIB` lacks the rule (4th spec-divergence form — one RS
-   conversation). No existing test pins the wrong MFJ arithmetic by name. The
-   Slate screen instructs combined entry meanwhile. REVIEW_QUEUE has the
-   recommendation.
-10. **(s149) Form 8880's Credit Limit Worksheet must also subtract Schedule 3
-   lines 6d and 6l** (2025 i8880 verbatim: "lines 1 through 3, 6d, and 6l");
-   `compute_8880_db` reads 1/2/3 only while the 8911/8936 sibling reads
-   include 6d/6l. Both are seeded direct-entry lines, so it is reachable
-   today. The Slate screen warns live when 6d/6l hold a value.
+9. ✅ **DONE (s173, 2026-07-31, `976eb08`) — Form 8880 line 4 carries BOTH
+   spouses' distributions in BOTH columns on MFJ.** `compute_8880_lines`
+   combines the two entries before either column subtracts (2025 face +
+   i8880 + §25B(d)(2)(C)). The combine deliberately IGNORES the eligibility
+   caution — that caution zeroes an excluded person's CONTRIBUTIONS, not the
+   §25B(d)(2) reduction (a student spouse's distribution still reduces the
+   taxpayer's column; pinned). The didn't-file-jointly exception stays
+   preparer-applied (no prior-year filing-status fact exists) and can now
+   only UNDERSTATE, so the screen names it and points at the Schedule 3
+   line-4 override. ⚠ The screen's interim "enter the COMBINED total in both
+   cells" instruction was RETIRED in the same commit — after this fix a
+   combined entry would DOUBLE-COUNT. RS `R-8880-CONTRIB` still lacks the
+   rule → RS agenda.
+10. ✅ **DONE (s173, with item 9) — the Credit Limit Worksheet subtracts the
+   2025 i8880 list verbatim**, via the new `CLW_SCH3_LINES =
+   ("1","2","3","6d","6l")` — the list `compute_8911` / `compute_8936`
+   already carried. The old read took 1/2/3 only while its comment named
+   6c/6g/6h (lines the 2025 worksheet does not list). The screen's "line 11
+   is overstated" warning became a neutral note explaining the tightened cap.
+   Live-proven: line 11 = 6,852 = 1040 line 18 (7,002) − a staged Sch 3 6d
+   credit (150).
 11. **(s150) `rules_8960._f8960` must resolve rental the way the engine does**
    (Schedule 1 line 5 fallback + the `schedule_e_non_1411_income` back-out),
    and `d_8960_rental` must key off the RESOLVED 4a amount, not the override
@@ -623,6 +631,23 @@ lane — ~12 more, none started. Ken's call when to take them.**
    the derived key itself was wrong for 3 of 4 states — `split("-")[0]` only
    parses the GA-* family. A derivation that happens to work for the most
    common case survives for years.)
+30. ⚠⚠ **AN INTERIM WORKAROUND INSTRUCTION IS WORSE THAN A STALE NOTICE — IT
+   BECOMES ACTIVELY WRONG THE MOMENT THE FIX LANDS.** The 8880 screen told MFJ
+   preparers to key the COMBINED distributions in BOTH cells, which exactly
+   reproduced the form while the engine subtracted per-column. After s173's fix
+   the engine combines, so that same instruction would have DOUBLE-COUNTED every
+   joint return — a stale limitation notice merely wastes a preparer's time; a
+   stale workaround corrupts the return. When you fix a defect, grep the screen
+   for what it told preparers to DO about it, not only for what it said was
+   broken.
+31. ⚠ **A PER-PERSON ELIGIBILITY GATE AND A STATUTORY COMBINE ARE DIFFERENT
+   RULES — DECIDE WHICH ONE THE GATE ACTUALLY SUPPRESSES.** Form 8880's Caution
+   excludes a student / dependent / under-18 person's CONTRIBUTIONS; it says
+   nothing about §25B(d)(2)(C), which treats a spouse's distribution as received
+   by the individual. So an excluded spouse's distributions still reduce the
+   taxpayer's column, while their own column stays zero. Getting this backwards
+   would have handed a credit to exactly the return the Caution exists to police
+   — pinned by `test_mfj_excluded_spouse_distributions_still_reduce`.
 15. ⚠ **A DEFECT THE SCREEN WARNS ABOUT IS A TEST THAT MUST BE REWRITTEN, NOT
    DELETED.** Fixing the engine broke exactly the tests that pinned the wrong
    behaviour (2 vitest, 3 pytest). Each was rewritten to pin the FIX with a note
