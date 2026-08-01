@@ -1,6 +1,6 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 175 (**THE QA-BATCH SESSION.** Ken relayed a
+*Last updated: 2026-08-01, session 175 (**THE QA-BATCH SESSION — AND THE DEPLOY SHIPPED AT THE END OF IT** (see Active gates). Ken relayed a
 Codex/ChatGPT defect list reproduced 2026-07-28 on the LEGACY screens, three
 days before the cutover. Seven commits, six of them fixes. **The headline: of
 the six items examined, THREE prescriptions were already the behaviour and TWO
@@ -101,12 +101,23 @@ new list arrives:
   touching code that may no longer run.**
 
 ## Active gates
-- **Branch:** `slate-ui`, pushed, in sync. `main` is one commit behind at
-  `6da4966` (everything from `ae7cde9` on is `slate-ui`-only). `Design/screens/`
-  stays untracked (entity-sweep screenshots, unrelated).
-- ⚠⚠ **DEPLOY DEBT — `seed_rules` on BOTH DBs, now SIX sessions** (s169–s172,
-  s173/s174 rule text, **plus s175's NEW `D_4562_CONVENTION`**). Migration 0227
-  still un-applied on PROD. A deploy does NOT run `seed_rules`.
+- **⚡ DEPLOYED 2026-08-01 ~22:40Z (Ken's go, end of s175): `main` fast-forwarded
+  to `fdbd7f2` and pushed → Render built `index-BrbsO-k6.js`.** Verified live:
+  the status control is in the deployed chrome chunk (`slate-pill-select` /
+  "Return status" / the Filed tooltip ×1 each); `/api/v1/version/` 200 `prod`.
+- **✅ THE SEED DEBT IS CLEARED — `seed_rules` RUN ON BOTH DBs post-deploy**
+  (prod 771 → **772** active rules, demo 772; `D_4562_CONVENTION` seeded as
+  error; **every rule_function verified resolvable on both DBs — zero
+  unresolvable**). Post-deploy diagnostics probe on a real prod return: 12
+  findings (10 info / 2 warning), **zero rule crashes**. ⚠ The probe wrote a
+  fresh DiagnosticRun on the most-recently-updated prod 1040 (findings
+  re-derived; return data untouched) — the standing server-deploy check.
+- **✅ Migration 0227 was ALREADY APPLIED on prod** (an earlier deploy's
+  `migrate --noinput` took it) — the carried "0227 un-applied" debt note was
+  STALE. `showmigrations`: zero unapplied, all apps. This deploy was code-only.
+- **Branch:** `slate-ui` checked out, in sync; `main` == `slate-ui` ==
+  `fdbd7f2`. `Design/screens/` stays untracked (entity-sweep screenshots,
+  unrelated).
 - ⚠ **`LEDGER_AUTOPOST_ENABLED` must stay unset until the production cutover**
   (Ken: January 2027). Setting the Ledger credentials alone no longer arms it.
 - ⚠ **Demo DB verified byte-clean at close** — 892/892 FFV rows, AGI 94,560,
