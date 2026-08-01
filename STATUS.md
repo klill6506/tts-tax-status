@@ -1,6 +1,66 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 173 (**LEG 2 IS COMPLETE — ITEMS 9, 10, 11,
+*Last updated: 2026-08-01, session 174 (**THE SLATE CUTOVER — `NEW_UI` NOW
+DEFAULTS ON** (`590b173`, `slate-ui` + `main` fast-forwarded, pushed, NO
+deploy). Ken set the order for what follows LEG 2: **flip the flag → the MeF
+documents batch → the stacked deploy → the year-constant ruling.** Item 1 of
+that order is done; the MeF batch is next and is UNSTARTED.
+
+**THE FLIP.** Polarity flipped, not removed: default ON; **`VITE_NEW_UI=0` opts
+a BUILD out and is ABSOLUTE** (it beats the per-browser override — it is the
+rollback lever for a bad deploy: one Render env var, no code change, no revert,
+and NOTHING in `build.sh` sets the var today, so the next deploy produces a
+Slate-default bundle on its own); `localStorage["delvio-new-ui"]="0"` drops ONE
+browser back to legacy so a preparer can finish a return on the old screen.
+⚠ **Legacy is now the FALLBACK, not dead code** — the override is a runtime
+read, so both branches ship (accepted: the lever is worth the bundle).
+
+⚠⚠ **THE SESSION'S LESSON: WHEN A FLAG FLIPS, ~160 TESTS SILENTLY CHANGE
+BRANCH.** Flipping the default turned 162 tests across 17 files red — every one
+a LEGACY-container suite that had simply started rendering the Slate branch, not
+a defect (checked, not assumed: the s152 envelope test's REAL assertion passes
+under Slate; only its legacy wording fails). Rewriting them to Slate would not
+have re-pointed that coverage, it would have **DELETED** it at exactly the
+moment the fallback became the thing you fall back TO. So `test/setup.ts` seeds
+the override "0" suite-wide and the legacy pins stand. **This is the one place
+the test default and the app default disagree on purpose** — both files say so,
+and `featureFlags.test.ts` pins the arrangement itself (revert-proven: removing
+the seed fails the guard AND breaks the container tests).
+
+**THE STRAGGLERS WERE VERIFIED, NOT ASSUMED.** The 1041 editor and the
+state-return editor interiors are unconverted and now render legacy bodies
+inside the Slate chrome. They pass `groups={undefined}`, so `LeftRail` falls
+back to a flat "Sections" list of every tab — **live-proven on the 1041 (all 9
+tabs render, legacy body loads)**. ⚠ The state interiors share that exact branch
+but were **NOT independently live-run**: the only state returns in the shared DB
+belong to **The Tax Shelter's real clients**, and a demo/dev firm has none.
+Also closed the s162 nav-coverage gap on the **1040** (the rail is now THE nav;
+the entity navs have been pinned since unit 42, the 1040 never was because the
+legacy tab row was still reachable) — currently clean, revert-proven with an
+orphan tab.
+
+⚠ **HASH ROUTER.** Deep links are `#/tax-returns/<id>/editor`. A path-style URL
+silently renders the root route, and setting `location.href` to a `#/...` URL is
+a SAME-DOCUMENT navigation — the module never re-evaluates, so a flag change
+does not take effect until a real reload. Both cost time this session; judge the
+flag by a reload, and judge login by the firm name on screen.
+
+Gates: vitest **1558** (1556 + 2 new pins) · tsc **46** = baseline · production
+build green. **NO migration, NO seeded-rule change, server untouched** — the
+deploy debt is UNCHANGED (see below).
+
+**NEXT: the MeF documents batch, UNSTARTED** — `build_schedule1a` /
+`build_irs8615` / `build_irs1116` / `build_irs5695`. Confirmed this session that
+all four are genuinely absent from `composition/mappers/y2025/builder.py` and
+that **all four XSDs are local** under
+`docs/mef/schemas/2025v5.3/2025v5.3/IndividualIncomeTax/Common/` (543 / 337 /
+885 / 1,055 lines). Each needs a source dataclass + extract + builder + a slot
+in `build_return`'s document sequence + the manifest + tests — a multi-session
+unit; take it with a fresh context.)*
+
+*(s173 below, for the LEG 2 record.)*
+
+*Session 173 (**LEG 2 IS COMPLETE — ITEMS 9, 10, 11,
 12 AND 13 ALL SHIPPED, FOUR COMMITS.** `976eb08` the two **Form 8880** defects
 (the MFJ line-4 both-columns rule + `CLW_SCH3_LINES` 1/2/3/6d/6l); `ac20c6a`
 **Form 8960** (the diagnostics recompute carried a hand-copied mirror of the
@@ -73,9 +133,15 @@ today with no supporting document, scoped as ONE pass).)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **LEG 2 IS COMPLETE (items 1–13 + 16 all shipped). KEN DIRECTS THE NEXT MOVE.** The rule/diagnostic backlog's remaining legs are: **LEG 3** — every item needs a migration or an e-file builder, so each is stage-then-Ken-deploys; the largest is the **"missing MeF documents" batch** (`build_schedule1a`, `build_irs8615`, `build_irs1116`, `build_irs5695` — four forms whose amounts transmit with no supporting document; scope as ONE pass), plus the amended-1040 submission path (item 17), the duplicate-state-return constraint (item 18), and the render gaps (items 12/14/15). **LEG 4** — Ken-scoped: the ONE ruling on the year-keyed-constant fallback (item 17, now FIVE occurrences) is the highest-value one. ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 failed that check outright; item 12's HELD BUT WAS INCOMPLETE (it omitted Sch 3 line 6l). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FIVE times in one session. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+## ▶ RESUME HERE — **THE MeF DOCUMENTS BATCH (LEG 3), UNSTARTED.** Ken set the order on 2026-08-01: **① flip `NEW_UI` ON ✅ (s174) → ② the MeF documents batch ← YOU ARE HERE → ③ the stacked deploy → ④ the year-constant ruling (LEG 4 item 17).** The batch is `build_schedule1a` + `build_irs8615` + `build_irs1116` + `build_irs5695` — four forms whose credits and totals transmit TODAY with no supporting document, so a return claiming any of them is paper-only. Scope as ONE pass (they share the shape). Groundwork done in s174: all four builders confirmed ABSENT from `composition/mappers/y2025/builder.py`; all four XSDs confirmed LOCAL at `docs/mef/schemas/2025v5.3/2025v5.3/IndividualIncomeTax/Common/IRS{1040Schedule1A,8615,1116,5695}/` (543 / 337 / 885 / 1,055 lines). Per form: a source dataclass + extract in `read_model.py`, the builder, a slot in `build_return`'s document sequence (⚠ **insert at XSD SEQUENCE POSITION** — the s170 lesson, `_lines_doc` cannot place non-line documents), the manifest, and tests. ⚠ `build_irs1116` emits **ONLY on path "full"** (the §904(j) and auto-de-minimis paths legitimately file no 1116). ⚠ `IRS5695` is `maxOccurs 2` (the two-home case the app deliberately does not model — one document suffices). ⚠ Read each item's REVIEW_QUEUE entry AND **verify its premise against the sources BEFORE building** — backlog items 3 and 6 failed that check outright and item 12's held but was INCOMPLETE. ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS** (all four screens today state the e-file gap — those notices go stale the moment the builder lands; s173 hit that five times in one session). ⚠ **AT THE NEXT DEPLOY (Ken's item ③): migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 and s174 added neither).
 
-**Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
+<details><summary>Superseded pointer (s173) — LEG 2 IS COMPLETE (items 1–13 + 16 all shipped)</summary>
+
+**LEG 2 IS COMPLETE (items 1–13 + 16 all shipped). KEN DIRECTS THE NEXT MOVE.** The rule/diagnostic backlog's remaining legs are: **LEG 3** — every item needs a migration or an e-file builder, so each is stage-then-Ken-deploys; the largest is the **"missing MeF documents" batch** (`build_schedule1a`, `build_irs8615`, `build_irs1116`, `build_irs5695` — four forms whose amounts transmit with no supporting document; scope as ONE pass), plus the amended-1040 submission path (item 17), the duplicate-state-return constraint (item 18), and the render gaps (items 12/14/15). **LEG 4** — Ken-scoped: the ONE ruling on the year-keyed-constant fallback (item 17, now FIVE occurrences) is the highest-value one. ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 failed that check outright; item 12's HELD BUT WAS INCOMPLETE (it omitted Sch 3 line 6l). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FIVE times in one session. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+
+</details>
+
+**Context for the fresh session:** ⚠ the flag line below is SUPERSEDED — **`NEW_UI` defaults ON as of s174** (2026-08-01); the rest still holds. The TB-import parallel session's dirty files are still in this repo and were NOT touched by s174 (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — **never stage them**). The Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
 **Ken picked the entity lane over resuming the backlog (2026-07-31, s156).**
 The lane is SCOPED — 13 units in entity-nav order, 1120-S first per the
