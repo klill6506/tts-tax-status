@@ -1,10 +1,26 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 174 (**THE SLATE CUTOVER — `NEW_UI` NOW
-DEFAULTS ON** (`590b173`, `slate-ui` + `main` fast-forwarded, pushed, NO
-deploy). Ken set the order for what follows LEG 2: **flip the flag → the MeF
-documents batch → the stacked deploy → the year-constant ruling.** Item 1 of
-that order is done; the MeF batch is next and is UNSTARTED.
+*Last updated: 2026-08-01, session 174 (**TWO UNITS: THE SLATE CUTOVER, THEN
+THE FIRST MeF DOCUMENT.** Ken set the order for what follows LEG 2: **flip the
+flag → the MeF documents batch → the stacked deploy → the year-constant
+ruling.** Items ① and the first quarter of ② are done.
+
+**② `build_schedule1a` SHIPPED** (`676b6d8`) — 1040 line 13b no longer
+transmits `TotalAdditionalDeductionsAmt` with no schedule behind it, so an
+OBBBA-deduction return is no longer paper-only. Proven by **LIVE XSD
+VALIDATION against the real gated 2025v5.3 schemas** (two cases), revert-proven
+twice. ⚠⚠ **The attach gate is line 38, NOT the generic `_any(...)` the sibling
+schedules use** — `compute_sch_1a` writes Part I MAGI + the threshold on EVERY
+return with a taxpayer, so `_any` would have attached an EMPTY Schedule 1-A to
+essentially every 1040. ⚠ Both stale screen notices retired in the same commit
+(the "file on paper" error, and the vehicle-overflow note that gave the same
+instruction — now scoped to paper filing only, since the XML carries every
+row). ⚠⚠ **AND THE BATCH IS NOT "ONE PASS": `build_irs8615` is BLOCKED on a
+migration** (parent name + SSN are schema-REQUIRED and the model has neither),
+so LEG 3 item 11 depends on item 12. See the resume pointer.
+
+**① THE SLATE CUTOVER — `NEW_UI` NOW DEFAULTS ON** (`590b173`, `slate-ui` +
+`main` fast-forwarded, pushed, NO deploy).
 
 **THE FLIP.** Polarity flipped, not removed: default ON; **`VITE_NEW_UI=0` opts
 a BUILD out and is ABSOLUTE** (it beats the per-browser override — it is the
@@ -133,11 +149,29 @@ today with no supporting document, scoped as ONE pass).)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE MeF DOCUMENTS BATCH (LEG 3), UNSTARTED.** Ken set the order on 2026-08-01: **① flip `NEW_UI` ON ✅ (s174) → ② the MeF documents batch ← YOU ARE HERE → ③ the stacked deploy → ④ the year-constant ruling (LEG 4 item 17).** The batch is `build_schedule1a` + `build_irs8615` + `build_irs1116` + `build_irs5695` — four forms whose credits and totals transmit TODAY with no supporting document, so a return claiming any of them is paper-only. Scope as ONE pass (they share the shape). Groundwork done in s174: all four builders confirmed ABSENT from `composition/mappers/y2025/builder.py`; all four XSDs confirmed LOCAL at `docs/mef/schemas/2025v5.3/2025v5.3/IndividualIncomeTax/Common/IRS{1040Schedule1A,8615,1116,5695}/` (543 / 337 / 885 / 1,055 lines). Per form: a source dataclass + extract in `read_model.py`, the builder, a slot in `build_return`'s document sequence (⚠ **insert at XSD SEQUENCE POSITION** — the s170 lesson, `_lines_doc` cannot place non-line documents), the manifest, and tests. ⚠ `build_irs1116` emits **ONLY on path "full"** (the §904(j) and auto-de-minimis paths legitimately file no 1116). ⚠ `IRS5695` is `maxOccurs 2` (the two-home case the app deliberately does not model — one document suffices). ⚠ Read each item's REVIEW_QUEUE entry AND **verify its premise against the sources BEFORE building** — backlog items 3 and 6 failed that check outright and item 12's held but was INCOMPLETE. ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS** (all four screens today state the e-file gap — those notices go stale the moment the builder lands; s173 hit that five times in one session). ⚠ **AT THE NEXT DEPLOY (Ken's item ③): migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 and s174 added neither).
+## ▶ RESUME HERE — **THE MeF DOCUMENTS BATCH: 1 of 4 SHIPPED (`676b6d8`), AND THE BATCH IS NOT "ONE PASS" AFTER ALL.**
+
+**✅ `build_schedule1a` IS DONE** (s174, `676b6d8`) — the OBBBA schedule transmits at ReturnData1040.xsd position 885, proven by LIVE XSD validation against the real gated 2025v5.3 schemas. Both stale screen notices retired in the same commit.
+
+⚠⚠ **THE BATCH'S SCOPING WAS WRONG AND THE ORDER MATTERS. Verify each remaining form's REQUIRED elements against its XSD before starting it** — that check is what found this:
+- **`build_irs8615` is BLOCKED on a migration.** `IRS8615.xsd` makes **`ParentNm`, `ParentNameControlTxt`, the parent's `SSN` and `IndividualReturnFilingStatusCd` all REQUIRED** (top level). The model has `parent_filing_status` (box C) but **no `parent_name` and no `parent_ssn`** — so a schema-valid IRS8615 cannot be emitted today. **LEG 3 item 11 (the builder) DEPENDS ON item 12 (the parent header fields), which the queue lists as two separate items.** Item 12 must land first — and it is a migration, so it is a stage-then-Ken-deploys item. Do NOT start 11 before 12.
+- **`build_irs5695` is NOT blocked** — only `NameLine1Txt` and `SSN` are required at top level (both already in the return header); the §25C door/window/AC detail (19a–22a) is required only *within* its optional groups, so a return that does not itemize that detail still emits a valid document. **This is the easiest of the three remaining — do it next.**
+- **`build_irs1116` is not blocked but is the biggest** — 15 required elements including the income-CATEGORY indicators (a–g, near top level) and the per-country column group. Emit ONLY on path "full" (the §904(j) and auto-de-minimis paths legitimately file no 1116). Check what the app models for category + per-country before writing it.
+
+⚠ **PREMISE CORRECTION, and it is good news: `IRS8615` (1630) and `IRS1116` (1067) ARE declared in `ReturnData1040.xsd`** — in 2025v5.3, v5.4 AND 2026v1.0 alike. The s147 and s148 write-ups both assert the elements do not exist; they were wrong. **Nothing in this batch is blocked by an IRS schema limitation** (only 8615 by our own missing columns). That is the 3rd and 4th queued premise to fail verification, after backlog items 3 and 6 — keep verifying.
+
+⚠ **When each builder lands, GREP ITS SCREEN for the e-file-gap notice** — all four screens state the gap today, and Schedule 1-A's told preparers to *file on paper*, which the fix made actively wrong (the s173 lesson, 6th occurrence; its vehicle-overflow note said the same and is now scoped to paper filing only).
+
+<details><summary>Original s174 pointer (before the batch was started)</summary>
+
+**THE MeF DOCUMENTS BATCH (LEG 3), UNSTARTED.** Ken set the order on 2026-08-01: **① flip `NEW_UI` ON ✅ (s174) → ② the MeF documents batch ← YOU ARE HERE → ③ the stacked deploy → ④ the year-constant ruling (LEG 4 item 17).** The batch is `build_schedule1a` + `build_irs8615` + `build_irs1116` + `build_irs5695` — four forms whose credits and totals transmit TODAY with no supporting document, so a return claiming any of them is paper-only. Scope as ONE pass (they share the shape). Groundwork done in s174: all four builders confirmed ABSENT from `composition/mappers/y2025/builder.py`; all four XSDs confirmed LOCAL at `docs/mef/schemas/2025v5.3/2025v5.3/IndividualIncomeTax/Common/IRS{1040Schedule1A,8615,1116,5695}/` (543 / 337 / 885 / 1,055 lines). Per form: a source dataclass + extract in `read_model.py`, the builder, a slot in `build_return`'s document sequence (⚠ **insert at XSD SEQUENCE POSITION** — the s170 lesson, `_lines_doc` cannot place non-line documents), the manifest, and tests. ⚠ `build_irs1116` emits **ONLY on path "full"** (the §904(j) and auto-de-minimis paths legitimately file no 1116). ⚠ `IRS5695` is `maxOccurs 2` (the two-home case the app deliberately does not model — one document suffices). ⚠ Read each item's REVIEW_QUEUE entry AND **verify its premise against the sources BEFORE building** — backlog items 3 and 6 failed that check outright and item 12's held but was INCOMPLETE. ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS** (all four screens today state the e-file gap — those notices go stale the moment the builder lands; s173 hit that five times in one session). ⚠ **AT THE NEXT DEPLOY (Ken's item ③): migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 and s174 added neither).
 
 <details><summary>Superseded pointer (s173) — LEG 2 IS COMPLETE (items 1–13 + 16 all shipped)</summary>
 
 **LEG 2 IS COMPLETE (items 1–13 + 16 all shipped). KEN DIRECTS THE NEXT MOVE.** The rule/diagnostic backlog's remaining legs are: **LEG 3** — every item needs a migration or an e-file builder, so each is stage-then-Ken-deploys; the largest is the **"missing MeF documents" batch** (`build_schedule1a`, `build_irs8615`, `build_irs1116`, `build_irs5695` — four forms whose amounts transmit with no supporting document; scope as ONE pass), plus the amended-1040 submission path (item 17), the duplicate-state-return constraint (item 18), and the render gaps (items 12/14/15). **LEG 4** — Ken-scoped: the ONE ruling on the year-keyed-constant fallback (item 17, now FIVE occurrences) is the highest-value one. ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 failed that check outright; item 12's HELD BUT WAS INCOMPLETE (it omitted Sch 3 line 6l). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FIVE times in one session. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+
+
+</details>
 
 </details>
 
