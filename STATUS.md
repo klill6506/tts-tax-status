@@ -1,62 +1,70 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9, 10, 11 AND 12 DONE —
-THREE COMMITS.** `976eb08` the two **Form 8880** defects (the MFJ line-4
-both-columns rule + the Credit Limit Worksheet's `CLW_SCH3_LINES` 1/2/3/6d/6l);
-`ac20c6a` **Form 8960** (the diagnostics recompute carried a hand-copied mirror
-of the engine's input resolution that predated the Schedule 1 line-5 rental
-auto-feed — NEW `resolve_8960_inputs` is THE ONE resolution both sides call);
-and **Form 5695** (below). ⚠⚠ **THE SESSION'S HEADLINE LESSON, EARNED FOUR
-TIMES: AN INTERIM WORKAROUND INSTRUCTION IS WORSE THAN A STALE NOTICE — IT
-TURNS ACTIVELY WRONG THE MOMENT ITS FIX LANDS.** The 8880 screen told MFJ
-preparers to key the COMBINED distributions (after the fix that DOUBLE-COUNTS),
-the 8960 screen said the diagnostics "do not see" the auto-feed, and BOTH 5695
-banners said "refigure by hand". All four were rewritten IN THE SAME COMMIT as
-their fix, with every vitest contract rewritten carrying what it used to assert.
+*Last updated: 2026-07-31, session 173 (**LEG 2 IS COMPLETE — ITEMS 9, 10, 11,
+12 AND 13 ALL SHIPPED, FOUR COMMITS.** `976eb08` the two **Form 8880** defects
+(the MFJ line-4 both-columns rule + `CLW_SCH3_LINES` 1/2/3/6d/6l); `ac20c6a`
+**Form 8960** (the diagnostics recompute carried a hand-copied mirror of the
+engine's input resolution that predated the Schedule 1 line-5 rental auto-feed —
+NEW `resolve_8960_inputs` is THE ONE resolution both sides call, so an auto-fed
+rental return is no longer invisible to all five §1411 rules); `a27db00` **Form
+5695** (both Credit Limit Worksheets per the 2025 i5695 — §25C figured FIRST,
+which required SPLITTING the compute into two phases around Schedule 8812
+because line 14 subtracts the CTC); and `46ea702` **Form 1040-X** (below).
 
-**ITEM 12 — Form 5695's two Credit Limit Worksheets, per the 2025 i5695 read
-VERBATIM from the instructions PDF** (re-fetched from irs.gov this session):
-§25C (line 31) = 1040 line 18 − Schedule 3 [6l,1,2,6d,3,4]; §25D (line 14) =
-that list PLUS Form 5695 line 32, Schedule 3 [6m,6f,6g,6c,6h] and 1040 line 19
-(the CTC/ODC). **The premise held with ONE correction — the queued
-recommendation omitted Schedule 3 line 6l from the §25D list**; the form
-carries it in BOTH (the §25D list is a strict SUPERSET of the §25C one, which
-IS the ordering rule). Because line 14 subtracts line 32, §25C must be figured
-FIRST, and because §25D carries forward while §25C does not, the order is worth
-real money. ⚠⚠ **THE COMPUTE IS NOW TWO PHASES**: `compute_5695_db` (§25C →
-Sch 3 5b) stays before `compute_sch_8812`, and the NEW `compute_5695_25d_db`
-(§25D → Sch 3 5a) runs AFTER it — because line 14 needs the CTC, which 8812
-writes after Form 5695's old slot. That is the `compute_8911_db` slot and
-precedent, and it is **acyclic only because Schedule 8812's own Credit Limit
-Worksheet A includes Sch 3 line 5b but deliberately EXCLUDES 5a** (the IRS
-designed the break; `test_sch3_pre_ctc_credits_total_clw_a_line_set` already
-pinned it). Phase A owns engage/disengage for the whole form. **FA-1040-5695-04
-is a source-grep assertion that broke on the split — its intent (§25D→5a,
-§25C→5b, catching a swap) was UPDATED to follow the two phases, never
-loosened.** ⚠ **KEN-FLAG, bounded** (REVIEW_QUEUE): the i5695 footnote directs
-a filer to Schedule 8812 **Credit Limit Worksheet B line 14** in place of 1040
-line 19 when Schedule 8812 sends them there — the app does not model Worksheet
-B at all (a Ken-scoped Session-1 deferral with an existing diagnostic), so line
-19 is used and `clw_limit_25d`'s docstring says so. Not guessed
-(Authoritative-Source Rule #4). Revert-proven: 4 targeted failures.
-**Live-proven on the demo QA return with the s151 flip case** (solar 60,000 +
-insulation 4,000, line 18 = 12,204): line 31 **12,204** / line 32 **1,200**
-where the old engine destroyed the entire §25C credit, line 14 11,004, line 15
-11,004, and the 2026 carryforward **5,796 → 6,996** — $1,200 preserved, with
-the current-year total unchanged at 12,204, exactly as the write-up predicted.
+⚠⚠ **THE SESSION'S HEADLINE LESSON, EARNED FIVE TIMES: AN INTERIM WORKAROUND
+INSTRUCTION IS WORSE THAN A STALE NOTICE — IT TURNS ACTIVELY WRONG THE MOMENT
+ITS FIX LANDS.** The 8880 screen told MFJ preparers to key the COMBINED
+distributions (after the fix that DOUBLE-COUNTS); the 8960 screen said the
+diagnostics "do not see" the auto-feed; BOTH 5695 banners said "refigure by
+hand"; and the 1040-X screen said to "disregard the stale figures". All five
+were rewritten IN THE SAME COMMIT as their fix, with every vitest contract
+rewritten carrying what it used to assert. **When you fix a defect, grep the
+screen for what it told preparers to DO about it, not only for what it said was
+broken.**
 
-Every QA write was reverted all three times and the demo return proved back at
-its EXACT baseline row hash (892 rows / `8f7d2c18b57d8bd2`). Gates: FA 521 ·
-8880 legs 50 · 8960 suites 43 · 5695+e-file+sch123 suites 715 · vitest 1555
-(+6) · tsc at the 46 baseline. **NO migration and NO seeded-rule change all
-session** — the deploy debt is UNCHANGED: ⚠ **migrate 0227 on PROD +
-`seed_rules` on BOTH DBs, FOUR sessions stacked** (s169 D_SCH1A_007+003 · s170
-D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172 D_W2G_LOSS_CAP name/desc + NEW
-D_EIC_018). **NEXT: LEG 2 item 13** — the 1040-X delete residue (reset
-`is_amended_return=False` in the DELETE branch of views.py `form_1040x` and
-make `compute_1040x_db` blank its lines when the row is gone; ~61 stale FFV rows
-survive today and F8888-020 keeps blocking. The s143 zero-residue shape — fix at
-the write). That closes LEG 2.)*
+**ITEM 13 — the 1040-X delete residue.** `compute_1040x_db` early-returned on
+`Form1040X.DoesNotExist` without blanking, so deleting an amendment left TWO
+ghosts: the ~61 published 1040-X FormFieldValue rows kept their last values
+forever, and `is_amended_return` (set True on create) was never reset — so
+`analyze_8888`'s F8888-020 amended-refund cap kept firing as an **e-file
+blocker** on a return whose amendment had been deleted. NEW `disengage_1040x`
+blanks the rows AND clears the flag (the s143 zero-residue family — fix at the
+WRITE). ⚠ **It lives in the COMPUTE, not the view's DELETE branch — a deliberate
+improvement on the queued recommendation**: the DELETE branch already calls
+`_recompute_1040` (the mutation-side chokepoint) so the API path is covered
+either way, while the compute-side fix additionally **HEALS a return already in
+the bad state** and covers any other deletion path — and it avoids editing
+`views.py`, which carries the parallel TB-import session's uncommitted work.
+⚠ **Clearing the flag is safe ONLY here, and the module says so**:
+`is_amended_return` is a column SHARED with the ENTITY page-1 header checkbox,
+where it is a preparer-owned answer set through `update_info` — but that tab
+(`InfoSection`, the entity/state `info` nav) **does not exist on the 1040 nav**,
+and `compute_1040x_db` runs only inside the `form_code == "1040"` block; verified
+by reading the nav definitions, not assumed. Revert-proven: 3 targeted failures.
+Live-proven on the demo QA return — created an amendment (24 rows published,
+flag True), deleted the row, and the recompute cleared **both** (0 rows, flag
+False) where the old engine left both standing; the 61 blank backfill rows were
+then removed and the return proved back at its EXACT baseline row hash.
+
+Every QA write was reverted all four times and the demo return proved back at
+892 rows / `8f7d2c18b57d8bd2` each time. Gates: FA 521 · 8880 legs 50 · 8960
+suites 43 · 5695+e-file+sch123 715 · 1040-X suites 549 · the keyword sweeps
+(629 pipeline-neighbour, 76 amended/8888/baseline) · vitest 1556 (+7) · tsc at
+the 46 baseline. ⚠ **The FULL server suite (~6,900 tests against the remote
+pooler) does NOT finish in a session** — it ran 30+ minutes without completing
+and was stopped; use targeted suites + `-k` keyword sweeps instead.
+
+**NO migration and NO seeded-rule change anywhere in s173** — the deploy debt is
+UNCHANGED: ⚠ **migrate 0227 on PROD + `seed_rules` on BOTH DBs, FOUR sessions
+stacked** (s169 D_SCH1A_007+003 · s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009
+· s172 D_W2G_LOSS_CAP name/desc + NEW D_EIC_018).
+
+**NEXT: Ken directs.** LEG 2 is done; **LEG 3 is what remains, and every item in
+it needs a migration or an e-file builder** — so it is a stage-and-Ken-pulls-the-
+trigger leg, not a keep-going one. The biggest single work item there is the
+**"missing MeF documents" batch** (`build_schedule1a` / `build_irs8615` /
+`build_irs1116` / `build_irs5695` — four forms whose credits and totals transmit
+today with no supporting document, scoped as ONE pass).)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -65,7 +73,7 @@ the write). That closes LEG 2.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 13, THE LAST ONE** (the 1040-X delete residue: reset `is_amended_return=False` in the DELETE branch of views.py `form_1040x` — mirroring the create side — and make `compute_1040x_db` blank its lines when the `Form1040X` row is gone; it early-returns today, leaving ~61 stale FormFieldValue rows and a stuck flag, so the F8888-020 amended-refund cap keeps blocking a return whose amendment was deleted. Proven live in s152. The s143 zero-residue family — **fix at the WRITE**, not only at the clear-up. The Slate screen keys engagement off the row and warns on ghost rows meanwhile. Read its REVIEW_QUEUE entry first.) Items 9, 10, 11 and 12 are ✅ DONE (s173, 2026-07-31 — two Form 8880 defects, the Form 8960 resolution mirror, and Form 5695's two Credit Limit Worksheets; see the header). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 both failed that check, and **item 12's premise HELD but was incomplete** (it omitted Sch 3 line 6l from the §25D list; the form carries it in both worksheets). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FOUR times in one session. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+## ▶ RESUME HERE — **LEG 2 IS COMPLETE (items 1–13 + 16 all shipped). KEN DIRECTS THE NEXT MOVE.** The rule/diagnostic backlog's remaining legs are: **LEG 3** — every item needs a migration or an e-file builder, so each is stage-then-Ken-deploys; the largest is the **"missing MeF documents" batch** (`build_schedule1a`, `build_irs8615`, `build_irs1116`, `build_irs5695` — four forms whose amounts transmit with no supporting document; scope as ONE pass), plus the amended-1040 submission path (item 17), the duplicate-state-return constraint (item 18), and the render gaps (items 12/14/15). **LEG 4** — Ken-scoped: the ONE ruling on the year-keyed-constant fallback (item 17, now FIVE occurrences) is the highest-value one. ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 failed that check outright; item 12's HELD BUT WAS INCOMPLETE (it omitted Sch 3 line 6l). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FIVE times in one session. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -344,14 +352,17 @@ number is at least loud while the compute fix is pending.
    PINNED by a test covering an auto-fed 4a and a self-rental 4b back-out.
    The screen's "the diagnostics do not see it" banner was rewritten in the
    same commit. Live: engine NIIT $5,493, recompute agrees line-for-line.
-13. **(s152) The 1040-X delete residue** — reset `is_amended_return=False` in
-   the DELETE branch of views.py `form_1040x` (mirroring the create side)
-   and make `compute_1040x_db` blank its lines when the `Form1040X` row is
-   gone (it early-returns today, leaving ~61 stale FFV rows). Proven live:
-   after a 204 DELETE the demo return kept 61 rows + the stuck flag, and
-   F8888-020 (the amended-refund cap) stays armed. The s143 zero-residue
-   shape — fix at the write. The Slate screen keys engagement off the row
-   and warns on ghost rows meanwhile.
+13. ✅ **DONE (s173, 2026-07-31, `46ea702`) — deleting a 1040-X leaves
+   nothing behind.** NEW `disengage_1040x` blanks the published rows AND
+   clears `is_amended_return` (which had kept F8888-020 blocking e-file on a
+   return whose amendment was deleted). ⚠ In the COMPUTE, not the view's
+   DELETE branch — the branch already recomputes, and the compute-side fix
+   HEALS returns already stuck, covers non-API deletes, and avoids editing
+   the parallel session's dirty views.py. ⚠ Clearing the flag is safe only
+   here: the column is shared with the ENTITY page-1 checkbox, but that tab
+   does not exist on the 1040 nav. Live: 24 rows + flag True → 0 rows + flag
+   False. **LEG 2 COMPLETE.**
+
 12. ✅ **DONE (s173, 2026-07-31) — Form 5695's two Credit Limit Worksheets
    follow the 2025 i5695 verbatim.** §25C is figured FIRST
    (`CLW_25C_SCH3_LINES = (6l,1,2,6d,3,4)`); §25D then subtracts Form 5695
