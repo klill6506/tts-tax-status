@@ -1,52 +1,62 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9, 10 AND 11 DONE — TWO
-COMMITS.** `976eb08`: the two **Form 8880** defects — the MFJ line-4
-both-columns rule (both spouses' testing-period distributions now combine into
-BOTH columns before either subtracts, per the 2025 face and §25B(d)(2)(C); the
-combine deliberately IGNORES the eligibility caution, which zeroes an excluded
-person's CONTRIBUTIONS, not the §25B(d)(2) reduction) and the Credit Limit
-Worksheet's Schedule 3 list, now the 2025 i8880 verbatim via the new
-`CLW_SCH3_LINES = ("1","2","3","6d","6l")`. `ac20c6a`: **Form 8960** — the
-diagnostics recompute carried a hand-copied mirror of the engine's input
-resolution that predated the Schedule 1 line-5 rental auto-feed, so an auto-fed
-rental return was invisible to all five §1411 rules and D_8960_NII_LOSS
-reported "no §1411 tax applies" on a return the engine was charging; NEW
-`resolve_8960_inputs` is THE ONE resolution both sides call (the s144 delegate
-rule), and D_8960_RENTAL now keys off the RESOLVED 4a — which aligns the app
-WITH its spec, whose condition reads "line 4a rental income is present" (the
-LINE). ⚠⚠ **THE SESSION'S HEADLINE LESSON, EARNED TWICE: AN INTERIM WORKAROUND
-INSTRUCTION IS WORSE THAN A STALE NOTICE — IT TURNS ACTIVELY WRONG THE MOMENT
-ITS FIX LANDS.** The 8880 screen told MFJ preparers to key the COMBINED
-distributions in both cells (after the fix that DOUBLE-COUNTS) and the 8960
-screen said the diagnostics "do not see" the auto-feed (now false). Both were
-rewritten IN THE SAME COMMIT as their fix, with their vitest contracts
-rewritten carrying what they used to assert. **FAMILY AUDIT (the s143
-lesson-11 rule):** `render_8960` and the MeF `_extract_f8960` carry the 3rd and
-4th copies of the 8960 resolution — both READ this session and both CORRECT
-(they were updated when the auto-feed landed), so they are NOT refactored
-(print and e-file are outside the item's scope and right today); their
-agreement is PINNED by a test exercising an auto-fed 4a AND a self-rental 4b
-back-out. Revert-proven: 5 targeted failures on 8880, 4 on 8960 — and the 8960
-anti-drift pin reported `line17 0 != 608`, exactly the figure the s150
-write-up priced. Live-proven on the demo QA return, both times, with every QA
-write reverted and the return proved back at its EXACT baseline row hash (892
-rows / `8f7d2c18b57d8bd2`): the 8880 case showed line 4a AND 4b = 500 with
-line 11 = 6,852 = 1040 line 18 (7,002) − a staged Sch 3 6d credit (150); the
-8960 case showed the engine charging **$5,493** of NIIT with the recompute
-agreeing line-for-line (12 = 252,200, 17 = 5,493) and D_8960_RENTAL naming
-$250,000 and its Schedule 1 line 5 source, where the pre-s173 gate read
-`e8960_rental` = 0.00 and every §1411 check was silent. Gates: FA 521 · 8880
-legs 50 · 8960 suites 43 · 8960-adjacent server suites 151 · Sch3+e-file
-suites 168 · vitest 1553 (+4) · tsc at the 46 baseline. **NO migration and NO
-seeded-rule change all session** — the deploy debt is UNCHANGED: ⚠ **migrate
-0227 on PROD + `seed_rules` on BOTH DBs, FOUR sessions stacked** (s169
-D_SCH1A_007+003 · s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172
-D_W2G_LOSS_CAP name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 12** — Form
-5695's two Credit Limit Worksheets against the 2025 i5695 verbatim (§25C
-computes FIRST; up to $3,200 of §25D carryforward destroyed, priced $1,000,
-and a CTC return's Sch 3 5a overstated by up to the CTC, priced $2,000, which
-transmits). Item 13 (the 1040-X delete residue) follows.)*
+*Last updated: 2026-07-31, session 173 (**LEG 2 ITEMS 9, 10, 11 AND 12 DONE —
+THREE COMMITS.** `976eb08` the two **Form 8880** defects (the MFJ line-4
+both-columns rule + the Credit Limit Worksheet's `CLW_SCH3_LINES` 1/2/3/6d/6l);
+`ac20c6a` **Form 8960** (the diagnostics recompute carried a hand-copied mirror
+of the engine's input resolution that predated the Schedule 1 line-5 rental
+auto-feed — NEW `resolve_8960_inputs` is THE ONE resolution both sides call);
+and **Form 5695** (below). ⚠⚠ **THE SESSION'S HEADLINE LESSON, EARNED FOUR
+TIMES: AN INTERIM WORKAROUND INSTRUCTION IS WORSE THAN A STALE NOTICE — IT
+TURNS ACTIVELY WRONG THE MOMENT ITS FIX LANDS.** The 8880 screen told MFJ
+preparers to key the COMBINED distributions (after the fix that DOUBLE-COUNTS),
+the 8960 screen said the diagnostics "do not see" the auto-feed, and BOTH 5695
+banners said "refigure by hand". All four were rewritten IN THE SAME COMMIT as
+their fix, with every vitest contract rewritten carrying what it used to assert.
+
+**ITEM 12 — Form 5695's two Credit Limit Worksheets, per the 2025 i5695 read
+VERBATIM from the instructions PDF** (re-fetched from irs.gov this session):
+§25C (line 31) = 1040 line 18 − Schedule 3 [6l,1,2,6d,3,4]; §25D (line 14) =
+that list PLUS Form 5695 line 32, Schedule 3 [6m,6f,6g,6c,6h] and 1040 line 19
+(the CTC/ODC). **The premise held with ONE correction — the queued
+recommendation omitted Schedule 3 line 6l from the §25D list**; the form
+carries it in BOTH (the §25D list is a strict SUPERSET of the §25C one, which
+IS the ordering rule). Because line 14 subtracts line 32, §25C must be figured
+FIRST, and because §25D carries forward while §25C does not, the order is worth
+real money. ⚠⚠ **THE COMPUTE IS NOW TWO PHASES**: `compute_5695_db` (§25C →
+Sch 3 5b) stays before `compute_sch_8812`, and the NEW `compute_5695_25d_db`
+(§25D → Sch 3 5a) runs AFTER it — because line 14 needs the CTC, which 8812
+writes after Form 5695's old slot. That is the `compute_8911_db` slot and
+precedent, and it is **acyclic only because Schedule 8812's own Credit Limit
+Worksheet A includes Sch 3 line 5b but deliberately EXCLUDES 5a** (the IRS
+designed the break; `test_sch3_pre_ctc_credits_total_clw_a_line_set` already
+pinned it). Phase A owns engage/disengage for the whole form. **FA-1040-5695-04
+is a source-grep assertion that broke on the split — its intent (§25D→5a,
+§25C→5b, catching a swap) was UPDATED to follow the two phases, never
+loosened.** ⚠ **KEN-FLAG, bounded** (REVIEW_QUEUE): the i5695 footnote directs
+a filer to Schedule 8812 **Credit Limit Worksheet B line 14** in place of 1040
+line 19 when Schedule 8812 sends them there — the app does not model Worksheet
+B at all (a Ken-scoped Session-1 deferral with an existing diagnostic), so line
+19 is used and `clw_limit_25d`'s docstring says so. Not guessed
+(Authoritative-Source Rule #4). Revert-proven: 4 targeted failures.
+**Live-proven on the demo QA return with the s151 flip case** (solar 60,000 +
+insulation 4,000, line 18 = 12,204): line 31 **12,204** / line 32 **1,200**
+where the old engine destroyed the entire §25C credit, line 14 11,004, line 15
+11,004, and the 2026 carryforward **5,796 → 6,996** — $1,200 preserved, with
+the current-year total unchanged at 12,204, exactly as the write-up predicted.
+
+Every QA write was reverted all three times and the demo return proved back at
+its EXACT baseline row hash (892 rows / `8f7d2c18b57d8bd2`). Gates: FA 521 ·
+8880 legs 50 · 8960 suites 43 · 5695+e-file+sch123 suites 715 · vitest 1555
+(+6) · tsc at the 46 baseline. **NO migration and NO seeded-rule change all
+session** — the deploy debt is UNCHANGED: ⚠ **migrate 0227 on PROD +
+`seed_rules` on BOTH DBs, FOUR sessions stacked** (s169 D_SCH1A_007+003 · s170
+D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172 D_W2G_LOSS_CAP name/desc + NEW
+D_EIC_018). **NEXT: LEG 2 item 13** — the 1040-X delete residue (reset
+`is_amended_return=False` in the DELETE branch of views.py `form_1040x` and
+make `compute_1040x_db` blank its lines when the row is gone; ~61 stale FFV rows
+survive today and F8888-020 keeps blocking. The s143 zero-residue shape — fix at
+the write). That closes LEG 2.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -55,7 +65,7 @@ transmits). Item 13 (the 1040-X delete residue) follows.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 12** (Form 5695's two Credit Limit Worksheets, against the 2025 i5695 VERBATIM: compute §25C FIRST — line 31 = 1040 line 18 − Sch 3 [6l,1,2,6d,3,4] — then §25D — line 14 = line 18 − Sch 3 [1,2,6d,3,4] − Form 5695 line 32 − 1040 line 19 (CTC) − Sch 3 [6m,6f,6g,6c,6h]. The engine's §25D-first order destroys up to $3,200 of §25D carryforward (priced $1,000) and overstates a CTC return's Sch 3 5a by up to the CTC (priced $2,000; it TRANSMITS). The `qa_unit31` flip case is a ready regression. Read its REVIEW_QUEUE entry first.) Items 9, 10 and 11 are ✅ DONE (s173, 2026-07-31 — the two Form 8880 defects and the Form 8960 resolution mirror; see the header). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7, 9, 10 and 11 all held). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that twice in one session. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 13, THE LAST ONE** (the 1040-X delete residue: reset `is_amended_return=False` in the DELETE branch of views.py `form_1040x` — mirroring the create side — and make `compute_1040x_db` blank its lines when the `Form1040X` row is gone; it early-returns today, leaving ~61 stale FormFieldValue rows and a stuck flag, so the F8888-020 amended-refund cap keeps blocking a return whose amendment was deleted. Proven live in s152. The s143 zero-residue family — **fix at the WRITE**, not only at the clear-up. The Slate screen keys engagement off the row and warns on ghost rows meanwhile. Read its REVIEW_QUEUE entry first.) Items 9, 10, 11 and 12 are ✅ DONE (s173, 2026-07-31 — two Form 8880 defects, the Form 8960 resolution mirror, and Form 5695's two Credit Limit Worksheets; see the header). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — items 3 and 6 both failed that check, and **item 12's premise HELD but was incomplete** (it omitted Sch 3 line 6l from the §25D list; the form carries it in both worksheets). ⚠⚠ **AND GREP THE SCREEN FOR THE INTERIM INSTRUCTION IT GAVE PREPARERS ABOUT THE DEFECT** — s173 hit that FOUR times in one session. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169–s172; s173 added neither).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -342,20 +352,20 @@ number is at least loud while the compute fix is pending.
    F8888-020 (the amended-refund cap) stays armed. The s143 zero-residue
    shape — fix at the write. The Slate screen keys engagement off the row
    and warns on ghost rows meanwhile.
-12. **(s151) Form 5695's two Credit Limit Worksheets, against the 2025 i5695
-   verbatim** — compute §25C FIRST (line 31 = 1040 line 18 − Sch 3
-   [6l,1,2,6d,3,4]), then §25D (line 14 = line 18 − Sch 3 [1,2,6d,3,4] −
-   Form 5695 line 32 − 1040 line 19 (CTC) − Sch 3 [6m,6f,6g,6c,6h]). The
-   engine's §25D-first order + lines-1–4-only subtraction destroys up to
-   $3,200 of §25D carryforward (priced $1,000) and overstates a
-   CTC-return's Sch 3 5a by up to the CTC (priced $2,000; transmits; 1040
-   line 22 clamps so current-year tax hides it). Every needed input is
-   computed before `compute_5695_db` runs. The RS spec carries the same
-   simplified limit → the standing spec-corrections agenda. The Slate screen
-   warns at the l14/l31 cells only when the divergence is live (live-proven).
-   The `qa_unit31` flip case (solar 60,000 + insulation 4,000, demo return)
-   is a ready regression: engine l15 12,204 / l16 5,796 / l32 0; the form
-   gives l32 1,200 first.
+12. ✅ **DONE (s173, 2026-07-31) — Form 5695's two Credit Limit Worksheets
+   follow the 2025 i5695 verbatim.** §25C is figured FIRST
+   (`CLW_25C_SCH3_LINES = (6l,1,2,6d,3,4)`); §25D then subtracts Form 5695
+   line 32, `CLW_25D_EXTRA_SCH3_LINES = (6m,6f,6g,6c,6h)` and 1040 line 19.
+   ⚠ The premise HELD but was INCOMPLETE — the queued recommendation omitted
+   Schedule 3 line 6l from the §25D list; the form carries it in BOTH.
+   ⚠⚠ The compute is now TWO PHASES (`compute_5695_db` before Schedule 8812,
+   NEW `compute_5695_25d_db` after it) because line 14 needs the CTC — the
+   compute_8911_db precedent, acyclic because 8812's CLW-A excludes line 5a.
+   FA-1040-5695-04's source-grep glue was updated to follow the split, not
+   loosened. Both screen "refigure by hand" banners retired. Live: the s151
+   flip case gives line 32 1,200 (was 0 — destroyed) and carryforward
+   5,796 → 6,996. ⚠ Ken-flag: the i5695's Schedule 8812 Worksheet-B footnote
+   is not modelled (an existing Session-1 deferral) — line 19 is used.
 
 ### ▶ LEG 3 — needs a migration or an e-file builder. Stage; Ken pulls the trigger.
 8. **`CarLoanVehicle.vehicle_qualifies` / `.loan_qualifies` → `default=False`**
