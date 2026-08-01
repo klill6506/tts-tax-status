@@ -1,5 +1,22 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-07-31 session 172 — BACKLOG LEG 2 ITEMS 8 + 16: THE TWO KEN-RULED
+> DERIVES (Schedule A §165(d) gambling cap · EIC self-employed).**
+> SCHEDULE_A compute leg: `scha_gambling_winnings` now DERIVES from the
+> return (Σ W-2G box 1 + `other_gambling_winnings`) unless the NEW
+> `scha_gambling_winnings_overridden` (migration 0227 — demo DB applied,
+> PROD at deploy); the cap left the engage list (a cap alone is not a
+> deduction); a W-2G delete resnaps it; the s137 $0-deduction defect heals.
+> 1040_EIC compute leg: an UNANSWERED `eic_self_employed` derives from Sch 1
+> L3/L6/K-1 box-14A SE (explicit answer = the override; None stays None so
+> `eic_engaged` is untouched); the WS-B default base widened to L3+L6+K-1 SE
+> (R-EIC-WSB-SE still says L3-only → RS agenda); the s139 $0-EIC defect
+> heals ($4,328 pinned). D_W2G_LOSS_CAP reworded + NEW D_EIC_018 →
+> `seed_rules` at deploy (FOUR sessions stacked). ⚠ Also repaired three
+> ROTTED s142-era pins (s143's QBI fix + s145's dual-student demotion had
+> silently broken test_backlog_leg1_diagnostics_s142.py — it was never
+> re-run by those sessions).
+
 > **2026-07-31 session 168 — THE WRAP-UP TABS (Extensions / PY Compare /
 > State): SCREEN LEG CONVERTED — THE BUSINESS-ENTITY SLATE LANE IS
 > COMPLETE (13/13).** Both entity editors' last three tabs are Slate
