@@ -1,45 +1,47 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 171 (**LEG 2 ITEM 7 DONE — Form 8615
-line 1 now follows the 2025 i8615 "Line 1" instruction VERBATIM** (fetched
-from irs.gov this session; the premise was re-verified per the item-6
-lesson and HELD — the RS spec's own `k_child_unearned_income` note already
-listed the broad definition, so the engine's 2b + 3b + max(0, 7) was the
-outlier). SHIPPED (`slate-ui`, client+server, NO migration):
-`_source_child_amounts` sources line 1 as **AGI (1040 line 11) for a child
-with NO earned income** (the face's 11b is the page-2 carry of 11a), else
-the **Child's Unearned Income Worksheet** — 1040 line 9 − (earned income +
-the Sch 1 line 18 early-withdrawal penalty), earned income = 1040 line 1z
-+ Sch 1 lines 3/6 with a loss counting as zero; a capital LOSS on line 7
-now reduces line 1 (it rides line 9 / AGI — the old max(0,7) ignored it).
-The **Alternate Worksheet cases RED-defer** (net SE loss on Sch 1 line 3/6
-or an NOL on line 8a, detected from the return's own Schedule 1 via
-`sch_line_values` — NOT preparer-asserted): new `DEFER_ALT_WS =
-"ALT_L1_WORKSHEET"` blanks line 18 → **NEW rule `D_8615_009`** (error);
-Form 2555 (the third trigger) is unmodeled so that leg cannot arise. Both
-screens' line-1 copy rewritten (the old "check line 1 by hand" ERROR
-banner described the fixed defect — the s136/s169 stale-banner trap,
-avoided at the source this time); `F8615_DEFER_COPY` carries the new code.
-The s147 proof cases pin as regressions (trust child line 1 = AGI 20,000
-not 2,000; annuity child 14,000 not 0) + the i8615 "Amanda Black" example
-+ an END-TO-END SE-loss defer against real seeded SCH_1 rows.
-Revert-proven: 12 targeted failures. Live-proven on the demo QA return:
-the new sourcing note renders, the old banner is gone, **compute is a
-fixpoint and the baseline FFV hash is byte-identical** (8615 not engaged →
-zero dollars move), and a FRESH diagnostics run is clean — the 4
-rule-execution errors visible on screen (D_8995_003 / D_8959_*) were STALE
-findings from a 2-day-old run and do not reproduce. Gates: flow assertions
-521 · the five 8615 legs + spine/packet 165 · vitest 1548 (+1) · tsc at
-the 46 baseline. ⚠ **`seed_rules` on BOTH DBs at the next deploy** (now
-THREE sessions stacked: s169's D_SCH1A_007 + 003, s170's D_8863_LOCKOUT_NA
-+ LOCKOUT description, s171's NEW D_8615_009); no migration. **Ken-flags,
-not blocking** (REVIEW_QUEUE): (1) the Alternate Worksheet is computable
-for everything the app models — build it later to remove the defer; the
-i8615 text is ambiguous on a no-earned-income child WITH an NOL, which is
-why it defers to the preparer today; (2) the RS spec carries no line-1
-SOURCING rule at all — author the AGI-shortcut/worksheet routing into it.
-**NEXT: LEG 2 item 8** — `scha_gambling_winnings` DERIVE (Ken-ruled
-2026-07-30); item 16 (`eic_self_employed`, its twin shape) rides with it.)*
+*Last updated: 2026-07-31, session 172 (**LEG 2 ITEMS 8 + 16 DONE — THE
+TWO KEN-RULED DERIVES SHIPPED TOGETHER** (both rulings 2026-07-30,
+DECISIONS.md; the twin derive-with-override shape). **Item 8 —
+`scha_gambling_winnings` DERIVED**: `derive_gambling_cap` keeps the §165(d)
+cap at Σ W-2G box 1 + `other_gambling_winnings` on every compute unless the
+NEW `scha_gambling_winnings_overridden` (**migration 0227** — applied on the
+DEMO DB this session; **PROD migrates at Ken's deploy**); the serializer
+marks the override on a direct write of the cap (the `_derive_person`
+first-half pattern) and an explicit flag write is the un-override lane; the
+cap came OUT of the Schedule A engage list (a cap alone is not a deduction —
+pinned: winnings-only returns do not auto-engage Sch A); deleting the last
+W-2G RESNAPS the cap (the s143 zero-residue family, at the write); the s137
+proof case heals ($10,000 of losses now deducts $10,000 on line 16, was $0);
+D_W2G_LOSS_CAP reworded to the override-disagreement framing. **Item 16 —
+`eic_self_employed` DERIVED when UNANSWERED**: None routes by the return
+itself — Sch 1 line 3 / line 6 / K-1 box-14A SE, exactly Ken's three named
+sources (NOT L15 alone: clergy-only returns must not flip onto a Worksheet B
+base that cannot source them); the preparer's EXPLICIT answer is the
+override — **the nullable fact's None state IS the not-overridden state, so
+NO new column and NO `eic_engaged` widening** (an answered fact engages the
+whole EIC lane; a derived one must not — pinned; Ken-flagged as the one
+deviation from the ruling's literal "_overridden companion", same semantics);
+the WS-B default base widened L3-only → L3 + L6 + K-1 SE (Pub 596 WS B 1a;
+R-EIC-WSB-SE still says L3-only → RS agenda); NEW **D_EIC_018** (warning)
+reports an explicit No with SE income; the s139 proof heals ($4,328 computed
+with the question unanswered, was $0). All four screens' stale banners
+rewritten (Misc Income's "nothing fills it in automatically" + EIC's "no
+diagnostic covers it" would both have been the stale-notice trap). **ALSO:
+repaired three ROTTED s142-era pins found by the gates** — the s142 test
+file was never updated when s143 fixed the stale-QBI defect and s145 demoted
+D_8863_DUAL_STUDENT (rewritten as belt+brace / current-severity pins with
+notes). Revert-proven: 8 targeted failures. Live-proven on the demo QA
+return: fixpoint, ZERO lines moved (no W-2Gs; EIC not engaged), fresh
+diagnostics clean, both screens' new copy renders. Gates: FA 521 · s172
+suite 11 · s142 repaired 29 · Sch A/W-2G/topic7/input suites 117 · vitest
+1549 (+1) · tsc at the 46 baseline. ⚠ **AT THE NEXT DEPLOY: `migrate`
+(0227, prod) + `seed_rules` on BOTH DBs — FOUR sessions stacked** (s169
+D_SCH1A_007+003 · s170 D_8863_LOCKOUT_NA+desc · s171 D_8615_009 · s172
+D_W2G_LOSS_CAP name/desc + NEW D_EIC_018). **NEXT: LEG 2 item 9** — Form
+8880 line 4 must carry BOTH spouses' distributions in BOTH columns on MFJ
+($1,000 proven; prints AND transmits); item 10 (the 8880 CLW 6d/6l
+subtraction) is its natural companion.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -48,7 +50,7 @@ SOURCING rule at all — author the AGI-shortcut/worksheet routing into it.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 8** (`scha_gambling_winnings`: DERIVE it — **KEN ALREADY RULED 2026-07-30**, DECISIONS.md: the §165(d) cap becomes the W-2G box-1 sum + `other_gambling_winnings`, with an `_overridden` companion; `D_W2G_LOSS_CAP` stays as the disagreement reporter. Item 16, `eic_self_employed`, is the SAME derive-with-override shape — Ken-ruled the same day — so consider building both in one session). Item 7 is ✅ DONE (s171, 2026-07-31 — the i8615 line-1 sourcing; see the header paragraph; premise VERIFIED and held, unlike items 3 and 6). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ THREE sessions of `seed_rules` are stacked for the next deploy (s169/s170/s171 — see the header).
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 9** (Form 8880 line 4 must carry BOTH spouses' distributions in BOTH columns on MFJ — face + i8880 + §25B(d)(2)(C); `compute_8880_column` subtracts each column's own entry only, $1,000 proven on the max case, and it PRINTS and TRANSMITS; item 10 — the 8880 Credit Limit Worksheet's missing Sch 3 6d/6l subtraction, same module — is its natural companion; read both REVIEW_QUEUE entries first). Items 8 + 16 are ✅ DONE (s172, 2026-07-31 — the two Ken-ruled derives; see the header paragraph). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building (items 3 and 6 both failed that check; 7's held). Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ **AT THE NEXT DEPLOY: migrate 0227 on PROD + `seed_rules` on BOTH DBs — FOUR sessions stacked** (see the header).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -286,11 +288,13 @@ number is at least loud while the compute fix is pending.
    regressions. ⚠ `seed_rules` at deploy (the new 009 row). Ken-flags in
    REVIEW_QUEUE: the Alternate Worksheet is computable later; the RS spec lacks
    any line-1 sourcing rule.
-8. **`scha_gambling_winnings`: DERIVE it — KEN RULED 2026-07-30 (s153
-   close-out, DECISIONS.md).** The §165(d) cap becomes the W-2G box-1 sum
-   plus `other_gambling_winnings`, with an `_overridden` companion;
-   `D_W2G_LOSS_CAP` stays as the disagreement reporter for overrides.
-   Ready to build when the backlog resumes.
+8. ✅ **DONE (s172, 2026-07-31) — `scha_gambling_winnings` DERIVED** per the
+   Ken ruling: `derive_gambling_cap` (Σ W-2G box 1 + other winnings) unless
+   the NEW `scha_gambling_winnings_overridden` (migration 0227 — demo applied,
+   PROD at deploy); cap OUT of the Sch A engage list; W-2G delete resnaps;
+   serializer marks the override / explicit flag write un-overrides;
+   D_W2G_LOSS_CAP reworded (seed_rules). The s137 $0-deduction case heals.
+   RS R-SCHA-OTHER still carries the cap as a bare input fact → RS agenda.
 9. **(s149) Form 8880 line 4 must carry BOTH spouses' distributions in BOTH
    columns on MFJ** (face + i8880 + §25B(d)(2)(C); the didn't-file-jointly
    exception is preparer-applied). `compute_8880_column` subtracts each
@@ -429,10 +433,13 @@ number is at least loud while the compute fix is pending.
    `ADJ_EXCEPTION_TI` (latent; D_1116_007 covers only year==2026, never an
    unpinned year). **Sweep the engine for the pattern and rule once — skip the
    unpinned year and diagnose it — instead of finding it a fifth time.**
-16. **`eic_self_employed`: DERIVE it — KEN RULED 2026-07-30 (s153 close-out,
-   DECISIONS.md).** Default True when the return carries a Schedule C / F /
-   SE K-1, with an `_overridden` companion. Ready to build when the backlog
-   resumes (moves to the LEG 2 lane with item 8, its twin shape).
+16. ✅ **DONE (s172, 2026-07-31, with item 8) — `eic_self_employed` DERIVED
+   when UNANSWERED** (Sch 1 L3 / L6 / K-1 box-14A SE — Ken's three named
+   sources; not L15 alone). None IS the not-overridden state — the explicit
+   answer is the override, so NO new column and NO eic_engaged widening
+   (Ken-flagged modeling note; same semantics as the ruled companion). WS-B
+   base widened L3-only → L3+L6+K-1 SE (R-EIC-WSB-SE divergence → RS agenda);
+   NEW D_EIC_018 (seed_rules). The s139 $0-EIC case heals ($4,328 pinned).
 
 ### ✅ LEG 1 — COMPLETE (s142), 12 diagnostics across three commits
 (`2ed5eff` new `rules_sch_1a.py` · `42eb851` the two Form 5329 fixes · `d991b50`
