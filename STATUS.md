@@ -1,45 +1,45 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-07-31, session 170 (**LEG 2 ITEM 6 RESOLVED — BY
-VERIFICATION, NOT BY THE FIX THE BACKLOG PRESCRIBED.** The item read
-"Form 8863 line-7 lockout: key it per student, not `any()`" — the s138
-recommendation was checked against the sources FIRST (the
-Authoritative-Source Rule) and found WRONG: the 2025 f8863 face's
-line-7 caution ("If **YOU** were under age 24 … check this box"),
-§25A(i)(5) ("shall not apply to any **taxpayer**"), the RS spec's own
-R-8863-AOTC-PHASEOUT, and the MeF `IRS8863.xsd`'s single return-level
-`RefundableAmerOppCrUnder24Ind` ALL make the lockout RETURN-WIDE — the
-engine's `any()` was already correct, and a per-student split of lines
-8/9 would have been a change of law. The REAL defect was the modeling
-+ copy inviting a preparer to tick the box for an under-24 DEPENDENT
-student (the most common AOTC case), wrongly killing the return's
-refundable 40%. SHIPPED (`slate-ui`, client+server, NO migration):
-`D_8863_LOCKOUT` reworded to teach the FILER condition (+ a
-dependent-row misapplication hint); **NEW rule `D_8863_LOCKOUT_NA`**
-(warning) when the tick provably cannot apply (joint return, or filer
-24+ at year-end per DOB — i8863 items 3 and 1); the MeF builder now
-transmits `RefundableAmerOppCrUnder24Ind` in XSD sequence position
-(before s170 a lockout return e-filed with the face's checkbox
-silently ABSENT); both screens reframed (the Slate banner had called
-the law an engine quirk and told preparers to "work the return by
-hand" — removed and pinned out); `test_lockout_scope_is_the_whole_
-return` pins the scope with citations. Live-proven on the demo QA
-return (staged 2 students, one ticked → banner + checkbox copy
-verified on BOTH screens, reworded D_8863_LOCKOUT fired, NA correctly
-silent; staging reverted, baseline hash re-verified EXACTLY).
-Revert-proven: 4 targeted failures across builder/compute-pin/NA.
-Gates: flow assertions 521 · 8863 suites 143 · vitest 1547 (+1) · tsc
-at the 46 baseline. ⚠ **`seed_rules` on BOTH DBs at the next deploy**
-(s169's D_SCH1A_007 + 003, AND s170's NEW D_8863_LOCKOUT_NA row + the
-D_8863_LOCKOUT description); no migration. **Ken decisions flagged:**
-(1) move the lockout checkbox storage to the return level (Taxpayer
-field + migration — changes Decision 2's shape; safe as-is meanwhile);
-(2) RS spec corrections: the spec's D_8863_LOCKOUT message +
-f8863_lockout_any label still say "a student is subject…".
-**NEXT: LEG 2 item 7** — Form 8615 line 1 counts only
-interest/dividends/cap-gain; i8863→i8615 says ALL unearned income
-(AGI shortcut for a no-earned-income child). Items 8 and 16 (the
-Ken-ruled derives) remain ready.)*
+*Last updated: 2026-07-31, session 171 (**LEG 2 ITEM 7 DONE — Form 8615
+line 1 now follows the 2025 i8615 "Line 1" instruction VERBATIM** (fetched
+from irs.gov this session; the premise was re-verified per the item-6
+lesson and HELD — the RS spec's own `k_child_unearned_income` note already
+listed the broad definition, so the engine's 2b + 3b + max(0, 7) was the
+outlier). SHIPPED (`slate-ui`, client+server, NO migration):
+`_source_child_amounts` sources line 1 as **AGI (1040 line 11) for a child
+with NO earned income** (the face's 11b is the page-2 carry of 11a), else
+the **Child's Unearned Income Worksheet** — 1040 line 9 − (earned income +
+the Sch 1 line 18 early-withdrawal penalty), earned income = 1040 line 1z
++ Sch 1 lines 3/6 with a loss counting as zero; a capital LOSS on line 7
+now reduces line 1 (it rides line 9 / AGI — the old max(0,7) ignored it).
+The **Alternate Worksheet cases RED-defer** (net SE loss on Sch 1 line 3/6
+or an NOL on line 8a, detected from the return's own Schedule 1 via
+`sch_line_values` — NOT preparer-asserted): new `DEFER_ALT_WS =
+"ALT_L1_WORKSHEET"` blanks line 18 → **NEW rule `D_8615_009`** (error);
+Form 2555 (the third trigger) is unmodeled so that leg cannot arise. Both
+screens' line-1 copy rewritten (the old "check line 1 by hand" ERROR
+banner described the fixed defect — the s136/s169 stale-banner trap,
+avoided at the source this time); `F8615_DEFER_COPY` carries the new code.
+The s147 proof cases pin as regressions (trust child line 1 = AGI 20,000
+not 2,000; annuity child 14,000 not 0) + the i8615 "Amanda Black" example
++ an END-TO-END SE-loss defer against real seeded SCH_1 rows.
+Revert-proven: 12 targeted failures. Live-proven on the demo QA return:
+the new sourcing note renders, the old banner is gone, **compute is a
+fixpoint and the baseline FFV hash is byte-identical** (8615 not engaged →
+zero dollars move), and a FRESH diagnostics run is clean — the 4
+rule-execution errors visible on screen (D_8995_003 / D_8959_*) were STALE
+findings from a 2-day-old run and do not reproduce. Gates: flow assertions
+521 · the five 8615 legs + spine/packet 165 · vitest 1548 (+1) · tsc at
+the 46 baseline. ⚠ **`seed_rules` on BOTH DBs at the next deploy** (now
+THREE sessions stacked: s169's D_SCH1A_007 + 003, s170's D_8863_LOCKOUT_NA
++ LOCKOUT description, s171's NEW D_8615_009); no migration. **Ken-flags,
+not blocking** (REVIEW_QUEUE): (1) the Alternate Worksheet is computable
+for everything the app models — build it later to remove the defer; the
+i8615 text is ambiguous on a no-earned-income child WITH an NOL, which is
+why it defers to the preparer today; (2) the RS spec carries no line-1
+SOURCING rule at all — author the AGI-shortcut/worksheet routing into it.
+**NEXT: LEG 2 item 8** — `scha_gambling_winnings` DERIVE (Ken-ruled
+2026-07-30); item 16 (`eic_self_employed`, its twin shape) rides with it.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -48,7 +48,7 @@ Ken-ruled derives) remain ready.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 7** (Form 8615 line 1 — `_source_child_amounts` counts only 1040 2b+3b+max(0,7) while i8615 counts ALL unearned income and directs AGI for a no-earned-income child; engine-proven $1,767/$1,217 understated; read the REVIEW_QUEUE entry first). Item 6 is ✅ RESOLVED (s170, 2026-07-31) — **by verification, not by the prescribed fix**: the `any()` return-wide lockout IS the law (f8863 face + §25A(i)(5) + the RS spec + IRS8863.xsd); shipped the copy/diagnostic/e-file corrections instead (see the header paragraph). ⚠ Read the item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building — item 6 is the second backlog item whose recommendation didn't survive contact with the form face. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. Items 8 and 16 (the Ken-ruled derives) are ready to build in this lane.
+## ▶ RESUME HERE — **THE RULE/DIAGNOSTIC BACKLOG IS RUNNING; NEXT IS LEG 2 ITEM 8** (`scha_gambling_winnings`: DERIVE it — **KEN ALREADY RULED 2026-07-30**, DECISIONS.md: the §165(d) cap becomes the W-2G box-1 sum + `other_gambling_winnings`, with an `_overridden` companion; `D_W2G_LOSS_CAP` stays as the disagreement reporter. Item 16, `eic_self_employed`, is the SAME derive-with-override shape — Ken-ruled the same day — so consider building both in one session). Item 7 is ✅ DONE (s171, 2026-07-31 — the i8615 line-1 sourcing; see the header paragraph; premise VERIFIED and held, unlike items 3 and 6). ⚠ Read each item's REVIEW_QUEUE entry AND verify its premise against the sources BEFORE building. Per-item process: fetch the RS spec first, flow-assertion gate after, Ken deploy. ⚠ THREE sessions of `seed_rules` are stacked for the next deploy (s169/s170/s171 — see the header).
 
 **Context for the fresh session:** the Slate sweep is DONE both lanes (1040 39/39+2 · entity 13/13) and **`slate-ui` is MERGED TO MAIN** (Ken-directed: fast-forward `be82b22`→`aaf0743`; the only migration, diagnostics 0005, was already applied to both DBs 07-30; NEW_UI still defaults OFF — the flag flip is a separate Ken decision; the un-redesigned stragglers are the 1041 editor, the state-return editor interiors, and the other suite apps). **Post-merge Ken-review fixes, all pushed to BOTH branches:** the navy app bar (`f09bde5` — the gold was the legacy :root `--accent` amber winning the cascade; Slate's Tax accent was always `#133c66`; re-declared on `.slate-root`), the wordmark → Return Manager home link (same commit — there was NO route back from an open return), and the 8867 attestation auto-rerun (`def8b06` — the attestation cascade WORKED all along [live-proven on demo Bobby Barker: every applicable box filled, D_8867_001 quiet]; the panel showed the STALE last run, so attesting now re-runs diagnostics and the error clears ON SCREEN, both directions; vitest 1545). ⚠ **A PARALLEL SESSION may be porting Slate to delvio-ledger** (Ken green-lit, prompt handed over) — different repo, but the SAME shared Supabase DB; and the TB-import parallel session's dirty files remain in THIS repo (`server/apps/returns/views.py` modified + `tb_import.py`/`test_tb_import.py` untracked — never stage them).
 
@@ -277,16 +277,15 @@ number is at least loud while the compute fix is pending.
    wrong and is pinned out), and the citation-carrying scope pin test.
    ⚠ `seed_rules` at deploy (new NA row + the LOCKOUT description). Ken-flagged,
    not blocking: return-level checkbox storage (migration); RS spec wording.
-7. **(s147) Form 8615 line 1 counts only interest + dividends + capital gain.**
-   `_source_child_amounts` = 1040 2b + 3b + max(0, 7). i8615 (fetched live) counts
-   ALL unearned income — rents, royalties, pensions/annuities, taxable SS, taxable
-   scholarships, unemployment, alimony, **trust beneficiary income** — and directs
-   a child with no earned income to enter **AGI**. Engine-proven **$1,767** and
-   **$1,217** understated on two returns, and `child_unearned_income` is
-   `read_only_fields`, so there is no override to escape with. A minor who is a
-   trust beneficiary is exactly what §1(g) exists to reach. REVIEW_QUEUE has the
-   recommendation (AGI shortcut + the Child's Unearned Income Worksheet;
-   RED-defer the Alternate Worksheet cases).
+7. ✅ **DONE (s171, 2026-07-31) — Form 8615 line 1 per the 2025 i8615 "Line 1"
+   instruction.** AGI for a no-earned-income child; the Child's Unearned Income
+   Worksheet otherwise (line 9 − earned − the Sch 1/18 penalty; earned = 1z +
+   Sch 1 3/6, losses at zero); the Alternate Worksheet cases (net SE loss / NOL)
+   RED-defer via `ALT_L1_WORKSHEET` → NEW **D_8615_009**. Capital losses now
+   reduce line 1. Both screens' copy rewritten; the s147 dollar proofs pin as
+   regressions. ⚠ `seed_rules` at deploy (the new 009 row). Ken-flags in
+   REVIEW_QUEUE: the Alternate Worksheet is computable later; the RS spec lacks
+   any line-1 sourcing rule.
 8. **`scha_gambling_winnings`: DERIVE it — KEN RULED 2026-07-30 (s153
    close-out, DECISIONS.md).** The §165(d) cap becomes the W-2G box-1 sum
    plus `other_gambling_winnings`, with an `_overridden` companion;
