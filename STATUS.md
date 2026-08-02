@@ -1,13 +1,12 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 179 (**IMPORT LANE LEG D SHIPPED + 🚀 THE
-STACKED DEPLOY LANDED AND VERIFIED (Ken's go, same session)** — `main`
-fast-forwarded to `2f3f1a4`, bundle `index-HC1WX6M_.js` live on prod AND
-demo, migrations 0228/0229/0230 applied BOTH DBs, `seed_ga500` 7c flip +
-`seed_rules` D_RET_010 confirmed BOTH DBs (773 active rules), backentry
-endpoints LIVE on prod (auth probe: 404-not-500 on a random batch id).
-**DEPLOY DEBT: CLEARED. The lane is deployable-done — next is the pilot
-batch.**)*
+*Last updated: 2026-08-02, session 180 (**🏁 PILOT BATCH 001 RAN THE IMPORT
+LANE END-TO-END ON PROD** — 10 real TaxWise packets staged → dry-run →
+committed → reconciled → mark-filed → diagnostics → QA reports. **8 of 10
+TIED TO THE DOLLAR (federal + GA) and are FILED on prod**; 2 held draft
+with fully-diagnosed causes; 1 more return proved the refusal lane. One
+real Leg B bug found+fixed+DEPLOYED same session (`facc4d6`). Deploy debt:
+ZERO.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -16,125 +15,115 @@ batch.**)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — THE LANE IS BUILT AND DEPLOYED; NEXT IS THE FIRST REAL
-## PILOT BATCH
+## ▶ RESUME HERE — THE PILOT PROVED THE LANE; NEXT IS INDUSTRIALIZING THE
+## BACKLOG (blocked on 4 Ken rulings, s180 REVIEW_QUEUE)
 
-**The lane (Ken's go 2026-08-01): COMPLETE in code.** Legs: **A staging ✅
-(`4926fa4`)** → **B commit ✅ (`aff0025`)** → **C reconciliation ✅
-(`5303279`)** → **D Mark-Filed + QA report ✅ (this session)**.
+**Pilot-001 results (batches `pilot-001`/`-001b`/`-001c` on prod, dev QA
+account, 2026-08-01/02 night):**
+- **8 FILED, tie 17/17 lines** (client numbers 1953/2095/2182/2223/2251/
+  2595/2763/3295): W-2, INT (4-payer Sch B), DIV, 1099-R (codes 3/4/7/Q,
+  IRA box), SSA, Sch 1-A senior deduction, age-additions std deduction,
+  MFJ + GA filing status B, EIC-decline, full-refund and zero-tax shapes —
+  all exact, federal AND GA-500.
+- **2 committed, HELD draft** (the lane's designed outcome): #1995 —
+  1099-R $5,400 flag-E exclusion not expressible in backentry.v1 (schema
+  gap); #2743 — 2210 penalty 83 vs 82, INSIDE the $5 line-38 tolerance but
+  the $1 flows into untolerated line 37 (policy question).
+- **1 refused by design**: a same-name hub client pair (two identical
+  name rows, #2129/#2130), ssn+last_name locator cannot resolve (no
+  identity rows) — staged INVALID, excluded. Proves the never-guess rule.
+- Mark-filed swept ONLY ties (7+1 via correction batch); post-commit
+  diagnostics ran on all 10 (no error-severity findings; MISSING_PREPARER
+  warns on all — schema gap); reports saved:
+  `D:\tax-test-data\tmp\pilot-001\pilot001*_report.json`.
 
-**Leg D is LIVE in code:**
-- `POST /backentry/batches/{id}/mark-filed/` — sweeps the batch: committed
-  returns whose reconciliation verdict is **`tie` — and ONLY those** — are
-  marked `filed` (the s175 status ruling: the agent marks a return filed
-  once it ties to the return as actually filed). The flip goes through the
-  **UI's own →filed side effects**: as-filed baseline (1040-X Column A),
-  proforma prior-year snapshot, audit log, guarded ledgerlink call (inert
-  on →filed by design + `LEDGER_AUTOPOST_ENABLED` default OFF). Attached
-  state returns ride the same flip (the packet filed as one return).
-  Everything else skips WITH A REASON (no_tie / no answer key / not
-  committed / excluded / already filed); per-return atomic; idempotent
-  re-POST. **Shape decision (mine, revisable): an explicit batch action,
-  NOT auto-on-tie at commit** — flag for Ken if he wants auto.
-- `GET /backentry/batches/{id}/report/` — the PII-safe batch QA report:
-  per-return commit/verdict/filed state, **the mismatching lines of every
-  no-tie**, commit warnings + replaced sections, validation errors, and a
-  **diagnostics-staleness verdict** per committed return (latest
-  `DiagnosticRun.started_at` vs `committed_at` — a run that predates the
-  commit describes a return that no longer exists; the Batch 002
-  staleness family, folded in as promised).
-- No new model state — the live `TaxReturn.status` is the truth the report
-  reads. NO migration.
+**Shipped this session:**
+- **`facc4d6` (DEPLOYED prod+demo): Leg B commit coerces payload JSON
+  scalars through each model field's clean()** — raw setattr left
+  date_of_birth as a STRING on the in-memory Taxpayer; on a VIRGIN shell
+  `Taxpayer(tax_return=target)` caches that instance, so same-transaction
+  compute died str-vs-date → 500 on EVERY real senior packet. Regression
+  pin on a virgin shell; revert-proven. Backentry 39/39, FA 521.
+- **Workflow artifacts** (in `D:\tax-test-data\tmp\pilot-001\`):
+  `AUTHORING_GUIDE.md` (the payload-authoring spec agents follow; now
+  carries the GA line-5 rule), `pilot_driver.py` (auth/stage/dryrun/
+  commit/markfiled/report CLI against prod), `triage_inbox.py` +
+  results CSV (classifies all 420 packets by the invoice's billed-forms
+  list), `RUNBOOK.md`, per-return payloads/notes. 10 entered PDFs moved
+  to Done with notes.
+
+**Key workflow facts (industrialization inputs):**
+- **Locators must be client_number** — virgin shells have NO Taxpayer row
+  (93 of 2,831 have one), so ssn+last_name resolves nothing until an
+  identity backfill lands (REVIEW_QUEUE).
+- **ga500_fields must always carry {"5": "<letter>"}** — GA-500 line 5 is
+  preparer-entered by design; empty = "A" default = single $12,000 GA std
+  deduction (an MFJ return silently overstates GA tax by 5.19% × $12,000 —
+  caught by reconciliation, fixed via correction batch `pilot-001c`).
+- **Inbox inventory: only 246 of 420 packets are real** — 174 are
+  invoice-only PDFs (no return inside); 37 of the 246 are lane-eligible
+  under the current schema (triage CSV). The rest need UI entry or schema
+  extensions.
+- Per-return authoring = 1 subagent reading the full packet (~4-5 min,
+  parallelizes ×10); dry-run precommit preview works BOTH via prod
+  endpoint and via local rollback script (same code, same DB).
 
 **▶ NEXT:**
-1. ~~Ken's stacked deploy~~ ✅ **DONE + VERIFIED this session** (see Active
-   gates).
-2. **Pilot batch (THE next unit)**: drive ONE real ≤10-packet batch
-   end-to-end on prod (stage → dry-run → commit → reconcile → mark-filed →
-   report) with the delvio-1040-entry skill's conventions; tune the payload
-   authoring workflow from what the packets actually contain.
-3. Then industrialize: the 420-packet backlog at ~10/batch.
-4. Behind the lane: Batch 002's row-creation family (matters for January's
-   human preparers), Ken's ② MeF batch (`build_irs5695` next) and ④
-   year-constant ruling.
+1. **Ken's 4 rulings (REVIEW_QUEUE s180)**: ① 37/34 inherit the line-38
+   tolerance when fully explained by it? ② schema gaps (preparer field /
+   1099-R exclusion / claimed-as-dependent / Sch 1-A tips-overtime)?
+   ③ identity backfill from the TaxWise roster xlsx (unblocks ssn
+   locators + same-name disambiguation)? ④ the 174 invoice-only packets —
+   re-export from TaxWise?
+2. **Industrialize**: next batches from the 37-candidate pool (~26
+   remain), 10/batch, the pilot workflow verbatim. Grow the pool as
+   rulings land.
+3. Behind the lane: Batch 002 row-creation family (also ChatGPT
+   Batch-003 items 6/7), ChatGPT Batch-003 engine claims (ACTC cap ·
+   15-yr depreciation · GA low-income credit $5 · 8812 suppression —
+   reproduce-first, s175 rule), Ken's ② MeF batch (`build_irs5695`),
+   ④ year-constant ruling.
 
-## QA Batch 002 — remaining queue (paused behind the import lane;
-## family #3 diagnostics-staleness is now SERVED by the Leg D report)
-
-⚠ **Re-verify every screen-layer item on the DEPLOYED Slate first** — Batch 002
-was QA'd before the 2026-08-01 ~22:40Z deploy (the s175 lesson: 2 of 6 items
-had already stopped existing).
-
-1. **The row-creation transactional family** — INT/DIV payers, dependents,
-   K-1, W-2G, 2210 dated payments: no pending state, retries mint silent
-   duplicates (also the real cause of the "W-2G counted twice" report).
-   Design: optimistic row w/ stable ID, disable-while-pending, reconcile by
-   ID; audit which add-lanes lack `@idempotent_create`.
-2. **Rental `+ Add property` silently inert** (blocker-class).
-3. **The diagnostics-staleness family** — findings published from a different
-   calculation revision than the one on screen. *(Leg D's report now flags
-   run-predates-commit per return; the SCREEN-side staleness fix remains.)*
-4. **K-1 material participation defaults to an unsupported YES.**
-5. **Diagnostic gating**: `D_6251_008` on bare LTCL carryover; `D_GA500_008`
-   with zero depreciation facts.
-6. **GA retirement-exclusion feeders**: Sch C earned income + Sch D gains
-   unfed (correct-by-coincidence at the $65k cap).
-7. **Form 8995 prior-year QBI loss carryforward inputs.**
-8. **Schedule A Medicare feeder provenance** (double-count trap).
-9. **Form 8960 filed PDF omits pure-arithmetic lines** (5d/9d/11/14/15).
-10. **Source-summary INT box-1 400** — `FORBIDDEN_ON_SUMMARY`/
-    `summaryConflicts` unwired in `SourceSummary.tsx`.
-11. **PDF preview canvas race** — cancel/await prior render per revision.
-12. *(carried, s175)* Stale totals strip on Slate INT/DIV screens.
-
-## What shipped this session (`slate-ui`, pushed, NO deploy)
-
-- **s179 — Leg D, batch Mark-Filed + the QA report.** Everything in the
-  resume block. Files: `apps/returns/backentry.py` (`mark_filed_sweep` /
-  `_mark_return_filed` / `build_batch_report` / `_diagnostics_summary`),
-  `views_backentry.py` (the two endpoints). 7 tests in
-  `test_backentry_markfiled.py` (tied-sweep + GA-500 flip + baseline +
-  idempotent replay; no_tie stays draft; unreconciled skipped; uncommitted/
-  excluded skipped; report verdicts/mismatch-lines/filed counts + planted
-  −7 delta; diagnostics staleness all three states; cross-firm 404 + auth).
-  **Revert-proven ×2**: tie gate disabled → a no-tie return got filed (pin
-  tripped); staleness comparison flipped → pin tripped. Gates: backentry
-  38/38, FA 521 (559 total). NO migration, NO client code.
+## QA Batch 002 — remaining queue (unchanged from s179; paused behind the
+## lane; ChatGPT Batch-003 adds overlapping items 6/7 = family #1)
+1. Row-creation transactional family (add-lanes minting silent duplicates).
+2. Rental `+ Add property` silently inert (blocker-class).
+3. Diagnostics-staleness SCREEN-side fix (report side served by Leg D).
+4. K-1 material participation defaults to unsupported YES.
+5. Diagnostic gating: D_6251_008 / D_GA500_008.
+6. GA retirement-exclusion feeders (Sch C earned income + Sch D gains).
+7. Form 8995 prior-year QBI loss carryforward inputs.
+8. Schedule A Medicare feeder provenance.
+9. Form 8960 filed PDF omits pure-arithmetic lines.
+10. Source-summary INT box-1 400 unwired.
+11. PDF preview canvas race.
+12. Stale totals strip on Slate INT/DIV screens.
 
 ## Active gates
-- **🚀 DEPLOYED (2026-08-01, Ken's go, this session): `main` == `slate-ui`
-  == `2f3f1a4`** (fast-forward, 14 commits s176–s179). **VERIFIED:**
-  ① prod bundle `index-HC1WX6M_.js` carries the s176 2210 label verbatim
-  ("per the i2210 Line 8 chart"), old label gone — the carried
-  browser-verification gate is satisfied by the bundle grep; ② migrations
-  0228/0229/0230 applied on BOTH DBs (recorder rows + the tables answer);
-  ③ `seed_ga500` 7c `is_computed=True` BOTH DBs; ④ `seed_rules` D_RET_010
-  active BOTH DBs, **773 active rules both** (772 + D_RET_010, exactly
-  expected); ⑤ demo service same bundle, `environment: "demo"`;
-  ⑥ **backentry endpoints LIVE on prod** — dev-account magic-link probe,
-  GET random batch id → 404 (was a guaranteed 500 pre-migration), logout
-  clean. **DEPLOY DEBT: NONE.**
-- **RS agenda (REVIEW_QUEUE s176/s176b)**: ① R-RET-CODE spec edit — code 6
-  SUPPORTED; ② rule-studio `check_ga500_integrity.py` 7c→7a scenario edit.
-- **REVIEW_QUEUE (s178)**: GA-500 UET line number disputed between our own
-  sources (brief 44 vs coordinates/diagnostics 42) — verify against the
-  DOR PDF before GA UET ever computes/reconciles.
+- **Deploy debt: ZERO** — `main` == `facc4d6`, deployed prod+demo this
+  session (server-only; verified by behavior: the pre-fix dry-run 500
+  became a 200-tie on prod). No pending migrations/seeds.
+- **RS agenda (unchanged)**: R-RET-CODE code-6 edit; rule-studio
+  check_ga500_integrity 7c→7a scenario edit.
+- **REVIEW_QUEUE**: 4 NEW s180 items (above) + GA UET line dispute (s178).
 - ⚠ `LEDGER_AUTOPOST_ENABLED` stays unset until production cutover (Jan 2027).
 - ⚠ One test DB — never overlap pytest runs.
-- ⚠ Full server suite (~6,900) does NOT finish in a session — s179 gated
-  on: backentry 38 + FA 521; the deploy's own vite production build ran
-  clean locally as pre-flight before the push.
+- ⚠ ChatGPT works the SAME Inbox alphabetically from the top (Batch-003 =
+  ADKINS→[client]); import-lane batches pick from later letters. His
+  Batch-003 CC list is in `D:\tax-test-data\QA Reports\Batch-003\`.
 
-## 🔑 Method notes (carried; s179 confirmations)
-1. **THE REVERT IS THE ONLY PROOF** — tie gate and staleness comparison
-   both deliberately broken; both pins tripped.
-2. **Delegate to the chokepoint, don't copy it** — mark-filed reuses
-   `capture_as_filed_baseline` / `capture_prior_year_1040_snapshot` /
-   `handle_status_transition` (the UI's own →filed block), not a re-derive.
-3. **Reachability ≠ permission** (s175, honored): the ledgerlink call is
-   inert on →filed AND enablement-gated before credentials.
-4. **No new model state when an existing field is the truth** — filed
-   state reads live `TaxReturn.status`; zero migration.
+## 🔑 Method notes (s180 additions)
+1. **The reconciliation IS the QA** — it caught the GA line-5 default
+   (623 GA tax overstatement) that eight green federal lines hid.
+2. **Pre-register expected outcomes before running** (RUNBOOK.md) — the
+   two no-ties were predicted with their exact causes before any commit.
+3. **A dry-run 500 reproduces locally against the same prod DB** with
+   commit_staged_return inside a forced-rollback transaction — full
+   traceback, zero writes, no Render log access needed.
+4. **The staged copy is FROZEN at staging** — a payload fix needs
+   exclude + a new correction batch (pilot-001c pattern), not a file edit.
+5. ⚠ `poetry -C server run python` resolves ALL relative paths against
+   server/ — absolute paths for scripts AND their file arguments.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. **The app is TESTING until January 2027.**
