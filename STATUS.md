@@ -1,10 +1,13 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 179 (**IMPORT LANE LEG D SHIPPED — batch
-Mark-Filed + the QA report. 🏁 THE BACK-ENTRY IMPORT LANE IS CODE-COMPLETE,
-ALL FOUR LEGS** — on `slate-ui`, pushed, NO deploy, NO migration, NO client
-code; deploy debt unchanged. The lane cannot run against prod until the
-stacked deploy lands.)*
+*Last updated: 2026-08-01, session 179 (**IMPORT LANE LEG D SHIPPED + 🚀 THE
+STACKED DEPLOY LANDED AND VERIFIED (Ken's go, same session)** — `main`
+fast-forwarded to `2f3f1a4`, bundle `index-HC1WX6M_.js` live on prod AND
+demo, migrations 0228/0229/0230 applied BOTH DBs, `seed_ga500` 7c flip +
+`seed_rules` D_RET_010 confirmed BOTH DBs (773 active rules), backentry
+endpoints LIVE on prod (auth probe: 404-not-500 on a random batch id).
+**DEPLOY DEBT: CLEARED. The lane is deployable-done — next is the pilot
+batch.**)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -13,8 +16,8 @@ stacked deploy lands.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — THE LANE IS BUILT; THE NEXT STEP IS KEN'S DEPLOY, THEN
-## THE FIRST REAL BATCH
+## ▶ RESUME HERE — THE LANE IS BUILT AND DEPLOYED; NEXT IS THE FIRST REAL
+## PILOT BATCH
 
 **The lane (Ken's go 2026-08-01): COMPLETE in code.** Legs: **A staging ✅
 (`4926fa4`)** → **B commit ✅ (`aff0025`)** → **C reconciliation ✅
@@ -44,11 +47,11 @@ stacked deploy lands.)*
   reads. NO migration.
 
 **▶ NEXT:**
-1. **Ken's stacked deploy** (the gate on everything): the lane's endpoints
-   500 on live until migrations 0228/0229/0230 land. Full debt list below.
-2. **Pilot batch**: after the deploy, drive ONE real ≤10-packet batch
-   end-to-end (stage → dry-run → commit → reconcile → mark-filed → report)
-   with the delvio-1040-entry skill's conventions; tune the payload
+1. ~~Ken's stacked deploy~~ ✅ **DONE + VERIFIED this session** (see Active
+   gates).
+2. **Pilot batch (THE next unit)**: drive ONE real ≤10-packet batch
+   end-to-end on prod (stage → dry-run → commit → reconcile → mark-filed →
+   report) with the delvio-1040-entry skill's conventions; tune the payload
    authoring workflow from what the packets actually contain.
 3. Then industrialize: the 420-packet backlog at ~10/batch.
 4. Behind the lane: Batch 002's row-creation family (matters for January's
@@ -99,16 +102,18 @@ had already stopped existing).
   38/38, FA 521 (559 total). NO migration, NO client code.
 
 ## Active gates
-- **Deployed prod state unchanged from s175b**: `main` == `fdbd7f2`, bundle
-  `index-BrbsO-k6.js`, seed debt CLEAR (772 rules both DBs), 0227 applied.
-  `slate-ui` is ahead of `main` (s176–s179, un-deployed).
-- **⚠ DEPLOY DEBT at the next deploy, BOTH DBs: ① `seed_ga500 --year 2025`**
-  (7c `is_computed` flip) **+ ② `seed_rules`** (NEW D_RET_010 + D_RET_003
-  rewording) **+ ③ migrations 0228/0229/0230** (back-entry staging tables +
-  RLS + the commit-replay fields — none applied locally; the backentry
-  endpoints 500 on live until then, which is safe: nothing links to them).
-  s178/s179 added NO new debt. **The deploy is now the gate on the whole
-  import lane.**
+- **🚀 DEPLOYED (2026-08-01, Ken's go, this session): `main` == `slate-ui`
+  == `2f3f1a4`** (fast-forward, 14 commits s176–s179). **VERIFIED:**
+  ① prod bundle `index-HC1WX6M_.js` carries the s176 2210 label verbatim
+  ("per the i2210 Line 8 chart"), old label gone — the carried
+  browser-verification gate is satisfied by the bundle grep; ② migrations
+  0228/0229/0230 applied on BOTH DBs (recorder rows + the tables answer);
+  ③ `seed_ga500` 7c `is_computed=True` BOTH DBs; ④ `seed_rules` D_RET_010
+  active BOTH DBs, **773 active rules both** (772 + D_RET_010, exactly
+  expected); ⑤ demo service same bundle, `environment: "demo"`;
+  ⑥ **backentry endpoints LIVE on prod** — dev-account magic-link probe,
+  GET random batch id → 404 (was a guaranteed 500 pre-migration), logout
+  clean. **DEPLOY DEBT: NONE.**
 - **RS agenda (REVIEW_QUEUE s176/s176b)**: ① R-RET-CODE spec edit — code 6
   SUPPORTED; ② rule-studio `check_ga500_integrity.py` 7c→7a scenario edit.
 - **REVIEW_QUEUE (s178)**: GA-500 UET line number disputed between our own
@@ -117,9 +122,8 @@ had already stopped existing).
 - ⚠ `LEDGER_AUTOPOST_ENABLED` stays unset until production cutover (Jan 2027).
 - ⚠ One test DB — never overlap pytest runs.
 - ⚠ Full server suite (~6,900) does NOT finish in a session — s179 gated
-  on: backentry 38 + FA 521 (server-only; tsc/vitest not re-run).
-- ⚠ Browser verification of the 2210 label still owed on the next live pass
-  (carried from s176).
+  on: backentry 38 + FA 521; the deploy's own vite production build ran
+  clean locally as pre-flight before the push.
 
 ## 🔑 Method notes (carried; s179 confirmations)
 1. **THE REVERT IS THE ONLY PROOF** — tie gate and staleness comparison
