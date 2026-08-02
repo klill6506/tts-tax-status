@@ -18,17 +18,37 @@ era). Deploy debt: ZERO.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — BATCH-003 IS NEXT: ~42 lane-eligible packets remain
-## (triage_v3_buckets.csv: the rest of READY_NOW + the 18 capgains
-## unlocks), 10/batch, workflow verbatim. The AUTHORING_GUIDE now carries
-## EVERY convention batches 001-002 earned: preparer · GA line-5 letter ·
-## GA 7a dependent count · dependent tin_type/citizenship on
-## credit-claiming returns · dependent_filer_earned_income · 1099-R
-## post-exclusion taxable · capital_transactions · car_loan_vehicles ·
-## UNKNOWN-payer interest. Residuals: BARROW held on the GA LIC
+## ▶ RESUME HERE — KEN'S STANDING ORDER (2026-08-02): RUN ALL 42
+## READY PACKETS AUTONOMOUSLY, THEN STOP; builds resume with Ken tomorrow.
+##
+## The list: `D:\tax-test-data\tmp\pilot-001\READY_NOW_LIST.txt` (42
+## names; SKIP FINLEY JAMES P — still blocked on the which-client
+## question). Run 10/batch (keys batch-003, -004, -005, -006), the
+## proven loop per batch:
+##  1. Resolve client_numbers (hub lookup by name; identity last4 now
+##     backfilled as a cross-check — 2,001 rows).
+##  2. 10 parallel authoring subagents against
+##     `D:\tax-test-data\tmp\pilot-001\AUTHORING_GUIDE.md` (it carries
+##     EVERY earned convention: preparer · GA line-5 · GA 7a dependent
+##     count · dependent tin_type/citizenship on credit returns ·
+##     dependent_filer_earned_income · 1099-R post-exclusion taxable ·
+##     capital_transactions · car_loan_vehicles · UNKNOWN-payer
+##     interest · relationship tokens lowercase). Payloads to
+##     `D:\tax-test-data\tmp\batch-00N\`.
+##  3. Local validate (patch_validate pattern) → mint magic link
+##     --prod-db → auth → stage → dry-run each → fix payload issues via
+##     correction batches → commit → mark-filed → diagnostics → report.
+##     Driver: `D:\tax-test-data\tmp\pilot-001\pilot_driver.py`.
+##  4. Done notes + move PDFs; misses whose delta factors into a known
+##     constant are PAYLOAD issues; genuinely new engine questions →
+##     REVIEW_QUEUE, return stays held (the BARROW pattern).
+##
+## Ken-blocked residuals (do NOT self-serve): BARROW GA LIC
 ## exemption-count ruling (REVIEW_QUEUE s180c) · FINLEY which-is-which ·
-## RS agenda retirement-exclusion input · the 174 quarantined
-## invoice-only re-exports · 175 HARD packets await the Sch C/E/A era.
+## the 174 quarantined invoice-only re-exports. Next BUILD era (with Ken
+## tomorrow): Sch C + SE + Sch 1 odds-and-ends (+15-22 packets), then
+## depreciation import (+11, January-critical), Sch E, Sch A; 95 packets
+## stay hard regardless (UI lane / later eras).
 
 **Pilot-001 results (batches `pilot-001`/`-001b`/`-001c` on prod, dev QA
 account, 2026-08-01/02 night):**
