@@ -2,7 +2,7 @@
 
 *Last updated: 2026-08-02, session 186 (**b008's four holds RESOLVED and
 FILED — lane at 64.** `sch1_fields` shipped for educator/student-loan
-adjustments; the CRAFT "W-2G double count" was REFUTED — shell residue,
+adjustments; the b008 "W-2G double count" was REFUTED — shell residue,
 not an engine bug. Correction batch `b008c2`: 4/4 dry-run TIE → committed
 → filed; PDFs moved to Done.)*
 
@@ -27,7 +27,7 @@ open question: set `autoDeploy: false`?
 
 ### Worker split (Ken, s184 — unchanged)
 ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff prompt
-now carries s185 Sch A + s186 sch1_fields/CRAFT addenda) · **CC sessions
+now carries s185 Sch A + s186 sch1_fields/W-2G-residue addenda) · **CC sessions
 = engine/tax-law work only** (s186's correction batch was Ken-directed).
 
 ### s186 shipped + deployed (`4cdecba`, verified live by the acceptance run itself)
@@ -37,7 +37,7 @@ now carries s185 Sch A + s186 sch1_fields/CRAFT addenda) · **CC sessions
   import mirrors the UI (ga500_fields precedent) — NOT Taxpayer facts +
   a feeder. Applied before compute; R-S1-04 → line 26 → 1040 line 10.
   Computed feeder lines refuse at staging.
-- **CRAFT refuted**: his shell carried `other_gambling_winnings=1220`
+- **The W-2G hold refuted**: the shell carried `other_gambling_winnings=1220`
   (browser-lane residue duplicating his one W-2G). Engine 8b math is
   correct single-count. NEW commit warning fires on the residue shape
   (payload W-2Gs + preserved nonzero shell value). Fix = explicit 0 in a
@@ -61,9 +61,10 @@ HARD pile.
 ---
 
 ## Known traps (carried — do not re-learn)
-- **s186: a "reproduced engine defect" can be shell residue** — CRAFT is
-  the 4th wrong-source/leftover-shell class member (LINN, PEGGY, CRIM,
-  CHANELL). Probe the shell's scalars + overrides BEFORE believing a
+- **s186: a "reproduced engine defect" can be shell residue** — the b008
+  W-2G hold is the 4th wrong-source/leftover-shell class member (the s183
+  2210 wrong-page, the s184 payload carry, the s181 override + leftover-
+  flag cases). Probe the shell's scalars + overrides BEFORE believing a
   no-tie names the engine. The commit now warns on the W-2G/other_gambling
   shape specifically.
 - **s186: sch1_fields is for spec-typed INPUT lines only** — direct-
