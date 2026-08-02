@@ -1,15 +1,15 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-02, session 180/180b (**🏁 PILOT BATCH 001 RAN THE
-LANE END-TO-END ON PROD — AND AFTER KEN'S FOUR LIVE RULINGS, ALL 10
-RETURNS ARE TIED AND FILED.** s180: 8/10 tied+filed, Leg B bug
-found+fixed+deployed `facc4d6`. s180b (Ken ruled live, one decision at a
-time): 37/34 inherit an explained penalty delta `4e0558e` → JONES filed;
-schema extensions preparer/claimed-as-dep/tips-OT `1a0c3df` + the 1099-R
-exclusion authoring convention → DUNN re-committed 17/17 + filed; 2,001
-identity SSNs backfilled; 174 invoice-only PDFs quarantined; the public
-mirror's history force-scrubbed of a client name (Ken's explicit go).
-Deploy debt: ZERO.)*
+*Last updated: 2026-08-02, session 180/b/c (**🏁 THE LANE IS INDUSTRIAL:
+20 REAL RETURNS IMPORTED TONIGHT, 19 TIED TO THE DOLLAR AND FILED.**
+s180: pilot 10/10 (after s180b's four Ken rulings). s180c: batch-002 ran
+9/10 tied+filed SAME NIGHT and grew the schema four more times —
+capgains family `d894ba4`, car-loan family `fbbf6af`, dependent
+tin_type + dependent_filer_earned_income `50bcb69` (all deployed). The
+ONE hold: BARROW, on the GA low-income-credit exemption-count question
+(= ChatGPT Batch-003 item 3, REVIEW_QUEUE). Triage v3: 34 were
+ready-now, +18 unlocked by capgains; 175 HARD (Sch C/E/A + depreciation
+era). Deploy debt: ZERO.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -18,12 +18,17 @@ Deploy debt: ZERO.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — ALL FOUR RULINGS LANDED (s180b); NEXT IS INDUSTRIALIZING
-## THE BACKLOG: ~26 lane-eligible packets remain, run at 10/batch with the
-## pilot workflow verbatim (AUTHORING_GUIDE now carries preparer + GA
-## line-5 + the exclusion convention). Residuals: the FINLEY pair needs
-## Ken's which-is-which; RS agenda gains the retirement-spec exclusion
-## input; 166+55 roster ambiguities left unfilled by the identity backfill.
+## ▶ RESUME HERE — BATCH-003 IS NEXT: ~42 lane-eligible packets remain
+## (triage_v3_buckets.csv: the rest of READY_NOW + the 18 capgains
+## unlocks), 10/batch, workflow verbatim. The AUTHORING_GUIDE now carries
+## EVERY convention batches 001-002 earned: preparer · GA line-5 letter ·
+## GA 7a dependent count · dependent tin_type/citizenship on
+## credit-claiming returns · dependent_filer_earned_income · 1099-R
+## post-exclusion taxable · capital_transactions · car_loan_vehicles ·
+## UNKNOWN-payer interest. Residuals: BARROW held on the GA LIC
+## exemption-count ruling (REVIEW_QUEUE s180c) · FINLEY which-is-which ·
+## RS agenda retirement-exclusion input · the 174 quarantined
+## invoice-only re-exports · 175 HARD packets await the Sch C/E/A era.
 
 **Pilot-001 results (batches `pilot-001`/`-001b`/`-001c` on prod, dev QA
 account, 2026-08-01/02 night):**
@@ -90,6 +95,33 @@ account, 2026-08-01/02 night):**
    15-yr depreciation · GA low-income credit $5 · 8812 suppression —
    reproduce-first, s175 rule), Ken's ② MeF batch (`build_irs5695`),
    ④ year-constant ruling.
+
+**s180c (same night — batch-002 + four schema growths, all deployed):**
+- **Batch-002: 10 packets (A–B names incl. ChatGPT's started shells —
+  replace_documents overwrote partial UI entries cleanly), 9 tied+filed.**
+  Every dry-run miss was diagnosable to a payload/allowlist cause and
+  fixed the same hour: dependent `tin_type` blank zeroed EVERY child
+  credit + EIC (CTC needs valid_ssn — on a completed return the TaxWise
+  filing + 8867 IS the eligibility evidence, transcribed);
+  `dependent_filer_earned_income` is the R-STD-04 worksheet's dedicated
+  input (both BRAYs got the $1,350 floor without it — AGI−1,350 to the
+  dollar, and with it both match their packets' printed limited std);
+  GA-500 **7a** (dependent count) is preparer-entered like line 5 —
+  missing = the $4,000/dependent exemption drops (BURROUGHS, exactly
+  207 = 5.19%×4,000).
+- **Schema families added + deployed**: `capital_transactions` (8949
+  rows on CapitalTransaction; box A–L routing; broker summaries; Sch D
+  carryovers via taxpayer fields — test pins 8949→Sch D→AGI exact) and
+  `car_loan_vehicles` (Sch 1-A Part IV QPVLI; attestation booleans
+  default true). Backentry suite now 44 tests.
+- **Engine evidence BOTH ways**: BROWN CHANELL's EIC 6,651 + ACTC 4,119
+  computed EXACT (counter-evidence to Batch-003's "ACTC capped at $21"
+  as a general bug) · BARROW pins the GA LIC exemption-count divergence
+  (Batch-003 item 3) to a precise $5 — HELD on that ruling.
+- **Triage v3** (invoice billed-forms, benign/computed lines reclassified):
+  34 ready-now · +18 capgains · 0 for a 1099-G family (not built) · 175
+  HARD (Sch C 54 · Sch E 54 · 4562/depr 47/44 · SE 33 · Sch A 31 · K-1
+  21 · 8889 19...). `D:\tax-test-data\tmp\pilot-001\triage_v3_buckets.csv`.
 
 **s180b (same session, Ken ruled live one-at-a-time):**
 - **Tolerance flow-through** `4e0558e`: 37/34 tie when their delta is
