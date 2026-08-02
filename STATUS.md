@@ -1,12 +1,15 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-02, session 180 (**🏁 PILOT BATCH 001 RAN THE IMPORT
-LANE END-TO-END ON PROD** — 10 real TaxWise packets staged → dry-run →
-committed → reconciled → mark-filed → diagnostics → QA reports. **8 of 10
-TIED TO THE DOLLAR (federal + GA) and are FILED on prod**; 2 held draft
-with fully-diagnosed causes; 1 more return proved the refusal lane. One
-real Leg B bug found+fixed+DEPLOYED same session (`facc4d6`). Deploy debt:
-ZERO.)*
+*Last updated: 2026-08-02, session 180/180b (**🏁 PILOT BATCH 001 RAN THE
+LANE END-TO-END ON PROD — AND AFTER KEN'S FOUR LIVE RULINGS, ALL 10
+RETURNS ARE TIED AND FILED.** s180: 8/10 tied+filed, Leg B bug
+found+fixed+deployed `facc4d6`. s180b (Ken ruled live, one decision at a
+time): 37/34 inherit an explained penalty delta `4e0558e` → JONES filed;
+schema extensions preparer/claimed-as-dep/tips-OT `1a0c3df` + the 1099-R
+exclusion authoring convention → DUNN re-committed 17/17 + filed; 2,001
+identity SSNs backfilled; 174 invoice-only PDFs quarantined; the public
+mirror's history force-scrubbed of a client name (Ken's explicit go).
+Deploy debt: ZERO.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -15,8 +18,12 @@ ZERO.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — THE PILOT PROVED THE LANE; NEXT IS INDUSTRIALIZING THE
-## BACKLOG (blocked on 4 Ken rulings, s180 REVIEW_QUEUE)
+## ▶ RESUME HERE — ALL FOUR RULINGS LANDED (s180b); NEXT IS INDUSTRIALIZING
+## THE BACKLOG: ~26 lane-eligible packets remain, run at 10/batch with the
+## pilot workflow verbatim (AUTHORING_GUIDE now carries preparer + GA
+## line-5 + the exclusion convention). Residuals: the FINLEY pair needs
+## Ken's which-is-which; RS agenda gains the retirement-spec exclusion
+## input; 166+55 roster ambiguities left unfilled by the identity backfill.
 
 **Pilot-001 results (batches `pilot-001`/`-001b`/`-001c` on prod, dev QA
 account, 2026-08-01/02 night):**
@@ -69,20 +76,42 @@ account, 2026-08-01/02 night):**
   endpoint and via local rollback script (same code, same DB).
 
 **▶ NEXT:**
-1. **Ken's 4 rulings (REVIEW_QUEUE s180)**: ① 37/34 inherit the line-38
-   tolerance when fully explained by it? ② schema gaps (preparer field /
-   1099-R exclusion / claimed-as-dependent / Sch 1-A tips-overtime)?
-   ③ identity backfill from the TaxWise roster xlsx (unblocks ssn
-   locators + same-name disambiguation)? ④ the 174 invoice-only packets —
-   re-export from TaxWise?
-2. **Industrialize**: next batches from the 37-candidate pool (~26
-   remain), 10/batch, the pilot workflow verbatim. Grow the pool as
-   rulings land.
+1. **Industrialize**: next batches from the candidate pool (~26 remain
+   of the 37), 10/batch, the pilot workflow verbatim — subagent
+   authoring per the updated AUTHORING_GUIDE (preparer section + GA
+   line-5 letter + post-exclusion 1099-R taxable), stage → dry-run →
+   commit → mark-filed → report. Re-run the triage on the cleaned Inbox
+   to refresh the pool as needed.
+2. Residuals: FINLEY which-is-which (Ken); RS agenda — retirement-spec
+   exclusion input (then the engine field + payload field); the 174
+   quarantined invoice-only re-exports (whenever convenient).
 3. Behind the lane: Batch 002 row-creation family (also ChatGPT
    Batch-003 items 6/7), ChatGPT Batch-003 engine claims (ACTC cap ·
    15-yr depreciation · GA low-income credit $5 · 8812 suppression —
    reproduce-first, s175 rule), Ken's ② MeF batch (`build_irs5695`),
    ④ year-constant ruling.
+
+**s180b (same session, Ken ruled live one-at-a-time):**
+- **Tolerance flow-through** `4e0558e`: 37/34 tie when their delta is
+  EXACTLY the (within-$5-tolerance) line-38 delta; `tolerated_by: "38"`;
+  DECISIONS.md s180; revert-proven. JONES's stored verdict recomputed
+  from her stored commit data → tie → FILED.
+- **Schema extensions** `1a0c3df` (DEPLOYED, live-proven via pilot-001d):
+  `preparer` section roster-resolved PTIN-first (unknown → warning,
+  never a guess) and assigned to federal + attached states;
+  claimed-as-dependent boxes; Sch 1-A tips/overtime inputs. The 1099-R
+  exclusion is an AUTHORING CONVENTION (post-exclusion taxable) because
+  the RS retirement spec has no exclusion rule — spec-first.
+- **DUNN corrected end-to-end on prod**: exclude-and-correct pattern ×2
+  now (dorsey/001c, dunn/001d): re-staged with the exclusion convention
+  + preparer, merge=replace_documents, 17/17 TIE, FILED, fresh
+  diagnostics clean of MISSING_PREPARER. **Pilot final: 10/10 tied+filed.**
+- **Identity backfill: 2,001 PRIMARY SSNs** into clients_tax_identity
+  via `upsert_identity` (strict 3-way roster match; every ambiguity
+  skipped + counted; all 11 pilot identities cross-checked exact).
+- **Housekeeping**: 174 invoice-only PDFs → `Inbox\_invoice_only\`;
+  public-mirror history force-scrubbed (Ken's go — the never-rewrite
+  rule stands for code repos).
 
 ## QA Batch 002 — remaining queue (unchanged from s179; paused behind the
 ## lane; ChatGPT Batch-003 adds overlapping items 6/7 = family #1)
