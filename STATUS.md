@@ -20,7 +20,43 @@ of the gross fallback; RS spec edit queued).)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — QA Batch 002, remaining queue (in priority order)
+## ▶ RESUME HERE — THE BACK-ENTRY IMPORT LANE (Ken's go, 2026-08-01 — jumped
+## ahead of the Batch 002 screen queue below)
+
+**The lane** (from ChatGPT's proposal, Ken-approved order): industrialize the
+420-packet back-entry backlog (Inbox 420 / Done 40; ~45 min/return via the UI
+today). Legs: **A staging ✅ (this session, `4926fa4`)** → **B commit (NEXT)**
+→ C reconciliation workspace → D batch status/Mark-Filed/QA report.
+
+**Leg A is LIVE in code** — `POST /api/v1/backentry/batches/` stages+validates
+up to 10 returns (schema `backentry.v1`), model-driven field-level errors,
+locator→seeded-shell resolution (never creates), (firm,batch_key) idempotent
+replay, RLS default-deny on both new tables. **Staging writes NOTHING live —
+the commit endpoint deliberately does not exist yet.**
+
+**▶ NEXT — Leg B, the per-return atomic commit:**
+1. `POST /backentry/batches/{id}/returns/{return_key}/commit/` — one
+   transaction per return: apply taxpayer allowlist fields → create document
+   rows (W-2 + state entries / INT / DIV / R / W-2G / dependents) → apply
+   `ga500_fields` as preparer entries (`is_overridden=True`, the
+   update_fields convention) → `compute_return` + `_auto_sync_ga500` →
+   return computed federal/state summaries in the response.
+2. Merge policy for a non-empty target (the staged warning): v1 = REFUSE
+   unless `{"merge": "replace_documents"}` is passed explicitly; replace
+   deletes the return's existing W2/INT/DIV/R/W2G rows in the same
+   transaction (the ORM-delete-then-compute rule).
+3. Batch status transitions (staged→partial→committed) + `exclude` action.
+4. Idempotent commit (re-POST = replay), `dry_run=1` echo of the diff.
+5. ⚠ Rule: commits go through the SAME model paths as the UI (serializer
+   defaults like the s175 "New Business" line-C bug are the cautionary tale
+   — set ONLY payload fields, never placeholder defaults).
+
+Then Leg C (reconciliation + the $5 2210 acceptance policy — record the $5
+ruling in DECISIONS when built) and Leg D (batch Mark-Filed + QA report;
+fits the s175 status ruling: the agent marks filed once it ties).
+
+## QA Batch 002 — remaining queue (paused behind the import lane; the
+## diagnostics-staleness family (#3) gets folded into Leg C/D when needed)
 
 ⚠ **Re-verify every screen-layer item on the DEPLOYED Slate first** — Batch 002
 was QA'd before the 2026-08-01 ~22:40Z deploy (the s175 lesson: 2 of 6 items
@@ -113,9 +149,12 @@ had already stopped existing).
 - **Deployed prod state unchanged from s175b**: `main` == `fdbd7f2`, bundle
   `index-BrbsO-k6.js`, seed debt CLEAR (772 rules both DBs), 0227 applied.
   `slate-ui` is now 5 commits AHEAD of `main` (this session, un-deployed).
-- **⚠ DEPLOY DEBT (s176 + s176b), at the next deploy: ① `seed_ga500 --year
-  2025` on BOTH DBs** (7c `is_computed` flip) **+ ② `seed_rules` on BOTH DBs**
-  (NEW D_RET_010 + the D_RET_003 rewording). No new migrations.
+- **⚠ DEPLOY DEBT (s176/b/c), at the next deploy: ① `seed_ga500 --year 2025`
+  on BOTH DBs** (7c `is_computed` flip) **+ ② `seed_rules` on BOTH DBs** (NEW
+  D_RET_010 + the D_RET_003 rewording) **+ ③ migrations 0228/0229 on BOTH
+  DBs** (the back-entry staging tables + their RLS — neither DB migrated
+  locally this session; the staging endpoint 500s on live until then, which
+  is safe because Leg B doesn't exist).
 - **RS agenda (REVIEW_QUEUE s176/s176b)**: ① R-RET-CODE spec edit — code 6 is
   now SUPPORTED (Ken ruled 2026-08-01; app deliberately ahead of spec);
   ② rule-studio `check_ga500_integrity.py` needs the 7c→7a scenario-input
