@@ -1,11 +1,12 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 177 (**IMPORT LANE LEG B SHIPPED — the
-per-return atomic commit**, `aff0025` on `slate-ui`, pushed, NO deploy.
-`POST /backentry/batches/{id}/returns/{return_key}/commit/` lands one staged
-return whole or not at all; merge gate, idempotent replay, dry_run, exclude,
-batch status transitions. 11 new tests, three behaviors revert-proven, FA 521
-green. ⚠ deploy debt adds **migration 0230**.)*
+*Last updated: 2026-08-01, session 178 (**IMPORT LANE LEG C SHIPPED — the
+answer-key reconciliation**, on `slate-ui`, pushed, NO deploy. A payload's
+optional `expected` section (the TaxWise answer key) reconciles inside the
+Leg B commit: **$5 tolerance on the 2210 penalty ONLY (Ken's ruling, now in
+DECISIONS.md); every other line ties exactly.** 10 new tests, both policy
+directions revert-proven, FA 521 green. NO new migration — deploy debt
+unchanged.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -14,50 +15,50 @@ green. ⚠ deploy debt adds **migration 0230**.)*
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names/SSNs/EFINs.
 
-## ▶ RESUME HERE — THE BACK-ENTRY IMPORT LANE, LEG C (the lane is the spine;
+## ▶ RESUME HERE — THE BACK-ENTRY IMPORT LANE, LEG D (the lane is the spine;
 ## Ken's go 2026-08-01)
 
 **The lane**: industrialize the 420-packet back-entry backlog (Inbox 420 /
 Done 40; ~45 min/return via the UI). Legs: **A staging ✅ (`4926fa4`)** →
-**B commit ✅ (this session, `aff0025`)** → **C reconciliation (NEXT)** →
-D batch Mark-Filed/QA report.
+**B commit ✅ (`aff0025`)** → **C reconciliation ✅ (this session)** →
+**D batch Mark-Filed + QA report (NEXT)**.
 
-**Leg B is LIVE in code** — one transaction per return:
-- Taxpayer allowlist fields + document rows (W-2 w/ state entries, INT, DIV,
-  R, W-2G, dependents) as **direct model creates with ONLY payload fields**
-  (no serializer, so no serializer defaults — the s175 line-C rule held).
-- `ga500_fields` land as preparer entries (`is_overridden=True`,
-  `updated_by` — the update_fields convention); unknown GA line = 400 +
-  full rollback. GA-500 auto-attaches via the UI's own `_auto_sync_ga500`
-  chokepoint; force-created when `ga500_fields` demand it w/o a GA doc.
-- **Merge gate**: non-empty target → 409 unless `{"merge":
-  "replace_documents"}`; the gate covers all SIX row families (wider than
-  the staging warning's four — W-2G/dependents would double just as
-  silently). Replace deletes ONLY sections the payload supplies; families
-  left in place are reported as warnings.
-- Idempotent replay (re-POST → stored `commit_result`, new model fields
-  `committed_at`/`commit_result`, migration 0230); `dry_run=1` runs the
-  FULL commit (writes + compute + summaries) inside a rolled-back
-  transaction; `exclude` action; batch staged→partial→committed.
-- Response echoes computed face lines (federal 11/15/16/22/24/25d/33/34/37;
-  GA-500 8/16/23/29/30/45/46) — **these are Leg C's reconciliation inputs.**
+**Leg C is LIVE in code** — reconciliation inside the commit:
+- `backentry.v1` gains an optional **`expected`** section per return —
+  `{"federal": {line: $}, "ga500": {line: $}}`, line numbers restricted to
+  the reconcilable face lines (typo = loud staging error, never a silently
+  skipped comparison). Additive: staging always REJECTED unknown sections,
+  so pre-Leg-C payloads are unchanged-valid (no version bump).
+- Federal echo/reconcile lines now include **38** (the 2210 penalty):
+  11/15/16/22/24/25d/33/34/37/38; GA-500 unchanged (8/16/23/29/30/45/46).
+- **Policy (Ken's ruling → DECISIONS.md s178 entry): only penalty
+  CALCULATIONS tolerate a difference — federal 38 ties within $5; every
+  other line ties exactly.** GA UET is direct-entry (not computed), so no
+  GA tolerance line exists in v1.
+- `reconcile_expected()` runs inside `commit_staged_return` → the commit
+  result carries `reconciliation` (per-line expected/actual/delta/tie +
+  verdict); **dry_run previews the verdict without landing anything**.
+  A no-tie is RECORDED, never a block — it feeds Leg D's QA report.
+- Batch summary rows carry `reconciliation_verdict`; counts add
+  `tied` / `not_tied`.
 
-**▶ NEXT — Leg C, the reconciliation workspace:**
-1. The packet's TaxWise answer key (expected refund/due, withholding, AGI,
-   GA figures) needs a home in the schema — likely an optional `expected`
-   section per return (additive to `backentry.v1`; staging ignores unknown
-   sections today, so decide version bump vs. additive allowlist).
-2. Compare committed/computed face lines (already echoed by Leg B) against
-   expected; **$5 tolerance on the Form 2210 penalty is KEN'S RULING —
-   record it in DECISIONS.md when built.** Exact-match policy for the other
-   lines is undecided — flag for Ken.
-3. Surface per-return tie/no-tie verdicts on the batch summary; a no-tie
-   feeds the QA report (Leg D), not an auto-fix.
-4. Then Leg D: batch Mark-Filed + QA report (fits the s175 status ruling:
-   the agent marks filed once it ties).
+**▶ NEXT — Leg D, batch Mark-Filed + the QA report:**
+1. Mark-Filed: per the s175 status ruling (status is a preparer control),
+   the lane marks a committed return **filed** once its reconciliation
+   verdict is `tie` — decide trigger shape (auto-on-tie at commit vs. an
+   explicit batch action `POST .../mark-filed/` that sweeps tied returns).
+   Explicit batch action is the safer default — flag for Ken only if he
+   wants auto.
+2. QA report: per-batch PII-safe report — committed/excluded counts,
+   no-tie returns with their per-line deltas, warnings (families left in
+   place, non-draft shells). Where it lands: response JSON + printable
+   statement page? Decide at build.
+3. Fold-ins from the Batch 002 queue: the diagnostics-staleness family
+   (#3) — Leg D should report diagnostics from the post-commit compute
+   revision, not a stale one.
 
 ## QA Batch 002 — remaining queue (paused behind the import lane; the
-## diagnostics-staleness family (#3) folds into Leg C/D when needed)
+## diagnostics-staleness family (#3) folds into Leg D)
 
 ⚠ **Re-verify every screen-layer item on the DEPLOYED Slate first** — Batch 002
 was QA'd before the 2026-08-01 ~22:40Z deploy (the s175 lesson: 2 of 6 items
@@ -86,43 +87,51 @@ had already stopped existing).
 
 ## What shipped this session (`slate-ui`, pushed, NO deploy)
 
-- **`aff0025` (s177) — Leg B, the per-return atomic commit.** Everything in
-  the resume block above. 11 tests in `test_backentry_commit.py` (happy
-  path incl. only-payload-fields pin — a shell Taxpayer field NOT in the
-  payload survives; replay; merge refuse + section-granular replace;
-  dry-run rollback; GA-500 preparer entries; unknown-GA-line atomicity;
-  invalid/excluded refusals; batch transitions; cross-firm 404; auth).
-  **Revert-proven**: merge gate, `is_overridden` convention, and dry-run
-  rollback each break their pins when disabled. Gates: backentry 21/21,
-  FA 521, migration 0230 generated (NOT applied locally — shared-prod DB).
+- **s178 — Leg C, the answer-key reconciliation.** Everything in the resume
+  block above. Files: `apps/returns/backentry.py` (expected validation +
+  `_parse_amount` + `reconcile_expected` + `PENALTY_TOLERANCE_LINES` +
+  line 38 in the federal echo), `views_backentry.py` (verdict on staged
+  rows, tied/not_tied counts), `tests/test_backentry_reconcile.py` (10
+  tests: engine boundaries $3/$5/$6 on line 38, exact-rule $1 no-tie that
+  still commits, staging validation, tie rollup, null-when-no-key).
+  **Revert-proven BOTH directions**: tolerance disabled → penalty pins
+  trip; tolerance-everywhere → exact-rule pins trip. One old staging test
+  pin widened for the new counts keys. Gates: backentry 31/31, FA 521.
+  NO migration, NO client code.
 
 ## Active gates
 - **Deployed prod state unchanged from s175b**: `main` == `fdbd7f2`, bundle
   `index-BrbsO-k6.js`, seed debt CLEAR (772 rules both DBs), 0227 applied.
-  `slate-ui` is now 11 commits AHEAD of `main` (s176–s177, un-deployed).
+  `slate-ui` is ahead of `main` (s176-s178, un-deployed).
 - **⚠ DEPLOY DEBT at the next deploy, BOTH DBs: ① `seed_ga500 --year 2025`**
   (7c `is_computed` flip) **+ ② `seed_rules`** (NEW D_RET_010 + D_RET_003
   rewording) **+ ③ migrations 0228/0229/0230** (back-entry staging tables +
   RLS + the commit-replay fields — none applied locally; the backentry
   endpoints 500 on live until then, which is safe: nothing links to them).
+  s178 adds NO new debt.
 - **RS agenda (REVIEW_QUEUE s176/s176b)**: ① R-RET-CODE spec edit — code 6
   SUPPORTED (Ken ruled 2026-08-01; app deliberately ahead of spec);
   ② rule-studio `check_ga500_integrity.py` needs the 7c→7a scenario edit.
 - ⚠ `LEDGER_AUTOPOST_ENABLED` stays unset until production cutover (Jan 2027).
 - ⚠ One test DB — never overlap pytest runs.
 - ⚠ The full server suite (~6,900) does NOT finish in a session — this
-  session gated on: backentry 21 + FA 521 (server-only change; no client
+  session gated on: backentry 31 + FA 521 (server-only change; no client
   code touched, tsc/vitest not re-run).
 - ⚠ Browser verification of the 2210 label still owed on the next live pass
   (carried from s176).
 
-## 🔑 Method notes (carried; s177 confirmations)
-1. **REPRODUCE BEFORE BUILDING** / **THE REVERT IS THE ONLY PROOF** — Leg B's
-   three key behaviors were deliberately broken and each pin tripped.
-2. **A QA-PRESCRIBED CITATION IS ALSO A HYPOTHESIS.**
-3. **CHECK THE SPEC BEFORE CALLING IT A BUG.**
-4. **Only-payload-fields discipline** (s175→s177): the commit lane never
-   touches a serializer; a field the payload doesn't carry keeps its value.
+## 🔑 Method notes (carried; s178 confirmations)
+1. **THE REVERT IS THE ONLY PROOF** — both reconciliation policy directions
+   were deliberately broken and each pin tripped (tolerance-off AND
+   tolerance-everywhere).
+2. **A STATUS claim is a hypothesis** — s177's "staging ignores unknown
+   sections" was wrong (staging REJECTS them), which made the `expected`
+   section addition cleanly additive with no version bump.
+3. **Only-payload-fields discipline** (s175→s177) unchanged in the commit
+   lane; Leg C touches no write path.
+4. **Authoritative-source rule applied**: GA UET line number is disputed
+   between the source brief (44) and the coordinate map/diagnostics (42) —
+   GA penalty deliberately left OUT of `expected` v1 rather than guessed.
 
 ## ⚡ MISSION (Ken, 2026-07-09): 1040 · 1120-S · 1120 · 1065 · 1041 · 709 by END OF 2026
 Unchanged. **The app is TESTING until January 2027.**
