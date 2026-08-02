@@ -1,14 +1,17 @@
 # TTS Tax App - STATUS (current state only)
 
-*Last updated: 2026-08-01, session 176 (**QA BATCH 002, LEG 1 — the engine-claim
-triage**. Ken relayed ChatGPT's 10-return Batch 002 (~18 defect groups). The
-s175 method held: of the four engine claims examined, TWO did not reproduce —
-the "W-2G counted twice" prescription blamed the 1040 income math and the
-engine is provably clean (the +$2,440 is the add-row retry race minting hidden
-duplicate cards); the code-6 1099-R blanking is the Ken-ruled RS spec behaving
-as designed WITH its RED firing. Two were real and are FIXED: the GA-500 7c
-derive and the direct-field-save GA resync. Plus the 2210 label, verified
-against the 2025 i2210 fetched from irs.gov.)*
+*Last updated: 2026-08-01, session 176 + 176b (**QA BATCH 002 LEG 1 (the
+engine-claim triage) + KEN'S TWO SAME-DAY ASKS**. s176: of four engine claims,
+two did not reproduce (W-2G "double count" = the add-row race; code-6 blanking
+= the Ken-ruled spec with its RED firing) and two were real and FIXED (GA-500
+7c derive · direct-save GA resync), plus the 2210 label verified against the
+2025 i2210. s176b, Ken live: ① the "green 1040" print — the IRS's published
+2025 f1040.pdf IS the green rendition (irs.gov + the archive serve identical
+bytes; all 100 other templates are B/W; the GA-500 comb form is the official
+DOR web2 version) → NEW render-time de-tint (`decolorize.py`), output verified
+0.00% colored, both pages; ② **KEN RULED: code 6 (§1035) IS SUPPORTED** —
+built same session (taxable = box 2a; NEW D_RET_010 blocks a blank 2a instead
+of the gross fallback; RS spec edit queued).)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -60,6 +63,27 @@ had already stopped existing).
 
 ## What shipped this session (all on `slate-ui`, pushed, NO deploy)
 
+- **`3e55635` (s176b) — the 1040 prints classic black-and-white.** The green
+  came from the TEMPLATE: the IRS's published 2025 f1040.pdf ("Created
+  9/5/25" face) paints ~45% of each page pale mint, and irs.gov AND the
+  irs-prior archive serve the SAME bytes — there is no B/W official file to
+  download. All 100 other 2025 templates scanned clean (a colored-pixel sweep);
+  the GA-500 comb/barcode form is the official DOR "Approved web2" version
+  (what GA requires for processing — TaxWise prints the same shape), left
+  unchanged. NEW `apps/tts_forms/decolorize.py` rewrites the colored RGB
+  fill/stroke operators to white/black at render time; the resources template
+  stays the untouched official PDF (never-redraw rule); opt-in per form via
+  `DECOLORIZE_FORM_IDS = {"f1040"}`. Output verified by rasterizing filled
+  pages: 0.00% colored, layout/text intact. 4 new tests incl. a trip-wire
+  that says to REMOVE the pass if a future template refresh goes B/W.
+- **`5d4d81f` (s176b) — 1099-R code 6 (§1035 exchange) is SUPPORTED, Ken's
+  ruling.** Taxable follows box 2a exactly (explicit 0 → 0; boot → taxable);
+  the Sharon-shaped scenario heals (5b = 27,679, gross on 5a, no RED). NEW
+  **D_RET_010** (error) blocks a code-6 doc with BLANK/'not determined' box 2a
+  — the generic fallback would have taxed the whole $80,051 gross; §1035 docs
+  are excluded from the Simplified-Method blank-2a trigger (box 5 carries
+  contract premiums). D_RET_003 drops code 6 from its text. Deliberately AHEAD
+  of RS spec R-RET-CODE — spec edit queued (REVIEW_QUEUE). Revert-proven.
 - **`6239d5e` — GA-500 line 7c derives from 7a + 7b** (2025 Form 500 face:
   "Total Number of Dependents"; verified against the PDF template). A
   preparer-saved 7c (`is_overridden`) still wins — safe for every existing
@@ -89,13 +113,13 @@ had already stopped existing).
 - **Deployed prod state unchanged from s175b**: `main` == `fdbd7f2`, bundle
   `index-BrbsO-k6.js`, seed debt CLEAR (772 rules both DBs), 0227 applied.
   `slate-ui` is now 5 commits AHEAD of `main` (this session, un-deployed).
-- **⚠ NEW DEPLOY DEBT: `seed_ga500 --year 2025` must re-run on BOTH DBs at the
-  next deploy** (7c `is_computed` flip — display metadata; values compute
-  correctly regardless). No new migrations this session.
-- **Ken decisions queued in REVIEW_QUEUE (s176)**: ① support code 6 as a
-  tax-free exchange (RS spec R-RET-CODE change FIRST — Ken-ruled v1 set) vs.
-  keep RED; ② rule-studio `check_ga500_integrity.py` needs the 7c→7a
-  scenario-input edit to match the new derive.
+- **⚠ DEPLOY DEBT (s176 + s176b), at the next deploy: ① `seed_ga500 --year
+  2025` on BOTH DBs** (7c `is_computed` flip) **+ ② `seed_rules` on BOTH DBs**
+  (NEW D_RET_010 + the D_RET_003 rewording). No new migrations.
+- **RS agenda (REVIEW_QUEUE s176/s176b)**: ① R-RET-CODE spec edit — code 6 is
+  now SUPPORTED (Ken ruled 2026-08-01; app deliberately ahead of spec);
+  ② rule-studio `check_ga500_integrity.py` needs the 7c→7a scenario-input
+  edit to match the new derive.
 - ⚠ `LEDGER_AUTOPOST_ENABLED` stays unset until production cutover (Jan 2027).
 - ⚠ One test DB — never overlap pytest runs.
 - ⚠ The full server suite (~6,900) does NOT finish in a session — this session
