@@ -1,10 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 188 (**the b009 findings landed** — all
-three ChatGPT/Codex batch-009 improvement requests verified against the
-code and implemented: ① read-only shell-locator lookup, ② four new triage
-blockers, ③ Form 8959 aggregate Medicare-wages fallback. Bands green,
-migration 0231 applied, pushed → deploys.)*
+*Last updated: 2026-08-02, session 189a (**the b010/b011 findings triaged
+and resolved** — one real engine defect fixed (GA RIE rollover netting),
+three misdiagnoses refuted against the printed packets, three HOLDs
+resolved with verified-tie corrections, new GA worksheet answer-key
+lines + a staging guardrail shipped. All bands green; pushed → deploys.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -27,102 +27,100 @@ open question: set `autoDeploy: false`?
 
 ### Worker split (Ken, s184 — unchanged)
 ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff prompt
-now carries an **s188 addendum**: locator lookup mandatory per packet, the
-four b009 triage blockers, 8959 aggregate smoke-test-first) · **CC
+now carries an **s189a addendum**: five new transcription rules, three
+resolved-HOLD corrections, the new GA worksheet answer-key lines) · **CC
 sessions = engine/tax-law work only.**
 
-### s188 shipped (b009 findings; migration 0231)
-- **① Shell-locator lookup** (b009: invoice-number locators resolved
-  packets to unrelated clients — the TaxWise invoice number is NOT the
-  Delvio client number): read-only `GET /api/v1/backentry/shell-lookup/
-  ?q=<name>` — tokenized, order-insensitive client-name search over the
-  firm's seeded 2025 1040 shells; returns client_number + PII-safe display
-  label + status + existing-doc count. Runner grew `-Action lookup
-  -Query 'SURNAME FIRST'`. Rule everywhere: confirm the PDF's printed name
-  against the display label BEFORE staging; never infer from the invoice.
-- **② Four triage blockers the invoice list missed**: taxable state
-  refund (Sch 1 L1), 1099-MISC other income (Sch 1 8z), deductible IRA
-  (Sch 1 L20 — sch1_fields stays 11/21 only), any non-GA state return
-  (even beside a GA part-year). `triage_inbox.py` gained a BLOCKED list
-  (checked before SUPPORTED) + a non-GA `STATE…RETURN` regex; the
-  AUTHORING_GUIDE gained a "b009 return-face checks" section (the invoice
-  alone cannot see Sch 1 lines 1/8z/20 — check the printed face).
-- **③ Form 8959 aggregate Medicare wages, narrowly** (b009: a packet
-  printed the $250,327 line-1 aggregate + $3 AMT but its W-2 detail
-  omitted every box 5): new Taxpayer input `amt_medicare_wages_agg` (migration 0231,
-  applied) — a FALLBACK compute uses ONLY when no W-2 row carries box 5;
-  per-row box 5 always wins. Per-spec: RS 8959 line 1 is the input fact
-  `amt_medicare_wages_l1` (fetched + verified this session). Staging warns
-  on agg-vs-rows mismatch, on the unevaluable single-W-2 >$200k engage
-  arm, and on W-2 rows with wages but no box 5 anywhere. Deriving box 5
-  from rounded box 6 stays forbidden (documented, not enforced in code —
-  it is an authoring rule). Engine engage gate UNCHANGED (spec fidelity);
-  the aggregate engages via the line-4>threshold arm, which covers the
-  b009 shape exactly ($250,327 MFJ → $3, test-pinned).
-- **Safety behavior preserved per b009 finding #4** — frozen staged
-  batches, explicit prod URL, named commits, re-dry-run, tie-only
-  mark-filed, display labels in stage output: all untouched.
-- Tests: staging band + topic8 band 82 green (incl. 3 new 8959 pipeline
-  tests + 5 staging-guardrail tests + 5 lookup tests); flow assertions +
-  backentry commit/reconcile/markfiled 562 green. Schema
-  `batch-import.schema.json` regenerated (carries the new field).
-- Docs: CC_IMPORT_LANE_HANDOFF (§2 endpoint, §3 locator rule, §0 table,
-  §4 W-2 bullet), AUTHORING_GUIDE (triage section, w2s box-5/8959 rule,
-  hard-rules list), CODEX_KICKOFF_PROMPT s188 addendum.
+### s189a shipped (the b010 + partial b011 findings)
+- **① The ONE real engine defect — GA RIE rollover netting (FIXED)**:
+  the GA-500 retirement-exclusion pull read raw 1099-R box 2a; worksheet
+  L11/L12 are the FEDERAL per-document taxable, so it now uses
+  `doc_taxable` (2a − rollover − QCD — the same value that feeds 1040
+  4b/5b). Found by a b010 MFJ return whose spouse IRA excluded the gross
+  9,547 instead of the filed 4,547. Tests: rollover + QCD fixtures + a
+  dual-earner worksheet fixture pinned to a printed packet.
+- **② Three QA misdiagnoses REFUTED against the printed packets** (each
+  delta factored exactly): "explicit 0 didn't clear" was really the
+  **itemize-below-standard election** missing from the payload (34,700
+  std w/ two age-65 boxes vs 34,272 elected itemized; 428 = the gap, 94
+  fed = 22% × it, 533 GA = 5.19% × the GA-deduction gap) · the "GA
+  earned-income exclusion gap" — the engine ties the printed worksheet
+  to the dollar · b011's repeat claim was an **owner-tag** issue (the
+  W-2 detail report's TP|SP designator column, position-verified).
+- **③ Explicit-0 semantics pinned**: regression test proves a payload 0
+  overwrites a nonzero shell scalar through dry-run AND commit (the
+  mechanism was never broken — the "shell value" never existed).
+- **④ New staging guardrail**: Schedule A facts + expected federal 12
+  BELOW the payload-computable standard deduction without
+  `scha_elect_itemize` → warning naming the fix (pure, warnings-only).
+- **⑤ GA worksheet answer-key lines**: `S1-7`, `RIE-TP-17` (Sch 1 7a),
+  `RIE-SP-17` (7d) joined GA500_SUMMARY_LINES — echo + reconcilable, so
+  a GA no-tie names WHICH spouse's column missed. Schema regenerated.
+- **⑥ Three HOLDs resolved with exact corrections written into their
+  HOLD files, each verified to a FULL 21-line tie by CC dry-runs on the
+  shared DB** (staged verify batches `b010c5-ccverify` / `b010c5b-ccverify`,
+  never committed). Codex re-stages after the deploy.
+- Docs: AUTHORING_GUIDE "b010 return-face lessons" (5 rules incl. the
+  TP|SP owner-authority rule and 1099-INT box-3-additive), kickoff s189a
+  addendum, CC_IMPORT_LANE_HANDOFF answer-key lists (12 + the three GA
+  worksheet lines).
+- Tests: staging + RIE-pull bands 56 green; commit band 24 green; flow
+  assertions 521 green; ga500/compute/reconcile/markfiled bands 54 green.
+- REVIEW_QUEUE additions: GA 12b blank-on-filed-itemizers (verify IT-511
+  2025) · should the RIE L2 pull feed Schedule C net profit (IT-511
+  verify + Ken go; no live return demonstrates it).
 
-### Next engine work — KEN RULED at s188 close (2026-08-02, three calls)
-**The s189 unit is the lane-extension trio, AHEAD of the August GA unit:**
-- **① Taxable state refund joins the lane** — carry the §111 worksheet's
-  prior-year inputs (the existing `sr_*` Taxpayer fields; engine
-  `compute_state_refund` already computes Sch 1 L1 + 8z from them).
-- **② IRA deduction (Sch 1 line 20) joins `sch1_fields`** — GATE: fetch
-  the RS Sch 1 spec first; proceed only if line 20 is input-typed (the
-  s186 precedent). The FILED amount is already phaseout-limited.
-- **③ `amt_medicare_wages_agg` gets an EDITABLE browser-UI surface**
-  (Ken chose editable over lane-only/read-only) — serializer + Slate
-  screen; preserve the fallback semantics on the face (per-row box 5
-  wins; label it as the 8959 line-1 aggregate as filed).
-- Each lane extension = smoke-test-first at the boundary per standing
-  rule; both un-HOLD their b009 triage classes once shipped (update
-  triage_inbox.py BLOCKED list + AUTHORING_GUIDE + kickoff prompt then).
-**Behind the trio (unchanged order):** the August GA build unit (GA UET
-line-42 worksheet + S4-8/S4-NB-18 NOL lines) · B002 row-creation family ·
-Ken's ② MeF (`build_irs5695`) · ④ year-constant ruling · Sch F / 8829 /
-6198 (HARD-pile gaps, Ken's go). SB 31 TY2026 military = standing RS W-item.
+### Next engine work — queue
+**Ken's s189 lane-extension trio stands as ruled (s188 close), UNCHANGED:**
+- ① Taxable state refund joins the lane (`sr_*` fields; engine exists).
+- ② IRA deduction (Sch 1 line 20) joins `sch1_fields` — GATE: RS Sch 1
+  spec line 20 must be input-typed.
+- ③ `amt_medicare_wages_agg` editable browser-UI surface.
+**NEW since the ruling (Ken to sequence):** b011 finding #1 — the
+self-employed EIC/ACTC path (fed 33/34 short 2,209) · b011 finding #3 —
+rental-property QBI missing from the 8995 feeder (S-corp QBI flows,
+rental doesn't).
+**Behind those (unchanged):** August GA unit (UET line-42 worksheet +
+S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
+year-constant ruling · Sch F / 8829 / 6198. SB 31 TY2026 military = RS W-item.
 
-### Codex: b010 CLEARED on prod (Ken, s188 close)
-Resume under the s188 addendum — mandatory name lookup per packet, the
-four triage blockers, and the b009 Medicare-aggregate packet re-staged as
-its own one-return smoke test.
+### Codex: b010/b011 resume state
+The two b010 HOLDs and the b011 owner-tag HOLD have verified-tie
+corrections written into their HOLD files (the rollover one needs the
+deploy first). b011 findings #1 and #3 stay HOLD (engine investigations
+queued above). Everything else in b011 proceeded under the s188 addendum.
 
-## Lane scoreboard: 64 FILED — 0 unfiled, 0 held
-Codex continues b009+ with the s188 addendum live (lookup mandatory, four
-new blockers, 8959 aggregate smoke-test-first); ChatGPT has the HARD pile.
+## Lane scoreboard: 64 FILED + b011's in-flight — 3 resolvable HOLDs pending re-stage
 
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s189a: the QA delta factors into known constants — DO THE ARITHMETIC
+  FIRST.** 428 = std-vs-itemized · 94 = 22% × 428 · 533/210 = 5.19% ×
+  the GA base gap. Three of four b010/b011 "engine defects" dissolved
+  under factoring before any code was read.
+- **s189a: every packet page prints the PRIMARY SSN in its header** — it
+  proves nothing about ownership. The TP|SP designator column on the
+  W-2/INT/DIV detail reports and the RIE worksheet's printed columns are
+  the owner authority.
 - **s188: the TaxWise invoice number is NOT the Delvio client number** —
-  locator resolution goes through `-Action lookup` name search, then a
-  human confirms the display label. Never infer.
+  `-Action lookup` name search, then a human confirms the display label.
 - **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override** —
-  any W-2 row carrying box 5 wins; the field survives
-  `replace_documents` like every taxpayer scalar (correction = send 0).
+  any W-2 row carrying box 5 wins; survives `replace_documents`.
 - **s187: the era-scoping prediction is itself a hypothesis** — engine-
-  scope-first (read compute + the model) decides, in either direction.
-- **s187: never import computed row columns** — passive_8582_allowed/
-  _suspended are Form 8582 OUTPUTS (input = `prior_year_unallowed_passive`);
-  net_profit/qbi_amount/etc. likewise. Staging rejects them.
+  scope-first decides, in either direction.
+- **s187: never import computed row columns** (passive_8582_*, net_profit,
+  qbi_amount…). Staging rejects them.
 - **s186: a "reproduced engine defect" can be shell residue** — probe the
   shell's scalars + overrides BEFORE believing a no-tie names the engine.
 - **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
 - **s185: Sch A 5a is DERIVED** (documents' W/H + dated payments);
-  nonzero `scha_salt_income_or_sales` direct entry wins.
-- **s184: blank prior-year 2210 COMPUTES the 90% fallback.** Printed
-  2210 → line 8; else Three-Year Summary; TaxWise-blank → 0/omit.
+  nonzero `scha_salt_income_or_sales` direct entry wins; **explicit 0
+  restores the derived path (s189a-pinned).**
+- **s184: blank prior-year 2210 COMPUTES the 90% fallback.**
 - **A correction payload must send explicit 0** — omit preserves.
 - **`replace_documents` does NOT clear field-level overrides or taxpayer
-  scalars** — covers the s187 families too (children cascade).
+  scalars.**
 - **1040 line 37 as printed INCLUDES the line-38 penalty.**
 - **The dry-run IS the commit, rolled back.**
 - GA `LIC-NODEP` gates the whole LIC; set when GA prints 17a/17c.
@@ -135,8 +133,8 @@ new blockers, 8959 aggregate smoke-test-first); ChatGPT has the HARD pile.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s188 fetched the 8959 spec before the compute change — line 1 is
-  input-typed, which sanctions the aggregate direct entry).
-- `pytest tests/test_flow_assertions.py` after any compute change (s188: green).
+  (s189a fetched the 500 spec — `g_*_rie_taxable_ira` is the "taxable
+  IRA" fact, which sanctions the doc_taxable netting).
+- `pytest tests/test_flow_assertions.py` after any compute change (s189a: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
   production write.
