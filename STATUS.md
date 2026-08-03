@@ -93,6 +93,32 @@ Ken relayed ChatGPT's 10-section blocker list. Triage verdicts:
   last4/DOB = PII exposure on the lookup endpoint — Ken's call) · amended
   1040-X + non-GA states in lane scope? · the cleanup browser screen.
 
+### s192c shipped (Ken's live asks — the FIRST REAL 1120-S TB IMPORT)
+- **Barcode Supply #1202 2025 1120-S drafted from a scanned BS+P&L** — the
+  first real client through the TB import lane. Scan transcribed to a
+  balanced TB CSV (assigned account numbers) → client-scoped 1120-S
+  template (47 EXACT rules by account number) → upload → plan (ties,
+  47/49 mapped) → commit → compute. Face reconciles to the books within
+  whole-dollar rounding (ordinary income 251,104 vs book NOI 251,107.06).
+  Notes + opens: `D:\tax-test-data\1120S\barcode_supply_2025_notes.md`
+  (vehicle 4797 detail · tax depreciation · beginning AAA · shareholders ·
+  EIN · 401k/GA-PTE classifications — all Ken inputs).
+- **Found: the default TB templates write Rent/Taxes onto COMPUTED face
+  lines** (11/12 are formulas over D_RENT_*/D_TAXES_* details that have NO
+  mapping keys) — the import lands then the formula pass zeroes it.
+  Worked around by direct detail entry; the proper fix is a spawned task
+  (seeder mapping keys + repoint the rules, check 1065/1120 for the class).
+- **Also fixed the s192-morning seeding gap**: the three default mapping
+  templates lived only in Dev Tax Firm — copied to The Tax Shelter
+  (52/55/59 rules), which is why Ken's earlier ledger-TB 1065 attempt
+  silently mapped nothing.
+- **Return-manager entity chips restyled** (Ken's ask): 34px, per-type
+  Slate-scale tints (steel/green/violet/info/neutral), live-verified.
+- **"2 clients for every client" NOT reproduced**: 3,747 clients, 3,739
+  roster rows (all 2025; GA state returns excluded server-side; only 21
+  true same-name pairs). The rendered roster shows one row per client.
+  Awaiting Ken's pointer to the exact screen he saw.
+
 ### Codex: resume state
 b027 re-staging + cleanup endpoint per handoff §12b, PLUS the s192/s192b
 addenda: state-refund, line-20, and box-12 packets are lane-eligible —
