@@ -70,12 +70,30 @@ sessions = engine/tax-law work only.**
   §4 W-2 bullet), AUTHORING_GUIDE (triage section, w2s box-5/8959 rule,
   hard-rules list), CODEX_KICKOFF_PROMPT s188 addendum.
 
-### Next engine work per BUILD_ORDER
-Unchanged from s187: the **"August GA build unit"** (GA UET line-42
-worksheet + S4-8/S4-NB-18 NOL lines) is the scoped follow-on. Behind it:
-B002 row-creation family · Ken's ② MeF (`build_irs5695`) · ④ year-constant
-ruling · Sch F / 8829 / 6198 (HARD-pile import gaps, only on Ken's go).
-SB 31 TY2026 military full exemption = standing RS W-item.
+### Next engine work — KEN RULED at s188 close (2026-08-02, three calls)
+**The s189 unit is the lane-extension trio, AHEAD of the August GA unit:**
+- **① Taxable state refund joins the lane** — carry the §111 worksheet's
+  prior-year inputs (the existing `sr_*` Taxpayer fields; engine
+  `compute_state_refund` already computes Sch 1 L1 + 8z from them).
+- **② IRA deduction (Sch 1 line 20) joins `sch1_fields`** — GATE: fetch
+  the RS Sch 1 spec first; proceed only if line 20 is input-typed (the
+  s186 precedent). The FILED amount is already phaseout-limited.
+- **③ `amt_medicare_wages_agg` gets an EDITABLE browser-UI surface**
+  (Ken chose editable over lane-only/read-only) — serializer + Slate
+  screen; preserve the fallback semantics on the face (per-row box 5
+  wins; label it as the 8959 line-1 aggregate as filed).
+- Each lane extension = smoke-test-first at the boundary per standing
+  rule; both un-HOLD their b009 triage classes once shipped (update
+  triage_inbox.py BLOCKED list + AUTHORING_GUIDE + kickoff prompt then).
+**Behind the trio (unchanged order):** the August GA build unit (GA UET
+line-42 worksheet + S4-8/S4-NB-18 NOL lines) · B002 row-creation family ·
+Ken's ② MeF (`build_irs5695`) · ④ year-constant ruling · Sch F / 8829 /
+6198 (HARD-pile gaps, Ken's go). SB 31 TY2026 military = standing RS W-item.
+
+### Codex: b010 CLEARED on prod (Ken, s188 close)
+Resume under the s188 addendum — mandatory name lookup per packet, the
+four triage blockers, and the b009 Medicare-aggregate packet re-staged as
+its own one-return smoke test.
 
 ## Lane scoreboard: 64 FILED — 0 unfiled, 0 held
 Codex continues b009+ with the s188 addendum live (lookup mandatory, four
