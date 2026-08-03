@@ -1,10 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 189a (**the b010/b011 findings triaged
-and resolved** — one real engine defect fixed (GA RIE rollover netting),
-three misdiagnoses refuted against the printed packets, three HOLDs
-resolved with verified-tie corrections, new GA worksheet answer-key
-lines + a staging guardrail shipped. All bands green; pushed → deploys.)*
+*Last updated: 2026-08-02, session 189b (**the b011/b012 findings landed**
+— two real engine gaps fixed (Schedule 8812 SE earned income; rental QBI
+into Form 8995), the GA RIE Schedule C earned-income pull built on b012's
+live proof, three new importable QBI fields, three HOLDs verified to full
+ties. Migration 0232 applied; all bands green; pushed → deploys.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -26,106 +26,99 @@ open question: set `autoDeploy: false`?
 ## ▶ RESUME HERE
 
 ### Worker split (Ken, s184 — unchanged)
-ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff prompt
-now carries an **s189a addendum**: five new transcription rules, three
-resolved-HOLD corrections, the new GA worksheet answer-key lines) · **CC
-sessions = engine/tax-law work only.**
+ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff now
+carries an **s189b addendum**) · **CC sessions = engine/tax-law work only.**
 
-### s189a shipped (the b010 + partial b011 findings)
-- **① The ONE real engine defect — GA RIE rollover netting (FIXED)**:
-  the GA-500 retirement-exclusion pull read raw 1099-R box 2a; worksheet
-  L11/L12 are the FEDERAL per-document taxable, so it now uses
-  `doc_taxable` (2a − rollover − QCD — the same value that feeds 1040
-  4b/5b). Found by a b010 MFJ return whose spouse IRA excluded the gross
-  9,547 instead of the filed 4,547. Tests: rollover + QCD fixtures + a
-  dual-earner worksheet fixture pinned to a printed packet.
-- **② Three QA misdiagnoses REFUTED against the printed packets** (each
-  delta factored exactly): "explicit 0 didn't clear" was really the
-  **itemize-below-standard election** missing from the payload (34,700
-  std w/ two age-65 boxes vs 34,272 elected itemized; 428 = the gap, 94
-  fed = 22% × it, 533 GA = 5.19% × the GA-deduction gap) · the "GA
-  earned-income exclusion gap" — the engine ties the printed worksheet
-  to the dollar · b011's repeat claim was an **owner-tag** issue (the
-  W-2 detail report's TP|SP designator column, position-verified).
-- **③ Explicit-0 semantics pinned**: regression test proves a payload 0
-  overwrites a nonzero shell scalar through dry-run AND commit (the
-  mechanism was never broken — the "shell value" never existed).
-- **④ New staging guardrail**: Schedule A facts + expected federal 12
-  BELOW the payload-computable standard deduction without
-  `scha_elect_itemize` → warning naming the fix (pure, warnings-only).
-- **⑤ GA worksheet answer-key lines**: `S1-7`, `RIE-TP-17` (Sch 1 7a),
-  `RIE-SP-17` (7d) joined GA500_SUMMARY_LINES — echo + reconcilable, so
-  a GA no-tie names WHICH spouse's column missed. Schema regenerated.
-- **⑥ Three HOLDs resolved with exact corrections written into their
-  HOLD files, each verified to a FULL 21-line tie by CC dry-runs on the
-  shared DB** (staged verify batches `b010c5-ccverify` / `b010c5b-ccverify`,
-  never committed). Codex re-stages after the deploy.
-- Docs: AUTHORING_GUIDE "b010 return-face lessons" (5 rules incl. the
-  TP|SP owner-authority rule and 1099-INT box-3-additive), kickoff s189a
-  addendum, CC_IMPORT_LANE_HANDOFF answer-key lists (12 + the three GA
-  worksheet lines).
-- Tests: staging + RIE-pull bands 56 green; commit band 24 green; flow
-  assertions 521 green; ga500/compute/reconcile/markfiled bands 54 green.
-- REVIEW_QUEUE additions: GA 12b blank-on-filed-itemizers (verify IT-511
-  2025) · should the RIE L2 pull feed Schedule C net profit (IT-511
-  verify + Ken go; no live return demonstrates it).
+### s189b shipped (the b011 + b012 findings; migration 0232 applied)
+- **① Schedule 8812 ACTC earned income (REAL, fixed)**: the Session-1
+  proxy `deductible_se_half × 2` returns the SE TAX (~15% of earnings),
+  not SE earnings — every SE-only return computed near-zero ACTC (b011:
+  a Sch C HOH parent got $21 instead of $2,230; the QA's 6,971 = correct
+  EIC 6,950 + that 21 — the delta factored before code was read). The
+  8812 now shares the EIC engine's Earned Income Worksheet derivation
+  (`earned_income_for_return`, new shared helper; combat pay always
+  included per §24(d)(1) — no election, unlike EIC's). Spec fact
+  `earned_income_for_actc` (SCH_8812 export, fetched) defines exactly
+  this derivation.
+- **② Rental QBI into Form 8995 (REAL, fixed)**: rentals had NO path in.
+  `RentalProperty.qbi_trade_or_business` (migration 0232; the Form 4835
+  field pattern — preparer-asserted §162 / Rev. Proc. 2019-38, default
+  NOT QBI) now feeds both the simplified 8995 and the 8995-A gather:
+  income in full, a LOSS at its Form 8582 ALLOWED portion (Reg.
+  §1.199A-3(b)(1)(iv), the existing Sch C/F convention). ⚠ AHEAD of the
+  RS 8995 spec (R-8995-QBI models Sch C rows only) — flagged, not a
+  silent divergence: RS spec-corrections agenda.
+- **③ GA RIE Schedule C/F earned income (the s189a REVIEW_QUEUE item —
+  live proof arrived in b012 and it was built)**: the filed worksheet
+  carries Schedule C **line 31 net profit** on L2 (not net of ½ SE —
+  settled by the printed page, position-verified). The GA-500 pull now
+  derives L2 from Sch C + Sch F net profit by `proprietor`. D_GA500_016
+  clears on affected shells at recompute.
+- **④ Import fields**: `qbi_loss_carryforward_prior` (8995 L3, NEGATIVE),
+  `qbi_reit_ptp_income` (L6), `qbi_reit_ptp_carryforward_prior` (L7,
+  NEGATIVE) + the rental QBI flag joined the allowlists; schema
+  regenerated; guide gained rules 6–10 (incl. printed-37-includes-38 and
+  the two-spouse-K-1 §199A owner rule).
+- **⑤ Class scoreboard for the "GA earned-income family"**: of three
+  same-family QA reports, only ONE was an engine gap — the other two were
+  a missing itemize election (s189a) and owner-tag transcription.
+- **⑥ Verified ties (CC dry-runs on the shared DB, staged batches
+  `b011c3/b011c4-ccverify`, never committed)**: the SE-EIC/ACTC return
+  (payload verbatim — engine only), the rental-QBI return (+ QBI flag,
+  + expected 37 = the printed 18,711: line 37 includes the 728 penalty —
+  the standing trap, bitten in transcription), and the owner-tag return
+  (W-2s → spouse per TP|SP designators; div/capital → taxpayer per the
+  worksheet columns). Exact corrections written into the HOLD files.
+- Tests: commit band 27 (incl. the SE-EIC/ACTC end-to-end pin + two
+  rental-QBI pins; fixture now seeds SCH_8812 — the s187 lesson again),
+  RIE pull 30, 8812 scenarios 20 + render 3, wide sweep 708, flow 521 —
+  all green.
 
 ### Next engine work — queue
 **Ken's s189 lane-extension trio stands as ruled (s188 close), UNCHANGED:**
-- ① Taxable state refund joins the lane (`sr_*` fields; engine exists).
-- ② IRA deduction (Sch 1 line 20) joins `sch1_fields` — GATE: RS Sch 1
-  spec line 20 must be input-typed.
-- ③ `amt_medicare_wages_agg` editable browser-UI surface.
-**NEW since the ruling (Ken to sequence):** b011 finding #1 — the
-self-employed EIC/ACTC path (fed 33/34 short 2,209) · b011 finding #3 —
-rental-property QBI missing from the 8995 feeder (S-corp QBI flows,
-rental doesn't).
+- ① Taxable state refund joins the lane · ② IRA deduction (Sch 1 L20)
+  joins `sch1_fields` (GATE: RS spec line 20 input-typed) · ③
+  `amt_medicare_wages_agg` editable browser-UI surface.
+**Coverage gaps queued behind Ken's sequencing** (b012 triage, all HOLD):
+Schedule F · 8889/HSA · 8606 · 8824 · 1099-MISC 8z lane extensions.
 **Behind those (unchanged):** August GA unit (UET line-42 worksheet +
 S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
 year-constant ruling · Sch F / 8829 / 6198. SB 31 TY2026 military = RS W-item.
+**RS agenda:** 8995 spec correction (rental rows) + R-EIC-WSB-SE (carried).
 
-### Codex: b010/b011 resume state
-The two b010 HOLDs and the b011 owner-tag HOLD have verified-tie
-corrections written into their HOLD files (the rollover one needs the
-deploy first). b011 findings #1 and #3 stay HOLD (engine investigations
-queued above). Everything else in b011 proceeded under the s188 addendum.
-
-## Lane scoreboard: 64 FILED + b011's in-flight — 3 resolvable HOLDs pending re-stage
+### Codex: resume state
+Three b011 HOLDs re-stageable (two need the deploy; the owner-tag one
+does not). b012's nine coverage-gap HOLDs stay held. The b012 QBI-
+carryforward return was already filed and needed nothing.
 
 ---
 
 ## Known traps (carried — do not re-learn)
-- **s189a: the QA delta factors into known constants — DO THE ARITHMETIC
-  FIRST.** 428 = std-vs-itemized · 94 = 22% × 428 · 533/210 = 5.19% ×
-  the GA base gap. Three of four b010/b011 "engine defects" dissolved
-  under factoring before any code was read.
-- **s189a: every packet page prints the PRIMARY SSN in its header** — it
-  proves nothing about ownership. The TP|SP designator column on the
-  W-2/INT/DIV detail reports and the RIE worksheet's printed columns are
-  the owner authority.
-- **s188: the TaxWise invoice number is NOT the Delvio client number** —
-  `-Action lookup` name search, then a human confirms the display label.
-- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override** —
-  any W-2 row carrying box 5 wins; survives `replace_documents`.
-- **s187: the era-scoping prediction is itself a hypothesis** — engine-
-  scope-first decides, in either direction.
-- **s187: never import computed row columns** (passive_8582_*, net_profit,
-  qbi_amount…). Staging rejects them.
-- **s186: a "reproduced engine defect" can be shell residue** — probe the
-  shell's scalars + overrides BEFORE believing a no-tie names the engine.
+- **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.** Five of six
+  b010–b012 "engine defects" dissolved or localized by arithmetic before
+  any code was read (std-vs-itemized · 22%×gap · 5.19%×base · 15%×(SE-tax
+  −2,500) · the included penalty).
+- **s189a: every packet page prints the PRIMARY SSN in its header** — the
+  TP|SP designator column + the printed worksheet columns are the owner
+  authority.
+- **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty** —
+  now also a guide rule (8) with a pre-staging arithmetic check.
+- **s188: the TaxWise invoice number is NOT the Delvio client number.**
+- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override.**
+- **s187: never import computed row columns** (staging rejects them).
+- **s187/s189b: the backentry fixture must seed EVERY form the flow
+  touches** (SCH_8812 was the latest miss — ACTC silently 0 in tests).
+- **s186: a "reproduced engine defect" can be shell residue.**
 - **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
-- **s185: Sch A 5a is DERIVED** (documents' W/H + dated payments);
-  nonzero `scha_salt_income_or_sales` direct entry wins; **explicit 0
-  restores the derived path (s189a-pinned).**
+- **s185: Sch A 5a is DERIVED; explicit 0 restores the derived path.**
 - **s184: blank prior-year 2210 COMPUTES the 90% fallback.**
 - **A correction payload must send explicit 0** — omit preserves.
-- **`replace_documents` does NOT clear field-level overrides or taxpayer
-  scalars.**
-- **1040 line 37 as printed INCLUDES the line-38 penalty.**
+- **`replace_documents` does NOT clear overrides or taxpayer scalars.**
 - **The dry-run IS the commit, rolled back.**
 - GA `LIC-NODEP` gates the whole LIC; set when GA prints 17a/17c.
 - Flat `est_payment_q1..q4` drive 1040 line 26; dated
   `federal_estimated_payments` drive only the §6654 accrual.
+- ⚠ PS 5.1: inline `python -c` fails silently — always exec a script file.
 
 ---
 
@@ -133,8 +126,8 @@ queued above). Everything else in b011 proceeded under the s188 addendum.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s189a fetched the 500 spec — `g_*_rie_taxable_ira` is the "taxable
-  IRA" fact, which sanctions the doc_taxable netting).
-- `pytest tests/test_flow_assertions.py` after any compute change (s189a: 521 green).
+  (s189b fetched SCH_8812 + 8995 exports; the 8812 fix implements the
+  spec's own fact note; the rental feeder is a FLAGGED spec-ahead).
+- `pytest tests/test_flow_assertions.py` after any compute change (s189b: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
-  production write.
+  production write. Migration 0232 is applied there.
