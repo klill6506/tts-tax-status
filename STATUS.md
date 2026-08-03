@@ -1,11 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 192 (**Ken's s188 lane-extension trio
-shipped** — the taxable state refund (`sr_*` §111 worksheet inputs) and the
-IRA deduction (`sch1_fields` "20") joined the import lane, and
-`amt_medicare_wages_agg` became editable in the browser UI. The b009
-state-refund/IRA triage HOLDs are lifted in the lane tooling + docs.
-No migration.)*
+*Last updated: 2026-08-03, session 192 + 192b (**the s188 lane-extension
+trio shipped**, then **ChatGPT's blocker backlog triaged** — two real
+defects fixed same-day: the SS worksheet ran before Schedule E landed
+(6b stale-low on every SS+rental return, HOLLIFIELD $387) and the
+dated-payments guidance zeroed 1040 line 26 (HUFF); W-2 box 12 joined
+the lane (Sch 2 L13 derives). No migration.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -62,27 +62,66 @@ ChatGPT-browser = the HARD pile · Codex = the import lane · **CC sessions
   `seed_state_refund`) · flow **521** · taxpayer+topic8 72 · tsc 0 ·
   vitest **1574** — all green. **No migration** (0233 remains latest).
 
+### s192b shipped (ChatGPT's blocker backlog — triage + same-day fixes)
+Ken relayed ChatGPT's 10-section blocker list. Triage verdicts:
+- **Stale (already live, no build)**: 8867 import (s191 `f8867_fields` —
+  the four named holds re-stage per handoff §12b) · `qbi_loss_carryforward_prior`
+  (s189b, return-level; per-ACTIVITY carryforward stays queued) · taxable
+  state refund + IRA deduction + educator (s186–s192) · the cleanup gate
+  API (s191; the SCREEN is Ken's call) · ATKINS ACTC (fixed s189b) ·
+  rental-199A-after-passive (engine already uses `passive_8582_allowed`).
+- **REAL, FIXED in s192b (`5b25335`)**: ① the SS Benefits Worksheet ran
+  BEFORE Schedule E landed — R-RET-SS-01's WS3 reads 1040 line 8, which
+  the Sch E reflow changes AFTER — so 6b was stale-low on EVERY SS+rental
+  return (HOLLIFIELD $387); compute_return now re-runs the worksheet
+  after the reflow (revert-proven pin: 17,000 vs stale 9,600; 8582 MAGI
+  unaffected — it already excludes 6b per §469(i)). ② the AUTHORING_GUIDE
+  told authors to use dated payments "INSTEAD of" flat buckets — but
+  line 26 reads ONLY flat and the §6654 accrual ONLY dated (HUFF's
+  $6,000 → $0 on line 26); wording corrected to BOTH-in-agreement + a
+  staging warning on divergence. ③ W-2 box 12 imports (`box_12_entries`
+  nested; codes A/B/M/N derive Sch 2 line 13 — HUFF's $34).
+- **Known v1 boundaries (not defects; workaround exists)**: GA RIE
+  Schedule E rental share (RentalProperty has no `owner` — enters via
+  `ga500_fields` RIE lines; permanent fix = owner field + pull, queued) ·
+  dividend US-obligation GA subtraction (the `ga500_fields "S1-10"`
+  convention; a structured DividendIncome field queued).
+- **Needs reproduction on prod before any build**: D_8995_STALE (DUVALL) ·
+  BARROW GA LIC (post-s182 rules) · BENKOSKI card creation (predates
+  deploys per the report itself; = the queued B002 row-creation family).
+- **Ken decisions queued**: shell-lookup disambiguation metadata (masked
+  last4/DOB = PII exposure on the lookup endpoint — Ken's call) · amended
+  1040-X + non-GA states in lane scope? · the cleanup browser screen.
+
 ### Codex: resume state
-Unchanged from s191 (b027 re-staging + cleanup endpoint per handoff
-§12b), PLUS the s192 addendum: state-refund and line-20 packets are now
-lane-eligible — first packet of each shape is its own smoke test. Wait
-for the Render deploy before staging returns that use the new fields.
+b027 re-staging + cleanup endpoint per handoff §12b, PLUS the s192/s192b
+addenda: state-refund, line-20, and box-12 packets are lane-eligible —
+first packet of each shape is its own smoke test; re-check any payload
+authored under the old dated-payments "INSTEAD" wording. Wait for the
+Render deploy before staging returns using the new fields.
 
 ### Next engine work — queue (awaiting Ken's sequencing)
-**Coverage gaps (b012 + b014 triage, all HOLD; blocking counts in parens):**
-- 8889/HSA inputs + compute (blocks 3 held returns — top of the b014 list)
-- 2441 + GA IND-CR 202 child-care flow (blocks 2)
-- 8606 nondeductible IRA + GA education-credit direct inputs (blocks 1)
-- Return-level 1099-R printed-aggregate fallback (blocks 1) — the
-  `amt_medicare_wages_agg` pattern; RS spec fact granularity decides.
-- Prior-year QBI loss carryforward **by activity** (affects 1)
-- 4797 business-property sale (blocks 1)
-- Schedule F · 8824 · 1099-MISC 8z (carried from b012).
-**Ken's-call items:** a browser "batch cleanup" screen over the b027
-cleanup endpoint (API live; a UI adds visibility but can't move local PDFs).
+**⚠ Reframe from the s192b triage: many "unsupported" forms have FULL
+engine support already** — their gap is lane schema only (the s185/s192
+pattern, one session each): **8880** (f8880_* taxpayer scalars) · **8962
+annual method** (s106e) · **2441** · **8863** · **5695** · **8606**
+(compute_8606 exists) · **4797** (f4797_* facts) · **6252** · **7203** ·
+**1116**. Bigger builds (engine + lane): **Sch F into the lane** ·
+**8889/HSA completeness** (blocks 3 — top of the b014 list) · **7206
+SEHI linkage** · **1099-G unemployment** · **1099-MISC 8z** · **8839** ·
+**8824**.
+**Other queued:** per-activity QBI carryforward · 1099-R printed-aggregate
+fallback (RS fact granularity decides) · RentalProperty `owner` + GA RIE
+rental pull · DividendIncome US-obligation field (GA S1-10 structured) ·
+GA payment line from dated state payments · shell-lookup disambiguation
+metadata (PII call) · packet preflight tooling (page-vs-invoice).
+**Ken's-call items:** the cleanup browser screen · 1040-X + non-GA scope ·
+shell creation authority (MOODY RONALD stays unattached — Ken deleted
+him s183; MCURLEY duplicate blank shells need a data cleanup ruling).
 **Behind those (unchanged):** August GA unit (UET line-42 worksheet +
-S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
-year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
+S4-8/S4-NB-18 NOL) · B002 row-creation family (covers the BENKOSKI
+claims) · MeF `build_irs5695` · year-constant ruling · 8829 / 6198.
+SB 31 TY2026 military = RS W-item.
 **RS agenda:** 8995 spec correction (rental rows) + R-EIC-WSB-SE (carried).
 
 ---
