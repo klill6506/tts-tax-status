@@ -65,7 +65,7 @@ only.**
   `g_lic_not_dependent` default → false (explicit assertion — Ken
   approved the flip at Gate 1).
 - Integrity gate 20 scenarios ALL PASS (new T19 military-midrange + T20
-  BARROW shapes); re-seeded, re-exported, **id-level diff = only the
+  LIC-count shapes); re-seeded, re-exported, **id-level diff = only the
   intended set**; tts GA-500 band + FA = 596 green. REVIEW_QUEUE s176
   RS-sync item closed; the 7/05 handoff doc marked DONE. No engine
   change — the spec caught up to the code.
