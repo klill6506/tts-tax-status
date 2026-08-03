@@ -1,11 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 191 (**the b027 findings landed** — the
-Inbox-cleanup gate is now a server endpoint (four Done gates + fresh
-diagnostics + source-verified warning acks + the closeout report), Form
-8867 due-diligence answers import per question (`f8867_fields`, clears
-D_8867_001 on the four held returns), schema + handoff guide regenerated.
-No migration. A stale s172-era EIC registry pin also caught and fixed.)*
+*Last updated: 2026-08-03, session 192 (**Ken's s188 lane-extension trio
+shipped** — the taxable state refund (`sr_*` §111 worksheet inputs) and the
+IRA deduction (`sch1_fields` "20") joined the import lane, and
+`amt_medicare_wages_agg` became editable in the browser UI. The b009
+state-refund/IRA triage HOLDs are lifted in the lane tooling + docs.
+No migration.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,56 +30,46 @@ open question: set `autoDeploy: false`?
 ChatGPT-browser = the HARD pile · Codex = the import lane · **CC sessions
 = engine/tax-law work only.**
 
-### s191 shipped (the b027 findings)
-- **① Inbox-cleanup gate (b027 items 1/3/4)**: NEW
-  `POST /api/v1/backentry/cleanup/` (≤10 packets, cross-batch). Per
-  packet: batch + reconciliation verdict, live return status, per-family
-  persistence counts (committed vs live), and a **fresh diagnostics run
-  made by the call itself** with error/warning rule IDs. The four Done
-  gates: TIE · filed · committed families persist · zero error-severity
-  findings. Any failure → `eligible:false` + named gates + rule IDs; the
-  packet stays in Inbox. WARNING findings block only until
-  `source_verified:true` records the reviewer's acknowledgment — through
-  the EXISTING DiagnosticAcknowledgment mechanism (fingerprint-keyed,
-  re-alarms when the numbers change; errors never acknowledgable, same as
-  the UI). The response IS the closeout report (`moved_to_done` /
-  `held_in_inbox`). The server cannot move Ken's local PDFs — the operator
-  moves the eligible list; the "batch cleanup screen" ask is satisfied
-  API-side; a browser screen is Ken's call (queued below).
-- **② Form 8867 import (b027 item 2)**: NEW `f8867_fields` payload
-  section — per-question transcription of the packet's filed 8867
-  (`"1"`–`"15"` + subs + `"5_docs"`; true/false, `"na"` only on the seven
-  printed-N/A lines — widget-truth-set enforced at staging). Written as
-  MANUAL (overridden) entries so the un-attested compute cascade preserves
-  them; `preparer_due_diligence_attested` stays non-importable BY DESIGN
-  (the attestation cascade would overwrite the transcription — a
-  commit warning fires on attested-shell residue). Omit-not-guess enforced:
-  blank questions are omitted, `"na"` outside the N/A set is a staging
-  error. Clears D_8867_001 (the four b027 held returns).
-- **③ Stale pin caught**: `test_full_eic_family_rules_registered` pinned
-  the EIC family at 001–017; D_EIC_018 (Ken's s172 ruling, 7/30) was never
-  added. Stale since 7/31 — this module isn't in the usual bands.
-- Schema (`batch-import.schema.json`) regenerated; handoff guide gained
-  the 8867 bullet (§4) + the cleanup section (§12b).
-- Tests: NEW `test_backentry_cleanup.py` 6 (incl. the b027 scenario
-  end-to-end: D_8867_001 error holds → f8867 correction batch → eligible;
-  warning-ack recorded; errors never ackable via the crashed-rule path),
-  commit band 32 (f8867 land/validate/attested-warn), flow 521,
-  reconcile+markfiled 18, topic7 29 — all green. **No migration.**
+### s192 shipped (Ken's s188 ruling, executed exactly)
+- **① Taxable state refund (Sch 1 line 1)**: the 17 `sr_*` §111
+  worksheet-input fields joined `TAXPAYER_FIELDS` (model fields existed
+  since NEXT-UP #9 — schema growth only, zero compute change). The lane
+  transcribes TaxWise's refund-worksheet INPUTS; the engine computes
+  line 1 + the 8z share. Line 1 stays REJECTED in `sch1_fields` (a direct
+  entry would fight `compute_state_refund_db`). Staging guardrails:
+  unknown `sr_py_filing_status` = ERROR (silently looks up a $0
+  prior-year std deduction → overstates taxability) · `sr_py_age_blind_boxes`
+  outside 0–4 = ERROR · refund amounts without `sr_py_itemized: true` =
+  WARNING (§111 computes $0 — can never tie a nonzero filed line 1).
+- **② IRA deduction (Sch 1 line 20)**: joined `SCH1_DIRECT_LINES`. The
+  Ken-set gate PASSED — live RS `SCH_1` export (2026-08-03) types line 20
+  `input`; verified no engine writes "20" (8582 / Sch E only read it);
+  R-S1-04 sums it into line 26 → 1040 line 10.
+- **③ `amt_medicare_wages_agg` browser-editable** (Ken chose editable
+  over lane-only): joined the Taxpayer serializer explicit list + the
+  QBI/8959 facts card (Slate Schedule C screen AND the legacy FormEditor
+  card). Fallback semantics unchanged — compute reads it only when no
+  W-2 row carries box 5.
+- **b009 un-HOLDs shipped with the code** (the ruling's condition):
+  `triage_inbox.py` BLOCKED pruned (STATE REFUND + IRA patterns →
+  SUPPORTED; 1099-G stays invoice-blocked — printed Sch 1 line 7 HOLDs,
+  line-1-only unblocks) · AUTHORING_GUIDE face-checks rewritten + new
+  `sr_*` section · CODEX_KICKOFF s192 addendum (per-shape one-packet
+  smoke tests) · handoff guide §0/§4 updated · schema regenerated
+  (sr enum + 0–4 range mirrored).
+- Tests: staging **33** (6 new) · commit **34** (2 new — full §111 math
+  end-to-end ties AGI 72,450; line 20 ties 64,250; fixture gained
+  `seed_state_refund`) · flow **521** · taxpayer+topic8 72 · tsc 0 ·
+  vitest **1574** — all green. **No migration** (0233 remains latest).
 
 ### Codex: resume state
-Re-stage the four D_8867_001 holds as correction batches (new keys) with
-`f8867_fields` transcribed from each packet's filed 8867, then run the
-cleanup endpoint per handoff §12b before ANY PDF moves to Done. The Done
-file-move is gated on `eligible:true` — holds carry the failing rule IDs.
+Unchanged from s191 (b027 re-staging + cleanup endpoint per handoff
+§12b), PLUS the s192 addendum: state-refund and line-20 packets are now
+lane-eligible — first packet of each shape is its own smoke test. Wait
+for the Render deploy before staging returns that use the new fields.
 
-### Next engine work — queue
-**Ken's s189 lane-extension trio stands as ruled (s188 close), UNCHANGED:**
-- ① Taxable state refund joins the lane · ② IRA deduction (Sch 1 L20)
-  joins `sch1_fields` (GATE: RS spec line 20 input-typed) · ③
-  `amt_medicare_wages_agg` editable browser-UI surface.
-**Coverage gaps queued behind Ken's sequencing** (b012 + b014 triage, all
-HOLD; b014 blocking counts in parens):
+### Next engine work — queue (awaiting Ken's sequencing)
+**Coverage gaps (b012 + b014 triage, all HOLD; blocking counts in parens):**
 - 8889/HSA inputs + compute (blocks 3 held returns — top of the b014 list)
 - 2441 + GA IND-CR 202 child-care flow (blocks 2)
 - 8606 nondeductible IRA + GA education-credit direct inputs (blocks 1)
@@ -88,9 +78,8 @@ HOLD; b014 blocking counts in parens):
 - Prior-year QBI loss carryforward **by activity** (affects 1)
 - 4797 business-property sale (blocks 1)
 - Schedule F · 8824 · 1099-MISC 8z (carried from b012).
-**New (b027, Ken's call):** a browser "batch cleanup" screen over the
-cleanup endpoint — the API is live; a UI adds visibility but cannot move
-the local PDFs.
+**Ken's-call items:** a browser "batch cleanup" screen over the b027
+cleanup endpoint (API live; a UI adds visibility but can't move local PDFs).
 **Behind those (unchanged):** August GA unit (UET line-42 worksheet +
 S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
 year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
@@ -99,17 +88,21 @@ year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s192: an unknown `sr_py_filing_status` computes silently wrong** —
+  the §111 std-deduction lookup returns $0 basic for an unrecognized
+  status. Staging validates the enum; the browser UI does not (CharField).
+- **s192: the lane never sends Schedule 1 line 1** — `sr_*` inputs only;
+  the worksheet owns line 1/8z when engaged (disengage never clobbers a
+  pure direct entry — that manual path is for the RED exception cases).
 - **s191: the 8867 answer rows are cascade-managed.** Un-attested compute
   BLANKS every non-overridden 8867 value; attested compute OVERWRITES
   everything (even overridden). Imported answers must be
-  `is_overridden=True`, and an attested shell + `f8867_fields` = a loud
-  commit warning, never a silent stomp.
+  `is_overridden=True`; attested shell + `f8867_fields` = loud warning.
 - **s191: a registry-count pin goes stale silently** when its module isn't
-  in the session's bands (D_EIC_018 for two days). When adding a rule,
-  grep for count pins on its family.
+  in the session's bands. When adding a rule, grep for family count pins.
 - **s190: migration-before-deploy skew on the shared DB is a CERTAINTY.**
   NOT NULL without `db_default` 500s every insert from still-deployed
-  code (b014; rule in DECISIONS.md). Check Render deploy timestamps vs
+  code (rule in DECISIONS.md). Check Render deploy timestamps vs
   `django_migrations.applied` before diagnosing "dry-run works, live
   fails" as a code defect.
 - **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.**
@@ -117,12 +110,13 @@ year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
   TP|SP designator + printed worksheet columns are the owner authority.
 - **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty.**
 - **s188: the TaxWise invoice number is NOT the Delvio client number.**
-- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override.**
+- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override**
+  (unchanged by its s192 UI surfacing — per-row box 5 always wins).
 - **s187: never import computed row columns** (staging rejects them).
 - **s187/s189b: the backentry fixture must seed EVERY form the flow
-  touches** (s191 added seed_8867 to both backentry fixtures).
+  touches** (s192 added seed_state_refund to the commit fixture).
 - **s186: a "reproduced engine defect" can be shell residue.**
-- **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
+- **s186/s192: sch1_fields is for spec-typed INPUT lines only** (11/20/21).
 - **s185: Sch A 5a is DERIVED; explicit 0 restores the derived path.**
 - **s184: blank prior-year 2210 COMPUTES the 90% fallback.**
 - **A correction payload must send explicit 0** — omit preserves.
@@ -139,8 +133,8 @@ year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s191 touched neither — lane/endpoint/tests only; the 8867 import shape
-  follows the seeded per-question face from specs/8867_spec.json).
-- `pytest tests/test_flow_assertions.py` after any compute change (s191: 521 green).
+  (s192 touched neither — the line-20 gate was answered by the LIVE SCH_1
+  export, re-fetched 2026-08-03; sr_* follows specs/state_refund_spec.json).
+- `pytest tests/test_flow_assertions.py` after any compute change (s192: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
-  production write. No new migration this session (0233 remains latest).
+  production write. No migration this session (0233 remains latest).
