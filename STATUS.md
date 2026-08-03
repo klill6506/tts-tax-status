@@ -1,11 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 190 (**the b014 production defect
-root-caused and hardened** — the two rental live-commit 500s were NOT a
-dry-run/live code split: migration 0232 was applied to the shared DB
-mid-batch, between the dry-runs and the live commits, while prod still ran
-pre-0232 code. Migration 0233 adds a durable DB-level DEFAULT; two
-regression tests pin the contract; b014's six coverage asks queued.)*
+*Last updated: 2026-08-03, session 191 (**the b027 findings landed** — the
+Inbox-cleanup gate is now a server endpoint (four Done gates + fresh
+diagnostics + source-verified warning acks + the closeout report), Form
+8867 due-diligence answers import per question (`f8867_fields`, clears
+D_8867_001 on the four held returns), schema + handoff guide regenerated.
+No migration. A stale s172-era EIC registry pin also caught and fixed.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,42 +30,48 @@ open question: set `autoDeploy: false`?
 ChatGPT-browser = the HARD pile · Codex = the import lane · **CC sessions
 = engine/tax-law work only.**
 
-### s190 shipped (the b014 defect)
-- **The 500s explained, to the second (Render logs + django_migrations)**:
-  b014c2 dry-runs 03:09:19–24Z all tied → migration 0232
-  (`qbi_trade_or_business` NOT NULL) applied to the shared DB at
-  **03:09:29Z** from the s189b dev session → live commits 03:09:36Z and
-  03:10:20Z 500'd with `NotNullViolation` (prod still ran s189a code,
-  whose rental INSERT omits the column; Django drops the Postgres DEFAULT
-  after an AddField backfill) → the s189b deploy went live 03:26Z and
-  closed the window. The two no-rental returns committed fine because
-  neither inserts rental rows. **No dry-run/live code defect exists** —
-  the two paths are one code path.
-- **Migration 0233 (applied)**: `db_default=False` on
-  `RentalProperty.qbi_trade_or_business` — the column keeps a
-  Postgres-level DEFAULT, so a pre-deploy service inserting without the
-  column can never NULL-violate again.
-- **New standing rule (DECISIONS.md, cross-cutting standards)**: any new
-  NOT NULL column on a table the deployed service inserts into carries
-  `db_default=` (or is nullable). The shared dev/prod DB makes
-  migration-before-deploy skew a certainty, not a risk.
-- **Regression tests** (`test_backentry_commit.py`, band now 29):
-  `test_dry_run_tie_commits_live_same_merge_b014` (dry-run TIE ⇒ live
-  commit under the same merge mode lands with the same verdict, on the
-  failing shape: loss rental + direct depreciation +
-  `active_participation: false` + prior unallowed passive + zero-dollar
-  K-1 shell, over existing rows via replace_documents) and
-  `test_rental_qbi_column_keeps_db_default_b014` (the schema pin).
-- Bands green: backentry commit 29, flow 521, reconcile + markfiled 18.
-- **Both held returns verified re-commitable** (CC rolled-back live-path
-  runs on the shared DB): the 3-rental return ties under
-  `replace_documents`; the 1-rental+K-1-shell return ties plain.
+### s191 shipped (the b027 findings)
+- **① Inbox-cleanup gate (b027 items 1/3/4)**: NEW
+  `POST /api/v1/backentry/cleanup/` (≤10 packets, cross-batch). Per
+  packet: batch + reconciliation verdict, live return status, per-family
+  persistence counts (committed vs live), and a **fresh diagnostics run
+  made by the call itself** with error/warning rule IDs. The four Done
+  gates: TIE · filed · committed families persist · zero error-severity
+  findings. Any failure → `eligible:false` + named gates + rule IDs; the
+  packet stays in Inbox. WARNING findings block only until
+  `source_verified:true` records the reviewer's acknowledgment — through
+  the EXISTING DiagnosticAcknowledgment mechanism (fingerprint-keyed,
+  re-alarms when the numbers change; errors never acknowledgable, same as
+  the UI). The response IS the closeout report (`moved_to_done` /
+  `held_in_inbox`). The server cannot move Ken's local PDFs — the operator
+  moves the eligible list; the "batch cleanup screen" ask is satisfied
+  API-side; a browser screen is Ken's call (queued below).
+- **② Form 8867 import (b027 item 2)**: NEW `f8867_fields` payload
+  section — per-question transcription of the packet's filed 8867
+  (`"1"`–`"15"` + subs + `"5_docs"`; true/false, `"na"` only on the seven
+  printed-N/A lines — widget-truth-set enforced at staging). Written as
+  MANUAL (overridden) entries so the un-attested compute cascade preserves
+  them; `preparer_due_diligence_attested` stays non-importable BY DESIGN
+  (the attestation cascade would overwrite the transcription — a
+  commit warning fires on attested-shell residue). Omit-not-guess enforced:
+  blank questions are omitted, `"na"` outside the N/A set is a staging
+  error. Clears D_8867_001 (the four b027 held returns).
+- **③ Stale pin caught**: `test_full_eic_family_rules_registered` pinned
+  the EIC family at 001–017; D_EIC_018 (Ken's s172 ruling, 7/30) was never
+  added. Stale since 7/31 — this module isn't in the usual bands.
+- Schema (`batch-import.schema.json`) regenerated; handoff guide gained
+  the 8867 bullet (§4) + the cleanup section (§12b).
+- Tests: NEW `test_backentry_cleanup.py` 6 (incl. the b027 scenario
+  end-to-end: D_8867_001 error holds → f8867 correction batch → eligible;
+  warning-ack recorded; errors never ackable via the crashed-rule path),
+  commit band 32 (f8867 land/validate/attested-warn), flow 521,
+  reconcile+markfiled 18, topic7 29 — all green. **No migration.**
 
 ### Codex: resume state
-Re-POST the two b014c2 live commits — no payload changes: the 3-rental
-return with `{"merge": "replace_documents"}` (its shell carries rows), the
-rental+K-1 return without merge. Both tie. b014's staging limit and
-frozen-batch/new-key correction behavior stay as-is (unchanged, by design).
+Re-stage the four D_8867_001 holds as correction batches (new keys) with
+`f8867_fields` transcribed from each packet's filed 8867, then run the
+cleanup endpoint per handoff §12b before ANY PDF moves to Done. The Done
+file-move is gated on `eligible:true` — holds carry the failing rule IDs.
 
 ### Next engine work — queue
 **Ken's s189 lane-extension trio stands as ruled (s188 close), UNCHANGED:**
@@ -77,15 +83,14 @@ HOLD; b014 blocking counts in parens):
 - 8889/HSA inputs + compute (blocks 3 held returns — top of the b014 list)
 - 2441 + GA IND-CR 202 child-care flow (blocks 2)
 - 8606 nondeductible IRA + GA education-credit direct inputs (blocks 1)
-- Return-level 1099-R printed-aggregate fallback when payer detail is
-  absent (blocks 1) — the `amt_medicare_wages_agg` pattern: fallback
-  SOURCE only + explicit warning/provenance; RS spec fact granularity
-  decides how it may exist (the s188 8959 rule).
-- Prior-year QBI loss carryforward **by activity** (s189b landed the
-  return-level fields; b014 asks per-activity) (affects 1)
-- 4797 business-property sale (a rental disposition can't ride 8949 rows)
-  (blocks 1)
+- Return-level 1099-R printed-aggregate fallback (blocks 1) — the
+  `amt_medicare_wages_agg` pattern; RS spec fact granularity decides.
+- Prior-year QBI loss carryforward **by activity** (affects 1)
+- 4797 business-property sale (blocks 1)
 - Schedule F · 8824 · 1099-MISC 8z (carried from b012).
+**New (b027, Ken's call):** a browser "batch cleanup" screen over the
+cleanup endpoint — the API is live; a UI adds visibility but cannot move
+the local PDFs.
 **Behind those (unchanged):** August GA unit (UET line-42 worksheet +
 S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
 year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
@@ -94,25 +99,28 @@ year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s191: the 8867 answer rows are cascade-managed.** Un-attested compute
+  BLANKS every non-overridden 8867 value; attested compute OVERWRITES
+  everything (even overridden). Imported answers must be
+  `is_overridden=True`, and an attested shell + `f8867_fields` = a loud
+  commit warning, never a silent stomp.
+- **s191: a registry-count pin goes stale silently** when its module isn't
+  in the session's bands (D_EIC_018 for two days). When adding a rule,
+  grep for count pins on its family.
 - **s190: migration-before-deploy skew on the shared DB is a CERTAINTY.**
-  A NOT NULL column without `db_default` 500s every insert from the
-  still-deployed code until the deploy lands (the b014 incident; rule now
-  in DECISIONS.md). Check the Render deploy timestamp against
-  `django_migrations.applied` before diagnosing a "dry-run works, live
-  fails" report as a code defect.
-- **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.** Five of six
-  b010–b012 "engine defects" dissolved or localized by arithmetic before
-  any code was read.
+  NOT NULL without `db_default` 500s every insert from still-deployed
+  code (b014; rule in DECISIONS.md). Check Render deploy timestamps vs
+  `django_migrations.applied` before diagnosing "dry-run works, live
+  fails" as a code defect.
+- **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.**
 - **s189a: every packet page prints the PRIMARY SSN in its header** — the
-  TP|SP designator column + the printed worksheet columns are the owner
-  authority.
-- **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty** —
-  guide rule 8 with a pre-staging arithmetic check.
+  TP|SP designator + printed worksheet columns are the owner authority.
+- **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty.**
 - **s188: the TaxWise invoice number is NOT the Delvio client number.**
 - **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override.**
 - **s187: never import computed row columns** (staging rejects them).
 - **s187/s189b: the backentry fixture must seed EVERY form the flow
-  touches** (SCH_8812 was the latest miss).
+  touches** (s191 added seed_8867 to both backentry fixtures).
 - **s186: a "reproduced engine defect" can be shell residue.**
 - **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
 - **s185: Sch A 5a is DERIVED; explicit 0 restores the derived path.**
@@ -131,7 +139,8 @@ year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s190 touched neither — models/migration/tests only).
-- `pytest tests/test_flow_assertions.py` after any compute change (s190: 521 green).
+  (s191 touched neither — lane/endpoint/tests only; the 8867 import shape
+  follows the seeded per-question face from specs/8867_spec.json).
+- `pytest tests/test_flow_assertions.py` after any compute change (s191: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
-  production write. Migrations 0232 + 0233 are applied there.
+  production write. No new migration this session (0233 remains latest).
