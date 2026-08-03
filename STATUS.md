@@ -86,9 +86,9 @@ for Barcode) onto the shareholder's GA-500.
    supports Ken; shareholder relief is an EXCLUSION limited to "income on
    which tax was actually paid". **No DOR guidance found on separately
    stated items.** The stake is the SALT deduction, not the GA total.
-3. **Client #2969 'LOMAX, ROBERT'** survives holding an empty individual
-   entity; Ken says there is only one Robert Lomax (#2970). Which client
-   number survives is his call.
+3. **Client #2969** survives holding an empty individual entity that is a
+   duplicate of the person at #2970 (Ken confirmed there is only one).
+   Which client number survives is his call — the s193 merge recipe.
 4. **Retire `reparent_business_entities`** — it encodes the client model
    Ken rejected; re-running it would undo `c72dfd4`.
 5. **The app computes no Georgia depreciation** — the GA/federal
