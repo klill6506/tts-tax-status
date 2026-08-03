@@ -1,10 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 186 (**b008's four holds RESOLVED and
-FILED — lane at 64.** `sch1_fields` shipped for educator/student-loan
-adjustments; the b008 "W-2G double count" was REFUTED — shell residue,
-not an engine bug. Correction batch `b008c2`: 4/4 dry-run TIE → committed
-→ filed; PDFs moved to Done.)*
+*Last updated: 2026-08-02, session 187 (**the Sch C / Sch E era SHIPPED —
+Schedule C, Schedule E both pages, and recipient K-1s join the import
+lane.** Engine-scope-first proved the engine already complete; the leg is
+pure backentry schema growth, `856dfe8`, deployed by push.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -27,57 +26,62 @@ open question: set `autoDeploy: false`?
 
 ### Worker split (Ken, s184 — unchanged)
 ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff prompt
-now carries s185 Sch A + s186 sch1_fields/W-2G-residue addenda) · **CC sessions
-= engine/tax-law work only** (s186's correction batch was Ken-directed).
+now carries an s187 addendum: Sch C/E supported, smoke-test-first at the
+boundary, **only on Ken's go**) · **CC sessions = engine/tax-law work
+only.**
 
-### s186 shipped + deployed (`4cdecba`, verified live by the acceptance run itself)
-- **`sch1_fields`** — Schedule 1 DIRECT-ENTRY adjustments: `"11"`
-  educator, `"21"` student-loan interest (FILED amounts). Spec-conformant:
-  sch_1_spec.json types both `line_type=input`, no source facts, so the
-  import mirrors the UI (ga500_fields precedent) — NOT Taxpayer facts +
-  a feeder. Applied before compute; R-S1-04 → line 26 → 1040 line 10.
-  Computed feeder lines refuse at staging.
-- **The W-2G hold refuted**: the shell carried `other_gambling_winnings=1220`
-  (browser-lane residue duplicating his one W-2G). Engine 8b math is
-  correct single-count. NEW commit warning fires on the residue shape
-  (payload W-2Gs + preserved nonzero shell value). Fix = explicit 0 in a
-  correction batch.
-- Tests revert-proven; backentry 50 green; FA 521 green; fixture now
-  seeds SCH_1.
-- **Acceptance: batch `b008c2` on prod — 4/4 TIE (every expected federal
-  + GA line), committed, mark-filed swept, report at
-  `D:\tax-test-data\tmp\b008\b008c2_report.json`, 4 PDFs → Done.**
+### s187 shipped + deployed (`856dfe8`, both services; NO migration/seed/client code)
+- **backentry.v1 grew three row-family sections**: `schedule_cs` (with
+  nested Part V `other_expenses` rows), `rental_properties` (Sch E p1),
+  `schedule_k1s` (Sch E p2 / the K-1 router). ZERO compute change — the
+  engine already ran Sch C → SE → Sch 1/2 feeders, §469/8582, and the
+  K-1 router end-to-end; only the lane couldn't carry the rows (the s185
+  Sch-A shape, despite the carried "NOT Sch-A-shaped" warning).
+- **Depreciation (Sch C 13 / Sch E 18) imports as the FILED total**:
+  `aggregate_depreciation` early-returns with no asset register, so the
+  direct entry holds (test-pinned). Asset detail is NOT carried — future
+  years ride the conversion importer.
+- Allowlists = model INPUT columns only; K-1 RED-defer presence boxes
+  importable (diagnostics speak) but a nonzero amount = HOLD.
+- Tests revert-proven ×4; backentry band 54 green; FA 521 green; commit
+  fixture now seeds SCH_2/SCH_C/SCHEDULE_E/8582/SE/8995.
+- Docs: AUTHORING_GUIDE (3 new sections + hard-rules rewrite),
+  CC_IMPORT_LANE_HANDOFF (§0/§4/§8), CODEX_KICKOFF_PROMPT s187 addendum,
+  batch-import.schema.json regenerated.
+- **Deploy verified live**: a staging probe on the deployed demo service
+  accepted all three sections (locator-only error on a bogus client
+  number, no "unknown section"); prod builds from the same push/commit.
 
 ### Next engine work per BUILD_ORDER
-**Sch C / Sch E schema era** — scope engine support FIRST (row-family
-models + SE tax / 8582 passive paths; NOT a Sch-A-shaped leg). Behind:
-B002 row-creation family · Ken's ② MeF (`build_irs5695`) · ④
-year-constant ruling.
+Behind: **B002 row-creation family** · Ken's ② MeF (`build_irs5695`) ·
+④ year-constant ruling · Sch F / 8829 / 6198 (the remaining HARD-pile
+import gaps, only if Ken wants the lane to grow further).
 
 ## Lane scoreboard: 64 FILED — 0 unfiled, 0 held
-60 (s180–s184) + 4 (s186 b008c2). Codex continues b009+; ChatGPT has the
-HARD pile.
+Codex continues b009+ (Sch C/E packets gated on Ken's go + per-shape
+smoke tests); ChatGPT has the HARD pile.
 
 ---
 
 ## Known traps (carried — do not re-learn)
-- **s186: a "reproduced engine defect" can be shell residue** — the b008
-  W-2G hold is the 4th wrong-source/leftover-shell class member (the s183
-  2210 wrong-page, the s184 payload carry, the s181 override + leftover-
-  flag cases). Probe the shell's scalars + overrides BEFORE believing a
-  no-tie names the engine. The commit now warns on the W-2G/other_gambling
-  shape specifically.
-- **s186: sch1_fields is for spec-typed INPUT lines only** — direct-
-  setting a computed feeder (15/16/etc.) would fight compute every pass;
-  staging rejects them.
+- **s187: the era-scoping prediction is itself a hypothesis** — the
+  carried "NOT a Sch-A-shaped leg" warning was wrong; engine-scope-first
+  (read compute + the model) decides, in either direction.
+- **s187: never import computed row columns** — passive_8582_allowed/
+  _suspended are Form 8582 OUTPUTS (the input is
+  `prior_year_unallowed_passive`); net_profit/qbi_amount/etc. likewise.
+  Staging rejects them.
+- **s186: a "reproduced engine defect" can be shell residue** — probe the
+  shell's scalars + overrides BEFORE believing a no-tie names the engine.
+  The commit warns on the W-2G/other_gambling shape specifically.
+- **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
 - **s185: Sch A 5a is DERIVED** (documents' W/H + dated payments);
-  nonzero `scha_salt_income_or_sales` direct entry wins. Gambling cap
-  derived from W-2Gs — staging rejects it.
+  nonzero `scha_salt_income_or_sales` direct entry wins.
 - **s184: blank prior-year 2210 COMPUTES the 90% fallback.** Printed
   2210 → line 8; else Three-Year Summary; TaxWise-blank → 0/omit.
 - **A correction payload must send explicit 0** — omit preserves.
 - **`replace_documents` does NOT clear field-level overrides or taxpayer
-  scalars.**
+  scalars** — and it now covers the s187 families too (children cascade).
 - **1040 line 37 as printed INCLUDES the line-38 penalty.**
 - **The dry-run IS the commit, rolled back.**
 - GA `LIC-NODEP` gates the whole LIC; set when GA prints 17a/17c.
@@ -90,8 +94,8 @@ HARD pile.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s186 touched neither — sch1_fields implements the sch_1_spec line_map
-  as written).
-- `pytest tests/test_flow_assertions.py` after any compute change (s186: 521 green).
+  (s187 touched neither — backentry implements the models, which
+  implement the SCHEDULE_C / SCHEDULE_E+FORM_8582 / SCHEDULE_K1 specs).
+- `pytest tests/test_flow_assertions.py` after any compute change (s187: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
   production write.
