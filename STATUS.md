@@ -114,10 +114,28 @@ Ken relayed ChatGPT's 10-section blocker list. Triage verdicts:
   silently mapped nothing.
 - **Return-manager entity chips restyled** (Ken's ask): 34px, per-type
   Slate-scale tints (steel/green/violet/info/neutral), live-verified.
-- **"2 clients for every client" NOT reproduced**: 3,747 clients, 3,739
-  roster rows (all 2025; GA state returns excluded server-side; only 21
-  true same-name pairs). The rendered roster shows one row per client.
-  Awaiting Ken's pointer to the exact screen he saw.
+- **"2 clients per client" SOLVED (Ken's screenshot cracked it — the
+  roster prints ENTITY names for businesses, so the client-name dupe
+  check was blind): 278 business-entity names exist on TWO clients.**
+  Feb 24-25 wave = entity under the OWNER's client, has the FEIN,
+  **221/278 carry real converted return data**. Jul 22 wave = standalone
+  company client (own TaxWise-style client number), no FEIN, **276/278
+  empty shells**. **KEN RULED: MERGE TO STANDALONE** — re-parent each
+  Feb entity (FEIN + data) onto the Jul standalone client, delete the
+  empty Jul entity; nothing with data deleted; owners keep their 1040s.
+  Ken observes the dupes look S-corp-only — verify entity_type breakdown
+  in the dry run. **▶ NEXT SESSION'S OPENING MOVE: the merge, dry-run
+  counts first.** (The 21 same-name individual pairs = different people,
+  left alone.)
+- **The "Barcode crashes" report root-caused to DEPLOY CHURN, not code**:
+  five deploys landed 12:26–14:19Z while Ken browsed; a stale index.html
+  lazy-loading a renamed entity-editor chunk 404s → white screen. Local
+  run on the identical code+data renders every Barcode screen clean
+  (console zero errors); Render shows all builds succeeded, `c72cf3b`
+  live, and the prod chunk verifiably carries today's code. Remedy =
+  hard refresh. ⚠ Clicking the entity editor's "Import trial balance"
+  nav item IMMEDIATELY re-runs the import (idempotent here) — surprise
+  UX, worth a confirm dialog someday.
 
 ### Codex: resume state
 b027 re-staging + cleanup endpoint per handoff §12b, PLUS the s192/s192b
