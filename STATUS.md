@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 194 (**Barcode pair merged · the 2025
-Lacerte depreciation schedule imported into the asset register — all 30
-assets tie Lacerte to the dollar** · back button + entity Email shipped.
-Three deploys by push (`fd3f770` back button · `5244176` email + Barcode
-merge script · `a2940f0` S/L parser fix). No migration — 0233 latest.)*
+*Last updated: 2026-08-03, session 194 + 194b (**Barcode pair merged ·
+the 2025 Lacerte depreciation schedule imported, 30/30 tied · Ken's
+inputs entered — THE 1120-S FACE NOW TIES THE BOOKS END-TO-END (L22
+379,312 = book NI)** · back button + entity Email shipped · **s194b: A
+DEPLOY-TIME SEEDER WAS WIPING EVERY PREPARER OVERRIDE on every computed
+1120-S line — fixed `5368945`**. No migration — 0233 latest.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -62,25 +63,39 @@ eyes needed)**. Detail in STATUS_ARCHIVE; rollback snapshots in
   historical `bonus_pct` (a stale pct double-reduces the table basis).
   Candidate importer hardening: derive the split automatically — queued.
 
-### ▶ Barcode return — remaining Ken inputs (detail in
-`D:\tax-test-data\1120S\barcode_supply_2025_notes.md`)
-1. **Per-vehicle sale prices** for the 3 sold vehicles (books total
-   237,361; Lacerte's 4797 report has the split). Until then the face
-   carries $0-proceeds placeholders (L4 −99,611 · K9 −9,542 · L22
-   151,493) — they become the real §1245/§1231 gains when prices land.
-2. **GA depreciation schedule** (prior federal bonus ⇒ GA basis differs).
-3. Beginning AAA (2024 M-2) · S-election date · 1125-E comp detail ·
-   401k L17 classification · GA PTE (L12 15,000) · APIC confirm.
+### s194b shipped (same day — Ken's inputs + THE DEPLOY-WIPE FIX)
+- **Ken's Barcode inputs entered** (`scripts/barcode_ken_inputs_20260803.py`):
+  3 vehicle sale prices (sum = the books' 237,361 exactly) → L4 128,208
+  (Tahoe 43,208 + Cybertruck 99,611 all-§1245, F350 −14,611 short-term);
+  beginning AAA 656,869 → M2_1a; S election 1/1/2004; officer comp
+  100,000. **The 1120-S face ties the books end-to-end: L22 = 379,312 =
+  book net income.** GA is PTET per Ken — the `GA_PTET` face field exists;
+  set when the GA-600S is attached (blocked on the GA depreciation
+  schedule).
+- **THE L20 MYSTERY SOLVED — IT WAS THE DEPLOYS**: `seed_1120s` (run by
+  `seed_all` on EVERY deploy) cleared `is_overridden` unconditionally on
+  every computed line's stored values — **every deploy wiped every
+  preparer override on every computed 1120-S line, firm-wide**. Invisible
+  when the override equals the formula; fatal where it differs (the TB
+  rollup's L20, any Ctrl+Enter override of a computed line). Fixed: the
+  clear now fires only on a manual→computed TRANSITION (the original
+  intent). 3 regression tests both directions + seed-safety band 6 green.
+  Deployed `5368945`; L20 restored (92,674, overridden) after the last
+  bad deploy.
 
-### ⚠ New watch items (s194)
-- **An L20 other-deductions override was found CLEARED** (value 0,
-  un-overridden) with a timestamp matching return-browsing, not any
-  import step. Restored via `_rollup_other_deductions`. If a TB-imported
-  return's L20 zeroes again: suspect an FFV write lane clearing the
-  override on a blank commit — capture the open screen.
+### ▶ Barcode return — remaining Ken items
+1. **GA depreciation schedule** (prior federal bonus ⇒ GA basis differs) —
+   then build the GA-600S + set GA_PTET.
+2. Asset-25 prior-column oddity (source shows 25,000 prior on a year-5
+   asset — adjusted basis displays high) · 401k L17 classification ·
+   APIC confirm.
+
+### ⚠ Watch / agenda (s194)
 - **RS agenda add**: 4562 R003 has NO same-year-acquired-and-sold rule
   (Pub 946: no deduction). Engine NOT changed (spec-silent); the Barcode
   F350 is keyed method NONE meanwhile.
+- Verify post-deploy (`5368945`): Barcode L20 still 92,674/overridden
+  after the FIXED seeder runs (checked at session close — see below).
 
 ### Codex: resume state (unchanged from s192)
 b027 re-staging + cleanup endpoint per handoff §12b + the s192/s192b
@@ -108,6 +123,13 @@ rule (new, s194)**.
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s194b: A DEPLOY-TIME SEEDER CAN REVERT PRODUCTION STATE.** `seed_all`
+  runs every `seed_*` on every deploy; `seed_1120s` cleared
+  `is_overridden` unconditionally. Any seeder write that touches
+  FormFieldValue (not just FormLine) is a firm-wide production mutation —
+  gate it on an actual schema TRANSITION, never on "the line is computed".
+  Swept the other seeders (1065/1041/ga700/…): they only delete FFVs of
+  REMOVED lines — intentional, not this shape. 1120-S was the only one.
 - **s194: Lacerte's "Prior 179/SDA/Depr." is a COMBINED column** — import
   must re-key to the R018 split (cost_basis net of prior 179/bonus) and
   zero stamped bonus_pct, or written-off assets depreciate again.
