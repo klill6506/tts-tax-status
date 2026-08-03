@@ -1,9 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 187 (**the Sch C / Sch E era SHIPPED —
-Schedule C, Schedule E both pages, and recipient K-1s join the import
-lane.** Engine-scope-first proved the engine already complete; the leg is
-pure backentry schema growth, `856dfe8`, deployed by push.)*
+*Last updated: 2026-08-02, session 187 (TWO units: **① the Sch C / Sch E
+era SHIPPED** — Schedule C, Schedule E both pages, and recipient K-1s join
+the import lane (`856dfe8`, deployed); **② the GA-500 RS spec
+RECONCILIATION SHIPPED** — Ken Gate-1 approved; the spec caught up to the
+season's three Ken-ruled engine corrections, re-seeded + re-exported, GA
+band 596 green.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -52,10 +54,29 @@ only.**
   accepted all three sections (locator-only error on a bogus client
   number, no "unknown section"); prod builds from the same push/commit.
 
+### s187b shipped same day (RS `432a5b9`/`90fb04e` + tts `500_spec.json`)
+- **The GA-500 RS spec EXISTS and always did** (authored/seeded 6-25;
+  lookup code is `500` — "GA-500" 404s; the "no spec" memory hook was
+  wrong and is corrected). This unit RECONCILED it to the engine:
+  ① R-GA500-MIL per the unexecuted 7/05 over-exclusion handoff (L8
+  entered alone; the mis-transcribed authority excerpt fixed at the
+  source) · ② 7c = 7a + 7b derived, unborn count in L14 · ③ LIC =
+  IT-511 p35 children-only count via new fact `g_lic_children`, and
+  `g_lic_not_dependent` default → false (explicit assertion — Ken
+  approved the flip at Gate 1).
+- Integrity gate 20 scenarios ALL PASS (new T19 military-midrange + T20
+  BARROW shapes); re-seeded, re-exported, **id-level diff = only the
+  intended set**; tts GA-500 band + FA = 596 green. REVIEW_QUEUE s176
+  RS-sync item closed; the 7/05 handoff doc marked DONE. No engine
+  change — the spec caught up to the code.
+
 ### Next engine work per BUILD_ORDER
-Behind: **B002 row-creation family** · Ken's ② MeF (`build_irs5695`) ·
-④ year-constant ruling · Sch F / 8829 / 6198 (the remaining HARD-pile
-import gaps, only if Ken wants the lane to grow further).
+The **"August GA build unit"** is now the scoped follow-on: GA UET
+worksheet computation (line 42, direct-entry today) + the S4-8/S4-NB-18
+seeded-computed-but-never-written NOL lines. Behind it: **B002
+row-creation family** · Ken's ② MeF (`build_irs5695`) · ④ year-constant
+ruling · Sch F / 8829 / 6198 (remaining HARD-pile import gaps, only on
+Ken's go). SB 31 TY2026 military full exemption = standing RS W-item.
 
 ## Lane scoreboard: 64 FILED — 0 unfiled, 0 held
 Codex continues b009+ (Sch C/E packets gated on Ken's go + per-shape
