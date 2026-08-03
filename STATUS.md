@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 193 (**THE DUPE-CLIENT MERGE EXECUTED** —
-Ken's s192c merge-to-standalone ruling applied on prod: 276 of the 278
-duplicate S-corp pairs merged; 2 held for Ken. Data-only session — no code
-deploy, no migration.)*
+*Last updated: 2026-08-03, session 194 (**Barcode pair merged · the 2025
+Lacerte depreciation schedule imported into the asset register — all 30
+assets tie Lacerte to the dollar** · back button + entity Email shipped.
+Three deploys by push (`fd3f770` back button · `5244176` email + Barcode
+merge script · `a2940f0` S/L parser fix). No migration — 0233 latest.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -28,125 +29,132 @@ open question: set `autoDeploy: false`?
 ChatGPT-browser = the HARD pile · Codex = the import lane · **CC sessions
 = engine/tax-law work only.**
 
-### s193 shipped (Ken's s192c ruling executed — the dupe-client merge)
-- **276 of 278 duplicate business pairs merged to the standalone client**
-  (script `server/scripts/merge_dupe_business_clients_20260803.py`, dry-run
-  → apply, per-pair transactions). Per pair: the empty Jul-wave shell entity
-  deleted FIRST (the `unique_client_entity_name_type` constraint), then the
-  Feb-wave entity (FEIN + converted data) re-parented onto the Jul standalone
-  client — its TaxWise-style client_number survives. **All 278 pairs were
-  S-corps — Ken's observation confirmed in the dry run.** Zero owner clients
-  left entity-less; owners keep their 1040s. 20 merged entities that lacked a
-  2025 tax year got a fresh 2025 backfill shell via `build_federal_return`
-  (the one build path) so they stay back-entry-lane-ready.
-- **Post-verify on prod**: exactly 2 duplicate business names remain — the
-  2 flagged holds below. Spot-checks show one entity per merged client,
-  EIN present, returns intact.
-- **Rollback net**: pre-state snapshot + per-pair detail at
-  `D:\tax-test-data\dupe_merge_20260803_prestate.json` / `_apply.txt`.
-- **Emptiness-metric lesson**: seeded business shells carry 41 standard $0
-  `OtherDeduction` scaffolding rows — "has data" must exclude
-  `source=standard, amount=0` or every shell looks non-empty.
-- Three shells created 7/29 (not 7/22) were the identical empty pattern —
-  merged under the same ruling after individual verification.
+### s193 (this morning): the dupe-client merge EXECUTED
+276/278 pairs merged to the standalone client (all S-corp); 2 holds —
+**Barcode (resolved in s194, below)** and **Robert Lomax LCSW #3798
+(STILL HELD — its "shell" has data AND the same EIN as its twin; Ken's
+eyes needed)**. Detail in STATUS_ARCHIVE; rollback snapshots in
+`D:\tax-test-data\`.
 
-### ▶ THE 2 HELD PAIRS — KEN'S CALL (next decision)
-1. **Barcode Supply #1202**: BOTH sides now carry data — the standalone got
-   the s192c 1120-S draft; the owner-attached Feb entity has the FEIN
-   (14-1890165) + converted data. Likely resolution: move the FEIN + any
-   prior-year data onto #1202's entity and delete the Feb twin — but that
-   deletes an entity WITH data, so it needs Ken's explicit go.
-2. **Robert Lomax LCSW LLC #3798**: the standalone shell has data AND
-   already carries the SAME EIN as the Feb-side entity (47-2791267) — it was
-   never an empty shell. Needs eyes on what's in each before merging.
+### s194 shipped (Ken's live asks)
+- **Barcode pair merged** (Ken's go): #1202 gained the EIN / inc date /
+  NAICS / 100%-shareholder + officer rows from the twin; twin deleted
+  after copy; owner keeps his own client + 1040. One Barcode remains.
+- **Barcode 2025 depreciation imported from the Lacerte schedule** (PDF →
+  row-reconstructed text → `import_depreciation` → the R018 re-key script
+  `scripts/rekey_barcode_depreciation_20260803.py`): **30/30 assets tie
+  Lacerte's 2025 amounts exactly; L14 = 37,931 = the book number** (no
+  M-1 depreciation difference). Return carries the **§168(k)(7)
+  elect-out for class 5** (matches Lacerte's no-bonus MQ math on the 2025
+  additions). Parser fix shipped: **Lacerte prints straight line "S/L" —
+  the method regex rejected it** (the 27.5 defect class; every S/L asset
+  imported method-less with life 0). The in-app Depreciation-screen
+  import gets the fix via the same deploy.
+- **Back button** in the Slate app bar (browser-history back; hidden on
+  the Return Manager root). **Entity Email field** on the Client
+  Information screen (both serializers + both renderings, one autosave
+  lane). Both live-verified; suites green (client 1,577 · clients band
+  28 · lacerte-import band 40+6).
+- **Importer lesson (engine-adjacent, no engine change)**: the Lacerte
+  schedule's combined "Prior 179/SDA/Depr." column must be re-keyed to
+  the R018 basis split (`cost_basis` NET of prior 179/bonus) or
+  fully-written-off assets depreciate again; the importer also stamps
+  historical `bonus_pct` (a stale pct double-reduces the table basis).
+  Candidate importer hardening: derive the split automatically — queued.
+
+### ▶ Barcode return — remaining Ken inputs (detail in
+`D:\tax-test-data\1120S\barcode_supply_2025_notes.md`)
+1. **Per-vehicle sale prices** for the 3 sold vehicles (books total
+   237,361; Lacerte's 4797 report has the split). Until then the face
+   carries $0-proceeds placeholders (L4 −99,611 · K9 −9,542 · L22
+   151,493) — they become the real §1245/§1231 gains when prices land.
+2. **GA depreciation schedule** (prior federal bonus ⇒ GA basis differs).
+3. Beginning AAA (2024 M-2) · S-election date · 1125-E comp detail ·
+   401k L17 classification · GA PTE (L12 15,000) · APIC confirm.
+
+### ⚠ New watch items (s194)
+- **An L20 other-deductions override was found CLEARED** (value 0,
+  un-overridden) with a timestamp matching return-browsing, not any
+  import step. Restored via `_rollup_other_deductions`. If a TB-imported
+  return's L20 zeroes again: suspect an FFV write lane clearing the
+  override on a blank commit — capture the open screen.
+- **RS agenda add**: 4562 R003 has NO same-year-acquired-and-sold rule
+  (Pub 946: no deduction). Engine NOT changed (spec-silent); the Barcode
+  F350 is keyed method NONE meanwhile.
 
 ### Codex: resume state (unchanged from s192)
-b027 re-staging + cleanup endpoint per handoff §12b, PLUS the s192/s192b
-addenda: state-refund, line-20, and box-12 packets are lane-eligible —
-first packet of each shape is its own smoke test; re-check any payload
-authored under the old dated-payments "INSTEAD" wording. The s192 deploy
-is live (verified via the Render timeline during s192c).
+b027 re-staging + cleanup endpoint per handoff §12b + the s192/s192b
+addenda. The s192 deploy is live.
 
-### Next engine work — queue (awaiting Ken's sequencing, carried from s192b)
-**⚠ Reframe from the s192b triage: many "unsupported" forms have FULL
-engine support already** — their gap is lane schema only (the s185/s192
-pattern, one session each): **8880** (f8880_* taxpayer scalars) · **8962
-annual method** (s106e) · **2441** · **8863** · **5695** · **8606**
-(compute_8606 exists) · **4797** (f4797_* facts) · **6252** · **7203** ·
-**1116**. Bigger builds (engine + lane): **Sch F into the lane** ·
-**8889/HSA completeness** (blocks 3 — top of the b014 list) · **7206
-SEHI linkage** · **1099-G unemployment** · **1099-MISC 8z** · **8839** ·
-**8824**.
-**Other queued:** the TB default-template Rent/Taxes computed-line fix
-(spawned s192c task) · per-activity QBI carryforward · 1099-R
-printed-aggregate fallback (RS fact granularity decides) · RentalProperty
-`owner` + GA RIE rental pull · DividendIncome US-obligation field (GA S1-10
-structured) · GA payment line from dated state payments · shell-lookup
-disambiguation metadata (PII call) · packet preflight tooling
-(page-vs-invoice) · confirm dialog on the entity editor's "Import trial
-balance" nav item (re-runs the import on click).
-**Ken's-call items:** the 2 held dupe pairs (above) · the cleanup browser
-screen · 1040-X + non-GA scope · shell creation authority (MCURLEY
-duplicate blank shells need a data cleanup ruling).
-**Needs reproduction on prod before any build (carried):** D_8995_STALE ·
-the BARROW GA LIC claim · the BENKOSKI card-creation family (= queued B002).
-**Behind those (unchanged):** August GA unit (UET line-42 worksheet +
-S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
-year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
-**RS agenda:** 8995 spec correction (rental rows) + R-EIC-WSB-SE (carried).
+### Next engine work — queue (awaiting Ken's sequencing, carried)
+**Lane-schema-only (engine-complete)**: 8880 · 8962 annual · 2441 · 8863 ·
+5695 · 8606 · 4797 · 6252 · 7203 · 1116. **True builds**: Sch F lane ·
+8889/HSA (blocks 3) · 7206 · 1099-G · 1099-MISC 8z · 8839 · 8824.
+**Other queued:** TB default-template Rent/Taxes computed-line fix ·
+depreciation-importer prior-split hardening (s194) · per-activity QBI
+carryforward · 1099-R printed-aggregate fallback · RentalProperty `owner`
++ GA RIE rental pull · DividendIncome US-obligation field · GA payment
+line from dated payments · shell-lookup PII metadata · packet preflight ·
+TB-import nav confirm dialog.
+**Ken's-call items:** the Lomax held pair · the cleanup browser screen ·
+1040-X + non-GA scope · MCURLEY blank-shell cleanup ruling.
+**Needs repro before build (carried):** D_8995_STALE · BARROW GA LIC ·
+BENKOSKI card family (= queued B002).
+**Behind those:** August GA unit (UET line-42 + NOL) · B002 family · MeF
+`build_irs5695` · year-constant ruling · 8829 / 6198. SB 31 = RS W-item.
+**RS agenda:** 8995 rental rows · R-EIC-WSB-SE · **4562 same-year-disposal
+rule (new, s194)**.
 
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s194: Lacerte's "Prior 179/SDA/Depr." is a COMBINED column** — import
+  must re-key to the R018 split (cost_basis net of prior 179/bonus) and
+  zero stamped bonus_pct, or written-off assets depreciate again.
+- **s194: disposal math runs at sales_price=0** the moment date_sold is
+  set (`sales_price is not None` — the field defaults 0) — a sold asset
+  without proceeds entered flows a phantom full-basis loss to L4/K9.
 - **s193: seeded business shells are NOT FFV-empty** — 41 standard $0
-  OtherDeduction rows per shell; any "is this entity empty" check must
-  exclude `source=standard, amount=0`.
-- **s192: an unknown `sr_py_filing_status` computes silently wrong** —
-  the §111 std-deduction lookup returns $0 basic for an unrecognized
-  status. Staging validates the enum; the browser UI does not (CharField).
-- **s192: the lane never sends Schedule 1 line 1** — `sr_*` inputs only;
-  the worksheet owns line 1/8z when engaged (disengage never clobbers a
-  pure direct entry — that manual path is for the RED exception cases).
-- **s191: the 8867 answer rows are cascade-managed.** Un-attested compute
-  BLANKS every non-overridden 8867 value; attested compute OVERWRITES
-  everything (even overridden). Imported answers must be
-  `is_overridden=True`; attested shell + `f8867_fields` = loud warning.
-- **s191: a registry-count pin goes stale silently** when its module isn't
-  in the session's bands. When adding a rule, grep for family count pins.
-- **s190: migration-before-deploy skew on the shared DB is a CERTAINTY.**
-  NOT NULL without `db_default` 500s every insert from still-deployed
-  code (rule in DECISIONS.md). Check Render deploy timestamps vs
-  `django_migrations.applied` before diagnosing "dry-run works, live
-  fails" as a code defect.
+  OtherDeduction rows per shell; emptiness checks must exclude
+  `source=standard, amount=0`.
+- **s192: an unknown `sr_py_filing_status` computes silently wrong**
+  (staging validates; the browser CharField does not).
+- **s192: the lane never sends Schedule 1 line 1** (`sr_*` inputs only).
+- **s191: the 8867 answer rows are cascade-managed** (import as
+  `is_overridden=True`; attested shell + `f8867_fields` = loud warning).
+- **s191: a registry-count pin goes stale silently** — grep family pins.
+- **s190: migration-before-deploy skew is a CERTAINTY** — new NOT NULL
+  columns on service-inserted tables carry `db_default`; check deploy
+  timestamps vs `django_migrations.applied` first.
 - **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.**
-- **s189a: every packet page prints the PRIMARY SSN in its header** — the
-  TP|SP designator + printed worksheet columns are the owner authority.
+- **s189a: every packet page prints the PRIMARY SSN** — TP|SP designator
+  is the owner authority.
 - **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty.**
 - **s188: the TaxWise invoice number is NOT the Delvio client number.**
-- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override**
-  (unchanged by its s192 UI surfacing — per-row box 5 always wins).
-- **s187: never import computed row columns** (staging rejects them).
-- **s187/s189b: the backentry fixture must seed EVERY form the flow
-  touches** (s192 added seed_state_refund to the commit fixture).
+- **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override.**
+- **s187: never import computed row columns.**
+- **s187/s189b: the backentry fixture must seed EVERY form the flow touches.**
 - **s186: a "reproduced engine defect" can be shell residue.**
-- **s186/s192: sch1_fields is for spec-typed INPUT lines only** (11/20/21).
+- **s186/s192: sch1_fields = spec-typed INPUT lines only** (11/20/21).
 - **s185: Sch A 5a is DERIVED; explicit 0 restores the derived path.**
 - **s184: blank prior-year 2210 COMPUTES the 90% fallback.**
 - **A correction payload must send explicit 0** — omit preserves.
 - **`replace_documents` does NOT clear overrides or taxpayer scalars.**
 - **The dry-run IS the commit, rolled back.**
 - GA `LIC-NODEP` gates the whole LIC; set when GA prints 17a/17c.
-- Flat `est_payment_q1..q4` drive 1040 line 26; dated
-  `federal_estimated_payments` drive only the §6654 accrual.
+- Flat `est_payment_q1..q4` drive 1040 line 26; dated rows drive only §6654.
 - ⚠ PS 5.1: inline `python -c` fails silently — always exec a script file.
+- ⚠ The entity editor's "Import trial balance" nav item re-runs the
+  import ON CLICK (confirm dialog queued).
 
 ---
 
 ## Standing gates
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
-- Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s193 touched neither — data-only session).
-- `pytest tests/test_flow_assertions.py` after any compute change (none in s193).
+- Rule Studio spec required before touching `compute*.py` / `renderer.py` /
+  the depreciation engine (s194 fetched the 4562 spec; engine deliberately
+  NOT changed on the spec-silent same-year rule — flagged instead).
+- `pytest tests/test_flow_assertions.py` after any compute change (none in s194).
 - Dev environment shares the **production** Supabase DB — every write is a
-  production write. No migration this session (0233 remains latest).
+  production write.
