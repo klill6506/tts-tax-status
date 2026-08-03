@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-02, session 189b (**the b011/b012 findings landed**
-— two real engine gaps fixed (Schedule 8812 SE earned income; rental QBI
-into Form 8995), the GA RIE Schedule C earned-income pull built on b012's
-live proof, three new importable QBI fields, three HOLDs verified to full
-ties. Migration 0232 applied; all bands green; pushed → deploys.)*
+*Last updated: 2026-08-02, session 190 (**the b014 production defect
+root-caused and hardened** — the two rental live-commit 500s were NOT a
+dry-run/live code split: migration 0232 was applied to the shared DB
+mid-batch, between the dry-runs and the live commits, while prod still ran
+pre-0232 code. Migration 0233 adds a durable DB-level DEFAULT; two
+regression tests pin the contract; b014's six coverage asks queued.)*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -26,88 +27,92 @@ open question: set `autoDeploy: false`?
 ## ▶ RESUME HERE
 
 ### Worker split (Ken, s184 — unchanged)
-ChatGPT-browser = the HARD pile · Codex = the import lane (kickoff now
-carries an **s189b addendum**) · **CC sessions = engine/tax-law work only.**
+ChatGPT-browser = the HARD pile · Codex = the import lane · **CC sessions
+= engine/tax-law work only.**
 
-### s189b shipped (the b011 + b012 findings; migration 0232 applied)
-- **① Schedule 8812 ACTC earned income (REAL, fixed)**: the Session-1
-  proxy `deductible_se_half × 2` returns the SE TAX (~15% of earnings),
-  not SE earnings — every SE-only return computed near-zero ACTC (b011:
-  a Sch C HOH parent got $21 instead of $2,230; the QA's 6,971 = correct
-  EIC 6,950 + that 21 — the delta factored before code was read). The
-  8812 now shares the EIC engine's Earned Income Worksheet derivation
-  (`earned_income_for_return`, new shared helper; combat pay always
-  included per §24(d)(1) — no election, unlike EIC's). Spec fact
-  `earned_income_for_actc` (SCH_8812 export, fetched) defines exactly
-  this derivation.
-- **② Rental QBI into Form 8995 (REAL, fixed)**: rentals had NO path in.
-  `RentalProperty.qbi_trade_or_business` (migration 0232; the Form 4835
-  field pattern — preparer-asserted §162 / Rev. Proc. 2019-38, default
-  NOT QBI) now feeds both the simplified 8995 and the 8995-A gather:
-  income in full, a LOSS at its Form 8582 ALLOWED portion (Reg.
-  §1.199A-3(b)(1)(iv), the existing Sch C/F convention). ⚠ AHEAD of the
-  RS 8995 spec (R-8995-QBI models Sch C rows only) — flagged, not a
-  silent divergence: RS spec-corrections agenda.
-- **③ GA RIE Schedule C/F earned income (the s189a REVIEW_QUEUE item —
-  live proof arrived in b012 and it was built)**: the filed worksheet
-  carries Schedule C **line 31 net profit** on L2 (not net of ½ SE —
-  settled by the printed page, position-verified). The GA-500 pull now
-  derives L2 from Sch C + Sch F net profit by `proprietor`. D_GA500_016
-  clears on affected shells at recompute.
-- **④ Import fields**: `qbi_loss_carryforward_prior` (8995 L3, NEGATIVE),
-  `qbi_reit_ptp_income` (L6), `qbi_reit_ptp_carryforward_prior` (L7,
-  NEGATIVE) + the rental QBI flag joined the allowlists; schema
-  regenerated; guide gained rules 6–10 (incl. printed-37-includes-38 and
-  the two-spouse-K-1 §199A owner rule).
-- **⑤ Class scoreboard for the "GA earned-income family"**: of three
-  same-family QA reports, only ONE was an engine gap — the other two were
-  a missing itemize election (s189a) and owner-tag transcription.
-- **⑥ Verified ties (CC dry-runs on the shared DB, staged batches
-  `b011c3/b011c4-ccverify`, never committed)**: the SE-EIC/ACTC return
-  (payload verbatim — engine only), the rental-QBI return (+ QBI flag,
-  + expected 37 = the printed 18,711: line 37 includes the 728 penalty —
-  the standing trap, bitten in transcription), and the owner-tag return
-  (W-2s → spouse per TP|SP designators; div/capital → taxpayer per the
-  worksheet columns). Exact corrections written into the HOLD files.
-- Tests: commit band 27 (incl. the SE-EIC/ACTC end-to-end pin + two
-  rental-QBI pins; fixture now seeds SCH_8812 — the s187 lesson again),
-  RIE pull 30, 8812 scenarios 20 + render 3, wide sweep 708, flow 521 —
-  all green.
+### s190 shipped (the b014 defect)
+- **The 500s explained, to the second (Render logs + django_migrations)**:
+  b014c2 dry-runs 03:09:19–24Z all tied → migration 0232
+  (`qbi_trade_or_business` NOT NULL) applied to the shared DB at
+  **03:09:29Z** from the s189b dev session → live commits 03:09:36Z and
+  03:10:20Z 500'd with `NotNullViolation` (prod still ran s189a code,
+  whose rental INSERT omits the column; Django drops the Postgres DEFAULT
+  after an AddField backfill) → the s189b deploy went live 03:26Z and
+  closed the window. The two no-rental returns committed fine because
+  neither inserts rental rows. **No dry-run/live code defect exists** —
+  the two paths are one code path.
+- **Migration 0233 (applied)**: `db_default=False` on
+  `RentalProperty.qbi_trade_or_business` — the column keeps a
+  Postgres-level DEFAULT, so a pre-deploy service inserting without the
+  column can never NULL-violate again.
+- **New standing rule (DECISIONS.md, cross-cutting standards)**: any new
+  NOT NULL column on a table the deployed service inserts into carries
+  `db_default=` (or is nullable). The shared dev/prod DB makes
+  migration-before-deploy skew a certainty, not a risk.
+- **Regression tests** (`test_backentry_commit.py`, band now 29):
+  `test_dry_run_tie_commits_live_same_merge_b014` (dry-run TIE ⇒ live
+  commit under the same merge mode lands with the same verdict, on the
+  failing shape: loss rental + direct depreciation +
+  `active_participation: false` + prior unallowed passive + zero-dollar
+  K-1 shell, over existing rows via replace_documents) and
+  `test_rental_qbi_column_keeps_db_default_b014` (the schema pin).
+- Bands green: backentry commit 29, flow 521, reconcile + markfiled 18.
+- **Both held returns verified re-commitable** (CC rolled-back live-path
+  runs on the shared DB): the 3-rental return ties under
+  `replace_documents`; the 1-rental+K-1-shell return ties plain.
+
+### Codex: resume state
+Re-POST the two b014c2 live commits — no payload changes: the 3-rental
+return with `{"merge": "replace_documents"}` (its shell carries rows), the
+rental+K-1 return without merge. Both tie. b014's staging limit and
+frozen-batch/new-key correction behavior stay as-is (unchanged, by design).
 
 ### Next engine work — queue
 **Ken's s189 lane-extension trio stands as ruled (s188 close), UNCHANGED:**
 - ① Taxable state refund joins the lane · ② IRA deduction (Sch 1 L20)
   joins `sch1_fields` (GATE: RS spec line 20 input-typed) · ③
   `amt_medicare_wages_agg` editable browser-UI surface.
-**Coverage gaps queued behind Ken's sequencing** (b012 triage, all HOLD):
-Schedule F · 8889/HSA · 8606 · 8824 · 1099-MISC 8z lane extensions.
+**Coverage gaps queued behind Ken's sequencing** (b012 + b014 triage, all
+HOLD; b014 blocking counts in parens):
+- 8889/HSA inputs + compute (blocks 3 held returns — top of the b014 list)
+- 2441 + GA IND-CR 202 child-care flow (blocks 2)
+- 8606 nondeductible IRA + GA education-credit direct inputs (blocks 1)
+- Return-level 1099-R printed-aggregate fallback when payer detail is
+  absent (blocks 1) — the `amt_medicare_wages_agg` pattern: fallback
+  SOURCE only + explicit warning/provenance; RS spec fact granularity
+  decides how it may exist (the s188 8959 rule).
+- Prior-year QBI loss carryforward **by activity** (s189b landed the
+  return-level fields; b014 asks per-activity) (affects 1)
+- 4797 business-property sale (a rental disposition can't ride 8949 rows)
+  (blocks 1)
+- Schedule F · 8824 · 1099-MISC 8z (carried from b012).
 **Behind those (unchanged):** August GA unit (UET line-42 worksheet +
 S4-8/S4-NB-18 NOL) · B002 row-creation family · MeF `build_irs5695` ·
-year-constant ruling · Sch F / 8829 / 6198. SB 31 TY2026 military = RS W-item.
+year-constant ruling · 8829 / 6198. SB 31 TY2026 military = RS W-item.
 **RS agenda:** 8995 spec correction (rental rows) + R-EIC-WSB-SE (carried).
-
-### Codex: resume state
-Three b011 HOLDs re-stageable (two need the deploy; the owner-tag one
-does not). b012's nine coverage-gap HOLDs stay held. The b012 QBI-
-carryforward return was already filed and needed nothing.
 
 ---
 
 ## Known traps (carried — do not re-learn)
+- **s190: migration-before-deploy skew on the shared DB is a CERTAINTY.**
+  A NOT NULL column without `db_default` 500s every insert from the
+  still-deployed code until the deploy lands (the b014 incident; rule now
+  in DECISIONS.md). Check the Render deploy timestamp against
+  `django_migrations.applied` before diagnosing a "dry-run works, live
+  fails" report as a code defect.
 - **s189a/b: FACTOR THE DELTA INTO KNOWN CONSTANTS FIRST.** Five of six
   b010–b012 "engine defects" dissolved or localized by arithmetic before
-  any code was read (std-vs-itemized · 22%×gap · 5.19%×base · 15%×(SE-tax
-  −2,500) · the included penalty).
+  any code was read.
 - **s189a: every packet page prints the PRIMARY SSN in its header** — the
   TP|SP designator column + the printed worksheet columns are the owner
   authority.
 - **s189b: 1040 line 37 as printed INCLUDES the line-38 penalty** —
-  now also a guide rule (8) with a pre-staging arithmetic check.
+  guide rule 8 with a pre-staging arithmetic check.
 - **s188: the TaxWise invoice number is NOT the Delvio client number.**
 - **s188: `amt_medicare_wages_agg` is a FALLBACK, not an override.**
 - **s187: never import computed row columns** (staging rejects them).
 - **s187/s189b: the backentry fixture must seed EVERY form the flow
-  touches** (SCH_8812 was the latest miss — ACTC silently 0 in tests).
+  touches** (SCH_8812 was the latest miss).
 - **s186: a "reproduced engine defect" can be shell residue.**
 - **s186: sch1_fields is for spec-typed INPUT lines only** (11/21).
 - **s185: Sch A 5a is DERIVED; explicit 0 restores the derived path.**
@@ -126,8 +131,7 @@ carryforward return was already filed and needed nothing.
 - `git pull origin main` at session start; push with `git push origin HEAD:main`.
 - Never `git stash`, never `checkout` mid-session.
 - Rule Studio spec required before touching `compute*.py` / `renderer.py`
-  (s189b fetched SCH_8812 + 8995 exports; the 8812 fix implements the
-  spec's own fact note; the rental feeder is a FLAGGED spec-ahead).
-- `pytest tests/test_flow_assertions.py` after any compute change (s189b: 521 green).
+  (s190 touched neither — models/migration/tests only).
+- `pytest tests/test_flow_assertions.py` after any compute change (s190: 521 green).
 - Dev environment shares the **production** Supabase DB — every write is a
-  production write. Migration 0232 is applied there.
+  production write. Migrations 0232 + 0233 are applied there.
