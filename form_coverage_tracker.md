@@ -1,5 +1,13 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-03 session 192 — LANE EXTENSIONS, NO FORM-LEG CHANGE.** The
+> STATE_REFUND worksheet (complete since NEXT-UP #9) and Schedule 1
+> line 20 became IMPORTABLE through the back-entry lane (`sr_*` taxpayer
+> fields · `sch1_fields` "20"); `amt_medicare_wages_agg` (8959 line-1
+> fallback) gained a browser-UI edit surface. All legs of the affected
+> forms were already green — this session changed input surfaces only
+> (backentry allowlists, serializer, two screens; zero compute/render).
+
 > **2026-07-31 session 172 — BACKLOG LEG 2 ITEMS 8 + 16: THE TWO KEN-RULED
 > DERIVES (Schedule A §165(d) gambling cap · EIC self-employed).**
 > SCHEDULE_A compute leg: `scha_gambling_winnings` now DERIVES from the
