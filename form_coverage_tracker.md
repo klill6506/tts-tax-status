@@ -1,5 +1,16 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-04 session 199 (cont.) — 1099-R CODE W COMPUTES + the D_RET_005
+> coverage gate (backlog item 9).** Code W (LTC-rider charge, combined
+> arrangement) joins `SUPPORTED_CODES`: §72(e)(11)(A)(ii) excludes the charge
+> from gross income by statute, so it rides the code-Q absolute-zero branch —
+> a blank box 2a can never tax the gross. AHEAD of RS `R-RET-CODE` (the
+> code-6 precedent; RS agenda). `D_RET_005` (IRA deduction + taxable SS
+> circular) now requires an employer-plan coverage signal (W-2 box 13 either
+> owner / Sch 1 line 16): Pub 590-A applies Appendix B only when covered;
+> uncovered = full deduction, no MAGI test, no circle. Registry description
+> changed → `seed_rules` on deploy. No migration.
+
 > **2026-08-04 session 199 (cont.) — FORM 8995: the §199A source enumeration
 > CONVERGED (backlog item 8).** The reported "stale 8995 state" was refuted —
 > the subject return's deduction was correct and engine-computed from a
