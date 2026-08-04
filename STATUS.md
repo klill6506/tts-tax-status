@@ -1,12 +1,19 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 206 (Form 8283 joins the import lane).
-Ken's relayed 1040 backlog is at 18 of ~37 (next: 8606 = 046 #10). The
-1120-S pilot's speed builds ⑧–⑫ STILL await Ken's sequencing vs this
-lane; ChatGPT may CONTINUE browser-entry 1120-S pilots (s205 blockers
-deployed). The February Schedule B residue snapshot is at
-D:\tax-test-data\schb_residue_blank_20260804_175129.json. Migration
-returns.0235 is latest and APPLIED; s206 adds NO migration.*
+*2026-08-04, cross-repo (Ledger session): "+ New Client" now takes email,
+phone and address at creation — optional; only typed fields are sent; a bad
+email is refused with nothing created. Normalizing lives in ONE place
+(`apps.clients.contact`, shared by the create path and the suite API) so
+the two hub write paths cannot drift (D-97). No migration. 55 server tests
+(client+suiteapi) + 9 form tests green.*
+
+*Last updated: 2026-08-04, session 208. The MIXED-PILOT batch is
+TRIAGED AND MOSTLY WORKED (Ken sequenced it ahead of the 1040 lane, quick
+wins first): four items landed (#5 refuted→URL-tab fix · #1 residual
+dollar · #4 QBI-wage override · #6 recovery slice), #3 REFUTED as written
+(GA-700 already exists end to end), #2 and #7 are true builds NEXT. Then
+the 1040 lane resumes at **8606 (046 #10)**. Migration returns.0235 is
+latest; s208 adds NO migration.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -21,6 +28,9 @@ returns.0235 is latest and APPLIED; s206 adds NO migration.*
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 `delvio-tax`; demo = `tts-tax-demo`. **The orphan third service
 `tts-tax-app` still fails every push — Ken should delete it.**
+⚠ NEW (s208): FOUR same-day deploys during a live pilot session produced
+the pilot's #5/#6 symptoms (stale-chunk self-heal reloads + restart
+windows). Batch pushes when a pilot is actively entering.
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
@@ -28,309 +38,174 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 18 of ~37 done
+## ▶ RESUME HERE
 
-### ⚠ BATCH-047 (arrived 2026-08-04, tax-test-data ROOT, items 11–20)
-Not yet sequenced against the existing queue — live defects first per
-Ken's standing ruling. 16–20 are the same lane-schema-only pattern as
-s202–s204 (5695 · 4797 · 6252 · 8824 · 6251); 13/15 are true builds
-(1099-MISC rows · 4952); 11/12 are model+everywhere builds (name
-suffixes · non-50/50 MFJ INT/DIV owner allocation, the GA RIE feeder).
+### ✅ Done in s208 (the MIXED-PILOT batch, quick wins first — Ken's pick)
+**#5 State button (REFUTED as a routing bug, real fix shipped):** the route
+works — live-verified on the subject 1120-S (State tab → State Returns
+screen → created + opened its GA-600S, full Sched 6-8/5/3/1/2/4 rail). The
+pilot's "returns to Client Information" = the s200 stale-chunk self-heal
+RELOAD landing on the default tab, because the active tab lived only in
+component state. FIX: the editor mirrors the active tab to `?tab=` in the
+URL (deep links, F5, browser restore, the vite:preloadError reload, and
+back/forward all retain the screen; `resolveEditorTab` + 3 pins; the
+mirror is gated on returnData.id === route id so cross-editor switches
+can't freeze the pre-load default into the URL). Live-verified: reload
+retention on federal + GA-600S editors, 1040 home tab intact, Back from
+the GA-600S returns to the federal State tab.
+**#1 1065 K-1 residual dollar (CONFIRMED, fixed):** per-partner HALF_EVEN
+quantizing lost the odd dollar (−53,701 at 50/50 → two −26,850s; Σ K-1 ≠
+Schedule K). NEW largest-remainder distribution per K line across the
+whole partner set (`_allocate_line_exact` / `_exact_line_shares` →
+`allocate_all_k1s`; ties break by partner order; pct sets ≠100% are left
+for D_K1_RECON, never force-summed; the WS3a SE base rides the same
+corrected set so 14a sums too). Spec authority: RECON-K1-K
+(schedule_k1_1065_spec.json, §704). 12 new tests; flow assertions + the
+572-test sweep green. NOTE: the 1120-S uses the Ken-ratified R-K1-ROUND
+last-owner-absorbs convention — the 1065 mechanism needs its own RS
+ruling (agenda).
+**#4 Statement A W-2 wages (built as override + diagnostic):** the line
+7+8 derivation is RS-pinned (flow assertion) and STAYS the default; the
+build is the reviewed-source override the pilot asked for: `QBI_W2_WAGES`
+joins a narrow OVERRIDABLE_COMPUTED_LINES allowlist in
+SlateStandardSection (Ctrl+Enter opens the override — the old blanket
+`noOverride={computed}` premise "the FFV lane has no override write" was
+FALSE: update_fields sets is_overridden and compute respects it). State
+precedence fixed: an overridden computed line paints OVERRIDDEN, not ƒx.
+NEW warning `D_SCHK_QBI_W2_OVERRIDE` names override vs derivation (Rev.
+Proc. 2019-11 / Reg. §1.199A-2 cited; equal-to-derivation = "redundant,
+clear it"); seed_rules run. Live-verified on the subject 1120-S: the
+103,365 override persisted through compute, K-1 share = 103,365, the
+diagnostic fires with both figures. The full Rev. Proc. 2019-11 wage
+WORKSHEET has no RS spec → RS agenda, not improvised.
+**#6 save-timeout recovery (root-caused + slice built):** the pilot's
+symptoms line up with the four same-day deploy restarts, not one slow
+endpoint — s168's serializer fix is in place (fresh_return is prefetched)
+and s119 already provides bounded 30s timeouts, saved_revision acks,
+SaveStatusIndicator retry, and idempotency keys on nested creates. BUILT
+NOW: explicit failure + Retry states on the three screens that lied or
+dangled — Return Manager (both chromes; a failed list fetch showed "No
+returns yet"), the editor Preparer tab ("Loading preparers..." forever),
+and PreparerManager. REMAINING (next session, design build): idempotency
+keys on the taxpayer/fields PATCH lanes + newer-edit-wins arbitration +
+per-field unsaved indicator + bootstrap retry.
+**#3 GA Form 700 (REFUTED as written):** "the 1065 editor has no
+State/Georgia workspace" — GA-700 EXISTS end to end (seed_ga700 S-10,
+FORMULAS_GA700, the GA700_FEDERAL_PULL, ga700_2025 AcroForm map,
+RULES_GA700, GA_700_SECTION_TABS, create path on the 1065 State tab). The
+pilot never found the State tab (see #5; the ?tab fix helps). NEXT: a
+verification pass against the pilot's fixture (GA net income −43,621,
+zero tax) — real gaps (e.g. the GA 4562 attachment = open item 6) go
+through triage.
+**Plus: FOUR rotted pins repaired** (red on main since 8f6a78e/74c1bad —
+the s198 class): test_returns 1065 seed counts 356→401 / sections 10→11,
+and the 1065 render pin still expecting "(102)" after s195c's
+the-form-owns-the-parentheses fix.
+Gates: server touched-suites + flow assertions sweep green · client
+vitest **1,628** (136 files) · tsc 0. NO migration.
 
-Ken interrupted the Georgia lane 2026-08-03 to clear a backlog relayed from
-ChatGPT (five source files under `D:\tax-test-data\CC Code Changes\` + the
-047 file at the root). **Ken's order: work them in order, then return to
-Georgia.** ⚠ Mostly accurate, but FOUR prescriptions proved wrong-layer or
-false — verify each claim before building.
+### ▶ NEXT: MIXED-PILOT #2 + #7 (true builds), then the 1040 lane
+**#2 item K BOY/EOY liability columns** — real build, migration: the app
+models ONE share per §752 bucket; the 2025 K-1 item K prints beginning AND
+ending for all three classes (DB → Slate → import/export → renderer → MeF
+→ roll-forward → diagnostics; next-year BOY defaults from prior EOY).
+**#7 K-1 basis/at-risk allowed-loss worksheet (1040 side)** — the
+basis-limited checkbox only FLAGS today; the full box-1 loss routes to
+Schedule E. Build the worksheet (beginning basis · additions ·
+distributions · current loss · allowed · suspended c/f), route only the
+allowed loss, keep QBI un-double-limited, persist the suspension.
+*(Adjacent to the parked K-1→individual GAP family — consider designing
+together.)* Then the 1040 lane resumes: **8606 (046 #10)**, then 047
+items 16-20 · the true builds.
 
-### ✅ Done s198–s201 (all revert-proved, all deployed — detail in STATUS_ARCHIVE / BUILD_ORDER)
-1–5 (s198): excess SS per person (`5f0adb2`) · Sch D QOF allowlist ·
-§179 base + K-1 income · SS worksheet per-line rounding · the $2 Sch D
-case REFUTED (payload omitted 1099-DIV box 2b).
-6–11 (s199): GA RIE ← Schedule E page 1 (`df515c1`, mig 0235,
-`schedule_e_page1_by_owner`, suspended losses never reach GA) ·
-SCHED_L_DEPR_TIE gated on the form's own lines · 4562 convention
-§168(d)(2) correction · D_8995_STALE refuted → one `qbi_engaged_db()` ·
-1099-R code W by statute + D_RET_005 coverage gate · dividend
-summary-row 1a half-refuted → failed-save revert channel + Ken's
-Option A threshold ruling BUILT.
-12–13 (s200/b): Sch C home-office election refuted at the prescribed
-layer → `SlateCheck` optimistic checkbox (⚠ 47 screens / 88 bare sites
-remain — DEFERRAL_AUDIT) · the blank-app unmount → `ScreenErrorBoundary`
-+ `vite:preloadError` self-heal (`4047d07`).
-14 (s201): "VARIOUS" 8949 date REFUTED at every layer — the subject
-row's column (b) was blank; repaired live, 2 pins (`56b04d7`).
+### Artifacts left on the shared DB (deliberate, s208)
+- The subject 1120-S now HAS its GA-600S (created during #5 verification)
+  and carries the 103,365 QBI_W2_WAGES override (matches the source
+  return) + its D_SCHK_QBI_W2_OVERRIDE warning awaiting source-verified.
+- seed_rules run locally (registers D_SCHK_QBI_W2_OVERRIDE); rides
+  build.sh on deploy anyway.
 
-### ✅ Done in s202 (deployed `707a5ea`)
-15. **Form 8880 joins the import lane (046 #5 = N-Z #3).** 8 `f8880_*`
-    facts (RS spec verbatim) + deferral-override staging warning; the
-    engine was complete since s149/s173. 8 tests incl. both source
-    shapes. Subject return #4303 needed no repair.
-
-### ✅ Done in s203 (deployed `d896b31`)
-16. **Form 2441 joins the import lane (N-Z #7).** 6 `f2441_*` facts +
-    `care_providers` row section + 3 staging warnings (claim-flag
-    disengage, DCB/earned-income override-shadows-derive). Printed 9b =
-    HOLD (spec models no prior-year fact). 9 tests incl. the PACE $1,200
-    shape.
-
-### ✅ Done in s204 (this session — commit pending push)
-17. **Form 8962 / 1095-A joins the import lane (046 #4 = N-Z #8).** The
-    engine has been complete since s106e (monthly + annual methods,
-    Part IV allocations, SEHI iterative); only the lane was missing.
-    Added: the 9 `f8962_*` Taxpayer facts (the RS spec's 6 input facts
-    verbatim — live spec re-fetched 2026-08-04, semantically identical
-    to the cache — plus the three s106e annual line-11 fields, the
-    Ken-directed ahead-of-spec surface the 046 item explicitly asks
-    for) + a NEW `form_1095as` row section (policy header + the 36
-    monthly A/B/C columns) with Part IV `allocations` NESTED per policy
-    (the model FKs the policy, not the return — the first nested child
-    on a new row family; months 1–12 ordered, pcts 0.00–1.00 validated
-    beyond model clean). NO migration. Staging checks: unknown
-    `f8962_state` = ERROR (compute silently falls back to the
-    contiguous FPL table); line-11 facts without `f8962_all_year_same`
-    = WARNING (the form computes NOTHING and no diagnostic fires — the
-    2441 claim-flag class); line-11 + 1095-A rows = WARNING (the
-    methods never mix). Schema regenerated (8962 moved OUT of the
-    NOT-SUPPORTED prose); handoff guide + AUTHORING_GUIDE s204 section
-    + kickoff s204 addendum shipped — held 8962 packets are
-    lane-eligible again, first one is its own smoke test. 12 new tests
-    (7 staging + 5 commit) incl. the 046 #4 annual shape (8,222 /
-    8,086 / 7,495 → net PTC 591 → Sch 3 line 9), the partial-year
-    monthly no-annualizing pin, the Table-5-limited excess repayment,
-    the ≥400% full repayment, and the 50% Part IV allocation halving
-    the aggregate. Gates: staging+commit 104 · 8962 sweep 61 ·
-    flow 521.
-    **⚠ The relayed N-Z #8 regression target is CONTRADICTED by
-    i8962:** it wants a full $4,632 excess-APTC repayment at household
-    income $45,995 = 305% FPL, but Table 5 (TY2025, fetched live
-    2026-08-04) caps a single filer under 400% at $1,625, and repayment
-    is "the smaller of line 27 or line 28". Full repayment is correct
-    only at line 5 ≥ 400. Pinned to the IRS table ($1,625), NOT the
-    relayed number; the entry session must verify the filed
-    line 5/28/29 against the actual packet (kickoff addendum warns).
-
-### ✅ Done in s205 (this session — the 1120-S pilot's release blockers, items 1–7)
-Ken interjected ChatGPT's first 1120-S back-entry pilot handoff
-(`Delvio 1120-S pilot: verified fixes and speed improvements`, relayed
-2026-08-04). Items 1–7 worked in order, verify-first:
-1. **Odd-dollar 50% meals (P0) — CONFIRMED, fixed.** Both halves of
-   x.50 rounded HALF_UP independently (22,397 → 11,199 + 11,199).
-   `D_MEALS_NONDED` is now the RESIDUAL of the book total against the
-   rounded deductible — RS R010's own invariant — on BOTH the 1120-S
-   and 1065 formula tables; K16c/M1_3b/M2_5a all ride it. 6 tests.
-2. **M-2 AAA distribution cap (P0) — ⛔ QUEUED FOR KEN** (open item 18):
-   the pilot demands uncapping line 7 (full distribution, negative
-   ending AAA), but i1120s p.50 verbatim says "Decrease AAA (but not
-   below zero) by property distributions" and the cap is Ken-ratified
-   (RS 1120S_M2 R002, 2026-07-13). Recommendation recorded below.
-3. **Form 7203 Part III lines 42–46 (P0) — CONFIRMED, fixed.** The K
-   map stopped at line 41: a cash charitable contribution reduced
-   NOTHING. Lines 42–46 now feed from K12a+K12b / K12c / K12d / K12e /
-   K16f (i7203 Part III col (a); the RS 7203 spec is a draft with no
-   Part III map — ahead-of-RS, agenda'd). Verified the template is
-   Rev. 12-2022 (the f7203_2025 field-map COMMENTS mislabel rows 38+ —
-   comments only, widgets align). Carryforward FIELDS for 41–46 are a
-   migration — DEFERRAL_AUDIT. 3 tests incl. the pilot's exact
-   6,000+992 → 6,992 shape.
-4. **GA depreciation conformity (P0) — REFUTED as prescribed; the DATA
-   was mistranscribed; repaired live.** The phantom 9,796 GA
-   subtraction was one asset keyed with 100% prior-year BONUS on a
-   2024-09-10 acquisition — impossible (TY2024 bonus was 60%,
-   §168(k)(6)); a full year-one write-off can only have been §179,
-   which GA conforms to (HB 1199). Re-keyed `sec_179_prior`=40,000,
-   recomputed, ran the GA-600S resync chokepoint: pair 6,660/6,660,
-   GA income **228,377** = the pilot's required result, ZERO law
-   change. (The pilot's "0/0" presentation ask contradicts Ken's s197
-   gross-pair ruling; the net is identical — not re-litigated.) An
-   impossible-bonus diagnostic → RS agenda.
-5. **Schedule B 14b (P1) — the field EXISTS at every layer** (seeded,
-   rendered behind 14a=Yes, test-pinned). Two real defects behind the
-   report: the sub-question only appears after the SLOW save round
-   trip serves 14a back (the s200 class), and **⚠ a February-era
-   backfill wrote 'false' into ~324 returns' Schedule B booleans**
-   (blank-≠-No violation — faces print "No" for questions never
-   answered; open item 19). The pilot return's 14a/14b now both true.
-6. **Client Info persistence (P1) — CONFIRMED, fixed, live-verified.**
-   Both debounced autosave lanes (entity + return-info) CLEARED their
-   pending timer on unmount — navigating within ~800ms of an edit
-   silently discarded it (officers persisted: their lane commits on
-   blur). NEW unmount flush fires the pending save instead.
-   Live-proven on the pilot return via the dev server: value typed →
-   navigate at 200ms → persists. ALSO: `create_state_return` now
-   copies the federal header cluster (staff preparer, signature date,
-   product/service, business code, S-election date, shareholder count,
-   accounting method — only `preparer` was carried), so a new GA-600S
-   no longer opens blank. 1 test.
-7. **Schedule L balance diagnostics (P0 gate) — CONFIRMED, built.**
-   The 1065 has had D_L_BALANCE_BOY/EOY since S-4; the 1120-S had
-   NOTHING — a visibly out-of-balance Schedule L produced zero
-   findings. NEW `rules_1120s_l.py` per RS 1120S_SCHL (live-fetched):
-   D_1120S_L_BALANCE_BOY/EOY (**errors**, with the dollar delta),
-   D_1120S_L_M2_TIE (warning), D_1120S_L_EXEMPT (info; B11 suppresses
-   — the same gate open item 15 wants for SCHED_L_DEPR_TIE). Spec D007
-   (item F ≠ L15d) holds BY CONSTRUCTION (the renderer fills item F
-   from L15d); D004–D006 queued. ⚠ seed_rules must run on deploy
-   (rides build.sh). 4 tests.
-   Gates: s205 tests 14 · meals/7203/flow sweep 629 · 1065-L+MeF+face
-   66 · tsc 0 · vitest 1,611.
-
-### ✅ Done in s206 (this session — commit pending push)
-18. **Form 8283 joins the import lane (backlog item 18; the fourth
-    lane-schema-only section).** The engine has been complete since s121
-    (row_analysis Section A/B routing, the Sch A line-12 bucket feed
-    R-8283-SCHA12, 13 diagnostics) — only the lane was missing. Added:
-    a NEW `noncash_contributions` row section over NoncashContribution
-    (47 allowlisted fields = all 46 RS-spec input facts + `entry_basis`,
-    importable BY DESIGN — 'source_summary' is the honest
-    packet-total-without-detail marker from QA batch-001 item 15; it
-    rewords diagnostics, never clears them). NO migration. Staging
-    warnings `_warn_8283_inputs`: ① the J1 override-shadows-derive
-    shape per bucket (a nonzero flat scha_charitable_noncash_fmv /
-    capgain_50org SILENCES the rows' feed — equal = redundant,
-    different = mistranscribed, the 8880 wording); ② a
-    conservation/historic row = the one feed withhold (D_8283_006, the
-    HOLD trigger) said at staging; ③ `_warn_elect_itemize` extended —
-    8283 rows count as Schedule A facts for the b010 election nudge.
-    Schema regenerated (+8283 supported prose); handoff guide +
-    AUTHORING_GUIDE s206 section + kickoff s206 addendum shipped —
-    held 8283 packets are lane-eligible again, **starting with the
-    JACKSON shape** (filed + tied, held at cleanup on D_8283_001,
-    $1,000 line-12: rows clear it IF his packet prints detail; if not,
-    source_summary is the honest state and the hold is CORRECT).
-    10 new tests (6 staging + 4 commit) incl. the Jackson $1,000 shape
-    (row lands, SCHEDULE_A 12 = 14 = 1000), the 900/400 bucket split
-    (engine splits, not the payload), source_summary honesty, and
-    replace_documents. Gates: staging+commit 114 · 8283/Sch A sweeps
-    67 · recon+flow 534.
-
-### ▶ NEXT — 8606 (046 #10), unless Ken sequences the pilot's speed builds
-The pilot's items 8–12 are BUILDS awaiting Ken's call: ⑧ an
-1120-S/GA-600S back-entry lane (multi-session) · ⑨ an S-corp
-answer-key/tie panel · ⑩ a packet pre-indexer · ⑪ depreciation-editor
-automation IDs + atomic save · ⑫ an entity closeout gate. Absent that
-call the 1040 lane continues: **8606 = 046 #10**, then 047 items 16–20
-(5695 · 4797 · 6252 · 8824 · 6251, the same lane pattern) · the true
-builds.
-
-### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
-Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
-
-### Then, in order
-- **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane
-  `schedule_fs` (N-Z #5) · SS lump-sum election (N-Z #6) · 1099-G unemployment
-  (N-Z #9) · multi-state import NC + MO (N-Z #10).
+### ⛔ TWO KEN DECISIONS STILL BLOCK A–M ITEM 7 (the 4562 assets)
+Unchanged from s207 — see "Open items" #13/#14.
 
 ---
 
 ## ⚠ Open items for Ken
+*(carried from s207 except as noted)*
 
 1. **The §179 base needs a rule for three components I would not guess.**
    Included: nonpassive K-1 ordinary income (Reg. §1.179-2(c)(6)(ii)-(iii)).
-   **Excluded pending Ken/RS:** §707(c) guaranteed payments (compensation, not
-   a distributive share — arguable), ordinary Form 4797 gain from an active
-   business, and 1041 beneficiary K-1s. All three can only UNDERSTATE the base,
-   never inflate a deduction. The RS 4562 spec names
-   `active_trade_or_business_taxable_income` but never enumerates it.
-2. **A rotted test pin was found RED on `main`** and repaired (s198):
-   `test_sch123_scenarios`'s Schedule 8812 L_24 assertion hardcoded the EIC
-   addend as 0, written before the Topic 7 EIC engine landed. Worth asking how
-   long the suite has been red — nobody re-ran it.
-3. **RS `GA600S R001`** still describes the GA-600S addition as bonus-only —
-   the presentation Ken rejected in favour of the gross pair (s197). Same net,
-   different face. Fix RS-side.
-4. **RS `R-GA500-DEPR` is stale** — still denies GA §179 conformity,
-   contradicting HB 1199 and the GA600S spec. It governs the auto-populate that
-   GAP 3 *is*.
-5. **GA §179 does NOT cover certain REAL PROPERTY** (Ken, s196);
-   `_calculate_state_ga` applies one flat limit with no property-type test.
-   Needs an RS rule.
-6. **No GA 4562 is produced**, though both GA-600S copies now say "attach GA
-   4562" and the filed copy's "(Attach Schedule)" lines carry the figures.
-7. **Other GA-600S returns will move on their next recompute** (s197). One test
-   entity has federal 44,444 vs Georgia 8,889 where the return previously
-   showed no depreciation modification at all.
-8. **The Lacerte PDF importer does not read the GA depreciation pages** —
-   `state_prior_depreciation` / `state_method` / `state_life` import empty.
-9. **An asset with federal bonus history and NO keyed GA prior over-depreciates
-   for Georgia.** A diagnostic is wanted; not built.
+   **Excluded pending Ken/RS:** §707(c) guaranteed payments, ordinary 4797
+   gain from an active business, 1041 beneficiary K-1s. All three can only
+   UNDERSTATE the base. The RS 4562 spec never enumerates.
+2. **Rotted pins keep surfacing** — s198 found one, s208 found FOUR more
+   (red on main for weeks; scoped sweeps never touch them). The full
+   server suite (~6,900) is not run routinely. Worth a weekly full-suite
+   cron or a pre-push canary set.
+3. **RS `GA600S R001`** still describes the addition as bonus-only — the
+   presentation Ken rejected for the gross pair (s197). Fix RS-side.
+4. **RS `R-GA500-DEPR` is stale** — denies GA §179 conformity vs HB 1199.
+5. **GA §179 does NOT cover certain REAL PROPERTY** (Ken, s196) — needs an
+   RS rule; `_calculate_state_ga` applies one flat limit.
+6. **No GA 4562 is produced** though both GA-600S copies say "attach GA
+   4562" — now ALSO a MIXED-PILOT #3 follow-up (Form 700 packets include one).
+7. **Other GA-600S returns will move on their next recompute** (s197).
+8. **The Lacerte PDF importer does not read the GA depreciation pages.**
+9. **Federal-bonus-history + no keyed GA prior over-depreciates for
+   Georgia** — diagnostic wanted, not built.
 10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
 11. **GA PTET base on a separately stated gain** — unchanged from s195.
-12. ~~046 #8's "Expected" vs `R-AGG-SUMMARY`~~ — **RULED (Option A,
-    2026-08-04) and BUILT** (s199e). **RS `R-AGG-SUMMARY` still needs the
-    spec edit** — on the RS agenda.
-13. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
-    = "8825" but `rental_property_id` is NULL), so `D_4562_DEST` still fires.
-    There is no single mechanical fix and I will not guess: return A has
-    exactly ONE rental property (an auto-link would be unambiguous), return B
-    has THREE (ambiguous — which one owns the asset?), and return C has NONE
-    at all, with a laptop asset pointing at the rental arm (there
-    `D_4562_DEST` looks CORRECT — it is probably a Schedule C asset). Ken's
-    call: auto-link only when exactly one candidate exists, or leave all three
-    for a preparer pick? Returns identified in the source file under
-    `D:\tax-test-data\CC Code Changes\`.
-14. **One of those stored assets still carries convention HY** and so computes
-    $0. The s199 parser fix protects FUTURE imports only — a code fix does not
-    refresh stored per-asset values (the s197 lesson). ⚠ Repairing it to MM
-    makes the asset compute **1,942/yr**, and the return is currently recorded
-    as an EXACT TIE — so the filed depreciation must already be reaching the
-    face another way, and the repair could DOUBLE-COUNT. Needs Ken's eyes on
-    the return before any data change.
-15. **`SCHED_L_DEPR_TIE` can still false-fire on an entity return that is not
-    required to complete Schedule L** (the Schedule B $250k test). Same shape
-    as the 1040 defect, smaller blast radius; not fixed.
-16. **Client #2969** duplicate individual entity · **retire
-    `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
-    **duplicate guard is blind to entity names**.
-17. ~~The M-2 AAA distribution cap~~ — **RULED (keep the IRS cap) and
-    BUILT (s205b).** The M-2 line-7 charge stays capped per i1120s p.50;
-    NEW `M2_DIST_EXCESS`/`L24d` bridge carries the excess into Schedule L
-    retained earnings (§1368(c) cascade), a **reconciliation statement**
-    attaches whenever L24 ≠ the M-2 endings, the D_1120S_L_M2_TIE rule
-    knows the bridge, and **distributions in excess of STOCK BASIS**
-    (§1368(b)(2) — keyed to basis per the statute, not AAA) now cap 7203
-    line 6 per i7203, print a **K-1 supplemental statement**, and ride
-    the 1040-side import offer as a loud advisory (never auto-entered —
-    the 8949 holding period is the preparer's fact). Live-proven on the
-    pilot return: L24d −1,419, Schedule L 316=316 both years, statement
-    attached, diagnostics quiet. NOTE: the pilot's answer key will still
-    NO-TIE on the M-2 line-7 FACE vs its source software (204,350 vs
-    205,769) — same equity, the IRS face; tell the entry agent.
-18. ~~The February 'false' residue~~ — **RULED and EXECUTED (s205b).**
-    4,133 boolean FFVs across 276 1120-S returns blanked (value 'false',
-    Feb-2026 mint window, not overridden; B11 auto-answer excluded);
-    rollback snapshot `D:\tax-test-data\schb_residue_blank_20260804_175129.json`;
-    script `server/scripts/blank_feb_schb_residue_s205.py`. No 1065
-    residue existed.
-19. **The N-Z #8 8962 target (s204)** — the relayed full-$4,632 repayment
-    contradicts i8962 Table 5 at the relayed 305% FPL (single cap $1,625).
-    When the packet is entered: verify the filed lines 5/28/29 against the
-    actual PDF. If the filed face REALLY repays in full under 400%, that is
-    either a TaxWise nuance we're missing (e.g. the Pub 974 SEHI line-28
-    computation) or a mistranscribed relay — escalate, don't force the tie.
+12. ~~046 #8~~ — RULED + BUILT (s199e). **RS `R-AGG-SUMMARY` spec edit**
+    still pending on the RS agenda.
+13. **The three A–M #2/#3 assets are not linked to an activity** — return A
+    has exactly ONE rental (auto-link unambiguous), return B has THREE,
+    return C has NONE (its laptop asset probably belongs to Schedule C).
+    Auto-link only when exactly one candidate, or preparer pick?
+14. **One stored asset still carries convention HY** and computes $0 — but
+    the return is recorded as an EXACT TIE, so a repair to MM (1,942/yr)
+    could DOUBLE-COUNT. Needs Ken's eyes before any data change.
+15. **`SCHED_L_DEPR_TIE` can false-fire on a no-Schedule-L entity return**
+    (the B11 gate exists on the s205 D_1120S_L_* family, not this older rule).
+16. **Client #2969 duplicate** · **retire `reparent_business_entities`** ·
+    **client-delete UI (no path exists)** · **duplicate guard blind to
+    entity names**.
+17. ~~M-2 AAA distribution cap~~ — RULED + BUILT (s205b). M-2 line-7 FACE
+    stays IRS-capped — pin equity/Schedule L, not that face.
+18. ~~February 'false' residue~~ — RULED + EXECUTED (s205b); rollback
+    snapshot in tax-test-data.
+19. **The N-Z #8 8962 target (s204)** — relayed full repayment contradicts
+    i8962 Table 5 at 305% FPL. Verify against the actual PDF at entry;
+    escalate, don't force the tie.
 
 ## The three K-1 → individual gaps (Ken's unit, parked for the backlog)
 **GAP 1** shareholder-side §179 disposition — BLOCKED on an RS 4797 rule.
-**GAP 2** Georgia Shareholder Summary — buildable; **the Lacerte artifact is
-not on disk**, ask Ken to re-send. s197's pair is what its 2b/3b would show.
+**GAP 2** Georgia Shareholder Summary — buildable; **the Lacerte artifact
+is not on disk**, ask Ken to re-send.
 **GAP 3** GA individual modifications carryover — needs open item 4 first.
+*(MIXED-PILOT #7's basis worksheet is adjacent — consider one design.)*
 
-## Carried queue (unchanged)
+## Carried queue
 **Lane-schema-only (engine-complete)**: 8863 · 5695 · 8606 · 4797 ·
-6252 · 7203 · 1116. *(8880 done s202; 2441 done s203; 8962 done s204;
-8283 done s206.)* **True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G ·
-1099-MISC 8z · 8839 · 8824.
+6252 · 7203 · 1116. *(8880 s202 · 2441 s203 · 8962 s204 · 8283 s206.)*
+**True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G · 1099-MISC 8z ·
+8839 · 8824 · **MIXED-PILOT #2 (item K BOY/EOY, migration) · MIXED-PILOT #7
+(basis/at-risk worksheet) · MIXED-PILOT #6 remainder (idempotent field-save
+lanes + newer-edit-wins + per-field unsaved indicator + bootstrap retry)**.
 **Other queued:** TB default-template Rent/Taxes computed-line fix ·
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
 1099-R printed-aggregate fallback · DividendIncome US-obligation field ·
 GA payment line from dated payments · packet preflight · TB-import nav
-confirm dialog.
+confirm dialog · ⚠ 47 Slate screens / 88 bare checkbox sites + tri-state
+selects still lack SlateCheck (DEFERRAL_AUDIT).
 **RS agenda:** 8995 rental rows · R-EIC-WSB-SE · 4562 same-year-disposal ·
 4797 shareholder-side §179 · GA §179 real-property carve-out ·
 R-GA500-DEPR conformity correction · GA600S R001 gross-pair correction ·
 §179 active-trade-or-business income enumeration (s198) ·
-`D_GA500_017` condition still lists Schedule E page-1 rental/royalty among
-the un-pulled categories — line 13 IS pulled as of s199 ·
-no RS rule polices the depreciation CONVENTION at all (`D_4562_CONVENTION`
-+ the s199 importer correction are both written straight against
-§168(d)(2)) · **R-AGG-SUMMARY threshold edit (Option A, s199e)**.
+`D_GA500_017` stale condition (line 13 IS pulled since s199) ·
+no RS rule polices the depreciation CONVENTION ·
+R-AGG-SUMMARY threshold edit (Option A, s199e) ·
+impossible-bonus diagnostic (s205 #4) · RS 7203 Part III map (draft spec) ·
+**NEW (s208): ratify the 1065 K-1 residual mechanism (largest-remainder)
+— the 1120-S R-K1-ROUND uses last-owner-absorbs; same RECON invariant,
+different tie-break** · **NEW (s208): author the Rev. Proc. 2019-11 W-2
+wage worksheet spec (MIXED-PILOT #4's full ask) before building**.
