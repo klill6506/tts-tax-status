@@ -15,6 +15,16 @@ dollar · #4 QBI-wage override · #6 recovery slice), #3 REFUTED as written
 the 1040 lane resumes at **8606 (046 #10)**. Migration returns.0235 is
 latest; s208 adds NO migration.*
 
+*s208c (2026-08-04): the PUBLIC-mirror PII history purge EXECUTED on Ken's
+order — the client surname lived in the trees of the mirror's last 4
+commits only (entered 16:15 today); those were squashed into one clean
+commit and force-pushed (the sanctioned exception to never-rewrite),
+local reflog expired + gc'd, zero hits across all refs. Pre-purge bundle:
+`D:\tax-test-data\tts-tax-status-prepurge-20260804.bundle` (contains the
+PII — never commit it anywhere). Residual: GitHub keeps the 4 old SHAs as
+dangling objects until its own GC; a GitHub Support ticket fully clears
+them if Ken wants belt-and-suspenders.*
+
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
 - Durable history → `STATUS_ARCHIVE.md`; deferrals → `DEFERRAL_AUDIT.md`; open questions →
