@@ -1,11 +1,14 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 205 (the 1120-S pilot interjection).
-Ken's relayed 1040 backlog is PAUSED at 17 of ~37 (next: 8283); Ken
-interjected ChatGPT's 1120-S pilot handoff — items 1–7 (release blockers)
-are DONE this session (one refuted as a data mistranscription, two
-queued for Ken); items 8–12 (the speed builds) await sequencing.
-Migration returns.0235 is latest and APPLIED; s205 adds NO migration.*
+*Last updated: 2026-08-04, session 205b (Ken's rulings executed).
+Ken's relayed 1040 backlog is PAUSED at 17 of ~37 (next: 8283); ChatGPT's
+1120-S pilot items 1–7 are DONE incl. both Ken rulings (the L24d bridge +
+reconciliation statement + §1368(b)(2) K-1 gain disclosure; the February
+Schedule B residue blanked — 4,133 rows / 276 returns, snapshot at
+D:\tax-test-data\schb_residue_blank_20260804_175129.json). Items 8–12
+(the speed builds) await sequencing. ChatGPT may CONTINUE browser-entry
+pilots meanwhile — the blockers are deployed. Migration returns.0235 is
+latest and APPLIED; s205 adds NO migration.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -252,27 +255,26 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
 16. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
-17. **⛔ The M-2 AAA distribution cap (s205 pilot item 2).** The pilot
-    demands M-2 line 7 carry the FULL Schedule K distribution and ending
-    AAA go negative (−1,419 on the subject return), matching its source
-    software's print. i1120s (2025) p.50, fetched verbatim: adjustment 3
-    = "Decrease AAA (but not below zero) by property distributions" —
-    the current cap implements the IRS instruction and is Ken-ratified
-    (RS 1120S_M2 R002, 2026-07-13). **Recommendation: keep the cap, fix
-    the BRIDGE** — the real pain is Schedule L: `L24d = Σ M-2 endings`
-    loses the distribution excess (the §1368(c) cascade's "reduce any
-    remaining shareholders' equity accounts"), so retained earnings
-    shows 0 where the books say −1,419. Carrying the excess into L24d
-    ties Schedule L exactly WITHOUT uncapping the M-2. The pilot's
-    answer key would still no-tie on the M-2 line-7 FACE vs its source
-    software — Ken decides which face we print.
-18. **⛔ The February 'false' residue (s205 pilot item 5).** ~324 of 325
-    1120-S returns carry `'false'` in Schedule B booleans (B14b et al.)
-    from a February-era backfill — the blank-≠-No violation predating
-    the s106 tri-state contract; faces print "No" for questions nobody
-    answered. Proposed repair: blank every boolean FFV whose value is
-    'false', updated_at in the Feb 2026 mint window, and not overridden
-    — needs Ken's go (bulk data change, s193-class).
+17. ~~The M-2 AAA distribution cap~~ — **RULED (keep the IRS cap) and
+    BUILT (s205b).** The M-2 line-7 charge stays capped per i1120s p.50;
+    NEW `M2_DIST_EXCESS`/`L24d` bridge carries the excess into Schedule L
+    retained earnings (§1368(c) cascade), a **reconciliation statement**
+    attaches whenever L24 ≠ the M-2 endings, the D_1120S_L_M2_TIE rule
+    knows the bridge, and **distributions in excess of STOCK BASIS**
+    (§1368(b)(2) — keyed to basis per the statute, not AAA) now cap 7203
+    line 6 per i7203, print a **K-1 supplemental statement**, and ride
+    the 1040-side import offer as a loud advisory (never auto-entered —
+    the 8949 holding period is the preparer's fact). Live-proven on the
+    pilot return: L24d −1,419, Schedule L 316=316 both years, statement
+    attached, diagnostics quiet. NOTE: the pilot's answer key will still
+    NO-TIE on the M-2 line-7 FACE vs its source software (204,350 vs
+    205,769) — same equity, the IRS face; tell the entry agent.
+18. ~~The February 'false' residue~~ — **RULED and EXECUTED (s205b).**
+    4,133 boolean FFVs across 276 1120-S returns blanked (value 'false',
+    Feb-2026 mint window, not overridden; B11 auto-answer excluded);
+    rollback snapshot `D:\tax-test-data\schb_residue_blank_20260804_175129.json`;
+    script `server/scripts/blank_feb_schb_residue_s205.py`. No 1065
+    residue existed.
 19. **The N-Z #8 8962 target (s204)** — the relayed full-$4,632 repayment
     contradicts i8962 Table 5 at the relayed 305% FPL (single cap $1,625).
     When the packet is entered: verify the filed lines 5/28/29 against the
