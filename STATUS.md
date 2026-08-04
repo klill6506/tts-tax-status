@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 199. Ken's relayed ChatGPT backlog is at
-9 of ~20 (two of them refuted prescriptions). Migration returns.0235
+*Last updated: 2026-08-04, session 200. Ken's relayed ChatGPT backlog is at
+12 of ~27 (three refuted prescriptions). Migration returns.0235
 (`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
@@ -24,7 +24,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 9 of ~20 done
+## ▶ RESUME HERE — the relayed backlog, 12 of ~27 done
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -115,11 +115,29 @@ ruled "whatever you think is best" on sequencing → live defects first.
     ($411 total, no payer detail) now enters as a summary total and feeds
     3b — no more fabricated "UNKNOWN PAYER" rows below the threshold.
 
-### ▶ NEXT — 046 #9: the Schedule C simplified home-office election
-The checkbox silently reverts to unchecked after navigation while its
-square-footage inputs persist — line 30 falls to $0 and AGI rises $1,000
-+ on the live case. Then 046 #6 (editor unmount on post-save navigation)
-· 046 #7 (VARIOUS acquisition date) · the lane sections (8880+046#5 ·
+### ✅ Done in s200 (revert-proved, deployed `1490437`)
+12. **Sch C simplified home-office election (046 #9) — the PRESCRIPTION
+    REFUTED, the defect one layer over.** The server never lost the
+    election (`BaseModelSerializer` has scoped partial saves to
+    `update_fields` since s35 — concurrent per-field PATCHes commute; every
+    probe showed the PATCH persisting). The real defect: a Slate checkbox
+    was a bare CONTROLLED input, a Schedule C PATCH round trip (recompute +
+    fresh_return build) runs 10–30s, and React snaps the box back to the
+    served value the instant after the click — the election LOOKS dropped,
+    the preparer clicks again "to make it stick", and once the first
+    refresh finally lands that extra click toggles the election OFF for
+    real. (Legacy `box()` was uncontrolled defaultChecked+key — the Slate
+    rewrite lost that.) NEW `SlateCheck` component = the FieldStateInput
+    draft pattern for checkboxes (optimistic pending → retires on served
+    catch-up → reverts on the s199 failed-save channel); adopted at all 3
+    checkbox sites on SlateScheduleCScreen. Live-verified on the subject
+    return: line 30 $1,000, net $20,591, AGI $19,680 — the item's exact
+    expected values. ⚠ 47 other Slate screens still hand-roll bare
+    checkboxes (88 sites) and tri-state SELECTS have the same gap —
+    sweep logged in DEFERRAL_AUDIT.
+
+### ▶ NEXT — 046 #6: the Slate editor unmount on post-save navigation
+Then 046 #7 (VARIOUS acquisition date) · the lane sections (8880+046#5 ·
 2441 · 8962+046#4 · 8283 · 8606=046#10) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
