@@ -109,6 +109,12 @@ ruled "whatever you think is best" on sequencing → live defects first.
     Every FieldStateInput on every Slate screen benefits. Live-verified:
     typed 411 → toast + field back to 0.00; scratch row deleted after.
 
+### ✅ Done in s199 (cont. 2)
+11. **Ken's Option A ruling BUILT — summary-row 1a/box-1 sub-threshold.**
+    See open item 12 (resolved) + DECISIONS.md. The 046 #8 packet shape
+    ($411 total, no payer detail) now enters as a summary total and feeds
+    3b — no more fabricated "UNKNOWN PAYER" rows below the threshold.
+
 ### ▶ NEXT — 046 #9: the Schedule C simplified home-office election
 The checkbox silently reverts to unchecked after navigation while its
 square-footage inputs persist — line 30 falls to $0 and AGI rises $1,000
@@ -159,17 +165,14 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
    for Georgia.** A diagnostic is wanted; not built.
 10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
 11. **GA PTET base on a separately stated gain** — unchanged from s195.
-12. **046 #8's "Expected" contradicts RS `R-AGG-SUMMARY` — your call.**
-    The report wants box 1a to ride a source-summary dividend row. The spec
-    (and D_INTDIV_012, "the whole design") forbids it because Sch B Part II
-    line 5 lists ordinary dividends by payer. BUT Schedule B is only
-    REQUIRED above $1,500 of ordinary dividends — below that, a
-    return-level 1a total is legally fine, and the current workaround
-    fabricates an "UNKNOWN PAYER - VERIFY" detail row (which is what the
-    subject return now carries — arguably worse than the summary total).
-    My recommendation: relax R-AGG-SUMMARY to allow summary-row 1a while
-    total ordinary dividends ≤ $1,500, with D_INTDIV_012 still firing
-    above it. RS-side edit either way; not built without you.
+12. ~~046 #8's "Expected" vs `R-AGG-SUMMARY`~~ — **RULED (Option A,
+    2026-08-04) and BUILT.** Summary-row box 1a / box 1 now allowed exactly
+    while Schedule B is not required (the full R-SB-04 trigger gate, not a
+    bare $1,500 test); adjustments stay forbidden always (each is its own
+    trigger). Serializer + D_INTDIV_012 both threshold-aware; dividend
+    nominee now triggers Schedule B (a gap against the verbatim i1040sb
+    list). Ruling recorded in DECISIONS.md. **RS `R-AGG-SUMMARY` still needs
+    the spec edit** — on the RS agenda.
 13. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
     = "8825" but `rental_property_id` is NULL), so `D_4562_DEST` still fires.
     There is no single mechanical fix and I will not guess: return A has
