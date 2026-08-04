@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 200. Ken's relayed ChatGPT backlog is at
-12 of ~27 (three refuted prescriptions). Migration returns.0235
+*Last updated: 2026-08-04, session 200 (items 12+13). Ken's relayed ChatGPT
+backlog is at 13 of ~27 (three refuted prescriptions). Migration returns.0235
 (`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
@@ -24,7 +24,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 12 of ~27 done
+## ▶ RESUME HERE — the relayed backlog, 13 of ~27 done
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -136,9 +136,21 @@ ruled "whatever you think is best" on sequencing → live defects first.
     checkboxes (88 sites) and tri-state SELECTS have the same gap —
     sweep logged in DEFERRAL_AUDIT.
 
-### ▶ NEXT — 046 #6: the Slate editor unmount on post-save navigation
-Then 046 #7 (VARIOUS acquisition date) · the lane sections (8880+046#5 ·
-2441 · 8962+046#4 · 8283 · 8606=046#10) · the true builds.
+13. **The blank-app unmount (046 #6)** — `4047d07`, deployed. The client
+    had NO error boundary, so ANY uncaught render/lazy error unmounted the
+    whole React root (blank page, title reset, no recovery). Likeliest
+    trigger: every push deploys, a deploy retires the old build's hashed
+    chunk URLs, the next lazy navigation 404s and throws — fits the
+    intermittent nav-triggered report exactly. NEW `ScreenErrorBoundary`
+    (recovery panel; picking another screen IS the retry; stale-chunk
+    failures get deploy wording + Reload) mounted inside both shells + as
+    the app backstop, plus a loop-guarded `vite:preloadError` self-heal
+    reload. Live-verified with a forced screen throw: nav/title survived,
+    nav-away recovered.
+
+### ▶ NEXT — 046 #7: "VARIOUS" as a Form 8949 acquisition date
+Then the lane sections (8880+046#5 · 2441 · 8962+046#4 · 8283 ·
+8606=046#10) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
