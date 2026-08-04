@@ -1,5 +1,17 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-04 session 199 (cont. 3) — SCHEDULE B: the source-summary
+> box 1a/box 1 ban is now gated on Schedule B's OWN requirement (Ken's
+> Option A ruling, recorded in DECISIONS.md).** A packet-total row may carry
+> ordinary dividends / taxable interest exactly while no R-SB-04 trigger
+> makes Schedule B required; the adjustments never relax (each is a trigger
+> itself). `schedule_b_required` gained the missing dividend-nominee trigger
+> (i1040sb verbatim: "interest or ordinary dividends as a nominee") — the
+> renderer and MeF attach gates ride the same helper. Serializer +
+> `D_INTDIV_012` both gate on `schedule_b_required_db`; D_INTDIV_012
+> re-alarms when a later payer row crosses the $1,500 threshold. AHEAD of RS
+> `R-AGG-SUMMARY` (spec edit queued). No migration.
+
 > **2026-08-04 session 199 (cont.) — 1099-R CODE W COMPUTES + the D_RET_005
 > coverage gate (backlog item 9).** Code W (LTC-rider charge, combined
 > arrangement) joins `SUPPORTED_CODES`: §72(e)(11)(A)(ii) excludes the charge
