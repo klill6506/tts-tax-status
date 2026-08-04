@@ -60,21 +60,31 @@ so far pointed at the wrong layer.
    PARTIALLY done, see the two open questions below. `SCHED_L_DEPR_TIE` no
    longer runs on forms without a Schedule L; the depreciation importer now
    corrects an explicitly-supplied convention that contradicts §168(d)(2).
+8. **`D_8995_STALE` (A–M #4) — the PRESCRIPTION REFUTED, the defect one layer
+   over.** Nothing was stale: the subject return's 8995 face is correct and
+   its line 13 (1,155 = 20% of a QBI-designated rental's 5,776 net) is
+   engine-computed. When b011 made QBI rentals a §199A source, FOUR call
+   sites that re-enumerated sources inline never learned: the D_8995_STALE
+   rule (false error, the reported blocker), the 8995-A diagnostics context,
+   the 8995-A PDF renderer, and the MeF read model (an above-threshold
+   rental-only return transmitted line 13 with no IRS8995A behind it). All
+   four now delegate to ONE shared `qbi_engaged_db()` — the s198
+   one-shared-aggregator pattern. Fresh diagnostics on the subject return:
+   0 errors; cleanup-eligible.
 
-### ▶ NEXT — item 8: `D_8995_STALE` on replace-document (A–M #4)
-The subject return is an exact tie, committed and Filed, and fresh cleanup
-still blocks on `D_8995_STALE`. Requested: recompute or clear stale derived
-Form 8995 state during a replace-document commit, BEFORE the fresh diagnostic
-run. (⚠ s181: `replace_documents` does NOT clear overrides — check whether that
-is the same mechanism.) Subject named in the source file under
-`D:\tax-test-data\CC Code Changes\` — NOT here; this file mirrors public.
+### ▶ NEXT — item 9: 1099-R code W + `D_RET_005` (A–M #6)
+Two asks: ① distribution code W (a full rollover printed nontaxable) is
+outside the supported diagnostic set — `D_RET_003` fires; add code-W handling
+per its printed treatment. ② `D_RET_005` (deductible IRA contribution +
+taxable Social Security = circular-calculation risk) wants a worksheet
+computation or a source-backed verification path that does NOT suppress the
+genuine risk. Five 1099-R rows on the subject return; named in the source
+file under `D:\tax-test-data\CC Code Changes\` — not here (public mirror).
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
 Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13.
 
 ### Then, in order
-- **Diagnostics/lane interaction (2 left):** `D_8995_STALE` (A–M #4) ·
-  1099-R **code W** + `D_RET_005` (A–M #6).
 - **New lane sections over EXISTING engines (4):** 8880 (N-Z #3) · 2441
   (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail (A–M #5).
 - **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane

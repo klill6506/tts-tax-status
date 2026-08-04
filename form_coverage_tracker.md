@@ -1,5 +1,15 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-04 session 199 (cont.) — FORM 8995: the §199A source enumeration
+> CONVERGED (backlog item 8).** The reported "stale 8995 state" was refuted —
+> the subject return's deduction was correct and engine-computed from a
+> QBI-designated rental. The real defect: b011 added rentals as a §199A
+> source and only `compute_8995_db` learned; the D_8995_STALE rule (false
+> ERROR), the 8995-A diagnostics context, the 8995-A renderer and the MeF
+> read model each carried their own frozen source list. All four now delegate
+> to one shared `qbi_engaged_db()`. Above-threshold rental-only returns now
+> render and transmit their 8995-A. No migration.
+
 > **2026-08-04 session 199 — GA-500 RIE INPUT LEG CLOSED + TWO DIAGNOSTIC
 > DEFECTS (Ken's relayed backlog, items 6–7 of ~20).** **GA-500**: the
 > Retirement Income Exclusion worksheet's line 13 leaves PREPARER-ENTRY for
