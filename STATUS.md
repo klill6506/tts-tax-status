@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 197 (**the Georgia depreciation pair now
-reaches the GA-600S**; Ken's gross-pair ruling built, Barcode ties Lacerte).
-Migration 0234 latest — s197 added none.*
+*Last updated: 2026-08-03, session 197–198. s197 routed the Georgia
+depreciation pair onto the GA-600S; s198 began Ken's relayed ChatGPT backlog
+(5 of ~20 done). Migration 0234 latest — neither session added one.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -19,106 +19,103 @@ Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 `tts-tax-app` still fails every push — Ken should delete it.**
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
-Ken, s195, plainly: **no 2025 returns are being prepared in the app.**
-Entries exist to find defects. Do not append compliance cautions to every
-number — state the finding and move on.
+Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
+find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the three K-1 → individual gaps
+## ▶ RESUME HERE — the relayed backlog, item 6 of ~20
 
-GAP 3's blocker is now half-cleared: the entity side produces the Georgia
-depreciation modification, so there is a real number for the individual
-return to carry. Ken's unit, unchanged in shape:
+Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
+ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
+`CC_A_M_REMAINING_BLOCKERS_2026-08-03.md` · `CC_CODE_CHANGES_BATCH-041.md` ·
+`CC_CODE_CHANGES_BATCH-046.md` (+ a byte-identical `- 2.md` duplicate) ·
+`CC_CODE_CHANGES_NZ_2026-08-03.md`. **Ken's order: work them in order, then
+return to Georgia.**
 
-**GAP 1 — shareholder-side §179 disposition:** BLOCKED on an RS rule (0 of
-the 9 4797 rules mention a shareholder/partner/§179 carryover, and the gain
-depends on the owner's UNUSED carryover).
-**GAP 2 — the Georgia Shareholder Summary (Form 600S):** buildable. Its line
-structure exists only as prose in this file — **the Lacerte artifact is not on
-disk**; ask Ken to re-send before building labels. The s197 pair is what its
-lines 2b/3b would show, so the two now reconcile by construction.
-**GAP 3 — GA individual modifications carryover:** GA-500 `S1-3` (add) /
-`S1-11` (sub) are spec'd as direct-entry, and `R-GA500-DEPR` explicitly
-anticipates "the depreciation engine's `Asset.state_*` fields auto-populate
-later" — that is this gap. **Fix open item 2 below first** (that rule is stale).
+**⚠ Unlike the s192 backlog, this one is mostly ACCURATE** — but 1 of the
+5 done was refuted (see #5). Verify each claim before building; two prescriptions
+so far pointed at the wrong layer.
 
----
+### ✅ Done in s198 (all revert-proved, all deployed)
+1. **Excess social security (A–M #1, LIVELY)** — `5f0adb2`. Schedule 3 line 11
+   now computes from same-owner W-2 box 4; ties $939.
+2. **Schedule D QOF answer (N-Z #1)** — `3379e91`. Allowlist gap only.
+3. **§179 limit + K-1 income (046 #3, LITTLETON)** — `3379e91`. Full election
+   deductible, carryover $0.
+4. **SS worksheet per-line rounding (N-Z #2, PARR BOYD)** — `20914e0`. Ties
+   $4,233 / AGI $25,774.
+5. **Hodges $2 (batch-041) — REFUTED, no code change** — `c1f8308`. The
+   worksheet was correct; the payload omitted 1099-DIV box 2b ($33 unrecaptured
+   §1250). Payload + HOLD note corrected in `D:\tax-test-data\tmp\b041\`.
 
-## Shipped in s197 (deployed, `014bd1f`; no migration)
+### ▶ NEXT — item 6: GA RIE worksheet ← Schedule E (batch-046 #2)
+Populate `RIE-TP-13` / `RIE-SP-13` from the owner-attributed **deductible**
+Schedule E result (after passive-loss limits), sign included; preserve an
+explicit preparer entry. Answer key: single GA taxpayer 65+, wages 6,699,
+taxable pension 40,227, deductible Schedule E loss 9,193 → RIE line 17 should
+be **36,034**, engine gives 45,227. `compute_ga500.rie()` already consumes
+those lines correctly — **the gap is the federal→GA feeder**, which is
+`GA500_FEDERAL_PULL` in `returns/views.py` (only 2 entries today). Do NOT
+rewrite `rie()`; it is IT-511-verified.
 
-**The Georgia depreciation pair now reaches the GA-600S.** s196 made the
-engine right; nothing consumed it, so the preparer's hand-keyed net difference
-was still what reached the return.
-
-- **Ken's ruling, built:** the GROSS PAIR on dedicated lines — `S7_7a`
-  federal depreciation (Schedule 7 ADDITION) and `S8_3a` Georgia depreciation
-  (Schedule 8 SUBTRACTION), both joining the `S7_8` / `S8_5` totals. Matches
-  the Lacerte GA Shareholder Summary (its 2b / 3b).
-- **The constraint, confirmed and handled:** the official DOR AcroForm has NO
-  depreciation widget (`S7_1..S7_8` / `S8_1..S8_5` only) — which is exactly why
-  Georgia words the catch-alls "(Attach Schedule)". The dedicated lines print
-  on the **preparer/client copy**; on the **filed copy** they roll into
-  `S7_7` / `S8_4`. Both faces carry identical totals. Verified by rendering both.
-- **Source:** `ga600s_depreciation_pair()` sums the FEDERAL register's
-  `current_depreciation` / `state_current_depreciation`. §179 sits in both
-  halves and nets to zero (GA conforms, HB 1199); §168(k) bonus is the delta.
-- **The one-shot pull is fixed:** `_auto_sync_ga600s` re-pulls after every
-  federal recompute (override-respecting, never raises), so an existing
-  GA-600S tracks the register instead of freezing at creation-day values. New
-  lines are backfilled first, so the pair lands on the FIRST sync, not the second.
-- **Verified on the test entity against Ken's Lacerte:** federal 37,931 /
-  Georgia 41,509 on the face → GA net income **232,915** · income tax
-  **12,088** — the same answer the hand-keyed 3,578 gave, with both figures
-  now showing. That stale override was cleared; it double-counted once the
-  pair landed.
-- ⚠ **The stored per-asset Georgia figures were pre-s196 stale** on the test
-  register — the engine was right, the register had not recomputed since the
-  fix. The pair reads STORED values **deliberately**, so the 600S can never
-  disagree with the 4562; the freshness comes from the federal recompute that
-  precedes every sync.
-- **Tests:** 10 new, **all four legs revert-proved individually** (formula
-  totals · creation pull · resync hook · filed-copy roll-up). 984 green across
-  the GA / depreciation / renderer / flow-assertion sweep. The GA-600S
-  line-count pin in `test_state_filing` had gone stale (82 → 84).
+### Then, in order
+- **Diagnostics/lane interaction (4):** 4562 metadata blockers (A–M #2 Bell/
+  Bernstein `D_4562_DEST` + `SCHED_L_DEPR_TIE`; A–M #3 Connell
+  `D_4562_CONVENTION`/`D_4562_METHOD`) · `D_8995_STALE` on replace-document
+  (A–M #4 Duvall) · 1099-R **code W** + `D_RET_005` (A–M #6 Linda Long).
+- **New lane sections over EXISTING engines (4):** 8880 (N-Z #3) · 2441
+  (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail (A–M #5 Jackson).
+- **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane
+  `schedule_fs` (N-Z #5) · SS lump-sum election (N-Z #6) · 1099-G unemployment
+  (N-Z #9) · multi-state import NC + MO (N-Z #10).
 
 ---
 
 ## ⚠ Open items for Ken
 
-1. **Other GA-600S returns will move when next recomputed.** The pair is now
-   pulled for all of them, and one test entity has a real delta (federal
-   44,444 vs Georgia 8,889 on a single bonused asset) where the return
-   previously showed NO depreciation modification at all. Expected and
-   correct — but it is a visible change on returns Ken did not touch.
-2. **RS `R-GA500-DEPR` is stale** — still says GA "did NOT adopt OBBBA... GA
-   uses its own §179 limit", contradicting the GA600S spec and Ken's HB 1199
-   ruling. It is the rule that governs the auto-populate GAP 3 *is*. Fix RS-side.
-3. **RS `GA600S R001` describes the addition as `ga_addition_bonus_depr`
-   (bonus only)** — the presentation Ken rejected in favour of the gross pair.
-   Changes no number (same net), but the spec and the code now disagree on
-   the face. Fix RS-side.
-4. **GA §179 does NOT cover certain REAL PROPERTY** (Ken, s196).
-   `_calculate_state_ga` applies one flat `GA_179_LIMIT` with **no
-   property-type test**. No test entity exercises it. **Needs an RS rule.**
-5. **The Lacerte PDF importer does not read the GA depreciation pages** —
-   `state_prior_depreciation` / `state_method` / `state_life` came in empty on
-   all 30 test assets and had to be hand-keyed. A CSV path exists
-   (`csv_depr_parser.py`); the PDF path does not.
-6. **An asset with federal bonus history and NO keyed GA prior
-   over-depreciates for Georgia** (full gross basis, no cap). A diagnostic is
-   wanted. Not built.
-7. **A GA 4562 is not produced.** Both 600S copies now say "attach GA 4562"
-   and the filed copy's "(Attach Schedule)" lines carry the figures — the
-   schedule itself does not exist yet.
-8. **RS rule for the shareholder-side §179 disposition** — still blocks GAP 1.
-9. **GA PTET base on a separately stated gain** — unchanged from s195.
-10. **Client #2969** holds an empty duplicate individual entity — unchanged.
-11. **Retire `reparent_business_entities`** — unchanged.
-12. M1_5b is COMPUTED — a return with other book-income-not-on-K items needs
-    an override carrying the total.
+1. **The §179 base needs a rule for three components I would not guess.**
+   Included: nonpassive K-1 ordinary income (Reg. §1.179-2(c)(6)(ii)-(iii)).
+   **Excluded pending Ken/RS:** §707(c) guaranteed payments (compensation, not
+   a distributive share — arguable), ordinary Form 4797 gain from an active
+   business, and 1041 beneficiary K-1s. All three can only UNDERSTATE the base,
+   never inflate a deduction. The RS 4562 spec names
+   `active_trade_or_business_taxable_income` but never enumerates it.
+2. **A rotted test pin was found RED on `main`** and repaired (s198):
+   `test_sch123_scenarios`'s Schedule 8812 L_24 assertion hardcoded the EIC
+   addend as 0, written before the Topic 7 EIC engine landed. Worth asking how
+   long the suite has been red — nobody re-ran it.
+3. **RS `GA600S R001`** still describes the GA-600S addition as bonus-only —
+   the presentation Ken rejected in favour of the gross pair (s197). Same net,
+   different face. Fix RS-side.
+4. **RS `R-GA500-DEPR` is stale** — still denies GA §179 conformity,
+   contradicting HB 1199 and the GA600S spec. It governs the auto-populate that
+   GAP 3 *is*.
+5. **GA §179 does NOT cover certain REAL PROPERTY** (Ken, s196);
+   `_calculate_state_ga` applies one flat limit with no property-type test.
+   Needs an RS rule.
+6. **No GA 4562 is produced**, though both GA-600S copies now say "attach GA
+   4562" and the filed copy's "(Attach Schedule)" lines carry the figures.
+7. **Other GA-600S returns will move on their next recompute** (s197). One test
+   entity has federal 44,444 vs Georgia 8,889 where the return previously
+   showed no depreciation modification at all.
+8. **The Lacerte PDF importer does not read the GA depreciation pages** —
+   `state_prior_depreciation` / `state_method` / `state_life` import empty.
+9. **An asset with federal bonus history and NO keyed GA prior over-depreciates
+   for Georgia.** A diagnostic is wanted; not built.
+10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
+11. **GA PTET base on a separately stated gain** — unchanged from s195.
+12. **Client #2969** duplicate individual entity · **retire
+    `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
+    **duplicate guard is blind to entity names**.
 
-## Carried queue (unchanged from s196 unless noted)
+## The three K-1 → individual gaps (Ken's unit, parked for the backlog)
+**GAP 1** shareholder-side §179 disposition — BLOCKED on an RS 4797 rule.
+**GAP 2** Georgia Shareholder Summary — buildable; **the Lacerte artifact is
+not on disk**, ask Ken to re-send. s197's pair is what its 2b/3b would show.
+**GAP 3** GA individual modifications carryover — needs open item 4 first.
+
+## Carried queue (unchanged)
 **Lane-schema-only (engine-complete)**: 8880 · 8962 annual · 2441 · 8863 ·
 5695 · 8606 · 4797 · 6252 · 7203 · 1116. **True builds**: Sch F lane ·
 8889/HSA · 7206 · 1099-G · 1099-MISC 8z · 8839 · 8824.
@@ -126,9 +123,8 @@ was still what reached the return.
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
 1099-R printed-aggregate fallback · RentalProperty `owner` + GA RIE rental
 pull · DividendIncome US-obligation field · GA payment line from dated
-payments · packet preflight · TB-import nav confirm dialog ·
-**client-delete UI (there is NO path to delete a client — the pages that
-can are unrouted)** · **duplicate guard is blind to entity names**.
+payments · packet preflight · TB-import nav confirm dialog.
 **RS agenda:** 8995 rental rows · R-EIC-WSB-SE · 4562 same-year-disposal ·
-**4797 shareholder-side §179 (GAP 1)** · **GA §179 real-property carve-out** ·
-**R-GA500-DEPR conformity correction** · **GA600S R001 gross-pair correction**.
+4797 shareholder-side §179 · GA §179 real-property carve-out ·
+R-GA500-DEPR conformity correction · GA600S R001 gross-pair correction ·
+**§179 active-trade-or-business income enumeration (new, s198)**.

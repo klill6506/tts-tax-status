@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-03 session 198 — FOUR COMPUTE LEGS MOVED + ONE REFUTED (Ken's
+> relayed backlog, items 1–5 of ~20).** **SCH_3** line 11 (excess social
+> security) leaves DIRECT-ENTRY for COMPUTED: figured per person from
+> same-owner W-2 box 4, 2+ employers required, the person dropped entirely when
+> one employer over-withheld; maximum derived from the Schedule SE wage base
+> (176,100 × 6.2%). NEW `D_SS_EXCESS_EMPLOYER` / `D_SS_EXCESS_SINGLE`.
+> **FORM_4562** line 11 now includes nonpassive K-1 ordinary business income
+> (Reg. §1.179-2(c)(6)(ii)-(iii)) via the shared
+> `section_179_active_business_income()` — guaranteed payments / 4797 ordinary
+> gain / 1041 K-1s stated as boundaries, not guessed. **SS BENEFITS WORKSHEET**
+> now rounds LINE BY LINE (the 1040's "round ALL amounts" election, which is
+> what TaxWise does) — affects every return with taxable Social Security.
+> **Back-entry lane**: `schd_qof_disposal` importable (tri-state preserved).
+> **SCHEDULE_D unchanged and VINDICATED** — the reported Hodges $2 was a
+> missing 1099-DIV box 2b, not a worksheet defect. No migration.
+
 > **2026-08-03 session 197 — GA-600S: THE GEORGIA DEPRECIATION PAIR NOW
 > REACHES THE FORM (compute + render legs both moved).** s196 taught the
 > engine to depreciate Georgia's own basis, but nothing consumed the result —
