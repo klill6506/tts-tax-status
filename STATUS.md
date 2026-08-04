@@ -93,13 +93,13 @@ row's column (b) was blank; repaired live, 2 pins (`56b04d7`).
     NOT-SUPPORTED prose); handoff guide + AUTHORING_GUIDE s204 section
     + kickoff s204 addendum shipped — held 8962 packets are
     lane-eligible again, first one is its own smoke test. 12 new tests
-    (7 staging + 5 commit) incl. the THOMPSON annual shape (8,222 /
+    (7 staging + 5 commit) incl. the 046 #4 annual shape (8,222 /
     8,086 / 7,495 → net PTC 591 → Sch 3 line 9), the partial-year
     monthly no-annualizing pin, the Table-5-limited excess repayment,
     the ≥400% full repayment, and the 50% Part IV allocation halving
     the aggregate. Gates: staging+commit 104 · 8962 sweep 61 ·
     flow 521.
-    **⚠ The relayed PETZELT regression target is CONTRADICTED by
+    **⚠ The relayed N-Z #8 regression target is CONTRADICTED by
     i8962:** it wants a full $4,632 excess-APTC repayment at household
     income $45,995 = 305% FPL, but Table 5 (TY2025, fetched live
     2026-08-04) caps a single filer under 400% at $1,625, and repayment
@@ -181,7 +181,7 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
 16. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
-17. **The PETZELT 8962 target (s204)** — the relayed full-$4,632 repayment
+17. **The N-Z #8 8962 target (s204)** — the relayed full-$4,632 repayment
     contradicts i8962 Table 5 at the relayed 305% FPL (single cap $1,625).
     When the packet is entered: verify the filed lines 5/28/29 against the
     actual PDF. If the filed face REALLY repays in full under 400%, that is
