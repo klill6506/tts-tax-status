@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 203 (item 16). Ken's relayed ChatGPT
-backlog is at 16 of ~37 (FOUR refuted prescriptions; ⚠ BATCH-047 ARRIVED
-2026-08-04 with items 11–20 — see below). Migration returns.0235
-(`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
+*Last updated: 2026-08-04, session 204 (item 17). Ken's relayed ChatGPT
+backlog is at 17 of ~37 (FOUR refuted prescriptions + one contradicted
+regression target; BATCH-047 items 11–20 still unsequenced). Migration
+returns.0235 (`RentalProperty.owner`) is latest and is APPLIED on the
+shared DB.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -25,198 +26,91 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 16 of ~37 done
+## ▶ RESUME HERE — the relayed backlog, 17 of ~37 done
 
-### ⚠ THE BACKLOG GREW AGAIN 2026-08-04: `CC_CODE_CHANGES_BATCH-047.md`
-New file at the `D:\tax-test-data` ROOT (not the CC Code Changes folder),
-items 11–20: name suffixes (11) · non-50/50 MFJ owner allocation on
-INT/DIV rows, the GA RIE feeder (12) · 1099-MISC source rows (13) · 7206
-source facts (14) · Form 4952 build (15) · 5695 lane (16) · 4797 lane
-(17) · 6252 lane (18) · 8824 lane (19) · 6251 amt_* lane (20). Items
-16–20 are the SAME lane-schema-only pattern as s202's 8880; 13/15 are
-true builds; 11/12 are model+everywhere builds. Not yet sequenced against
-the existing queue — live defects first per Ken's standing ruling.
+### ⚠ BATCH-047 (arrived 2026-08-04, tax-test-data ROOT, items 11–20)
+Not yet sequenced against the existing queue — live defects first per
+Ken's standing ruling. 16–20 are the same lane-schema-only pattern as
+s202–s204 (5695 · 4797 · 6252 · 8824 · 6251); 13/15 are true builds
+(1099-MISC rows · 4952); 11/12 are model+everywhere builds (name
+suffixes · non-50/50 MFJ INT/DIV owner allocation, the GA RIE feeder).
 
-Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
-ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
-`CC_A_M_REMAINING_BLOCKERS_2026-08-03.md` · `CC_CODE_CHANGES_BATCH-041.md` ·
-`CC_CODE_CHANGES_BATCH-046.md` (+ a byte-identical `- 2.md` duplicate) ·
-`CC_CODE_CHANGES_NZ_2026-08-03.md`. **Ken's order: work them in order, then
-return to Georgia.**
+Ken interrupted the Georgia lane 2026-08-03 to clear a backlog relayed from
+ChatGPT (five source files under `D:\tax-test-data\CC Code Changes\` + the
+047 file at the root). **Ken's order: work them in order, then return to
+Georgia.** ⚠ Mostly accurate, but FOUR prescriptions proved wrong-layer or
+false — verify each claim before building.
 
-**⚠ Unlike the s192 backlog, this one is mostly ACCURATE** — but three of the
-9 done were WRONG-LAYER prescriptions (#5 the input, #8 the diagnostic, #7's
-framing) — verify each claim before building.
-
-### ✅ Done in s198 (all revert-proved, all deployed)
-1. **Excess social security (A–M #1)** — `5f0adb2`. Schedule 3 line 11
-   now computes from same-owner W-2 box 4; ties $939.
-2. **Schedule D QOF answer (N-Z #1)** — `3379e91`. Allowlist gap only.
-3. **§179 limit + K-1 income (046 #3)** — `3379e91`. Full election
-   deductible, carryover $0.
-4. **SS worksheet per-line rounding (N-Z #2)** — `20914e0`. Ties
-   $4,233 / AGI $25,774.
-5. **The $2 Schedule D case (batch-041) — REFUTED, no code change** — `c1f8308`. The
-   worksheet was correct; the payload omitted 1099-DIV box 2b ($33 unrecaptured
-   §1250). Payload + HOLD note corrected in `D:\tax-test-data\tmp\b041\`.
-
-### ✅ Done in s199 (all revert-proved)
-6. **GA RIE ← Schedule E page 1 (046 #2)** — `df515c1`, deployed. NEW
-   `RentalProperty.owner` (T/S/J, migration 0235, db_default) +
-   `schedule_e_page1_by_owner()`, which splits the post-§469 result so a
-   suspended loss never reaches Georgia and whose parts reconstruct Schedule E
-   line 26 exactly. Ties the filed 36,034. Root-fixed alongside: `_attribute`
-   dropped half of any `joint` source on a non-MFJ return.
-7. **`SCHED_L_DEPR_TIE` + the 4562 convention import (A–M #2/#3)** —
-   PARTIALLY done, see the two open questions below. `SCHED_L_DEPR_TIE` no
-   longer runs on forms without a Schedule L; the depreciation importer now
-   corrects an explicitly-supplied convention that contradicts §168(d)(2).
-8. **`D_8995_STALE` (A–M #4) — the PRESCRIPTION REFUTED, the defect one layer
-   over.** Nothing was stale: the subject return's 8995 face is correct and
-   its line 13 (1,155 = 20% of a QBI-designated rental's 5,776 net) is
-   engine-computed. When b011 made QBI rentals a §199A source, FOUR call
-   sites that re-enumerated sources inline never learned: the D_8995_STALE
-   rule (false error, the reported blocker), the 8995-A diagnostics context,
-   the 8995-A PDF renderer, and the MeF read model (an above-threshold
-   rental-only return transmitted line 13 with no IRS8995A behind it). All
-   four now delegate to ONE shared `qbi_engaged_db()` — the s198
-   one-shared-aggregator pattern. Fresh diagnostics on the subject return:
-   0 errors; cleanup-eligible.
-
-9. **1099-R code W + the `D_RET_005` coverage gate (A–M #6).** ① Code W
-   (LTC-rider charge under a combined arrangement) ADMITTED to
-   `SUPPORTED_CODES` — §72(e)(11)(A)(ii) excludes the charge from gross
-   income by STATUTE, so it rides the code-Q absolute-zero branch and a
-   blank box 2a can never tax the gross (i1099r verified live; NOT a
-   rollover, though the filed face looks like one). AHEAD of RS
-   `R-RET-CODE` per the code-6 precedent — RS agenda. ② `D_RET_005` now
-   fires only when an employer-plan coverage signal exists (W-2 box 13
-   either owner, or Sch 1 line 16 self-employed plan): Pub 590-A
-   (fetched live) applies the Appendix B circular worksheets ONLY when
-   covered; Table 1-3 gives the uncovered case a full deduction with no
-   MAGI test — no circle. Covered returns still ERROR (Appendix B remains
-   unbuilt). Fresh diagnostics on the subject return: **0 errors,
-   cleanup-eligible.**
-
-### ⚠ THE BACKLOG GREW 2026-08-04 07:21 — now ~27 source items
-`CC_CODE_CHANGES_BATCH-046.md` was rewritten this morning: 3 items → 10
-(the stale 3-item version survives as the `- 2.md` copy). New items 4–10;
-#4 duplicates N-Z #8 (8962/1095-A) and #5 duplicates N-Z #3 (8880). Ken
-ruled "whatever you think is best" on sequencing → live defects first.
-
-### ✅ Done in s199 (cont.)
-10. **Dividend summary-row box 1a (046 #8) — HALF REFUTED, HALF FIXED.**
-    The server's refusal of box 1a on a source-summary row is RS
-    `R-AGG-SUMMARY` working as designed (Sch B Part II line 5 lists
-    ordinary dividends BY PAYER; entry-time serializer guard +
-    D_INTDIV_012) — the aggregate never omitted anything, the PATCH was
-    400'd. THE REAL DEFECT: `FieldStateInput` kept showing a refused value
-    forever — the draft only cleared when the server "caught up", which a
-    rejected save never does, and `lastSent` even blocked re-committing
-    the same value. The legacy FieldGrid design ("keep what was typed")
-    relied on a Retry banner Slate doesn't have. Now ANY failed mutation
-    reverts a committed-pending draft to the served value (in-progress
-    typing untouched); the existing red toast names the field and reason.
-    Every FieldStateInput on every Slate screen benefits. Live-verified:
-    typed 411 → toast + field back to 0.00; scratch row deleted after.
-
-### ✅ Done in s199 (cont. 2)
-11. **Ken's Option A ruling BUILT — summary-row 1a/box-1 sub-threshold.**
-    See open item 12 (resolved) + DECISIONS.md. The 046 #8 packet shape
-    ($411 total, no payer detail) now enters as a summary total and feeds
-    3b — no more fabricated "UNKNOWN PAYER" rows below the threshold.
-
-### ✅ Done in s200 (revert-proved, deployed `1490437`)
-12. **Sch C simplified home-office election (046 #9) — the PRESCRIPTION
-    REFUTED, the defect one layer over.** The server never lost the
-    election (`BaseModelSerializer` has scoped partial saves to
-    `update_fields` since s35 — concurrent per-field PATCHes commute; every
-    probe showed the PATCH persisting). The real defect: a Slate checkbox
-    was a bare CONTROLLED input, a Schedule C PATCH round trip (recompute +
-    fresh_return build) runs 10–30s, and React snaps the box back to the
-    served value the instant after the click — the election LOOKS dropped,
-    the preparer clicks again "to make it stick", and once the first
-    refresh finally lands that extra click toggles the election OFF for
-    real. (Legacy `box()` was uncontrolled defaultChecked+key — the Slate
-    rewrite lost that.) NEW `SlateCheck` component = the FieldStateInput
-    draft pattern for checkboxes (optimistic pending → retires on served
-    catch-up → reverts on the s199 failed-save channel); adopted at all 3
-    checkbox sites on SlateScheduleCScreen. Live-verified on the subject
-    return: line 30 $1,000, net $20,591, AGI $19,680 — the item's exact
-    expected values. ⚠ 47 other Slate screens still hand-roll bare
-    checkboxes (88 sites) and tri-state SELECTS have the same gap —
-    sweep logged in DEFERRAL_AUDIT.
-
-13. **The blank-app unmount (046 #6)** — `4047d07`, deployed. The client
-    had NO error boundary, so ANY uncaught render/lazy error unmounted the
-    whole React root (blank page, title reset, no recovery). Likeliest
-    trigger: every push deploys, a deploy retires the old build's hashed
-    chunk URLs, the next lazy navigation 404s and throws — fits the
-    intermittent nav-triggered report exactly. NEW `ScreenErrorBoundary`
-    (recovery panel; picking another screen IS the retry; stale-chunk
-    failures get deploy wording + Reload) mounted inside both shells + as
-    the app backstop, plus a loop-guarded `vite:preloadError` self-heal
-    reload. Live-verified with a forced screen throw: nav/title survived,
-    nav-away recovered.
-
-### ✅ Done in s201 (test pins deployed `56b04d7`)
-14. **"VARIOUS" as a Form 8949 acquisition date (046 #7) — REFUTED, the
-    FOURTH wrong prescription.** Column (b) was never a date-only control:
-    the Slate Schedule D date cell has been free text with the TaxWise
-    shorthand (V → VARIOUS, I/INH → INHERITED) since the screen was born
-    (`4126eb9`, 07-29; shorthand lib `d97d8b1`, 06-30), the model stores
-    the literal in a CharField, the renderer prints it verbatim, MeF maps
-    it to `DateAcquiredInheritedCd` (tested), `D_8949_005` treats VARIOUS
-    as a filled date, and the import lane has carried `"VARIOUS"` in
-    committed batches since b008. **The real gap was the ROW'S DATA:** the
-    subject return's box E row (sold 06/24/2025, 25,000/25,000) had a
-    BLANK column (b) — the entry agent skipped the value believing it
-    couldn't be entered, exactly the "loses filed source detail" outcome
-    the report warned about. Repaired live through the real UI on prod
-    (typed V → blur expanded to VARIOUS → PATCH 200 → survives hard
-    reload); fresh diagnostics on the subject return: **0 errors**. Two
-    pins added (render face carries VARIOUS in the item's exact shape;
-    a VARIOUS per-lot row must NOT fire D_8949_005).
+### ✅ Done s198–s201 (all revert-proved, all deployed — detail in STATUS_ARCHIVE / BUILD_ORDER)
+1–5 (s198): excess SS per person (`5f0adb2`) · Sch D QOF allowlist ·
+§179 base + K-1 income · SS worksheet per-line rounding · the $2 Sch D
+case REFUTED (payload omitted 1099-DIV box 2b).
+6–11 (s199): GA RIE ← Schedule E page 1 (`df515c1`, mig 0235,
+`schedule_e_page1_by_owner`, suspended losses never reach GA) ·
+SCHED_L_DEPR_TIE gated on the form's own lines · 4562 convention
+§168(d)(2) correction · D_8995_STALE refuted → one `qbi_engaged_db()` ·
+1099-R code W by statute + D_RET_005 coverage gate · dividend
+summary-row 1a half-refuted → failed-save revert channel + Ken's
+Option A threshold ruling BUILT.
+12–13 (s200/b): Sch C home-office election refuted at the prescribed
+layer → `SlateCheck` optimistic checkbox (⚠ 47 screens / 88 bare sites
+remain — DEFERRAL_AUDIT) · the blank-app unmount → `ScreenErrorBoundary`
++ `vite:preloadError` self-heal (`4047d07`).
+14 (s201): "VARIOUS" 8949 date REFUTED at every layer — the subject
+row's column (b) was blank; repaired live, 2 pins (`56b04d7`).
 
 ### ✅ Done in s202 (deployed `707a5ea`)
-15. **Form 8880 Saver's Credit joins the import lane (046 #5 = N-Z #3).**
-    The engine was complete since s149/s173; only the lane was missing.
-    The 8 `f8880_*` Taxpayer facts (RS FORM_8880 spec verbatim; live spec
-    re-fetched, semantically identical to the cache) joined
-    TAXPAYER_FIELDS + a NEW staging warning when a supplied deferral
-    override shadows the W-2 box-12 derive (redundant vs mistranscribed
-    wording). Schema regenerated; handoff guide + AUTHORING_GUIDE s202
-    section + kickoff s202 addendum shipped — held 8880 packets are
-    lane-eligible again, first one is its own smoke test. 8 new tests
-    incl. both source items' exact shapes (350 Roth → 50% → 175; the
-    box-12-derive-only HOH shape → 20% → 276). The 046 #5 subject
-    return already computed 175 live — the $350 had been
-    browser-entered; only the lane was ever blocked.
+15. **Form 8880 joins the import lane (046 #5 = N-Z #3).** 8 `f8880_*`
+    facts (RS spec verbatim) + deferral-override staging warning; the
+    engine was complete since s149/s173. 8 tests incl. both source
+    shapes. Subject return #4303 needed no repair.
 
 ### ✅ Done in s203 (deployed `d896b31`)
-16. **Form 2441 dependent-care credit joins the import lane (N-Z #7).**
-    The engine was complete since NEXT-UP #5; only the lane was missing —
-    and TWO of its three input homes were already importable (dependents'
-    `care_expenses`/`claims_dependent_care`, W-2 box 10). Added: the 6
-    `f2441_*` Taxpayer facts (RS FORM_2441 spec verbatim; live spec
-    re-fetched, semantically identical to the cache — the spec models NO
-    prior-year line 9b fact, so a printed 9b stays a HOLD) + a NEW
-    `care_providers` row section (Part I face; the math reads the
-    dependents' expenses) + staging warnings for the claim-flag disengage
-    trap (expenses without `claims_dependent_care` compute $0) and the
-    two override-shadows-derive shapes (DCB vs box 10, earned income vs
-    per-owner W-2 wages, where "different" is legitimate exactly for SE
-    earned income). NO migration. Schema regenerated (new section +
-    6 fields); handoff guide + AUTHORING_GUIDE s203 section + kickoff
-    s203 addendum shipped — held 2441 packets are lane-eligible again,
-    first one is its own smoke test. 9 new tests incl. the source item's
-    exact shape (2 kids × $3,000 → $6,000 capped → 20% → the filed
-    $1,200 on Sch 3 line 2), the box-10 Part III derive, the $500/month
-    spouse deeming, and the unclaimed-expenses disengage.
+16. **Form 2441 joins the import lane (N-Z #7).** 6 `f2441_*` facts +
+    `care_providers` row section + 3 staging warnings (claim-flag
+    disengage, DCB/earned-income override-shadows-derive). Printed 9b =
+    HOLD (spec models no prior-year fact). 9 tests incl. the PACE $1,200
+    shape.
 
-### ▶ NEXT — the lane sections, cont.: 8962/1095-A (046 #4 = N-Z #8)
-Then 8283 · 8606=046#10 · 047 items 16–20 (5695 · 4797 · 6252 · 8824 ·
-6251 — same pattern) · the true builds.
+### ✅ Done in s204 (this session — commit pending push)
+17. **Form 8962 / 1095-A joins the import lane (046 #4 = N-Z #8).** The
+    engine has been complete since s106e (monthly + annual methods,
+    Part IV allocations, SEHI iterative); only the lane was missing.
+    Added: the 9 `f8962_*` Taxpayer facts (the RS spec's 6 input facts
+    verbatim — live spec re-fetched 2026-08-04, semantically identical
+    to the cache — plus the three s106e annual line-11 fields, the
+    Ken-directed ahead-of-spec surface the 046 item explicitly asks
+    for) + a NEW `form_1095as` row section (policy header + the 36
+    monthly A/B/C columns) with Part IV `allocations` NESTED per policy
+    (the model FKs the policy, not the return — the first nested child
+    on a new row family; months 1–12 ordered, pcts 0.00–1.00 validated
+    beyond model clean). NO migration. Staging checks: unknown
+    `f8962_state` = ERROR (compute silently falls back to the
+    contiguous FPL table); line-11 facts without `f8962_all_year_same`
+    = WARNING (the form computes NOTHING and no diagnostic fires — the
+    2441 claim-flag class); line-11 + 1095-A rows = WARNING (the
+    methods never mix). Schema regenerated (8962 moved OUT of the
+    NOT-SUPPORTED prose); handoff guide + AUTHORING_GUIDE s204 section
+    + kickoff s204 addendum shipped — held 8962 packets are
+    lane-eligible again, first one is its own smoke test. 12 new tests
+    (7 staging + 5 commit) incl. the THOMPSON annual shape (8,222 /
+    8,086 / 7,495 → net PTC 591 → Sch 3 line 9), the partial-year
+    monthly no-annualizing pin, the Table-5-limited excess repayment,
+    the ≥400% full repayment, and the 50% Part IV allocation halving
+    the aggregate. Gates: staging+commit 104 · 8962 sweep 61 ·
+    flow 521.
+    **⚠ The relayed PETZELT regression target is CONTRADICTED by
+    i8962:** it wants a full $4,632 excess-APTC repayment at household
+    income $45,995 = 305% FPL, but Table 5 (TY2025, fetched live
+    2026-08-04) caps a single filer under 400% at $1,625, and repayment
+    is "the smaller of line 27 or line 28". Full repayment is correct
+    only at line 5 ≥ 400. Pinned to the IRS table ($1,625), NOT the
+    relayed number; the entry session must verify the filed
+    line 5/28/29 against the actual packet (kickoff addendum warns).
+
+### ▶ NEXT — the lane sections, cont.: 8283 item detail
+Then 8606=046#10 · 047 items 16–20 (5695 · 4797 · 6252 · 8824 · 6251 —
+same pattern) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
@@ -262,13 +156,8 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
 10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
 11. **GA PTET base on a separately stated gain** — unchanged from s195.
 12. ~~046 #8's "Expected" vs `R-AGG-SUMMARY`~~ — **RULED (Option A,
-    2026-08-04) and BUILT.** Summary-row box 1a / box 1 now allowed exactly
-    while Schedule B is not required (the full R-SB-04 trigger gate, not a
-    bare $1,500 test); adjustments stay forbidden always (each is its own
-    trigger). Serializer + D_INTDIV_012 both threshold-aware; dividend
-    nominee now triggers Schedule B (a gap against the verbatim i1040sb
-    list). Ruling recorded in DECISIONS.md. **RS `R-AGG-SUMMARY` still needs
-    the spec edit** — on the RS agenda.
+    2026-08-04) and BUILT** (s199e). **RS `R-AGG-SUMMARY` still needs the
+    spec edit** — on the RS agenda.
 13. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
     = "8825" but `rental_property_id` is NULL), so `D_4562_DEST` still fires.
     There is no single mechanical fix and I will not guess: return A has
@@ -292,6 +181,12 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
 16. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
+17. **The PETZELT 8962 target (s204)** — the relayed full-$4,632 repayment
+    contradicts i8962 Table 5 at the relayed 305% FPL (single cap $1,625).
+    When the packet is entered: verify the filed lines 5/28/29 against the
+    actual PDF. If the filed face REALLY repays in full under 400%, that is
+    either a TaxWise nuance we're missing (e.g. the Pub 974 SEHI line-28
+    computation) or a mistranscribed relay — escalate, don't force the tie.
 
 ## The three K-1 → individual gaps (Ken's unit, parked for the backlog)
 **GAP 1** shareholder-side §179 disposition — BLOCKED on an RS 4797 rule.
@@ -300,21 +195,21 @@ not on disk**, ask Ken to re-send. s197's pair is what its 2b/3b would show.
 **GAP 3** GA individual modifications carryover — needs open item 4 first.
 
 ## Carried queue (unchanged)
-**Lane-schema-only (engine-complete)**: 8962 annual · 8863 ·
-5695 · 8606 · 4797 · 6252 · 7203 · 1116. *(8880 done s202; 2441 done
-s203.)* **True builds**: Sch F lane ·
-8889/HSA · 7206 · 1099-G · 1099-MISC 8z · 8839 · 8824.
+**Lane-schema-only (engine-complete)**: 8863 · 5695 · 8606 · 4797 ·
+6252 · 7203 · 1116 · 8283. *(8880 done s202; 2441 done s203; 8962 done
+s204.)* **True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G ·
+1099-MISC 8z · 8839 · 8824.
 **Other queued:** TB default-template Rent/Taxes computed-line fix ·
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
-1099-R printed-aggregate fallback · RentalProperty `owner` + GA RIE rental
-pull · DividendIncome US-obligation field · GA payment line from dated
-payments · packet preflight · TB-import nav confirm dialog.
+1099-R printed-aggregate fallback · DividendIncome US-obligation field ·
+GA payment line from dated payments · packet preflight · TB-import nav
+confirm dialog.
 **RS agenda:** 8995 rental rows · R-EIC-WSB-SE · 4562 same-year-disposal ·
 4797 shareholder-side §179 · GA §179 real-property carve-out ·
 R-GA500-DEPR conformity correction · GA600S R001 gross-pair correction ·
-**§179 active-trade-or-business income enumeration (s198)** ·
-**`D_GA500_017` condition still lists Schedule E page-1 rental/royalty among
-the un-pulled categories — line 13 IS pulled as of s199 (new)** ·
-**no RS rule polices the depreciation CONVENTION at all** — `D_4562_CONVENTION`
-and the s199 importer correction are both written straight against
-§168(d)(2), logged here rather than silently diverged.
+§179 active-trade-or-business income enumeration (s198) ·
+`D_GA500_017` condition still lists Schedule E page-1 rental/royalty among
+the un-pulled categories — line 13 IS pulled as of s199 ·
+no RS rule polices the depreciation CONVENTION at all (`D_4562_CONVENTION`
++ the s199 importer correction are both written straight against
+§168(d)(2)) · **R-AGG-SUMMARY threshold edit (Option A, s199e)**.
