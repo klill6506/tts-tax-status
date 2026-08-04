@@ -87,12 +87,37 @@ framing) — verify each claim before building.
    unbuilt). Fresh diagnostics on the subject return: **0 errors,
    cleanup-eligible.**
 
-### ▶ NEXT — item 10: the four lane sections over EXISTING engines
-8880 (N-Z #3) · 2441 (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail
-(A–M #5) — import-schema sessions over engines that already compute.
+### ⚠ THE BACKLOG GREW 2026-08-04 07:21 — now ~27 source items
+`CC_CODE_CHANGES_BATCH-046.md` was rewritten this morning: 3 items → 10
+(the stale 3-item version survives as the `- 2.md` copy). New items 4–10;
+#4 duplicates N-Z #8 (8962/1095-A) and #5 duplicates N-Z #3 (8880). Ken
+ruled "whatever you think is best" on sequencing → live defects first.
+
+### ✅ Done in s199 (cont.)
+10. **Dividend summary-row box 1a (046 #8) — HALF REFUTED, HALF FIXED.**
+    The server's refusal of box 1a on a source-summary row is RS
+    `R-AGG-SUMMARY` working as designed (Sch B Part II line 5 lists
+    ordinary dividends BY PAYER; entry-time serializer guard +
+    D_INTDIV_012) — the aggregate never omitted anything, the PATCH was
+    400'd. THE REAL DEFECT: `FieldStateInput` kept showing a refused value
+    forever — the draft only cleared when the server "caught up", which a
+    rejected save never does, and `lastSent` even blocked re-committing
+    the same value. The legacy FieldGrid design ("keep what was typed")
+    relied on a Retry banner Slate doesn't have. Now ANY failed mutation
+    reverts a committed-pending draft to the served value (in-progress
+    typing untouched); the existing red toast names the field and reason.
+    Every FieldStateInput on every Slate screen benefits. Live-verified:
+    typed 411 → toast + field back to 0.00; scratch row deleted after.
+
+### ▶ NEXT — 046 #9: the Schedule C simplified home-office election
+The checkbox silently reverts to unchecked after navigation while its
+square-footage inputs persist — line 30 falls to $0 and AGI rises $1,000
++ on the live case. Then 046 #6 (editor unmount on post-save navigation)
+· 046 #7 (VARIOUS acquisition date) · the lane sections (8880+046#5 ·
+2441 · 8962+046#4 · 8283 · 8606=046#10) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
-Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13.
+Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
 
 ### Then, in order
 - **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane
@@ -134,7 +159,18 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13
    for Georgia.** A diagnostic is wanted; not built.
 10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
 11. **GA PTET base on a separately stated gain** — unchanged from s195.
-12. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
+12. **046 #8's "Expected" contradicts RS `R-AGG-SUMMARY` — your call.**
+    The report wants box 1a to ride a source-summary dividend row. The spec
+    (and D_INTDIV_012, "the whole design") forbids it because Sch B Part II
+    line 5 lists ordinary dividends by payer. BUT Schedule B is only
+    REQUIRED above $1,500 of ordinary dividends — below that, a
+    return-level 1a total is legally fine, and the current workaround
+    fabricates an "UNKNOWN PAYER - VERIFY" detail row (which is what the
+    subject return now carries — arguably worse than the summary total).
+    My recommendation: relax R-AGG-SUMMARY to allow summary-row 1a while
+    total ordinary dividends ≤ $1,500, with D_INTDIV_012 still firing
+    above it. RS-side edit either way; not built without you.
+13. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
     = "8825" but `rental_property_id` is NULL), so `D_4562_DEST` still fires.
     There is no single mechanical fix and I will not guess: return A has
     exactly ONE rental property (an auto-link would be unambiguous), return B
@@ -144,17 +180,17 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13
     call: auto-link only when exactly one candidate exists, or leave all three
     for a preparer pick? Returns identified in the source file under
     `D:\tax-test-data\CC Code Changes\`.
-13. **One of those stored assets still carries convention HY** and so computes
+14. **One of those stored assets still carries convention HY** and so computes
     $0. The s199 parser fix protects FUTURE imports only — a code fix does not
     refresh stored per-asset values (the s197 lesson). ⚠ Repairing it to MM
     makes the asset compute **1,942/yr**, and the return is currently recorded
     as an EXACT TIE — so the filed depreciation must already be reaching the
     face another way, and the repair could DOUBLE-COUNT. Needs Ken's eyes on
     the return before any data change.
-14. **`SCHED_L_DEPR_TIE` can still false-fire on an entity return that is not
+15. **`SCHED_L_DEPR_TIE` can still false-fire on an entity return that is not
     required to complete Schedule L** (the Schedule B $250k test). Same shape
     as the 1040 defect, smaller blast radius; not fixed.
-15. **Client #2969** duplicate individual entity · **retire
+16. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
 
