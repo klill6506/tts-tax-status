@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 202 (item 15). Ken's relayed ChatGPT
-backlog is at 15 of ~37 (FOUR refuted prescriptions; ⚠ BATCH-047 ARRIVED
+*Last updated: 2026-08-04, session 203 (item 16). Ken's relayed ChatGPT
+backlog is at 16 of ~37 (FOUR refuted prescriptions; ⚠ BATCH-047 ARRIVED
 2026-08-04 with items 11–20 — see below). Migration returns.0235
 (`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
@@ -25,7 +25,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 15 of ~37 done
+## ▶ RESUME HERE — the relayed backlog, 16 of ~37 done
 
 ### ⚠ THE BACKLOG GREW AGAIN 2026-08-04: `CC_CODE_CHANGES_BATCH-047.md`
 New file at the `D:\tax-test-data` ROOT (not the CC Code Changes folder),
@@ -193,9 +193,30 @@ ruled "whatever you think is best" on sequencing → live defects first.
     return already computed 175 live — the $350 had been
     browser-entered; only the lane was ever blocked.
 
-### ▶ NEXT — the lane sections, cont.: 2441 (dependent care)
-Then 8962+046#4 · 8283 · 8606=046#10 · 047 items 16–20 (5695 · 4797 ·
-6252 · 8824 · 6251 — same pattern) · the true builds.
+### ✅ Done in s203 (deployed `d896b31`)
+16. **Form 2441 dependent-care credit joins the import lane (N-Z #7).**
+    The engine was complete since NEXT-UP #5; only the lane was missing —
+    and TWO of its three input homes were already importable (dependents'
+    `care_expenses`/`claims_dependent_care`, W-2 box 10). Added: the 6
+    `f2441_*` Taxpayer facts (RS FORM_2441 spec verbatim; live spec
+    re-fetched, semantically identical to the cache — the spec models NO
+    prior-year line 9b fact, so a printed 9b stays a HOLD) + a NEW
+    `care_providers` row section (Part I face; the math reads the
+    dependents' expenses) + staging warnings for the claim-flag disengage
+    trap (expenses without `claims_dependent_care` compute $0) and the
+    two override-shadows-derive shapes (DCB vs box 10, earned income vs
+    per-owner W-2 wages, where "different" is legitimate exactly for SE
+    earned income). NO migration. Schema regenerated (new section +
+    6 fields); handoff guide + AUTHORING_GUIDE s203 section + kickoff
+    s203 addendum shipped — held 2441 packets are lane-eligible again,
+    first one is its own smoke test. 9 new tests incl. the source item's
+    exact shape (2 kids × $3,000 → $6,000 capped → 20% → the filed
+    $1,200 on Sch 3 line 2), the box-10 Part III derive, the $500/month
+    spouse deeming, and the unclaimed-expenses disengage.
+
+### ▶ NEXT — the lane sections, cont.: 8962/1095-A (046 #4 = N-Z #8)
+Then 8283 · 8606=046#10 · 047 items 16–20 (5695 · 4797 · 6252 · 8824 ·
+6251 — same pattern) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
@@ -279,8 +300,9 @@ not on disk**, ask Ken to re-send. s197's pair is what its 2b/3b would show.
 **GAP 3** GA individual modifications carryover — needs open item 4 first.
 
 ## Carried queue (unchanged)
-**Lane-schema-only (engine-complete)**: 8880 · 8962 annual · 2441 · 8863 ·
-5695 · 8606 · 4797 · 6252 · 7203 · 1116. **True builds**: Sch F lane ·
+**Lane-schema-only (engine-complete)**: 8962 annual · 8863 ·
+5695 · 8606 · 4797 · 6252 · 7203 · 1116. *(8880 done s202; 2441 done
+s203.)* **True builds**: Sch F lane ·
 8889/HSA · 7206 · 1099-G · 1099-MISC 8z · 8839 · 8824.
 **Other queued:** TB default-template Rent/Taxes computed-line fix ·
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
