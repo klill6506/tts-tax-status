@@ -1,5 +1,21 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-03 session 197 — GA-600S: THE GEORGIA DEPRECIATION PAIR NOW
+> REACHES THE FORM (compute + render legs both moved).** s196 taught the
+> engine to depreciate Georgia's own basis, but nothing consumed the result —
+> the 600S carried the preparer's hand-keyed net difference. Two NEW seeded
+> lines carry Ken's ruled GROSS PAIR: **`S7_7a` federal depreciation
+> (Schedule 7 addition) · `S8_3a` Georgia depreciation (Schedule 8
+> subtraction)**, both joining the `S7_8` / `S8_5` totals. Pulled from the
+> FEDERAL asset register (`current_depreciation` / `state_current_depreciation`)
+> at state-return creation AND re-pulled after every federal recompute
+> (`_auto_sync_ga600s`), override-respecting. **The DOR AcroForm has no
+> depreciation widget** — so the dedicated lines print on the preparer/client
+> copy (`ga600s_native`) and ROLL INTO `S7_7` / `S8_4` "(Attach Schedule)" on
+> the filed copy; both faces carry identical totals. Barcode ties Lacerte:
+> federal 37,931 / Georgia 41,509 → GA net income 232,915 · tax 12,088.
+> GA-600S line count **82 → 84**. No migration.
+
 > **2026-08-03 session 192 — LANE EXTENSIONS, NO FORM-LEG CHANGE.** The
 > STATE_REFUND worksheet (complete since NEXT-UP #9) and Schedule 1
 > line 20 became IMPORTABLE through the back-entry lane (`sr_*` taxpayer
