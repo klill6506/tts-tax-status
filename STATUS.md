@@ -1,14 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 205b (Ken's rulings executed).
-Ken's relayed 1040 backlog is PAUSED at 17 of ~37 (next: 8283); ChatGPT's
-1120-S pilot items 1–7 are DONE incl. both Ken rulings (the L24d bridge +
-reconciliation statement + §1368(b)(2) K-1 gain disclosure; the February
-Schedule B residue blanked — 4,133 rows / 276 returns, snapshot at
-D:\tax-test-data\schb_residue_blank_20260804_175129.json). Items 8–12
-(the speed builds) await sequencing. ChatGPT may CONTINUE browser-entry
-pilots meanwhile — the blockers are deployed. Migration returns.0235 is
-latest and APPLIED; s205 adds NO migration.*
+*Last updated: 2026-08-04, session 206 (Form 8283 joins the import lane).
+Ken's relayed 1040 backlog is at 18 of ~37 (next: 8606 = 046 #10). The
+1120-S pilot's speed builds ⑧–⑫ STILL await Ken's sequencing vs this
+lane; ChatGPT may CONTINUE browser-entry 1120-S pilots (s205 blockers
+deployed). The February Schedule B residue snapshot is at
+D:\tax-test-data\schb_residue_blank_20260804_175129.json. Migration
+returns.0235 is latest and APPLIED; s206 adds NO migration.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,7 +28,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 17 of ~37 done
+## ▶ RESUME HERE — the relayed backlog, 18 of ~37 done
 
 ### ⚠ BATCH-047 (arrived 2026-08-04, tax-test-data ROOT, items 11–20)
 Not yet sequenced against the existing queue — live defects first per
@@ -177,14 +175,43 @@ Ken interjected ChatGPT's first 1120-S back-entry pilot handoff
    Gates: s205 tests 14 · meals/7203/flow sweep 629 · 1065-L+MeF+face
    66 · tsc 0 · vitest 1,611.
 
-### ▶ NEXT — Ken's call: the pilot's speed builds (items 8–12), or resume 8283
-Items 8–12 are BUILDS, not fixes, and need sequencing against the paused
-1040 backlog: ⑧ an 1120-S/GA-600S back-entry lane (the 1040 lane design;
-multi-session) · ⑨ an S-corp answer-key/tie panel · ⑩ a packet
-pre-indexer for 487-page exports · ⑪ stable automation IDs + atomic
-save on the depreciation editor · ⑫ a one-click entity closeout gate
-(the s191 1040 cleanup-gate sibling). Then the 1040 lane resumes at
-**8283**, then 8606=046#10 · 047 items 16–20 · the true builds.
+### ✅ Done in s206 (this session — commit pending push)
+18. **Form 8283 joins the import lane (backlog item 18; the fourth
+    lane-schema-only section).** The engine has been complete since s121
+    (row_analysis Section A/B routing, the Sch A line-12 bucket feed
+    R-8283-SCHA12, 13 diagnostics) — only the lane was missing. Added:
+    a NEW `noncash_contributions` row section over NoncashContribution
+    (47 allowlisted fields = all 46 RS-spec input facts + `entry_basis`,
+    importable BY DESIGN — 'source_summary' is the honest
+    packet-total-without-detail marker from QA batch-001 item 15; it
+    rewords diagnostics, never clears them). NO migration. Staging
+    warnings `_warn_8283_inputs`: ① the J1 override-shadows-derive
+    shape per bucket (a nonzero flat scha_charitable_noncash_fmv /
+    capgain_50org SILENCES the rows' feed — equal = redundant,
+    different = mistranscribed, the 8880 wording); ② a
+    conservation/historic row = the one feed withhold (D_8283_006, the
+    HOLD trigger) said at staging; ③ `_warn_elect_itemize` extended —
+    8283 rows count as Schedule A facts for the b010 election nudge.
+    Schema regenerated (+8283 supported prose); handoff guide +
+    AUTHORING_GUIDE s206 section + kickoff s206 addendum shipped —
+    held 8283 packets are lane-eligible again, **starting with the
+    JACKSON shape** (filed + tied, held at cleanup on D_8283_001,
+    $1,000 line-12: rows clear it IF his packet prints detail; if not,
+    source_summary is the honest state and the hold is CORRECT).
+    10 new tests (6 staging + 4 commit) incl. the Jackson $1,000 shape
+    (row lands, SCHEDULE_A 12 = 14 = 1000), the 900/400 bucket split
+    (engine splits, not the payload), source_summary honesty, and
+    replace_documents. Gates: staging+commit 114 · 8283/Sch A sweeps
+    67 · recon+flow 534.
+
+### ▶ NEXT — 8606 (046 #10), unless Ken sequences the pilot's speed builds
+The pilot's items 8–12 are BUILDS awaiting Ken's call: ⑧ an
+1120-S/GA-600S back-entry lane (multi-session) · ⑨ an S-corp
+answer-key/tie panel · ⑩ a packet pre-indexer · ⑪ depreciation-editor
+automation IDs + atomic save · ⑫ an entity closeout gate. Absent that
+call the 1040 lane continues: **8606 = 046 #10**, then 047 items 16–20
+(5695 · 4797 · 6252 · 8824 · 6251, the same lane pattern) · the true
+builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
@@ -290,8 +317,8 @@ not on disk**, ask Ken to re-send. s197's pair is what its 2b/3b would show.
 
 ## Carried queue (unchanged)
 **Lane-schema-only (engine-complete)**: 8863 · 5695 · 8606 · 4797 ·
-6252 · 7203 · 1116 · 8283. *(8880 done s202; 2441 done s203; 8962 done
-s204.)* **True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G ·
+6252 · 7203 · 1116. *(8880 done s202; 2441 done s203; 8962 done s204;
+8283 done s206.)* **True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G ·
 1099-MISC 8z · 8839 · 8824.
 **Other queued:** TB default-template Rent/Taxes computed-line fix ·
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
