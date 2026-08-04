@@ -1,7 +1,7 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 200 (items 12+13). Ken's relayed ChatGPT
-backlog is at 13 of ~27 (three refuted prescriptions). Migration returns.0235
+*Last updated: 2026-08-04, session 201 (item 14). Ken's relayed ChatGPT
+backlog is at 14 of ~27 (FOUR refuted prescriptions). Migration returns.0235
 (`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
@@ -24,7 +24,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 13 of ~27 done
+## ▶ RESUME HERE — the relayed backlog, 14 of ~27 done
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -148,11 +148,29 @@ ruled "whatever you think is best" on sequencing → live defects first.
     reload. Live-verified with a forced screen throw: nav/title survived,
     nav-away recovered.
 
-### ▶ NEXT — 046 #7: "VARIOUS" as a Form 8949 acquisition date
-Then the lane sections (8880+046#5 · 2441 · 8962+046#4 · 8283 ·
-8606=046#10) · the true builds.
+### ✅ Done in s201 (test pins deployed `56b04d7`)
+14. **"VARIOUS" as a Form 8949 acquisition date (046 #7) — REFUTED, the
+    FOURTH wrong prescription.** Column (b) was never a date-only control:
+    the Slate Schedule D date cell has been free text with the TaxWise
+    shorthand (V → VARIOUS, I/INH → INHERITED) since the screen was born
+    (`4126eb9`, 07-29; shorthand lib `d97d8b1`, 06-30), the model stores
+    the literal in a CharField, the renderer prints it verbatim, MeF maps
+    it to `DateAcquiredInheritedCd` (tested), `D_8949_005` treats VARIOUS
+    as a filled date, and the import lane has carried `"VARIOUS"` in
+    committed batches since b008. **The real gap was the ROW'S DATA:** the
+    subject return's box E row (sold 06/24/2025, 25,000/25,000) had a
+    BLANK column (b) — the entry agent skipped the value believing it
+    couldn't be entered, exactly the "loses filed source detail" outcome
+    the report warned about. Repaired live through the real UI on prod
+    (typed V → blur expanded to VARIOUS → PATCH 200 → survives hard
+    reload); fresh diagnostics on the subject return: **0 errors**. Two
+    pins added (render face carries VARIOUS in the item's exact shape;
+    a VARIOUS per-lot row must NOT fire D_8949_005).
 
-### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
+### ▶ NEXT — the lane sections: 8880+046#5 first
+Then 2441 · 8962+046#4 · 8283 · 8606=046#10 · the true builds.
+
+### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
 
 ### Then, in order
