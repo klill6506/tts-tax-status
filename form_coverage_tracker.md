@@ -1,6 +1,17 @@
 # Form Coverage Tracker — tts-tax-app
 
-> **2026-08-04 session 199 (cont. 3) — SCHEDULE B: the source-summary
+> **2026-08-04 session 209 — SCHEDULE K-1 (1065) ITEM K1: BEGINNING/ENDING
+> LIABILITY COLUMNS (MIXED-PILOT #2).** The 2025 K-1 item K1 prints Beginning
+> AND Ending per §752 bucket; the app modeled ending only. Partner gains the
+> three `liability_*_boy` fields (**migration 0236**, db_default=0), the
+> renderer feeds all six item K1 AcroForm boxes (the map had them since s125 —
+> only the EOY trio was wired; render pin added), both chromes gain the BOY
+> column, and NEW `_populate_partners_from_prior_year` proformas partners from
+> the prior IN-APP 1065 with prior-EOY→BOY on items J/K1/L (flows zero, special
+> allocations not carried). NEW `D_K1_ITEMK_BOY` warning polices BOY vs prior
+> in-app EOY. AHEAD of RS `R-K1-ITEM-K` (ending-only; spec edit queued — the
+> s204 class, Ken-sequenced). MeF N/A (no 1065 builder). ⚠ a future 1065
+> back-entry lane must allowlist the BOY fields. 42 tests + 556 sweep.
 > box 1a/box 1 ban is now gated on Schedule B's OWN requirement (Ken's
 > Option A ruling, recorded in DECISIONS.md).** A packet-total row may carry
 > ordinary dividends / taxable interest exactly while no R-SB-04 trigger

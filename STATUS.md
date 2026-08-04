@@ -1,29 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*2026-08-04, cross-repo (Ledger session): "+ New Client" now takes email,
-phone and address at creation — optional; only typed fields are sent; a bad
-email is refused with nothing created. Normalizing lives in ONE place
-(`apps.clients.contact`, shared by the create path and the suite API) so
-the two hub write paths cannot drift (D-97). No migration. 55 server tests
-(client+suiteapi) + 9 form tests green.*
-
-*Last updated: 2026-08-04, session 208. The MIXED-PILOT batch is
-TRIAGED AND MOSTLY WORKED (Ken sequenced it ahead of the 1040 lane, quick
-wins first): four items landed (#5 refuted→URL-tab fix · #1 residual
-dollar · #4 QBI-wage override · #6 recovery slice), #3 REFUTED as written
-(GA-700 already exists end to end), #2 and #7 are true builds NEXT. Then
-the 1040 lane resumes at **8606 (046 #10)**. Migration returns.0235 is
-latest; s208 adds NO migration.*
+*Last updated: 2026-08-04, session 209. **MIXED-PILOT #2 is BUILT and
+DEPLOYED** (`c179e0e`): the K-1 item K1 §752 liability share now carries
+Beginning AND Ending columns end to end — migration **returns.0236 is
+latest** (applied to the shared DB this session, db_default=0 per the s190
+skew rule). NEXT: **MIXED-PILOT #7 (K-1 basis/at-risk allowed-loss
+worksheet)**, then the 1040 lane resumes at **8606 (046 #10)**.*
 
 *s208c (2026-08-04): the PUBLIC-mirror PII history purge EXECUTED on Ken's
-order — the client surname lived in the trees of the mirror's last 4
-commits only (entered 16:15 today); those were squashed into one clean
-commit and force-pushed (the sanctioned exception to never-rewrite),
+order — 4 tip commits squashed + force-pushed (the sanctioned exception),
 local reflog expired + gc'd, zero hits across all refs. Pre-purge bundle:
 `D:\tax-test-data\tts-tax-status-prepurge-20260804.bundle` (contains the
 PII — never commit it anywhere). Residual: GitHub keeps the 4 old SHAs as
-dangling objects until its own GC; a GitHub Support ticket fully clears
-them if Ken wants belt-and-suspenders.*
+dangling objects until its own GC; a Support ticket clears them fully.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -50,75 +39,49 @@ find defects. State the finding and move on.
 
 ## ▶ RESUME HERE
 
-### ✅ Done in s208 (the MIXED-PILOT batch, quick wins first — Ken's pick)
-**#5 State button (REFUTED as a routing bug, real fix shipped):** the route
-works — live-verified on the subject 1120-S (State tab → State Returns
-screen → created + opened its GA-600S, full Sched 6-8/5/3/1/2/4 rail). The
-pilot's "returns to Client Information" = the s200 stale-chunk self-heal
-RELOAD landing on the default tab, because the active tab lived only in
-component state. FIX: the editor mirrors the active tab to `?tab=` in the
-URL (deep links, F5, browser restore, the vite:preloadError reload, and
-back/forward all retain the screen; `resolveEditorTab` + 3 pins; the
-mirror is gated on returnData.id === route id so cross-editor switches
-can't freeze the pre-load default into the URL). Live-verified: reload
-retention on federal + GA-600S editors, 1040 home tab intact, Back from
-the GA-600S returns to the federal State tab.
-**#1 1065 K-1 residual dollar (CONFIRMED, fixed):** per-partner HALF_EVEN
-quantizing lost the odd dollar (−53,701 at 50/50 → two −26,850s; Σ K-1 ≠
-Schedule K). NEW largest-remainder distribution per K line across the
-whole partner set (`_allocate_line_exact` / `_exact_line_shares` →
-`allocate_all_k1s`; ties break by partner order; pct sets ≠100% are left
-for D_K1_RECON, never force-summed; the WS3a SE base rides the same
-corrected set so 14a sums too). Spec authority: RECON-K1-K
-(schedule_k1_1065_spec.json, §704). 12 new tests; flow assertions + the
-572-test sweep green. NOTE: the 1120-S uses the Ken-ratified R-K1-ROUND
-last-owner-absorbs convention — the 1065 mechanism needs its own RS
-ruling (agenda).
-**#4 Statement A W-2 wages (built as override + diagnostic):** the line
-7+8 derivation is RS-pinned (flow assertion) and STAYS the default; the
-build is the reviewed-source override the pilot asked for: `QBI_W2_WAGES`
-joins a narrow OVERRIDABLE_COMPUTED_LINES allowlist in
-SlateStandardSection (Ctrl+Enter opens the override — the old blanket
-`noOverride={computed}` premise "the FFV lane has no override write" was
-FALSE: update_fields sets is_overridden and compute respects it). State
-precedence fixed: an overridden computed line paints OVERRIDDEN, not ƒx.
-NEW warning `D_SCHK_QBI_W2_OVERRIDE` names override vs derivation (Rev.
-Proc. 2019-11 / Reg. §1.199A-2 cited; equal-to-derivation = "redundant,
-clear it"); seed_rules run. Live-verified on the subject 1120-S: the
-103,365 override persisted through compute, K-1 share = 103,365, the
-diagnostic fires with both figures. The full Rev. Proc. 2019-11 wage
-WORKSHEET has no RS spec → RS agenda, not improvised.
-**#6 save-timeout recovery (root-caused + slice built):** the pilot's
-symptoms line up with the four same-day deploy restarts, not one slow
-endpoint — s168's serializer fix is in place (fresh_return is prefetched)
-and s119 already provides bounded 30s timeouts, saved_revision acks,
-SaveStatusIndicator retry, and idempotency keys on nested creates. BUILT
-NOW: explicit failure + Retry states on the three screens that lied or
-dangled — Return Manager (both chromes; a failed list fetch showed "No
-returns yet"), the editor Preparer tab ("Loading preparers..." forever),
-and PreparerManager. REMAINING (next session, design build): idempotency
-keys on the taxpayer/fields PATCH lanes + newer-edit-wins arbitration +
-per-field unsaved indicator + bootstrap retry.
-**#3 GA Form 700 (REFUTED as written):** "the 1065 editor has no
-State/Georgia workspace" — GA-700 EXISTS end to end (seed_ga700 S-10,
-FORMULAS_GA700, the GA700_FEDERAL_PULL, ga700_2025 AcroForm map,
-RULES_GA700, GA_700_SECTION_TABS, create path on the 1065 State tab). The
-pilot never found the State tab (see #5; the ?tab fix helps). NEXT: a
-verification pass against the pilot's fixture (GA net income −43,621,
-zero tax) — real gaps (e.g. the GA 4562 attachment = open item 6) go
-through triage.
-**Plus: FOUR rotted pins repaired** (red on main since 8f6a78e/74c1bad —
-the s198 class): test_returns 1065 seed counts 356→401 / sections 10→11,
-and the 1065 render pin still expecting "(102)" after s195c's
-the-form-owns-the-parentheses fix.
-Gates: server touched-suites + flow assertions sweep green · client
-vitest **1,628** (136 files) · tsc 0. NO migration.
+### ✅ Done in s209 — MIXED-PILOT #2: item K1 BOY/EOY liability columns
+The 2025 K-1 (1065) item K1 prints Beginning AND Ending per §752 bucket;
+the app modeled one share. Built end to end (`c179e0e`, deployed):
+- **DB**: Partner gains `liability_recourse_boy` / `liability_qnr_boy` /
+  `liability_nonrecourse_boy` (**migration 0236**, db_default=0 —
+  APPLIED to the shared DB this session); serializer carries them.
+- **Renderer**: all six item K1 AcroForm boxes feed (the f1065sk1_2025
+  map already had them; only the EOY trio was wired). Render pin added.
+- **Roll-forward**: NEW `_populate_partners_from_prior_year` on the
+  return-creation chokepoint — copies active partners from the prior
+  **in-app** 1065 (there is NO PriorYearReturn partner parsing): prior
+  EOY → BOY on item J %s, item K1 liabilities, item L capital;
+  current-year flows zero; special allocations deliberately NOT carried
+  (§704(b) is per-year). Activates next season (needs a prior in-app
+  1065); 7 tests prove it now.
+- **Diagnostic**: NEW `D_K1_ITEMK_BOY` warning — BOY ≠ prior in-app EOY
+  (TIN-digit match, else exact name; silent with no prior year).
+  seed_rules run locally; rides build.sh on deploy anyway.
+- **Both chromes**: Slate Partners screen gets the item-J-style
+  beginning/ending grid (capital account moved to its own full-width
+  span); legacy FormEditor card gains the BOY row.
+- **MeF**: N/A — no 1065 MeF builder exists. **Import**: the Partner API
+  surface; the entity back-entry lane has no 1065 support yet (when it
+  gains one, the BOY fields must join its allowlist).
+- **Ahead-of-spec**: RS `R-K1-ITEM-K` models the ENDING share only — the
+  BOY columns are the s204-class Ken-sequenced surface; spec edit on the
+  RS agenda below.
+Live-verified on the dev server against a real 1065 (2 partners): all
+six cells render with data-field wiring, a BOY commit PATCHes 200 and
+survives a hard reload (the s208 `?tab=partners` deep link held too);
+test value reset to 0 afterward (both PATCHes 200). Gates: 42 new/
+touched server tests + flow/allocator/render sweep **556** · client
+vitest 20 (2 files) · tsc 0.
 
-### ▶ NEXT: MIXED-PILOT #2 + #7 (true builds), then the 1040 lane
-**#2 item K BOY/EOY liability columns** — real build, migration: the app
-models ONE share per §752 bucket; the 2025 K-1 item K prints beginning AND
-ending for all three classes (DB → Slate → import/export → renderer → MeF
-→ roll-forward → diagnostics; next-year BOY defaults from prior EOY).
+### ✅ s208 (compact — full detail in STATUS_ARCHIVE)
+The MIXED-PILOT batch, quick wins first: #5 REFUTED→the `?tab=` URL fix ·
+#1 1065 K-1 largest-remainder residual dollar (1120-S keeps
+last-owner-absorbs — RS ruling on the agenda) · #4 QBI_W2_WAGES reviewed
+override + D_SCHK_QBI_W2_OVERRIDE · #6 failure+Retry on three lying
+screens (remainder = a designed build, queued) · #3 REFUTED (GA-700
+exists; verify vs the pilot fixture still open) · 4 rotted pins repaired.
+
+### ▶ NEXT: MIXED-PILOT #7 (true build), then the 1040 lane
 **#7 K-1 basis/at-risk allowed-loss worksheet (1040 side)** — the
 basis-limited checkbox only FLAGS today; the full box-1 loss routes to
 Schedule E. Build the worksheet (beginning basis · additions ·
@@ -128,12 +91,14 @@ allowed loss, keep QBI un-double-limited, persist the suspension.
 together.)* Then the 1040 lane resumes: **8606 (046 #10)**, then 047
 items 16-20 · the true builds.
 
-### Artifacts left on the shared DB (deliberate, s208)
-- The subject 1120-S now HAS its GA-600S (created during #5 verification)
-  and carries the 103,365 QBI_W2_WAGES override (matches the source
-  return) + its D_SCHK_QBI_W2_OVERRIDE warning awaiting source-verified.
-- seed_rules run locally (registers D_SCHK_QBI_W2_OVERRIDE); rides
-  build.sh on deploy anyway.
+### Artifacts left on the shared DB (deliberate, s208/s209)
+- **Migration 0236 APPLIED to the shared DB (s209)** — three Partner BOY
+  liability columns, db_default=0; deploys re-run it as a no-op.
+- seed_rules run locally s209 (registers D_K1_ITEMK_BOY); rides build.sh.
+- The s209 live-verification value on 409 FAMILY HOLDINGS was RESET to 0
+  (both PATCHes 200) — no droppings.
+- The subject 1120-S (s208) has its GA-600S + the 103,365 QBI_W2_WAGES
+  override + its D_SCHK_QBI_W2_OVERRIDE warning awaiting source-verified.
 
 ### ⛔ TWO KEN DECISIONS STILL BLOCK A–M ITEM 7 (the 4562 assets)
 Unchanged from s207 — see "Open items" #13/#14.
@@ -198,9 +163,9 @@ is not on disk**, ask Ken to re-send.
 **Lane-schema-only (engine-complete)**: 8863 · 5695 · 8606 · 4797 ·
 6252 · 7203 · 1116. *(8880 s202 · 2441 s203 · 8962 s204 · 8283 s206.)*
 **True builds**: Sch F lane · 8889/HSA · 7206 · 1099-G · 1099-MISC 8z ·
-8839 · 8824 · **MIXED-PILOT #2 (item K BOY/EOY, migration) · MIXED-PILOT #7
-(basis/at-risk worksheet) · MIXED-PILOT #6 remainder (idempotent field-save
-lanes + newer-edit-wins + per-field unsaved indicator + bootstrap retry)**.
+8839 · 8824 · **MIXED-PILOT #7 (basis/at-risk worksheet) · MIXED-PILOT #6
+remainder (idempotent field-save lanes + newer-edit-wins + per-field
+unsaved indicator + bootstrap retry)**. *(#2 item K BOY/EOY — DONE s209.)*
 **Other queued:** TB default-template Rent/Taxes computed-line fix ·
 depreciation-importer prior-split hardening · per-activity QBI carryforward ·
 1099-R printed-aggregate fallback · DividendIncome US-obligation field ·
@@ -218,4 +183,8 @@ impossible-bonus diagnostic (s205 #4) · RS 7203 Part III map (draft spec) ·
 **NEW (s208): ratify the 1065 K-1 residual mechanism (largest-remainder)
 — the 1120-S R-K1-ROUND uses last-owner-absorbs; same RECON invariant,
 different tie-break** · **NEW (s208): author the Rev. Proc. 2019-11 W-2
-wage worksheet spec (MIXED-PILOT #4's full ask) before building**.
+wage worksheet spec (MIXED-PILOT #4's full ask) before building** ·
+**NEW (s209): extend `R-K1-ITEM-K` with the three BOY facts — the 2025
+item K1 prints Beginning/Ending per §752 bucket; the app now models both
+(s204-class ahead-of-spec, Ken-sequenced); D_K1_ITEMK_BOY should also
+join the spec's diagnostics**.
