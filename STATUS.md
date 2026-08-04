@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 204 (item 17). Ken's relayed ChatGPT
-backlog is at 17 of ~37 (FOUR refuted prescriptions + one contradicted
-regression target; BATCH-047 items 11–20 still unsequenced). Migration
-returns.0235 (`RentalProperty.owner`) is latest and is APPLIED on the
-shared DB.*
+*Last updated: 2026-08-04, session 205 (the 1120-S pilot interjection).
+Ken's relayed 1040 backlog is PAUSED at 17 of ~37 (next: 8283); Ken
+interjected ChatGPT's 1120-S pilot handoff — items 1–7 (release blockers)
+are DONE this session (one refuted as a data mistranscription, two
+queued for Ken); items 8–12 (the speed builds) await sequencing.
+Migration returns.0235 is latest and APPLIED; s205 adds NO migration.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -108,9 +109,79 @@ row's column (b) was blank; repaired live, 2 pins (`56b04d7`).
     relayed number; the entry session must verify the filed
     line 5/28/29 against the actual packet (kickoff addendum warns).
 
-### ▶ NEXT — the lane sections, cont.: 8283 item detail
-Then 8606=046#10 · 047 items 16–20 (5695 · 4797 · 6252 · 8824 · 6251 —
-same pattern) · the true builds.
+### ✅ Done in s205 (this session — the 1120-S pilot's release blockers, items 1–7)
+Ken interjected ChatGPT's first 1120-S back-entry pilot handoff
+(`Delvio 1120-S pilot: verified fixes and speed improvements`, relayed
+2026-08-04). Items 1–7 worked in order, verify-first:
+1. **Odd-dollar 50% meals (P0) — CONFIRMED, fixed.** Both halves of
+   x.50 rounded HALF_UP independently (22,397 → 11,199 + 11,199).
+   `D_MEALS_NONDED` is now the RESIDUAL of the book total against the
+   rounded deductible — RS R010's own invariant — on BOTH the 1120-S
+   and 1065 formula tables; K16c/M1_3b/M2_5a all ride it. 6 tests.
+2. **M-2 AAA distribution cap (P0) — ⛔ QUEUED FOR KEN** (open item 18):
+   the pilot demands uncapping line 7 (full distribution, negative
+   ending AAA), but i1120s p.50 verbatim says "Decrease AAA (but not
+   below zero) by property distributions" and the cap is Ken-ratified
+   (RS 1120S_M2 R002, 2026-07-13). Recommendation recorded below.
+3. **Form 7203 Part III lines 42–46 (P0) — CONFIRMED, fixed.** The K
+   map stopped at line 41: a cash charitable contribution reduced
+   NOTHING. Lines 42–46 now feed from K12a+K12b / K12c / K12d / K12e /
+   K16f (i7203 Part III col (a); the RS 7203 spec is a draft with no
+   Part III map — ahead-of-RS, agenda'd). Verified the template is
+   Rev. 12-2022 (the f7203_2025 field-map COMMENTS mislabel rows 38+ —
+   comments only, widgets align). Carryforward FIELDS for 41–46 are a
+   migration — DEFERRAL_AUDIT. 3 tests incl. the pilot's exact
+   6,000+992 → 6,992 shape.
+4. **GA depreciation conformity (P0) — REFUTED as prescribed; the DATA
+   was mistranscribed; repaired live.** The phantom 9,796 GA
+   subtraction was one asset keyed with 100% prior-year BONUS on a
+   2024-09-10 acquisition — impossible (TY2024 bonus was 60%,
+   §168(k)(6)); a full year-one write-off can only have been §179,
+   which GA conforms to (HB 1199). Re-keyed `sec_179_prior`=40,000,
+   recomputed, ran the GA-600S resync chokepoint: pair 6,660/6,660,
+   GA income **228,377** = the pilot's required result, ZERO law
+   change. (The pilot's "0/0" presentation ask contradicts Ken's s197
+   gross-pair ruling; the net is identical — not re-litigated.) An
+   impossible-bonus diagnostic → RS agenda.
+5. **Schedule B 14b (P1) — the field EXISTS at every layer** (seeded,
+   rendered behind 14a=Yes, test-pinned). Two real defects behind the
+   report: the sub-question only appears after the SLOW save round
+   trip serves 14a back (the s200 class), and **⚠ a February-era
+   backfill wrote 'false' into ~324 returns' Schedule B booleans**
+   (blank-≠-No violation — faces print "No" for questions never
+   answered; open item 19). The pilot return's 14a/14b now both true.
+6. **Client Info persistence (P1) — CONFIRMED, fixed, live-verified.**
+   Both debounced autosave lanes (entity + return-info) CLEARED their
+   pending timer on unmount — navigating within ~800ms of an edit
+   silently discarded it (officers persisted: their lane commits on
+   blur). NEW unmount flush fires the pending save instead.
+   Live-proven on the pilot return via the dev server: value typed →
+   navigate at 200ms → persists. ALSO: `create_state_return` now
+   copies the federal header cluster (staff preparer, signature date,
+   product/service, business code, S-election date, shareholder count,
+   accounting method — only `preparer` was carried), so a new GA-600S
+   no longer opens blank. 1 test.
+7. **Schedule L balance diagnostics (P0 gate) — CONFIRMED, built.**
+   The 1065 has had D_L_BALANCE_BOY/EOY since S-4; the 1120-S had
+   NOTHING — a visibly out-of-balance Schedule L produced zero
+   findings. NEW `rules_1120s_l.py` per RS 1120S_SCHL (live-fetched):
+   D_1120S_L_BALANCE_BOY/EOY (**errors**, with the dollar delta),
+   D_1120S_L_M2_TIE (warning), D_1120S_L_EXEMPT (info; B11 suppresses
+   — the same gate open item 15 wants for SCHED_L_DEPR_TIE). Spec D007
+   (item F ≠ L15d) holds BY CONSTRUCTION (the renderer fills item F
+   from L15d); D004–D006 queued. ⚠ seed_rules must run on deploy
+   (rides build.sh). 4 tests.
+   Gates: s205 tests 14 · meals/7203/flow sweep 629 · 1065-L+MeF+face
+   66 · tsc 0 · vitest 1,611.
+
+### ▶ NEXT — Ken's call: the pilot's speed builds (items 8–12), or resume 8283
+Items 8–12 are BUILDS, not fixes, and need sequencing against the paused
+1040 backlog: ⑧ an 1120-S/GA-600S back-entry lane (the 1040 lane design;
+multi-session) · ⑨ an S-corp answer-key/tie panel · ⑩ a packet
+pre-indexer for 487-page exports · ⑪ stable automation IDs + atomic
+save on the depreciation editor · ⑫ a one-click entity closeout gate
+(the s191 1040 cleanup-gate sibling). Then the 1040 lane resumes at
+**8283**, then 8606=046#10 · 047 items 16–20 · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
@@ -181,7 +252,28 @@ Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14
 16. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
-17. **The N-Z #8 8962 target (s204)** — the relayed full-$4,632 repayment
+17. **⛔ The M-2 AAA distribution cap (s205 pilot item 2).** The pilot
+    demands M-2 line 7 carry the FULL Schedule K distribution and ending
+    AAA go negative (−1,419 on the subject return), matching its source
+    software's print. i1120s (2025) p.50, fetched verbatim: adjustment 3
+    = "Decrease AAA (but not below zero) by property distributions" —
+    the current cap implements the IRS instruction and is Ken-ratified
+    (RS 1120S_M2 R002, 2026-07-13). **Recommendation: keep the cap, fix
+    the BRIDGE** — the real pain is Schedule L: `L24d = Σ M-2 endings`
+    loses the distribution excess (the §1368(c) cascade's "reduce any
+    remaining shareholders' equity accounts"), so retained earnings
+    shows 0 where the books say −1,419. Carrying the excess into L24d
+    ties Schedule L exactly WITHOUT uncapping the M-2. The pilot's
+    answer key would still no-tie on the M-2 line-7 FACE vs its source
+    software — Ken decides which face we print.
+18. **⛔ The February 'false' residue (s205 pilot item 5).** ~324 of 325
+    1120-S returns carry `'false'` in Schedule B booleans (B14b et al.)
+    from a February-era backfill — the blank-≠-No violation predating
+    the s106 tri-state contract; faces print "No" for questions nobody
+    answered. Proposed repair: blank every boolean FFV whose value is
+    'false', updated_at in the Feb 2026 mint window, and not overridden
+    — needs Ken's go (bulk data change, s193-class).
+19. **The N-Z #8 8962 target (s204)** — the relayed full-$4,632 repayment
     contradicts i8962 Table 5 at the relayed 305% FPL (single cap $1,625).
     When the packet is entered: verify the filed lines 5/28/29 against the
     actual PDF. If the filed face REALLY repays in full under 400%, that is
