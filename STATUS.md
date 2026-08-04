@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-03, session 197–198. s197 routed the Georgia
-depreciation pair onto the GA-600S; s198 began Ken's relayed ChatGPT backlog
-(5 of ~20 done). Migration 0234 latest — neither session added one.*
+*Last updated: 2026-08-04, session 199. Ken's relayed ChatGPT backlog is at
+7 of ~20. Migration returns.0235 (`RentalProperty.owner`) is latest and is
+APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,7 +24,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, item 6 of ~20
+## ▶ RESUME HERE — the relayed backlog, item 8 of ~20
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -38,34 +38,45 @@ return to Georgia.**
 so far pointed at the wrong layer.
 
 ### ✅ Done in s198 (all revert-proved, all deployed)
-1. **Excess social security (A–M #1, LIVELY)** — `5f0adb2`. Schedule 3 line 11
+1. **Excess social security (A–M #1)** — `5f0adb2`. Schedule 3 line 11
    now computes from same-owner W-2 box 4; ties $939.
 2. **Schedule D QOF answer (N-Z #1)** — `3379e91`. Allowlist gap only.
-3. **§179 limit + K-1 income (046 #3, LITTLETON)** — `3379e91`. Full election
+3. **§179 limit + K-1 income (046 #3)** — `3379e91`. Full election
    deductible, carryover $0.
-4. **SS worksheet per-line rounding (N-Z #2, PARR BOYD)** — `20914e0`. Ties
+4. **SS worksheet per-line rounding (N-Z #2)** — `20914e0`. Ties
    $4,233 / AGI $25,774.
-5. **Hodges $2 (batch-041) — REFUTED, no code change** — `c1f8308`. The
+5. **The $2 Schedule D case (batch-041) — REFUTED, no code change** — `c1f8308`. The
    worksheet was correct; the payload omitted 1099-DIV box 2b ($33 unrecaptured
    §1250). Payload + HOLD note corrected in `D:\tax-test-data\tmp\b041\`.
 
-### ▶ NEXT — item 6: GA RIE worksheet ← Schedule E (batch-046 #2)
-Populate `RIE-TP-13` / `RIE-SP-13` from the owner-attributed **deductible**
-Schedule E result (after passive-loss limits), sign included; preserve an
-explicit preparer entry. Answer key: single GA taxpayer 65+, wages 6,699,
-taxable pension 40,227, deductible Schedule E loss 9,193 → RIE line 17 should
-be **36,034**, engine gives 45,227. `compute_ga500.rie()` already consumes
-those lines correctly — **the gap is the federal→GA feeder**, which is
-`GA500_FEDERAL_PULL` in `returns/views.py` (only 2 entries today). Do NOT
-rewrite `rie()`; it is IT-511-verified.
+### ✅ Done in s199 (all revert-proved)
+6. **GA RIE ← Schedule E page 1 (046 #2)** — `df515c1`, deployed. NEW
+   `RentalProperty.owner` (T/S/J, migration 0235, db_default) +
+   `schedule_e_page1_by_owner()`, which splits the post-§469 result so a
+   suspended loss never reaches Georgia and whose parts reconstruct Schedule E
+   line 26 exactly. Ties the filed 36,034. Root-fixed alongside: `_attribute`
+   dropped half of any `joint` source on a non-MFJ return.
+7. **`SCHED_L_DEPR_TIE` + the 4562 convention import (A–M #2/#3)** —
+   PARTIALLY done, see the two open questions below. `SCHED_L_DEPR_TIE` no
+   longer runs on forms without a Schedule L; the depreciation importer now
+   corrects an explicitly-supplied convention that contradicts §168(d)(2).
+
+### ▶ NEXT — item 8: `D_8995_STALE` on replace-document (A–M #4)
+The subject return is an exact tie, committed and Filed, and fresh cleanup
+still blocks on `D_8995_STALE`. Requested: recompute or clear stale derived
+Form 8995 state during a replace-document commit, BEFORE the fresh diagnostic
+run. (⚠ s181: `replace_documents` does NOT clear overrides — check whether that
+is the same mechanism.) Subject named in the source file under
+`D:\tax-test-data\CC Code Changes\` — NOT here; this file mirrors public.
+
+### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
+Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13.
 
 ### Then, in order
-- **Diagnostics/lane interaction (4):** 4562 metadata blockers (A–M #2 Bell/
-  Bernstein `D_4562_DEST` + `SCHED_L_DEPR_TIE`; A–M #3 Connell
-  `D_4562_CONVENTION`/`D_4562_METHOD`) · `D_8995_STALE` on replace-document
-  (A–M #4 Duvall) · 1099-R **code W** + `D_RET_005` (A–M #6 Linda Long).
+- **Diagnostics/lane interaction (2 left):** `D_8995_STALE` (A–M #4) ·
+  1099-R **code W** + `D_RET_005` (A–M #6).
 - **New lane sections over EXISTING engines (4):** 8880 (N-Z #3) · 2441
-  (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail (A–M #5 Jackson).
+  (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail (A–M #5).
 - **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane
   `schedule_fs` (N-Z #5) · SS lump-sum election (N-Z #6) · 1099-G unemployment
   (N-Z #9) · multi-state import NC + MO (N-Z #10).
@@ -105,7 +116,27 @@ rewrite `rie()`; it is IT-511-verified.
    for Georgia.** A diagnostic is wanted; not built.
 10. **RS rule for the shareholder-side §179 disposition** — blocks K-1 GAP 1.
 11. **GA PTET base on a separately stated gain** — unchanged from s195.
-12. **Client #2969** duplicate individual entity · **retire
+12. **The three A–M #2/#3 assets are not linked to an activity** (`flow_to`
+    = "8825" but `rental_property_id` is NULL), so `D_4562_DEST` still fires.
+    There is no single mechanical fix and I will not guess: return A has
+    exactly ONE rental property (an auto-link would be unambiguous), return B
+    has THREE (ambiguous — which one owns the asset?), and return C has NONE
+    at all, with a laptop asset pointing at the rental arm (there
+    `D_4562_DEST` looks CORRECT — it is probably a Schedule C asset). Ken's
+    call: auto-link only when exactly one candidate exists, or leave all three
+    for a preparer pick? Returns identified in the source file under
+    `D:\tax-test-data\CC Code Changes\`.
+13. **One of those stored assets still carries convention HY** and so computes
+    $0. The s199 parser fix protects FUTURE imports only — a code fix does not
+    refresh stored per-asset values (the s197 lesson). ⚠ Repairing it to MM
+    makes the asset compute **1,942/yr**, and the return is currently recorded
+    as an EXACT TIE — so the filed depreciation must already be reaching the
+    face another way, and the repair could DOUBLE-COUNT. Needs Ken's eyes on
+    the return before any data change.
+14. **`SCHED_L_DEPR_TIE` can still false-fire on an entity return that is not
+    required to complete Schedule L** (the Schedule B $250k test). Same shape
+    as the 1040 defect, smaller blast radius; not fixed.
+15. **Client #2969** duplicate individual entity · **retire
     `reparent_business_entities`** · **client-delete UI (there is NO path)** ·
     **duplicate guard is blind to entity names**.
 

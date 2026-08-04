@@ -1,5 +1,23 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-04 session 199 — GA-500 RIE INPUT LEG CLOSED + TWO DIAGNOSTIC
+> DEFECTS (Ken's relayed backlog, items 6–7 of ~20).** **GA-500**: the
+> Retirement Income Exclusion worksheet's line 13 leaves PREPARER-ENTRY for
+> PULLED — the Schedule E page-1 result, attributed per spouse off the NEW
+> `RentalProperty.owner` (T/S/J, migration 0235) and split at its post-§469
+> ALLOWED amount so a suspended loss never reaches Georgia. The parts
+> reconstruct Schedule E line 26 exactly. Ties the filed 36,034 on the
+> batch-046 case (engine gave 45,227). `rie()` itself unchanged — it was never
+> wrong, it was never fed. Also fixed: `_attribute` dropped half of any
+> `joint`-tagged source on a NON-MFJ return, affecting every RIE category.
+> **SCHEDULE_L**: `SCHED_L_DEPR_TIE` now runs only on forms that HAVE a
+> Schedule L — it was firing two unclearable ERRORs on every 1040 carrying a
+> depreciation asset. **FORM_4562 import**: an explicitly-supplied convention
+> that contradicts §168(d)(2) on a real-property life is corrected to MM with
+> a loud warning (the blank-column case was already handled; the supplied one
+> was taken verbatim and computed $0). `RentalProperty.owner` is importable.
+> Migration returns.0235.
+
 > **2026-08-03 session 198 — FOUR COMPUTE LEGS MOVED + ONE REFUTED (Ken's
 > relayed backlog, items 1–5 of ~20).** **SCH_3** line 11 (excess social
 > security) leaves DIRECT-ENTRY for COMPUTED: figured per person from
@@ -13,7 +31,7 @@
 > now rounds LINE BY LINE (the 1040's "round ALL amounts" election, which is
 > what TaxWise does) — affects every return with taxable Social Security.
 > **Back-entry lane**: `schd_qof_disposal` importable (tri-state preserved).
-> **SCHEDULE_D unchanged and VINDICATED** — the reported Hodges $2 was a
+> **SCHEDULE_D unchanged and VINDICATED** — the reported $2 difference was a
 > missing 1099-DIV box 2b, not a worksheet defect. No migration.
 
 > **2026-08-03 session 197 — GA-600S: THE GEORGIA DEPRECIATION PAIR NOW
