@@ -158,4 +158,9 @@ payments · packet preflight · TB-import nav confirm dialog.
 **RS agenda:** 8995 rental rows · R-EIC-WSB-SE · 4562 same-year-disposal ·
 4797 shareholder-side §179 · GA §179 real-property carve-out ·
 R-GA500-DEPR conformity correction · GA600S R001 gross-pair correction ·
-**§179 active-trade-or-business income enumeration (new, s198)**.
+**§179 active-trade-or-business income enumeration (s198)** ·
+**`D_GA500_017` condition still lists Schedule E page-1 rental/royalty among
+the un-pulled categories — line 13 IS pulled as of s199 (new)** ·
+**no RS rule polices the depreciation CONVENTION at all** — `D_4562_CONVENTION`
+and the s199 importer correction are both written straight against
+§168(d)(2), logged here rather than silently diverged.
