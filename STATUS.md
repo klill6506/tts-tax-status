@@ -1,7 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 201 (item 14). Ken's relayed ChatGPT
-backlog is at 14 of ~27 (FOUR refuted prescriptions). Migration returns.0235
+*Last updated: 2026-08-04, session 202 (item 15). Ken's relayed ChatGPT
+backlog is at 15 of ~37 (FOUR refuted prescriptions; ⚠ BATCH-047 ARRIVED
+2026-08-04 with items 11–20 — see below). Migration returns.0235
 (`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
@@ -24,7 +25,17 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, 14 of ~27 done
+## ▶ RESUME HERE — the relayed backlog, 15 of ~37 done
+
+### ⚠ THE BACKLOG GREW AGAIN 2026-08-04: `CC_CODE_CHANGES_BATCH-047.md`
+New file at the `D:\tax-test-data` ROOT (not the CC Code Changes folder),
+items 11–20: name suffixes (11) · non-50/50 MFJ owner allocation on
+INT/DIV rows, the GA RIE feeder (12) · 1099-MISC source rows (13) · 7206
+source facts (14) · Form 4952 build (15) · 5695 lane (16) · 4797 lane
+(17) · 6252 lane (18) · 8824 lane (19) · 6251 amt_* lane (20). Items
+16–20 are the SAME lane-schema-only pattern as s202's 8880; 13/15 are
+true builds; 11/12 are model+everywhere builds. Not yet sequenced against
+the existing queue — live defects first per Ken's standing ruling.
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -167,8 +178,24 @@ ruled "whatever you think is best" on sequencing → live defects first.
     pins added (render face carries VARIOUS in the item's exact shape;
     a VARIOUS per-lot row must NOT fire D_8949_005).
 
-### ▶ NEXT — the lane sections: 8880+046#5 first
-Then 2441 · 8962+046#4 · 8283 · 8606=046#10 · the true builds.
+### ✅ Done in s202 (deployed `707a5ea`)
+15. **Form 8880 Saver's Credit joins the import lane (046 #5 = N-Z #3).**
+    The engine was complete since s149/s173; only the lane was missing.
+    The 8 `f8880_*` Taxpayer facts (RS FORM_8880 spec verbatim; live spec
+    re-fetched, semantically identical to the cache) joined
+    TAXPAYER_FIELDS + a NEW staging warning when a supplied deferral
+    override shadows the W-2 box-12 derive (redundant vs mistranscribed
+    wording). Schema regenerated; handoff guide + AUTHORING_GUIDE s202
+    section + kickoff s202 addendum shipped — held 8880 packets are
+    lane-eligible again, first one is its own smoke test. 8 new tests
+    incl. both source items' exact shapes (350 Roth → 50% → 175; the
+    box-12-derive-only HOH shape → 20% → 276). The 046 #5 subject
+    return already computed 175 live — the $350 had been
+    browser-entered; only the lane was ever blocked.
+
+### ▶ NEXT — the lane sections, cont.: 2441 (dependent care)
+Then 8962+046#4 · 8283 · 8606=046#10 · 047 items 16–20 (5695 · 4797 ·
+6252 · 8824 · 6251 — same pattern) · the true builds.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF A–M ITEM 7 (the 4562 assets)
 Both are on real Filed returns; I did not guess. Details in "Open items" #13/#14.
