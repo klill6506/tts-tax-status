@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-08-04, session 199. Ken's relayed ChatGPT backlog is at
-7 of ~20. Migration returns.0235 (`RentalProperty.owner`) is latest and is
-APPLIED on the shared DB.*
+9 of ~20 (two of them refuted prescriptions). Migration returns.0235
+(`RentalProperty.owner`) is latest and is APPLIED on the shared DB.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -24,7 +24,7 @@ find defects. State the finding and move on.
 
 ---
 
-## ▶ RESUME HERE — the relayed backlog, item 8 of ~20
+## ▶ RESUME HERE — the relayed backlog, 9 of ~20 done
 
 Ken interrupted the Georgia lane on 2026-08-03 to clear a backlog relayed from
 ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
@@ -33,9 +33,9 @@ ChatGPT, in five source files under `D:\tax-test-data\CC Code Changes\`:
 `CC_CODE_CHANGES_NZ_2026-08-03.md`. **Ken's order: work them in order, then
 return to Georgia.**
 
-**⚠ Unlike the s192 backlog, this one is mostly ACCURATE** — but 1 of the
-5 done was refuted (see #5). Verify each claim before building; two prescriptions
-so far pointed at the wrong layer.
+**⚠ Unlike the s192 backlog, this one is mostly ACCURATE** — but three of the
+9 done were WRONG-LAYER prescriptions (#5 the input, #8 the diagnostic, #7's
+framing) — verify each claim before building.
 
 ### ✅ Done in s198 (all revert-proved, all deployed)
 1. **Excess social security (A–M #1)** — `5f0adb2`. Schedule 3 line 11
@@ -72,21 +72,29 @@ so far pointed at the wrong layer.
    one-shared-aggregator pattern. Fresh diagnostics on the subject return:
    0 errors; cleanup-eligible.
 
-### ▶ NEXT — item 9: 1099-R code W + `D_RET_005` (A–M #6)
-Two asks: ① distribution code W (a full rollover printed nontaxable) is
-outside the supported diagnostic set — `D_RET_003` fires; add code-W handling
-per its printed treatment. ② `D_RET_005` (deductible IRA contribution +
-taxable Social Security = circular-calculation risk) wants a worksheet
-computation or a source-backed verification path that does NOT suppress the
-genuine risk. Five 1099-R rows on the subject return; named in the source
-file under `D:\tax-test-data\CC Code Changes\` — not here (public mirror).
+9. **1099-R code W + the `D_RET_005` coverage gate (A–M #6).** ① Code W
+   (LTC-rider charge under a combined arrangement) ADMITTED to
+   `SUPPORTED_CODES` — §72(e)(11)(A)(ii) excludes the charge from gross
+   income by STATUTE, so it rides the code-Q absolute-zero branch and a
+   blank box 2a can never tax the gross (i1099r verified live; NOT a
+   rollover, though the filed face looks like one). AHEAD of RS
+   `R-RET-CODE` per the code-6 precedent — RS agenda. ② `D_RET_005` now
+   fires only when an employer-plan coverage signal exists (W-2 box 13
+   either owner, or Sch 1 line 16 self-employed plan): Pub 590-A
+   (fetched live) applies the Appendix B circular worksheets ONLY when
+   covered; Table 1-3 gives the uncovered case a full deduction with no
+   MAGI test — no circle. Covered returns still ERROR (Appendix B remains
+   unbuilt). Fresh diagnostics on the subject return: **0 errors,
+   cleanup-eligible.**
+
+### ▶ NEXT — item 10: the four lane sections over EXISTING engines
+8880 (N-Z #3) · 2441 (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail
+(A–M #5) — import-schema sessions over engines that already compute.
 
 ### ⛔ TWO KEN DECISIONS BLOCK THE REST OF ITEM 7
 Both are on real Filed returns; I did not guess. Details in "Open items" #12/#13.
 
 ### Then, in order
-- **New lane sections over EXISTING engines (4):** 8880 (N-Z #3) · 2441
-  (N-Z #7) · 8962/1095-A (N-Z #8) · 8283 item detail (A–M #5).
 - **True builds (6):** Form 1310 (046 #1) · 8889/HSA (N-Z #4) · Schedule F lane
   `schedule_fs` (N-Z #5) · SS lump-sum election (N-Z #6) · 1099-G unemployment
   (N-Z #9) · multi-state import NC + MO (N-Z #10).
