@@ -118,7 +118,7 @@ Gates this session: 816 + 219 + 85 + 603 (batch-004 sweep) + 817
 Gates: 978 green.
 
 ### ✅ Done in s212 — RULE STUDIO WO-14: the Form 6765 spec (Ken's go)
-Authored in `sherpa-tax-rule-studio` (`d33584c`), **status ⏳ AWAITING KEN
+Authored in `delvio-rule-studio` (renamed from sherpa-tax-rule-studio 2026-08-05; `d33584c`), **status ⏳ AWAITING KEN
 (seed approval)** — `READY_TO_SEED=False` until Ken says "Approve — flip,
 seed, export". Sources fetched + read verbatim: f6765 Rev. 12-2024 face,
 i6765 Rev. 12-2025 (⚠ label mismatch flagged), i1120ssk box 13 **code M**.
