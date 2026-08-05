@@ -146,6 +146,45 @@ $33 §1250 input, pinned by `test_hodges_sdtw_1250_s198.py`); annexed and
 moved. ⚠ Two byte-identical duplicate copies + one superseded earlier
 draft await Ken's OK to delete.
 
+### ⚠⚠ s212 LATE — THE LOOP CAUGHT MY OWN REGRESSION (fixed `48ad1dc`)
+**batch-006 #10's gross-basis recovery cap was batch-007 #3's bug.** The
+gross frame (subtract prior regular + bonus + §179) is valid ONLY under
+the R018 split contract. With NO `original_cost`, `cost_basis` is ALREADY
+net of a recorded prior bonus — subtracted twice, it HALVED a legitimate
+SL deduction (packet 156's Raptor: 11,082 → 6,354, reproduced exactly)
+and moved K15a with it. `_recovery_remaining()` is now keying-aware
+(gross frame iff original_cost set; else prior bonus is already out but
+`sec_179_prior` still subtracts — the handoff's packet-138 keying).
+Deployed. Both shapes pinned; batch-006 #10's F-150 still zeroes.
+**Also guarded:** batch-006 #7 made the amortization register canonical
+for line 20, so a legacy "Amortization" `other_deductions` row DOUBLES it
+(13,334 for one 6,667) — staging now warns (a doc was not a guard).
+
+### ▶ 1040 LANE reopened and shipped (`7bba38c`)
+Ken's directive 2026-08-05: work BOTH queues. Done: **046 #10 Form 8606
+lane** (`form_8606s`, one row per owner — engine complete since mig 0079;
+duplicate-owner ERROR, blank-line-6/all-zero WARN; the [client]
+basis-only shape ties 2=3=14) · **047 #16-#20** (5695 `e5695_*` · 6251
+AMT facts · `dispositions`/`installment_sales`/`like_kind_exchanges`).
+⚠ `amt_medicare_wages_agg` is Form **8959**, NOT 6251 — the prefix
+collides. ⚠ `property_character` = `capital|business_1231|ordinary`.
+**NZ #1 was ALREADY built** — the item proposed `schedule_d_qof`; the
+shipped field is `schd_qof_disposal` (verify by the SHIPPED name).
+The 1040 queue now has the same annex-and-move contract + a verified
+ledger (`D:	ax-test-data\CC Code Changes\README.md`); batch-041 filed
+to `CC Code Changes Done\`.
+
+### ▶ NEXT: BATCH-007 (10 items, #3 DONE) + the CC-Changes loop
+`1120S\CC Changes\CC_CODE_CHANGES_1120S_BATCH-007.md`. **#3 fixed and
+deployed.** #2 (line 14 + line 20 double count) is most likely the
+amortization-duplicate shape now guarded — a normal page-1 asset does NOT
+double count (probed); ask Codex to re-run. Remaining: #1 sold assets
+must stay in BEGINNING Schedule L · #4 passenger-auto cap + disposition
+convention on a sold listed asset · #5 M1_3c → K16c/M-2/basis · #6 M1_5b
+detail → M-1 + the book bridge · #7 GA Schedule 5 allocation inputs ·
+#8/#10 SCHED_L_DEPR_TIE (legacy-asset exclusion; regular-vs-AMT arm) ·
+#9 the 150DB/MQ 7-year year-2 table rate (20.85%).
+
 ### ▶ NEXT: the CC-Changes loop continues
 - A background watcher polls `D:\tax-test-data\1120S\CC Changes\` for the
   next Codex batch file (re-arm ~10-minutely). Work it verify-first, ONE
