@@ -1479,6 +1479,21 @@ S-15, net-new RS scope depends on the TaxWise forms-usage report or a law change
 
 ## THE SPINE (dependency-ordered — just keep rolling)
 
+**S-27 · [RS→APP] · THE 45-STATE EXPANSION CAMPAIGN (Ken-chartered 2026-08-04, Tax Shelter
+Future D-030). Sequence detail lives in `delviotax/delvio-states` `STATE_MATRIX.md` — this
+node is the ONLY spine entry for the campaign; per-wave orders open as RS WORK_ORDERS batch
+WOs, never as new spine items.** Specs-first (no Dec-1 freeze applies to RS authoring);
+app builds land in demand order; broad state e-file targets TY2027 after the spring DOR
+approval cycle. Module-major waves of 3–5 states, ONE batched Gate-1 scope walk + ONE
+batched seed approval per wave (per-state quirks = the walk items). Wave order: CA 1120-S
+pilot (held packet 187) → PTE waves (1065+1120S paired) → C-corp → individual (slow lane)
+→ fiduciary on demand. Tier-0 (no RS work): the 9 already-authored entity specs
+(SC/AL/NC × PTE + C-corp, + GA600) dispatch to builder sessions any time — ⚠ NC/AL
+pass-through `[UNVERIFIED]` line numbers re-pull first; ⚠ builder-lane prerequisite:
+state-registry refactor + conformity table (delvio-tax DECISIONS.md:1177) before mass
+builds. Supersedes (authoring scope ONLY) SEASON_PLAN decision #1's four-state cap —
+the season-one build/e-file plan stands.
+
 **S-25 · [APP]✅ · Start Return flow for existing hub clients (Ken-directed 2026-07-23 —
 discovered in live QA on prep.delviotax.com; BLOCKS the 2025 return back-entry project,
 ~3,000 returns via agent data entry).** The pre-existing "+ New Client" free-text box was
