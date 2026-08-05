@@ -1,9 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 212 (the CC-Changes loop, live). This
-session CLEARED THE QUEUE: **BATCH-004 tranche B (items 1-5, migrations
-0237-0239, deploy `6d584d0`)** and **BATCH-005 (all 10 items, deploy
-`5cd3e09`)** — both annexed and moved to `CC Changes Done`. The loop is
+*Last updated: 2026-08-05, session 212 (the CC-Changes loop, live). This
+session CLEARED THE QUEUE THREE TIMES: **BATCH-004 tranche B (migrations
+0237-0239, deploy `6d584d0`)**, **BATCH-005 (deploy `5cd3e09`)**, and
+**BATCH-006 (migrations 0240-0241, deploy `16dfd7e`)** — all annexed and
+moved to `CC Changes Done`. Also authored the **RS Form 6765 spec** on
+Ken's go (WO-14, awaiting his seed approval). The loop is
 WATCHING for the next Codex batch file; the 1120-S Inbox (~200 packets)
 drains on Codex's side. Ken's directive this session: keep working until
 Codex empties the Inbox / new batches stop arriving; move any other-state
@@ -82,6 +84,52 @@ find defects. State the finding and move on.
 
 Gates this session: 816 + 219 + 85 + 603 (batch-004 sweep) + 817
 (batch-005 sweep) — all green.
+
+### ✅ Done in s212 — CC BATCH-006 (deploy `16dfd7e`, migs 0240-0241)
+- **#1** Tables A-6/A-7 year-specific rates coordinate-extracted from Pub
+  946 (2025) pp.73-74 (A-6's alternation flips phase at mid-year; A-7
+  checkerboards from year 9); final-year partials subtract the real
+  sequence; every month column sums to 100%. A-13/A-7a/A-13a verified
+  constant. PASSRJK → $3,039 federal AND Georgia.
+- **#2 RESOLVED as a mapping question** — the dollars were right: the
+  app's `S4_*` keys follow the **2024** 600S template; the Rev. 09/11/25
+  face renumbered (balance due = face 6 = `S4_5c`, amount due = face 11 =
+  `S4_10c`). Transcription map now in `CC_ENTITY_LANE_HANDOFF.md`; seed
+  labels annotated; packet-100 regression. ⚠ Ken: a 2025 DOR template
+  refresh is the real fix (needs his download).
+- **#3 / #9 REFUTED live** — signed L1a persists and sums (L15a =
+  10,021); the 50%-business SL F-350 computes 1,543 in all three arms
+  under every keying probed. Both pinned; Codex re-runs against current
+  prod.
+- **#4** K15b joined the restricted federal answer key + closeout.
+- **#5** `flow_to: "none"` (**mig 0241**): register-only assets keep the
+  4562/Schedule L/UBIA and their K15a/§179 derivations with zero line 14.
+- **#6** QBI W-2 wages now include Form 1125-A line 3 cost of labor.
+- **#7** `D_AMORT`: the entity amortization register is canonical for
+  line 20 (auto component + MeF statement), never line 14. ⚠ the 1065
+  D_AMORT seed line is a follow-up (its write skips silently until then).
+- **#8** six-decimal ownership percentages (**mig 0240**, widening only).
+  ⚠ packet 127's filed K-1 dollars may differ by $1 from our
+  last-owner-absorbs residual — the R-K1-ROUND tie-break already on the
+  RS agenda, not a new defect.
+- **#10** the recovery cap moved to a GROSS-BASIS frame in all three arms
+  (prior regular + prior bonus + prior §179), keying-agnostic, still
+  coherence-guarded; kills the spurious K15a on a §179-expensed asset.
+Gates: 978 green.
+
+### ✅ Done in s212 — RULE STUDIO WO-14: the Form 6765 spec (Ken's go)
+Authored in `sherpa-tax-rule-studio` (`d33584c`), **status ⏳ AWAITING KEN
+(seed approval)** — `READY_TO_SEED=False` until Ken says "Approve — flip,
+seed, export". Sources fetched + read verbatim: f6765 Rev. 12-2024 face,
+i6765 Rev. 12-2025 (⚠ label mismatch flagged), i1120ssk box 13 **code M**.
+Gate-1 scope walk = RS DECISIONS **D-16** (4 Ken rulings: fixed-base %
+preparer-entered · §280C diagnostic-only · Section D deferred+HOLD ·
+controlled group HOLD). 24 facts / 7 rules / 50 lines / 10 diagnostics /
+6 scenarios / 2 draft flow assertions; all rules cited; SQLite harness
+19/0. Packet 227's shape pinned (QREs 53,704 → 4,243; line 21 INFERRED).
+⚠ Section G becomes REQUIRED for TY2026 — the spec's staleness boundary.
+**Blocks batch-005 #2 / packet 227 until the flip + the app build**
+(which must COMPOSE 6765 with 8941 on Schedule K 13g, never stomp).
 
 ### ▶ NEXT: the CC-Changes loop continues
 - A background watcher polls `D:\tax-test-data\1120S\CC Changes\` for the
