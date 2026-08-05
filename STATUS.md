@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-04, session 209. **MIXED-PILOT #2 is BUILT and
-DEPLOYED** (`c179e0e`): the K-1 item K1 §752 liability share now carries
-Beginning AND Ending columns end to end — migration **returns.0236 is
-latest** (applied to the shared DB this session, db_default=0 per the s190
-skew rule). NEXT: **MIXED-PILOT #7 (K-1 basis/at-risk allowed-loss
-worksheet)**, then the 1040 lane resumes at **8606 (046 #10)**.*
+*Last updated: 2026-08-04, sessions 209+210. **THE CC-CHANGES LOOP IS
+LIVE** (Ken's automated system, ratified this session): Codex posts
+1120-S batch files to `D:\tax-test-data\1120S\CC Changes\` (contract in
+its README + the new CLAUDE.md standing rule); CC works each batch as an
+atomic unit — verify-first, ONE deploy per batch, result annex, move to
+`CC Changes Done`. s209 shipped MIXED-PILOT #2 (item K1 BOY/EOY,
+**migration returns.0236 = latest**, applied); s210 worked batches
+002+003 (annexed + moved). **NEXT: BATCH-004 (10 items, triage below)**,
+then MIXED-PILOT #7, then the 1040 lane at 8606. The 1040 lane resumes
+after the 1120-S Inbox empties (Ken).*
 
 *s208c (2026-08-04): the PUBLIC-mirror PII history purge EXECUTED on Ken's
 order — 4 tip commits squashed + force-pushed (the sanctioned exception),
@@ -81,7 +85,47 @@ override + D_SCHK_QBI_W2_OVERRIDE · #6 failure+Retry on three lying
 screens (remainder = a designed build, queued) · #3 REFUTED (GA-700
 exists; verify vs the pilot fixture still open) · 4 rotted pins repaired.
 
-### ▶ NEXT: MIXED-PILOT #7 (true build), then the 1040 lane
+### ✅ Done in s210 (CC Changes batches 002+003, one deploy `a62a754`)
+**Batch-003 #1 (P0, 5 packets):** `_rollup_other_deductions` pinned the
+face Other Deductions line is_overridden with the rows-only sum, erasing
+computed named components (deductible meals) — AND its post-compute K16c
+write never set the override flag (any recompute erased it; zeroed
+computed meals-nonded when rows existed). NEW seeded auto inputs
+`D_OTHER_ROWS`/`D_NONDED_ROWS` (both forms; ride seed_all) composed by
+the line 20/21 + K16c/K18c formulas; the rollup releases stale pre-fix
+pins; 1120 keeps the legacy path. Packet-124's 294/294 pinned + recompute
+stability. **Batch-002 retest:** the "7203 → Client Info" bounce =
+the vite:preloadError self-heal reloading BEFORE the s208 ?tab= mirror
+flushed (rail click verified live-working) — the reload now waits 150ms;
+the State tab is now ALWAYS present on entity returns (it was hidden
+without filing_states — and it's the only GA-600S creation surface);
+the Create-state button stays "Creating…" through the refresh and treats
+a retry's 409 as created-and-shown. **Batch-003 #2:** no upstream runner
+exists — the tax-test-data copy is the master (Codex already fixed it);
+the 0-means-uncapped contract recorded in the handoff. Gates: 576 server
+sweep · vitest 28 (2 files) · tsc 0. NO migration.
+
+### ▶ NEXT: CC BATCH-004 (10 items, first triage), then MIXED-PILOT #7
+In `CC Changes\CC_CODE_CHANGES_1120S_BATCH-004.md`. First-pass triage:
+- **Quick wins first:** #8/#10 pre-indexer patterns (CA forms + K-2/K-3
+  tokens — indexing only, independent of the big builds) · #6 K15a joins
+  the entity answer-key/closeout surface (derives from the AMT asset calc).
+- **Real builds:** #1 M-1 book-income derivation must include separately
+  stated deductions (K11 §179 / K12a/b) in the M1_1 back-computation —
+  SUPERSEDES batch-002 #1 (same family; RS 1120S_M1 spec consult; two
+  exact-tie packets given) · #4 imported fully-depreciated assets must cap
+  current depreciation at remaining basis (federal AND GA separately) ·
+  #2 GA-600S S7_8/S8_5 should be BLANK when federal = GA depreciation
+  (⚠ check against Ken's s197 gross-pair ruling before building — the
+  ruling was about PRESENTING the pair, this asks to suppress when equal)
+  · #3 8825 line 22a pass-through row family (schema + rollup to K2) ·
+  #5 authorable QBI wage eligibility (ties into the s208 QBI agenda).
+- **⛔ KEN SCOPE CALLS (not improvisable):** #7 California 100S lane (a
+  whole state family — NO RS specs exist; PRODUCT_MAP scope question) ·
+  #9 Schedule K-2/K-3 (international; NO RS spec). Both queued for Ken's
+  ruling; the 7 multi-state HOLD packets stay held either way.
+Then **MIXED-PILOT #7** (K-1 basis worksheet) · batch-002 #3 (seed-L
+mapping guard) · the duplicate-EIN same-year warning · then the 1040 lane.
 **#7 K-1 basis/at-risk allowed-loss worksheet (1040 side)** — the
 basis-limited checkbox only FLAGS today; the full box-1 loss routes to
 Schedule E. Build the worksheet (beginning basis · additions ·
