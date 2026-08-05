@@ -174,7 +174,32 @@ The 1040 queue now has the same annex-and-move contract + a verified
 ledger (`D:	ax-test-data\CC Code Changes\README.md`); batch-041 filed
 to `CC Code Changes Done\`.
 
-### ▶ NEXT: BATCH-007 (10 items, #3 DONE) + the CC-Changes loop
+### ▶ BATCH-007 — 9 of 10 resolved (deploys `48ad1dc` → `3d066eb`+)
+**#3 FIXED = our own batch-006 regression** (keying-aware recovery cap;
+see the block above). **#1** split: the packet-164 half FIXED — the
+Schedule L roll-forward removed a disposed asset's `cost_basis` (net of
+bonus) from a GROSS beginning balance, so an all-sold register never hit
+zero; now uses `original_cost` + full accumulated (the batch-005 #6
+correction applied to the roll-forward that feeds that diagnostic). The
+packet-139 half is NOT ours — **L10a/L10b are INPUT lines with no engine
+writer**; the 4,077 gap is exactly the omitted pair. **#5** K16c is now
+the canonical nondeductible subtotal (+ M1_3c → M-2/box 16C/basis); ⚠
+M1_3b had to stop keying off K16c or line 4 double-counts 3c — two older
+tests encoded the superseded contract and were rewritten. **#6** M1_5b
+detail rows reach M-1 via the new `D_M1_5B_ROWS` auto component (the
+rollup wrote the FACE, which the formula erased — batch-003 #1 shape).
+**#8** SCHED_L_DEPR_TIE accepts the book-basis presentation (skips ONLY
+when the difference IS exactly the fully recovered legacy subset).
+**#7 ALREADY POSSIBLE** — S5_2/S5_4/S5_6 are keyable; the all-Georgia
+carry is the S5_4=1.0 creation default the item wants preserved (key
+S5_4 = 0). **#2 / #9 NOT REPRODUCED** and pinned (a normal page-1 asset
+never reaches line 20 — the real double-count is a legacy "Amortization"
+row, now warned; the 150DB/MQ Q4 year-2 rate is already 20.85%).
+**⚠ #10 is probably the same cap regression as #3 — re-run first.**
+**OPEN: #4 only** (passenger-auto cap + disposition-year convention on
+packet 156's sold Cadillac, and its K17d prior-§179 statement gain).
+
+### ▶ NEXT: batch-007 #4, then the CC-Changes loop
 `1120S\CC Changes\CC_CODE_CHANGES_1120S_BATCH-007.md`. **#3 fixed and
 deployed.** #2 (line 14 + line 20 double count) is most likely the
 amortization-duplicate shape now guarded — a normal page-1 asset does NOT
