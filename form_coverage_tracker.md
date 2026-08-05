@@ -1,6 +1,18 @@
 # Form Coverage Tracker — tts-tax-app
 
-> **2026-08-04 session 209 — SCHEDULE K-1 (1065) ITEM K1: BEGINNING/ENDING
+> **2026-08-04 session 210 — 1120-S/1065 OTHER DEDUCTIONS: detail rows now
+> COMPOSE with computed named deductions (CC batch-003 #1, P0).** The rollup
+> pinned face line 20/21 is_overridden with the rows-only sum — erasing
+> computed deductible meals — and its post-compute K16c/K18c write (no
+> override flag) was erased by ANY recompute, zeroing computed meals-nonded
+> whenever rows existed. NEW seeded auto inputs `D_OTHER_ROWS` +
+> `D_NONDED_ROWS` (both entity forms, ride seed_all) join the line 20/21 and
+> K16c/K18c formulas; the rollup writes subtotals pre-compute and releases
+> stale pre-fix pins; the 1120 keeps the legacy path (no composing formula
+> there). Packet-124's 294/294 acceptance + recompute stability pinned
+> (test_other_deductions_compose.py, 6 tests). Plus batch-002: the self-heal
+> reload waits for the ?tab= mirror; entity returns always show the State
+> tab; the Create-state lane is timeout/409-honest. NO migration.
 > LIABILITY COLUMNS (MIXED-PILOT #2).** The 2025 K-1 item K1 prints Beginning
 > AND Ending per §752 bucket; the app modeled ending only. Partner gains the
 > three `liability_*_boy` fields (**migration 0236**, db_default=0), the
