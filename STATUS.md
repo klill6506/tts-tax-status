@@ -131,6 +131,21 @@ controlled group HOLD). 24 facts / 7 rules / 50 lines / 10 diagnostics /
 **Blocks batch-005 #2 / packet 227 until the flip + the app build**
 (which must COMPOSE 6765 with 8941 on Schedule K 13g, never stomp).
 
+### 📋 The 1040-lane queue is LEDGERED (s212, Ken's question)
+`D:\tax-test-data\CC Code Changes\` (the 1040 lane — SEPARATE from the
+1120-S queue) had 7 unique files and no Done folder: it predates the
+annex-and-move contract, which only ever existed on the 1120-S side. Both
+now match — a `CC Code Changes Done\` folder exists and a verified
+per-file ledger lives in that folder's new `README.md`. **They were open,
+not un-filed**: 046 is 8/10 (open: Form 1310 · the 8606 IMPORT LANE —
+engine complete) · 047's #16-20 still queued · NZ is 4/10 (open: Sch D
+QOF answer · 8889/HSA · Sch F · SS lump-sum · 1099-G · multi-state) ·
+A-M is blocked on Ken's two asset calls · PULLIAM is 6/7 (open: #7 basis
+worksheet). Only BATCH-041 was closed (s198 — the Hodges $2 was a missing
+$33 §1250 input, pinned by `test_hodges_sdtw_1250_s198.py`); annexed and
+moved. ⚠ Two byte-identical duplicate copies + one superseded earlier
+draft await Ken's OK to delete.
+
 ### ▶ NEXT: the CC-Changes loop continues
 - A background watcher polls `D:\tax-test-data\1120S\CC Changes\` for the
   next Codex batch file (re-arm ~10-minutely). Work it verify-first, ONE
