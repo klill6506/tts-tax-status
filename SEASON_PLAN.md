@@ -52,9 +52,14 @@ No silent defaults. The regression bed (real TY2025 returns tied to the dollar) 
 5. **Document import scope:** W-2, 1099-R, SSA-1099, 1099-INT/DIV, 1099-B summary → extracted
    into YELLOW (imported-provenance) fields with mandatory preparer confirmation.
 6. **E-signatures (8879/GA-8453): back-burnered.** Wet signatures season one.
-7. **Entity:** Sherpa Tax LLC formed July 2026; IP assigned in; its own IRS e-file application
-   filed immediately. The Tax Shelter's existing credentials stay untouched as the parachute.
-   Which entity's credentials run the season is decided at the Oct 1 gate.
+7. **Entity:** the software LLC formed July 2026 (legal name at formation: TTS Tax App LLC —
+   the "Sherpa Tax LLC" recorded here earlier was the working name); **being renamed to
+   Delvio Tax LLC via GA SOS amendment (Ken, 2026-08-05 — see Tax Shelter Future D-031)**.
+   IP assigned in; its own IRS e-file application filed. Sequence: SOS rename → IRS EIN
+   name-change notice → update the pending e-file application BEFORE approval → all industry
+   paperwork (NACTP, banks, state DORs) signs as Delvio Tax LLC. The Tax Shelter's existing
+   credentials stay untouched as the parachute. Which entity's credentials run the season is
+   decided at the Oct 1 gate.
 8. **PPR parachute** (Drake or similar) covers: C-corps, odd states, and any module that fails
    its Jan 2 go/no-go.
 
