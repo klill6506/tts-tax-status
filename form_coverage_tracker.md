@@ -1,5 +1,45 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 219 — CC BATCH-013 PART 1 (7 of 11 resolved; commits
+> `28f8a91` · `da9f85b` · `01b2ca9`, migration 0256). No form ticks — these
+> are corrections to forms already covered.**
+>
+> *Form 4562*: line 16 now has a **second arm**. Batch-012's `D_4562_L16` is
+> the register-less SCALAR and keeps its Schedule L exclusion; the new
+> **`f4562_bucket`** on a depreciation asset marks a REAL book row for line
+> 16. A marked row leaves every MACRS Part III aggregation (line 17, Section
+> B and Section C) so it reports exactly once on the face, while still
+> driving page-1 line 14, the Schedule L roll-forward and K15a. Line 22 adds
+> only the scalar — the rows are already in its register sum. ⚠ a non-MACRS
+> life (28.5 SL) has no Pub 946 table, so a line-16 row's current amount must
+> come from the batch-009 #10 source override.
+>
+> *Depreciation engine*: the per-arm current overrides now bind the
+> **amortization** path (the §197 branch returned before the override loop
+> existed), and the engine reports **`sec_179_in_current` /
+> `sec_179_in_amt_current`** so Schedule K line 15a can exclude the election
+> explicitly instead of relying on it to cancel between two totals. ⚠ **K15a
+> moves** on any 1120-S that overrides exactly one arm of a §179 row, and now
+> writes at zero so a stale figure clears.
+>
+> *Schedule K line 15a, 1065*: ⛔ the write was **unguarded by form code** and
+> that line on a 1065 is the **Low-Income Housing Credit (§42(j)(5))**. Now
+> 1120-S only — affected 1065s blank on next recompute.
+>
+> *Schedule L*: an emptied asset class now ends at **exactly zero** rather
+> than at the roll-forward's residue (the roll-forward subtracts the
+> REGISTER's gross costs from a SOURCE-keyed beginning face value, so it
+> could never be relied on to reach zero). Gated on the class having rows.
+>
+> *Diagnostics*: `OWNER_PCTS` allows one unit in the last permitted decimal
+> place per owner (six-decimal K-1 percentages cannot sum to a mathematical
+> 100), and gained an explicit negative-percentage error.
+>
+> *UI*: the three per-arm current overrides — built in batch-009 #10 and
+> **never rendered on any screen** until now — are on the Slate depreciation
+> worksheet, along with the Form 4562 line selector. The rest of the Georgia
+> register (method / life / prior) remains import-only.
+
 > **2026-08-06 session 216 — CC BATCH-012 CLOSED (10 items, one deploy
 > `7c5ac63`, migration 0252).**
 >
