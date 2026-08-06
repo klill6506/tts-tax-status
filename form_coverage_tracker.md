@@ -13,14 +13,14 @@
 > into box A and every long-term row into box D on a single page), with the
 > (f)/(g) columns and their totals. ⚠ the IRS8949 **e-file** adjustment leg is
 > NOT built — the read model now REFUSES an adjustment-carrying row rather
-> than transmitting a wrong gain (stated boundary). ZEVAREAL pinned:
+> than transmitting a wrong gain (stated boundary). The batch-010 #9 packet is pinned:
 > 215,000 − 162,889 + (−17,425) = 34,686 → K7.
 >
 > *Schedule K 15a*: NEW `PassthroughK1AMTAdjustment` (**0247** + **0248** RLS)
 > — post-1986 depreciation adjustments received on K-1s (1065 box 17 code A)
 > sum WITH the register's own adjustment into K15a and **derive even with no
 > owned depreciable assets** (the aggregate previously early-exited on an
-> empty register); a supporting statement names each source. WHITEWIN pinned
+> empty register); a supporting statement names each source. The batch-010 #7 packet is pinned
 > at −1, allocated −1/0 across two 50% K-1s.
 >
 > *Form 2553*: the FORM was already built (s69/s166); the **import lane** was
@@ -39,7 +39,7 @@
 > consent rows, and carry an attachment reference, or the return does not
 > file; the report exposes presence + per-jurisdiction attachment counts
 > either way, and a declared form with no gate behind it (e.g. 8832) warns
-> rather than pretending to verify. CARLYDAL pinned end to end.
+> rather than pretending to verify. The batch-009 #7 packet is pinned end to end.
 >
 > Also: the guarded entity-shell bootstrap endpoint (new-client packets) and
 > the L24 statement's prior-year timing-difference walk. Green: entity lane +
