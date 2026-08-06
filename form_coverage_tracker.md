@@ -1,5 +1,55 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 215 — CC BATCH-011 CLOSED (10 items, one deploy
+> `ac4a70e`, migration 0251).** *Form 7203*: Part I **line 3m** now has an
+> input — `Shareholder.other_stock_basis_increases` (MeF
+> `OthItemsIncreaseStockBasisAmt`), the increases twin of batch-010 #4's
+> line 13. It is deliberately NOT line 2: a source that reports an other
+> increase on 3m reaches the same ending basis through line 2 while printing
+> the wrong line. ⚠ the RS 7203 spec's `line_map` carries no 3a–3m at all
+> (one calculated line 3) — the letter→meaning map is the app's field map
+> plus the MeF element name; on the RS agenda.
+>
+> *Schedule K-1 (1120-S) item I*: **loans from shareholder now print.** The
+> field map's two cells (`sh_loans_boy` / `sh_loans_eoy`) had existed with no
+> source since the K-1 was built, so item I was blank on every K-1 ever
+> rendered. New `Shareholder.k1_loans_boy` / `k1_loans_eoy` drive it; the
+> nested Form 7203 Part II `loans` rows are the fallback when they are zero.
+> Item I and 7203 Part II debt basis are DIFFERENT facts — a source can
+> report loan balances on the K-1 face while carrying no debt basis at all,
+> and the new fields never create a Part II row.
+>
+> *Form 1125-A line 4*: `A4` joins the sub-schedule surface
+> (`LINE_DETAIL_LINES` + `SUBSCHEDULE_CONFIG`) so the "attach schedule"
+> §263A detail persists and rolls up; page-1 **line 2** (cost of goods sold)
+> joins the entity answer key. A keyed aggregate that disagrees with its own
+> rows is now a staging error instead of a silently discarded number.
+>
+> *Statements (ALL forms)*: single-amount sub-schedule rows now emit a
+> **Statement page automatically**. They already reached MeF as
+> `Itemized*Schedule` statements, but the print path only ran when a caller
+> passed `statements` explicitly — which nothing in the app does — so no
+> 1125-A, page-1 line 5 or M-1 detail statement had ever printed.
+> ⚠ **page counts change on any return carrying sub-schedule rows.** The
+> balance-sheet sub-schedules (L6/L9/L14/L18/L21) still do not print: the
+> statement page has one Amount column and they need a beginning/end pair.
+>
+> *Form 4562 / §280F*: `D_4562_VCLASS` becomes **error** severity when a
+> Vehicles-group asset's missing classification actually MOVES the number —
+> an unclassified listed vehicle falls back to the §280F passenger-auto
+> caps, and an over-6,000-lb vehicle is not a passenger automobile
+> (§280F(d)(5)). The finding now prices the fallback in dollars. ⛔ the
+> escalation needs Ken's ratification.
+>
+> *Schedule L*: the `SCHED_L_DEPR_TIE` fully-recovered-subset exception now
+> keys on the cost and accumulated lines moving by the SAME amount (bounded
+> by the fully-recovered population) instead of demanding that the source
+> omit every fully recovered row; and when the ending accumulated gap equals
+> the keyed BEGINNING gap, the finding names the beginning balance as the
+> origin. The four A/R cells (L2a/L2b gross+allowance beginning, L2d/L2e
+> ending) were already seeded and already net into L15a/L15d — no build; an
+> unknown line number now names the seeded siblings sharing its stem.
+
 > **2026-08-05 session 214 — FORM 8949 COLUMNS (f)/(g) + THE FORM 2553 IMPORT
 > UNIT (CC batches 010 + 009 CLOSED).** *8949*: `Disposition` gains
 > `adjustment_code` + signed `adjustment_amount` (**migration 0246**); gain is
