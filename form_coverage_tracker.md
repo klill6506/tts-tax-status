@@ -1,5 +1,59 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 216 — CC BATCH-012 CLOSED (10 items, one deploy
+> `7c5ac63`, migration 0252).**
+>
+> *Form 4562*: new **line 16** surface — "Other depreciation (including
+> ACRS)". No register can derive it (ACRS and the other pre-MACRS §167
+> methods have no Pub 946 table), so `D_4562_L16` is a preparer INPUT with
+> sub-schedule detail rows. It composes into page-1 line 14 alongside the
+> register aggregate and into 4562 line 22, and is deliberately EXCLUDED from
+> Schedule L — lines 10a/10b tie to the register's cost/accumulated columns
+> and this amount has no rows there. ⚠ the field map's `F4562_16` comment
+> said "Add lines 14 and 15"; there is no such line on the 2025 face (the
+> AcroForm target was correct, only the comment was wrong).
+>
+> *Depreciation asset*: **`amt_cost_basis`** — the AMT arm could carry its own
+> method, life, prior and current depreciation but never its own BASIS, so
+> disposal math reused the regular basis and destroyed any source difference.
+> NULL = "same as regular" (every pre-existing row unchanged); an explicit **0
+> is meaningful**. Drives the AMT adjusted basis and the K15b component.
+> Both UIs also stopped wrapping the disposal table's adjusted-basis row in
+> `Math.abs()` — a NEGATIVE adjusted basis is real once the AMT arm has its
+> own basis, and it ADDS to the gain.
+>
+> *GA-600S*: the Schedule 7/8 depreciation **gross pair now nets equal
+> federal/Georgia components PER ASSET.** batch-004 #2's whole-register
+> suppression was the all-or-nothing version of the same rule and a MIXED
+> register defeated it; it is now the degenerate case. ⚠ **the printed pair
+> moves on any return whose register mixes equal and unequal assets** (net
+> Georgia income is unchanged). GA line count unchanged.
+>
+> *Schedule L*: new `L24_BOOK_BRIDGE` carries the **current-year** M-1
+> book/tax difference into L24d (batch-008 #3 carried only the beginning
+> difference). Excludes tax-exempt interest, nondeductible expenses and the
+> §179 disposition gain — all already in the M-2 columns. ⛔ a derivation from
+> i1120s M-1/M-2 mechanics, not a quoted RS rule: on the RS agenda.
+>
+> *Diagnostics*: `SCHED_L_DEPR_TIE` error → **warning** (Schedule L is
+> "Balance Sheets per Books"; the register is TAX and the model has no book
+> columns — and the RS 1120S_SCHL spec has no tie diagnostic at all). Error is
+> kept behind a predicate that re-arms once book columns exist.
+> `D_4562_METHOD` exempts a row already fully recovered from PRIOR history in
+> every arm. `INT_GA_BONUS_ADDBACK` **rewritten**: it read `S1_3`, which on
+> the seeded GA-600S is "Total Income (Add Lines 1 and 2)" — so it was both a
+> false error when total income was zero AND silently satisfied whenever it
+> was not; it now reads the S7_7a/S8_3a pair. ⚠ **NEW HOLD**: `D_4562_BASIS`
+> now ERRORS when prior bonus + prior §179 exceeds original cost (previously
+> an acknowledgable warning) — recovered basis above what was paid is the same
+> impossibility as `original_cost < cost_basis`.
+>
+> *Entity lane*: `replace_documents` releases a family's derived lines on
+> PRESENCE, not only on an explicit empty list; the full federal→GA pull runs
+> for an ALREADY-LINKED GA-600S (override-respecting); and
+> `entity-shell-bootstrap` gained a guarded `attach` mode that creates only
+> the missing return shells on an exactly-matched existing entity.
+
 > **2026-08-06 session 215 — CC BATCH-011 CLOSED (10 items, one deploy
 > `ac4a70e`, migration 0251).** *Form 7203*: Part I **line 3m** now has an
 > input — `Shareholder.other_stock_basis_increases` (MeF
