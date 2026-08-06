@@ -1,5 +1,67 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 220 — CC BATCH-013 PART 2, batch CLOSED (items 2/4/5/8,
+> one deploy `0239b11`, migrations 0257–0259). ONE form ticks: Form 6252 gains
+> its ENTITY arm; the rest are new surfaces on forms already covered.**
+>
+> *Form 6252* — **the entity arm now exists.** The model and
+> `apps.returns.compute_6252` were already form-agnostic (the 1040 build), so
+> this added the SURFACE, not a second engine: an `installment_sales` section in
+> the entity allowlist / generated schema / replace-merge handling, an
+> *Installment Sale (6252)* tab on both entity editors, and an entity header on
+> `render_6252_1040` so the form PRINTS on an 1120-S/1065. Routing: **capital →
+> Schedule D by term → K7 / K8a**; business §1231 (>1yr) → the entity 4797 Part
+> I sum → K9 / K10; ordinary/≤1yr and the line-25/36 ordinary recapture → Part
+> II → page-1 line 4 (1120-S) / line 6 (1065). The §453 gross-profit percentage
+> is used **frozen**, never recomputed. ⚠ **§453A interest is a 1040 Schedule 2
+> line 15 write with no entity destination** — the two fields store and are
+> consumed nowhere on an entity return. e-file: unchanged (no IRS6252 leg).
+>
+> *Form 4797, entity* — a **BULK SALE** is now one property computed over many
+> register rows. `bulk_sale_group` links the aggregate `dispositions` row
+> (`is_4797`) to its member assets. The members keep driving the registers, Form
+> 4562 and the Schedule L beginning/ending removals — they still carry
+> `date_sold` — but their disposal RESULT columns are cleared and they emit no
+> gain. The aggregate row's **own keyed basis columns are ignored**: regular AND
+> AMT adjusted basis are summed from the linked rows, which is what makes
+> **Schedule K line 15b tie** where an aggregate row that cannot see its members
+> reports zero. ⚠ a §179 asset may NOT join a group (i4797 sends a §179
+> disposition to the K-1, not to Form 4797) — refused at staging and by
+> `D_SCHK_BULK_LINK`. ⛔ **e-file refuses a bulk sale loudly** — the aggregate
+> 4797 row has never been carried into IRS4797, so emitting the members would
+> put zero-proceeds losses in the XML against a recapture gain on the face.
+>
+> *Schedule D (1120-S) / Form 8949* — an **AGGREGATE net-only row**
+> (`net_gain_loss`) for source packets that print only corporation-level capital
+> results and supply no transaction detail anywhere. It carries no proceeds or
+> basis, prints **no Form 8949 line**, and lands on Schedule D line 7 / line 15
+> only. Detail rows stay authoritative per term (staging refuses the
+> combination; `D_SCHK_CAPD_AGG` reports the UI-built one). ⛔ **e-file refuses
+> it** — IRS8949 is a transaction schedule.
+>
+> *GA-600S Schedules 7/8* — the depreciation gross pair now has **two source
+> presentations**, chosen per return by `ga_depreciation_presentation` (blank ==
+> `component_net`, the batch-012 #7 behavior, so nothing stored moves).
+> `aggregate_gross` prints BOTH regular-depreciation columns in full and
+> excludes only what is not §168 regular depreciation at all — amortization and
+> §179. **Net Georgia income (S6_11) is identical under both**, pinned by test:
+> only the printed pair moves, and the pair is what reconciles line-for-line
+> against the source's own GA-600S. ⛔ a SALE's federal-vs-Georgia gain
+> difference still has **no face destination** — `D_SCHK_BULK_GA` reports the
+> computed figure and the preparer keys it on Schedule 7/8 "(Attach Schedule)",
+> as the source does; the destination is an RS/Ken question.
+>
+> *Depreciation engine* — reports **`sec_179_in_state_current`**, the Georgia
+> twin of the federal `sec_179_in_current` batch-013 #10 introduced. Both
+> components now persist on the asset row, so a later consumer subtracts the
+> engine's own answer rather than re-deriving the election's §280F and
+> remaining-basis caps. An overridden arm reports a §179 component of zero.
+>
+> *UI* — the bulk-sale label on both the depreciation worksheet (Disposal
+> block) and the entity Schedule D row expansion, the aggregate-net field on the
+> same expansion, and the GA depreciation-pair selector on entity Client Info.
+> Each carries an inline note stating what the setting suppresses.
+
 > **2026-08-06 session 219 — CC BATCH-013 PART 1 (7 of 11 resolved; commits
 > `28f8a91` · `da9f85b` · `01b2ca9`, migration 0256). No form ticks — these
 > are corrections to forms already covered.**
