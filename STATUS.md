@@ -86,7 +86,8 @@ preserved; GA dry-run auto-create works — all pinned).
 ### ⛔ KEN DECISIONS OUTSTANDING (new s213 items marked ●)
 - Form 6765: RS spec authored s212, ⏳ awaiting Ken's seed approval.
 - ● M2_3a auto-rollup question: should shareholder capital contributions
-  EVER auto-route into AAA (TIEGREEN's Lacerte presentation)? Built as
+  EVER auto-route into AAA (the batch-008 #8 packet's Lacerte
+  presentation)? Built as
   explicit `M2_3A_OTHER` input only — needs a Ken/RS ruling.
 - The A–M item-7 asset decisions; states + K-2/K-3 holds (unchanged).
 
