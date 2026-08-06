@@ -1,5 +1,52 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-05 session 214 — FORM 8949 COLUMNS (f)/(g) + THE FORM 2553 IMPORT
+> UNIT (CC batches 010 + 009 CLOSED).** *8949*: `Disposition` gains
+> `adjustment_code` + signed `adjustment_amount` (**migration 0246**); gain is
+> now **proceeds − basis + adjustment** in the model property, in
+> `aggregate_schedule_d` (→ K7/K8a) and in the print. Codes validated against
+> the i8949 (2025) columns (f)/(g) table fetched live from irs.gov
+> (B C D E H L M N O P Q R S T W X Y Z), stored uppercase-alphabetical per
+> i8949's own multi-code rule; an amount without a code refuses, as does
+> either on a Form 4797 row. **`render_8949` now emits ONE COPY PER BOX** (the
+> IRS "check only one box" rule — it previously forced every short-term row
+> into box A and every long-term row into box D on a single page), with the
+> (f)/(g) columns and their totals. ⚠ the IRS8949 **e-file** adjustment leg is
+> NOT built — the read model now REFUSES an adjustment-carrying row rather
+> than transmitting a wrong gain (stated boundary). ZEVAREAL pinned:
+> 215,000 − 162,889 + (−17,425) = 34,686 → K7.
+>
+> *Schedule K 15a*: NEW `PassthroughK1AMTAdjustment` (**0247** + **0248** RLS)
+> — post-1986 depreciation adjustments received on K-1s (1065 box 17 code A)
+> sum WITH the register's own adjustment into K15a and **derive even with no
+> owned depreciable assets** (the aggregate previously early-exited on an
+> empty register); a supporting statement names each source. WHITEWIN pinned
+> at −1, allocated −1/0 across two 50% K-1s.
+>
+> *Form 2553*: the FORM was already built (s69/s166); the **import lane** was
+> not — `return_info.s_election_date` was its only surface, so a packet whose
+> forms-needed page lists "2553 (Return)" imported and closed out silently
+> missing a required filed form. NEW typed `form_2553` OBJECT section
+> (Form2553 is OneToOne) carrying every authorable item plus nested
+> `consents` (column J–N) and `qsst` (Part III) rows — both authored WHOLE
+> under `replace_documents`, because a partial merge would leave a stale
+> signer on a filed election. `form_2553.election_effective_date` vs
+> `return_info.s_election_date` is a same-fact contradiction and refuses at
+> staging. NEW `ReturnAttachmentReference` (**0249** + **0250** RLS): what the
+> filed packet carried, per jurisdiction — deliberately REFERENCES, never
+> files (the server never receives the packet). NEW closeout **gate 3b**
+> driven by `source.forms_needed`: a declared 2553 must be present, carry
+> consent rows, and carry an attachment reference, or the return does not
+> file; the report exposes presence + per-jurisdiction attachment counts
+> either way, and a declared form with no gate behind it (e.g. 8832) warns
+> rather than pretending to verify. CARLYDAL pinned end to end.
+>
+> Also: the guarded entity-shell bootstrap endpoint (new-client packets) and
+> the L24 statement's prior-year timing-difference walk. Green: entity lane +
+> 2553 suite 64/64 · closeout 35/35 · flow assertions 521/521 · renderer +
+> 8949 e-file extract 251/251 · client tsc clean.
+
+
 > **2026-08-04 session 210 — 1120-S/1065 OTHER DEDUCTIONS: detail rows now
 > COMPOSE with computed named deductions (CC batch-003 #1, P0).** The rollup
 > pinned face line 20/21 is_overridden with the rows-only sum — erasing
