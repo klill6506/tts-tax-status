@@ -71,7 +71,7 @@ Everything below is ruled and buildable without asking:
 - **1120-S** (`1120S\CC Changes\`): **EMPTY** since batch-013 closed (s220).
   Sweep at boot; work batch-014 if Codex has posted one.
 - **1040** (`CC Code Changes\`): batches 046 and 047 both CLOSED. **NZ is now
-  9 of 10.** The pickup is the **PULLIAM pilot #7** (the K-1 basis/at-risk
+  9 of 10.** The pickup is the **mixed-entity pilot #7** (the K-1 basis/at-risk
   allowed-loss worksheet), or **NZ #2** — see the coupling note below.
   NZ #10 (multi-state) stays parked under Ken's states-on-hold ruling.
   `CC_A_M_REMAINING_BLOCKERS` is NOT blocked (DECISIONS item 1) — work it as a
