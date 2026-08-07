@@ -1,5 +1,82 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 222 — ★ FORM 1099-MISC (Miscellaneous Information) —
+> NEW UNIT, all legs green except render/e-file, which DO NOT EXIST for this
+> form (see below). BATCH-047 #13; batch 047 CLOSED. Commit `d885ab7`;
+> migrations 0260 (new table) + 0261 (its default-deny RLS ALTER).**
+>
+> *Legs.* **source brief** `server/specs/_1099misc_source_brief.md` ·
+> **seed** `seed_form_1099misc` (FORM_1099MISC, 11 output rows; picked up
+> automatically by `seed_all`'s name discovery) · **model** `Form1099Misc`
+> (payer block, all reportable boxes, the routing choice + three activity FKs) ·
+> **compute** `compute_1099misc.py` · **diagnostics** `rules_1099misc.py`
+> (10 rules) · **input** CRUD endpoints + the `misc_1099s` `backentry.v1`
+> section + `SlateForm1099MiscScreen` + its own nav tab · **tests** 21 + 6
+> staging + 5 commit + 17 Slate.
+>
+> *⚠ NO RENDER LEG AND NO E-FILE LEG — and that is a finding, not a deferral.*
+> A 1099-MISC is an INPUT document: there is no IRS form filed with the return
+> (the W-2 / 1099-INT / 1099-G position), so nothing is drawn. And **there is no
+> `IRS1099MISC` element anywhere in the 1040 MeF schema set** — 2025v5.3 and
+> 2025v5.4 were both grepped, and `ReturnData1040.xsd` includes IRS1099R, IRSW2
+> and IRSW2G as the only information-return documents. The amounts transmit
+> through the lines they compute into (`Form1099WithheldTaxAmt` for 1040 line
+> 25b, `OtherIncomeTotalAmt` for Schedule 1 line 8z). No builder is possible and
+> none was written.
+>
+> *⚠ THE AUTHORITY IS THE FORM, NOT A RULE STUDIO SPEC — and that is the house
+> rule.* `1099MISC` 404s in Rule Studio, and so do `1099INT`, `1099DIV`,
+> `1099R`, `1099NEC`, `1099G` and `W2`. **No information return is specced
+> there.** This follows the Form 1099-G precedent: build from the IRS form and
+> record the reasoning in a source brief. Source = **Form 1099-MISC Rev. April
+> 2025** — the revision that reports calendar year 2025 — plus its own
+> "Instructions for Recipient", page 5.
+>
+> *⚠ THE BOX LAYOUT IS NOT STABLE ACROSS YEARS.* On **Rev. 4-2025 box 14 reads
+> "Reserved for future use"**; Rev. 1-2024 had "Excess golden parachute
+> payments" there, and Rev. 12-2026 makes 13a/13b/14 Cash tips / TTOC /
+> Overtime compensation. Verified by text-extracting all three PDFs —
+> "parachute" appears on five pages of the 2024 file and **nowhere** in the 2025
+> one. So there is no TY2025 1099-MISC golden-parachute amount (Schedule 2 line
+> 17k keeps no feeder), box 14 is refused by the import lane, and the Rev.
+> 12-2026 columns exist on the model but are NOT routed (`D_1099MISC_TY26BOX`).
+> **Re-verify the box titles when the TY2026 forms post.**
+>
+> *⚠ ONLY TWO BOXES ARE ADDITIVE ENGINE FEEDERS.* Boxes **3 + 8** → Schedule 1
+> line 8z, and box **4** → Form 1040 line 25b. Every other box reports on an
+> activity's own schedule, whose income the preparer already keys: Schedule C
+> gross receipts already include boxes 1/5/6/10/11, Schedule E lines 3/4 already
+> include boxes 1/2, Schedule F line 6a already includes box 9. Feeding those
+> would **DOUBLE COUNT**. A row routed to an activity is therefore
+> **traceability, not a feeder** — it carries the FK, the payer record survives,
+> and `D_1099MISC_RECON` catches the opposite error: an activity keyed for LESS
+> than the 1099-MISC routed to it, which nothing on the return caught before.
+>
+> *⚠ SCHEDULE 1 LINE 8z ALREADY HAD AN OWNER.* `compute_state_refund_db` writes
+> **and blanks** it. Line 8z is now COMPOSED by a single final writer —
+> `compute_1099misc_db` runs immediately after it and reads the worksheet's
+> share back from the `sch1_8z` row the worksheet itself owns. Disengage hands
+> the line back rather than blanking it; a displaced direct entry is recorded
+> once, on the not-engaged → engaged transition, so `D_1099MISC_8Z` reports it
+> and it cannot decay on the next recompute.
+>
+> *⚠⚠ TWO LIVE DEFECTS FOUND WHILE BUILDING, neither reported*, both in the
+> GA-500 line-24 withholding roster this unit had to join anyway.
+> **(1)** It read `g.state_withholding`, which does not exist on `Form1099G`
+> (the column is `box11_state_withholding`), so `_populate_ga500_from_federal`
+> raised `AttributeError` on **any return carrying a 1099-G row** — a 500 on the
+> GA-500 federal pull for every Georgia return with unemployment income.
+> **(2)** `FormW2G` was missing from that roster entirely, so Georgia
+> withholding on a W-2G never reached line 24. ⚠ **Movement class** for (2):
+> GA-500 line 24 and the Georgia refund RISE on any existing return with a
+> GA-withheld W-2G. Both fixed and pinned by regression.
+>
+> *Not built, flagged.* Box 15 NQDC and its §409A additional tax (Schedule 2
+> line 17h stays direct-entry) · box 12 deferrals stored but not income · a
+> second state row (boxes 16–18 print two lines; v1 carries one, matching every
+> sibling document model) · routing boxes 13a/13b/14 into the OBBBA Schedule 1-A
+> tips/overtime deductions. Each fires its own diagnostic.
+
 > **2026-08-06 session 221 — production support on ONE 1040; three defects
 > fixed, two long-standing ⛔ items closed. No form ticks — every change is a
 > correction to a form already covered. Commits `a57832c` · `e9fe025` ·
