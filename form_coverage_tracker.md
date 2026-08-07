@@ -1,5 +1,40 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-07 session 225 — NZ #5 (SCHEDULE F) + NZ #6 (SS LUMP-SUM): both
+> import lanes closed. The NZ list goes 7 → 9 of 10. No new form ticks — both
+> forms were already covered; this closes their import legs. Commit `18b4db2`;
+> NO migration (no model changes).**
+>
+> *⚠⚠ FOUR CONSECUTIVE NZ ITEMS HAVE NOW BEEN LANE-ONLY GAPS* (#9, #4, #5, #6).
+> For Schedule F the models, `compute_schedule_f` (lines 1c/9/33/34 → Schedule 1
+> line 6 + Schedule SE line 1a, CRP → SE line 1b, the farm-optional SE method),
+> 10 diagnostics, the Slate screen, the render leg and six test files had all
+> shipped — `backentry.v1` simply had no `schedule_fs` section. For the lump-sum
+> election, `compute_ss_lumpsum` already implements **Pub 915 Worksheets 2 + 4
+> verbatim** (RS `1040_RETIREMENT` R-RET-LSE-WS2/WS4/ELECT, reconciled to Pub
+> 915's own worked example) with the model, the `ss_lump_sum_election` toggle,
+> D_RET_004/008 and a Slate screen; the lane had neither the rows nor the toggle.
+> **Both halves of #6 had to travel together** — the election is irrevocable and
+> explicit, never inferred from the presence of rows, so importing rows alone
+> would have left 1040 line 6b silently unelected on a packet that filed it.
+>
+> *⚠⚠ NZ #6's TARGET IS COUPLED TO NZ #2 — line 6b = 43,950 exactly cannot be
+> reached until the worksheet-rounding item lands.* Pub 915 is a whole-dollar
+> form and the engine carries cents (WS2 L21 = 18,571.80 vs the printed 18,572).
+> The election machinery is correct to the cent. #2 owns the whole SS worksheet
+> family and MOVES existing returns — work #2 and #6 together.
+>
+> *Repaired in passing:* `_resolve_misc_1099_link` has always matched farms, but
+> no farm could ever be imported, so that branch could never resolve;
+> `schedule_fs` now commits BEFORE `misc_1099s`, with a test pinning the order.
+> *Also:* 3 stale count trip-wires in `test_schedule_f.py`, red on main since
+> s213 (`8d022c8`) when the seeder gained two routing lines.
+>
+> Regression: `server/tests/test_schedule_f_sslumpsum_nz5_nz6_s225.py` — 19
+> tests, incl. #5's target verbatim (gross 6,536 / expenses 23,415 / net
+> **(16,879)** on Schedule 1 line 6 with no override, plus the Schedule SE leg
+> asserted separately) and Worksheet 2 reconstructed and verified line by line.
+
 > **2026-08-07 session 224 (part 2) — FORM 8889 / HSA: the import lane closed,
 > and Form 8889 LINE 4 built. NZ #4; the NZ list goes 6 → 7 of 10. No new form
 > ticks — 8889 was already covered; this closes its import leg and repairs a
