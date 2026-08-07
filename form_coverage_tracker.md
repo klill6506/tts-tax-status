@@ -1,5 +1,65 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-07 session 224 — FORM 1099-G: the import lane closed, and a THIRD
+> GA-500 line-24 roster defect. NZ #9; the NZ list goes 5 → 6 of 10. No new
+> form ticks — 1099-G was already covered; this closes its input leg and
+> corrects a state-routing error. Migration 0264 (three columns on an existing
+> table — no new table, so no RLS migration).**
+>
+> *⚠⚠ THE ITEM WAS MOSTLY ALREADY BUILT.* "Add 1099-G unemployment documents"
+> read like a full unit. Verify-first against shipped code says the model
+> `Form1099G`, `compute_1099g` (box 1 → Sch 1 line 7, netting a same-year
+> repayment and printing the "Repaid" literal), the box-4 → 1040 line 25b
+> roster, five diagnostics and `SlateForm1099GScreen` all shipped in Phase 2 on
+> 2026-06-14. **The only missing leg was the LANE** — `backentry.v1` had no
+> 1099-G section, so no packet with unemployment could be back-entered, which
+> is precisely the blocker the item observed. New section `g_1099s`; schema
+> growth only, zero compute change.
+>
+> *Box 2 is deliberately NOT importable.* It is the STATE_REFUND worksheet's
+> input; an importable box 2 would double-count Schedule 1 line 1. Its absence
+> is pinned by a test, so nobody "completes" the allowlist later.
+>
+> *⚠⚠ THE THIRD DEFECT IN THE SAME ROSTER, unreported — a MISSING COLUMN read
+> as a MISSING BOX.* `_populate_ga500_from_federal` added **every** 1099-G's
+> box-11 state withholding to GA-500 line 24 **ungated**, on a comment in that
+> very method asserting the form "has no state-code box". It has one: **box
+> 10a State**, on Form 1099-G **Rev. March 2024** — the revision that reports
+> CY2025 (verified against `irs.gov/pub/irs-prior/f1099g--2024.pdf`). The
+> column had never been stored even though `_1099g_source_brief.md` said boxes
+> 10a/10b/11 would all be "stored", and the absent column got mistaken for an
+> absent box. Every sibling arm (W-2, 1099-R, 1099-INT/DIV, W-2G, 1099-MISC)
+> was already gated on its own state code; this was the lone exception, so an
+> out-of-state agency's withholding inflated the Georgia refund. Now stored
+> (`box10a_state` / `box10b_state_id` / `payer_tin`) and gated.
+>
+> *⚠ NO MOVEMENT CLASS — deliberately.* A **blank** box 10a still counts as
+> Georgia: every row keyed before s224 has a blank one because the column did
+> not exist, and this practice files GA. Closing the hole therefore moves no
+> existing return. The new `D_1099G_STATE` warning makes that fallback visible
+> rather than silent, at the diagnostic AND at the cell.
+>
+> *⚠⚠ THE REVISION TRAP, NOW TWICE.* `irs.gov/pub/irs-pdf/f1099g.pdf` today
+> serves **Rev. December 2026**, which **renumbers these boxes**: a new
+> "Family leave benefits" money box takes 10, and the state trio moves to
+> 11a/11b/12. The columns here are TY2025 names and must not be "corrected"
+> against that download — pinned by a test that also asserts the TY2026
+> renumbering has not been silently adopted. Identical shape to the s222
+> 1099-MISC box-14 finding: **on irs.gov, `f<form>.pdf` is the NEXT revision.**
+>
+> *Legs.* **model** +3 columns (migration 0264, `db_default=""` per the
+> deploy-skew rule) · **serializer** the three new fields · **lane**
+> `g_1099s` in all four registries · **diagnostics** `D_1099G_STATE` (6th in
+> the family) · **state routing** the gated GA-500 arm · **input**
+> `SlateForm1099GScreen` box-10a cell (flags itself on withholding-without-
+> state) + payer TIN / box 10b in the expansion · **tests** 12 server + 3
+> client; the s222 roster test's own premise corrected in place.
+>
+> *Regression target met verbatim* (`test_form1099g_nz9_s224.py`): $365 → Sch 1
+> line 7, $37 → 1040 line 25b, $22 → GA-500 line 24, each exactly once; an
+> NC-sourced 1099-G contributes **nothing** to Georgia while its federal income
+> and withholding are untouched.
+
 > **2026-08-06 session 223 — ★ FORM 1310 (Statement of Person Claiming Refund
 > Due a Deceased Taxpayer) — NEW UNIT, all legs green. BATCH-046 #1; batch 046
 > CLOSED, and with 047 closed in s222 BOTH 1040 batches are now closed.
