@@ -1,12 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-07 (s224). **NZ #9 and NZ #4 both DONE — Form 1099-G and
-Form 8889/HSA through the back-entry lane.** Two deploys: `e1a97ac` (migration
-0264) and `804b088` (migration 0265). Two defects fixed in passing: a third
-GA-500 line-24 roster arm, and Form 8889 line 4. **The NZ list goes 5 → 7 of 10.***
+*Last updated: 2026-08-07 (s225). **Two units: (1) the L24d book bridge RATIFIED
+and specced into Rule Studio; (2) NZ #5 (Schedule F) and NZ #6 (SS lump-sum)
+both DONE — again lane-only gaps.** Deploys `2a959a5` and `18b4db2`; RS
+`d53da62`. **NO migrations** — no model changes in either unit. **The NZ list
+goes 7 → 9 of 10; the decision queue is EMPTY.***
 
-*Previous (s223): BATCH-046 #1 — Form 1310 built end to end; batch 046 CLOSED
-(`658915e`, migrations 0262 + 0263).*
+*Previous (s224): NZ #9 and NZ #4 — Form 1099-G and Form 8889/HSA through the
+lane (`e1a97ac` + `804b088`, migrations 0264/0265).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -69,19 +70,46 @@ Everything below is ruled and buildable without asking:
 ### The queue right now
 - **1120-S** (`1120S\CC Changes\`): **EMPTY** since batch-013 closed (s220).
   Sweep at boot; work batch-014 if Codex has posted one.
-- **1040** (`CC Code Changes\`): batches 046 and 047 both CLOSED. The pickup is
-  the **NZ list, now 7 of 10**: **#5 Schedule F · #6 SS lump-sum election**.
-  Then the PULLIAM pilot **#7** (the K-1 basis/at-risk allowed-loss worksheet).
-  NZ #10 (multi-state) stays parked under Ken's states-on-hold ruling, and
-  `CC_A_M_REMAINING_BLOCKERS` stays blocked on Ken's two asset decisions.
-- **⚠⚠ VERIFY-FIRST ON #5 AND #6 — BOTH #9 AND #4 WERE LANE-ONLY GAPS ON FORMS
-  THAT WERE ALREADY BUILT.** Each item read like a full form unit; in each case
-  the model, compute, diagnostics and Slate screen had shipped in Phase 2 and
-  only the back-entry section was missing. **`compute_schedule_f.py`,
-  `rules_schedule_f.py` and `_schedule_f_source_brief.md` all exist** — check
-  what actually shipped before designing anything. The deeper reason: a source
+- **1040** (`CC Code Changes\`): batches 046 and 047 both CLOSED. **NZ is now
+  9 of 10.** The pickup is the **PULLIAM pilot #7** (the K-1 basis/at-risk
+  allowed-loss worksheet), or **NZ #2** — see the coupling note below.
+  NZ #10 (multi-state) stays parked under Ken's states-on-hold ruling.
+  `CC_A_M_REMAINING_BLOCKERS` is NOT blocked (DECISIONS item 1) — work it as a
+  normal batch.
+- **⚠⚠ NZ #2 AND NZ #6 ARE COUPLED — DO NOT WORK #2 AS AN INDEPENDENT.**
+  #6's stated target (1040 line 6b = 43,950 exactly) **cannot be met until #2
+  lands**. Pub 915's worksheets are WHOLE-DOLLAR forms; the engine carries
+  cents: WS2 L18 = 33,988 × 85% = 28,889.80 (printed 28,890), so L21 =
+  18,571.80 (printed 18,572). 43,950 = 25,378 + 18,572 and both addends are
+  whole-dollar figures. The election machinery is correct **to the cent**;
+  only the rounding is missing. ⚠ #2 owns the WHOLE SS worksheet family — the
+  regular worksheet rounds the same way — so rounding just the lump-sum path
+  would desync them, and it **MOVES existing returns**. Pinned in
+  `test_schedule_f_sslumpsum_nz5_nz6_s225.py` at the engine's real answer with
+  the coupling as its own test.
+- **⚠⚠ VERIFY-FIRST IS NOW THE DEFAULT HYPOTHESIS, NOT A CAUTION — FOUR
+  CONSECUTIVE NZ ITEMS (#9, #4, #5, #6) WERE LANE-ONLY GAPS.** Each read like a
+  full form unit; in each case the model, compute, diagnostics and Slate screen
+  had shipped and only the back-entry section was missing. The reason: a source
   brief's `input` build leg means the BROWSER lane, so a form's plan can be
   fully ticked while the form stays un-importable.
+
+### ✅ s225 unit 2 in one paragraph — NZ #5 + #6
+Both were lane-only, like their two predecessors. **Schedule F**: the models,
+`compute_schedule_f` (1c/9/33/34 → Sch 1 line 6 + Sch SE 1a, CRP → SE 1b, the
+farm-optional method), 10 diagnostics, the Slate screen, the render leg and six
+test files had all shipped; there was no `schedule_fs` lane section. **SS
+lump-sum**: `compute_ss_lumpsum` already implements Pub 915 Worksheets 2+4
+verbatim against the RS `1040_RETIREMENT` spec and reconciles to Pub 915's own
+worked example, with the model, the toggle, D_RET_004/008 and a screen — no
+`ss_lump_sums` section and no importable `ss_lump_sum_election`. **Both halves
+of #6 had to travel together**: the election is irrevocable and explicit, never
+inferred from the rows, so importing rows alone would leave 6b silently
+unelected on a packet that filed the election. Georgia needed nothing — GA-500
+S1-8 is a federal pull of 6b. **A latent dead arm was repaired in passing**:
+`_resolve_misc_1099_link` has always matched farms, but no farm could ever be
+imported, so that branch could never resolve; `schedule_fs` now commits BEFORE
+`misc_1099s` with a test pinning the order.
 
 ### ✅ s224 part 2 in one paragraph
 NZ #4 (Form 8889 / HSA) is #9's twin, and the source brief shows why. The model,
@@ -115,7 +143,14 @@ absent column had been read as an absent box. Every sibling arm was already
 gated; this lone exception credited any state's withholding to Georgia.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Nothing moves from either unit.** Form 8889's `archer_msa_contributions`
+- **Nothing moves from s225.** Both units are additive: the L24d work was 14
+  comment lines, and NZ #5/#6 are lane allowlists only — no compute change, no
+  model change, **no migration**. A return with no farm and no lump-sum rows is
+  byte-identical.
+- ⚠ **NZ #2, when it is worked, WILL move returns** — worksheet rounding
+  touches the regular SS worksheet, not just the lump-sum path. Budget a
+  movement analysis for it.
+- **Nothing moves from either s224 unit.** Form 8889's `archer_msa_contributions`
   defaults to 0 and `hsa_deduction`'s new parameter defaults to 0, so every
   existing return and every existing caller computes exactly as before.
 - **Nothing moves from NZ #9 either — by design.** A **blank** box 10a still counts as Georgia on
@@ -126,6 +161,14 @@ gated; this lone exception credited any state's withholding to Georgia.
 - The lane widens (`g_1099s`); no existing payload changes meaning.
 
 ### ⚠ Known red / rotted (not this session's changes)
+- **FIXED s225**: `test_schedule_f.py` (3) — count trip-wires red on main since
+  **2026-08-05** (`8d022c8`, s213 batch-008), unrecorded. That batch added the
+  two non-face ROUTING lines `F_TO_PAGE1` / `D_F_EXPENSES` to the seeder and
+  nobody re-cut the pins (45→47, the computed set, and an expense count that had
+  silently absorbed a non-face row by filtering on the "F" prefix). The expense
+  pin now excludes the routing line **by name** so it stays a pin on the 25 face
+  rows. ⚠ **Two separate stale-pin/stale-mock finds in one session** — a count
+  assertion is only as good as the last person who grew the thing it counts.
 - **FIXED s225**: `test_schedule_l.py` (4) — an unrecorded red on main. Four
   hand-built mocks of `calculate_asset_depreciation` omitted
   `sec_179_in_state_current`, a key the engine gained in s220 (batch-013 #8) and
