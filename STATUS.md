@@ -33,20 +33,20 @@ low-friction: a few crisp choices he can answer from a laptop in minutes, never
 a wall of prose. Nothing is on a clock in that window; the next hard deadline is
 2026-09-15 (extended entity returns).
 
-## ⭐ FIRST THING NEXT SESSION — before picking up any build
-Ken asked (2026-08-07) for the **Schedule L line 24d "book bridge"** to be
-explained in **plain language** — an earlier attempt led with the M-1 arithmetic
-and lost him. **The plain-language write-up is already written: it is the FIRST
-item in `REVIEW_QUEUE.md`.** Present it to him essentially as written, take his
-answer to the three questions at the end, and record the ruling in DECISIONS.md
-(section "Scope + gate rulings — Ken's decision pass"). Do not re-derive it and
-do not lead with the formula. It is the LAST open decision from the s224 pass.
+## ✅ THE DECISION QUEUE IS EMPTY — all 20 settled
+Ken settled the last one, the **Schedule L line 24d book bridge**, on
+2026-08-07 (s225): **yes to the book basis, yes to the three exclusions, yes to
+Rule Studio.** Recorded as DECISIONS.md "Scope + gate rulings" **item 15**, and
+authored into RS as **1120S_SCHL R010** — R005 and D003 corrected to tie through
+the bridge, three scenarios pinning it (the 3,500 case, the zero-bridge
+book=tax case, and an exclusions pin that must stay at zero).
+`server/specs/1120s_schl_spec.json` re-exported (9 rules / 7 scenarios) and
+`compute.py` now cites the rule. ⚠ Ken: **"we may come back to it at some
+point"** — ratified, not frozen; the exclusion list is the part most likely to
+need revisiting on an unusual return. No engine change: 14 comment-only lines.
 
 ## ▶ THE QUEUE IS FULL — s224's decision pass cleared the backlog
-Ken settled **19 outstanding decisions** on 2026-08-07 (see DECISIONS.md
-"Scope + gate rulings"). Only ONE is still open: the **L24d book bridge**, which
-needs re-presenting in plainer terms. Everything below is ruled and buildable
-without asking:
+Everything below is ruled and buildable without asking:
 1. **`CC_A_M_REMAINING_BLOCKERS`** — work as a normal batch (six code requests;
    it was never blocked on Ken)
 2. **NZ #5 Schedule F** and **NZ #6 SS lump-sum election** — ⚠ verify what
@@ -126,6 +126,13 @@ gated; this lone exception credited any state's withholding to Georgia.
 - The lane widens (`g_1099s`); no existing payload changes meaning.
 
 ### ⚠ Known red / rotted (not this session's changes)
+- **FIXED s225**: `test_schedule_l.py` (4) — an unrecorded red on main. Four
+  hand-built mocks of `calculate_asset_depreciation` omitted
+  `sec_179_in_state_current`, a key the engine gained in s220 (batch-013 #8) and
+  `aggregate_depreciation` reads unconditionally → `KeyError`. **Test-fixture
+  rot only, no engine defect** — the engine and its wrapper both return all
+  eight keys on every path, including the four early returns. The mocks were
+  never updated. Now green (616 passed with the flow assertions).
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock fixtures
   hitting a UUID `ValidationError`. Proved pre-existing in s219. Not diagnosed.
 - `test_4868.py` — 4 tests fail on the Schedule 3 line-10 feeder. Proved
@@ -166,10 +173,9 @@ gated; this lone exception credited any state's withholding to Georgia.
 - Two new `DiagnosticRule` rows: `D_1099G_STATE` and `D_8889_ARCHER`.
 - No seeded FormDefinition changes, no probe rows.
 
-### ⛔ KEN DECISIONS OUTSTANDING — ALL BUT ONE CLEARED 2026-08-07
-**Only the L24d book bridge remains** (needs a plainer re-presentation). Every
-other item below was settled, closed by verification, or is an IRS errand — the
-full record is in DECISIONS.md. **⚠ Four of the eight items opened in the pass
+### ✅ KEN DECISIONS OUTSTANDING — ALL CLEARED (last one 2026-08-07, s225)
+**Nothing is waiting on Ken.** Every item below was settled, closed by
+verification, or is an IRS errand — the full record is in DECISIONS.md. **⚠ Four of the eight items opened in the pass
 were already fixed or mislabelled**, so re-verify any "⛔ needs Ken" line against
 the code before raising it again. The one live external item: **1040 v5.4
 business rules are still not in hand and go active 2026-08-09** (the v5.4
@@ -208,8 +214,8 @@ DECISIONS.md says otherwise.)*
 - Carried (s218): the **§213(d)(10) long-term-care age cap** needs the Rev.
   Proc. table in Rule Studio.
 - Carried (s217): the closed suffix list (JR, SR, I–X) is OUR inference.
-- Carried (s216): `D_4562_BASIS` warning→error escalation; the L24d
-  current-year book bridge needs ratification.
+- Carried (s216): `D_4562_BASIS` warning→error escalation. *(The L24d book
+  bridge is RATIFIED — decision 15, s225.)*
 - Carried (s215): `D_4562_VCLASS` warning→error escalation.
 - Form 6765: RS spec authored s212, ⏳ awaiting Ken's seed approval.
 
