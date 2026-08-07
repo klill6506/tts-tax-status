@@ -1,12 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-06 (s222). **BATCH-047 #13 BUILT and the batch CLOSED** —
-source-level Form 1099-MISC rows, end to end. Two live defects found and fixed
-in passing, neither reported, both in the GA-500 line-24 withholding roster.
-One deploy: `d885ab7`; migrations 0260 + 0261.*
+*Last updated: 2026-08-06 (s223). **BATCH-046 #1 BUILT and the batch CLOSED** —
+Form 1310, the deceased-taxpayer refund claim, end to end. Two gaps found and
+fixed in passing, neither reported. One deploy: `658915e`; migrations 0262 +
+0263.*
 
-*Previous (s221): a long production-support session on ONE 1040 — both reported
-blockers refuted, three other defects fixed; `M2_3a` and CR-2026-001 closed.*
+*Previous (s222): BATCH-047 #13 — source-level Form 1099-MISC rows; batch 047
+CLOSED; two GA-500 line-24 roster defects fixed (`d885ab7`, migrations
+0260 + 0261).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,48 +38,42 @@ Nothing is on a clock in that window. The next hard deadline is 2026-09-15
 ### The queue right now
 - **1120-S** (`1120S\CC Changes\`): **EMPTY** since batch-013 closed (s220).
   Sweep at boot; work batch-014 if Codex has posted one.
-- **1040** (`CC Code Changes\`): **BATCH-047 is now CLOSED** and filed to
-  `CC Code Changes Done` with a result annex. The pickup is **BATCH-046 #1 —
-  Form 1310** (deceased-taxpayer refunds; no code exists, a true build).
-  Then NZ **#4 Form 8889/HSA · #5 Schedule F · #6 SS lump-sum election ·
-  #9 1099-G unemployment**, then the PULLIAM pilot **#7** (the K-1
-  basis/at-risk allowed-loss worksheet). NZ #10 (multi-state) stays parked
-  under Ken's states-on-hold ruling.
+- **1040** (`CC Code Changes\`): **batches 046 and 047 are both CLOSED** and
+  filed to `CC Code Changes Done` with result annexes. The pickup is the **NZ
+  list**: **#4 Form 8889/HSA · #5 Schedule F · #6 SS lump-sum election ·
+  #9 1099-G unemployment** (5 of 10 already done). Then the PULLIAM pilot
+  **#7** (the K-1 basis/at-risk allowed-loss worksheet). NZ #10 (multi-state)
+  stays parked under Ken's states-on-hold ruling, and
+  `CC_A_M_REMAINING_BLOCKERS` stays blocked on Ken's two asset decisions.
 
-### ✅ s222 in one paragraph
-Form 1099-MISC had **no model, no import section and no source-level
-representation anywhere** — the only treatment was a flat Schedule 1 line 8z
-amount that discarded the payer, the box identity, the owner and the
-withholding. Built end to end. The authority is the form itself: **no
-information return is specced in Rule Studio** (1099MISC/INT/DIV/R/NEC/G and W2
-all 404), so this follows the Form 1099-G precedent and ships a source brief
-written from **Rev. April 2025** — the revision that reports CY2025. That
-mattered: **box 14 reads "Reserved for future use" on it** (the golden-parachute
-box was dropped after Rev. 1-2024) while Rev. 12-2026 makes 13a/13b/14 Cash
-tips / TTOC / Overtime, so the box layout is not stable across years and the
-lane refuses box 14. The design turns on one point: **only boxes 3 + 8 (→
-Schedule 1 line 8z) and box 4 (→ 1040 line 25b) are additive feeders.** Every
-other box reports on an activity's own schedule, whose income the preparer
-already keys — adding it again would double count — so a routed row is
-traceability, and `D_1099MISC_RECON` catches the *opposite* error instead: an
-activity keyed for LESS than the 1099-MISC routed to it, which nothing on the
-return caught before. Line 8z already had an owner (`compute_state_refund_db`
-writes *and blanks* it), so it is now composed by a single final writer that
-reads the worksheet's share back from the worksheet's own row.
+### ✅ s223 in one paragraph
+Form 1310 did not exist in any form. Built end to end — and the interesting
+part is that **almost every rule on this form is a REJECT rule**, so the work
+was mostly about refusing correctly rather than computing. There is no Rule
+Studio spec (that is the house pattern for a form with no arithmetic — 8879,
+2848, 9465 and 8888 all 404 too), so the authority is **Rev. December 2025**,
+`IRS1310.xsd` and the `F1310-*` / `IND-298/299/300` business rules, which turned
+out to *be* the specification: **box A can never be e-filed** (the schema's
+line-A element is commented out and Part I is a strict B-XOR-C choice), **box B
+is valid only on an amended or superseded return** with a court certificate, and
+**box C is transmittable only with 2a=No, 2b=No, 3=Yes** — the other answers are
+legitimate on paper, so they print and are refused at e-file with the rule
+named. Two things the schema hides in comments would have been easy to miss: the
+claimant's **name is not on Form 1310 at all** (it becomes the return header's
+in-care-of name), and `ValidProofOfDeathInd` is **required but has no box on the
+printed face**. The who-must-file gate is also narrower than it looks — it is
+conditioned on a **refund**, so a balance-due decedent return needs nothing.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Every Georgia return carrying a 1099-G row**: the GA-500 federal pull
-  **raised `AttributeError` and 500'd** — it read `g.state_withholding`, which
-  does not exist on `Form1099G` (the column is `box11_state_withholding`). The
-  pull now completes, so line 24 and everything downstream of it appear for the
-  first time on those returns. ⛔ KEN: this was a live production failure.
-- **Every return with a W-2G carrying Georgia withholding**: `FormW2G` was
-  missing from the GA-500 line-24 roster entirely, so that withholding never
-  reached the state return. It does now — **GA-500 line 24 rises and the
-  Georgia refund rises** on any such return. Line 24 stays overridable.
-- **Nothing else moves.** The 1099-MISC legs are inert until a row exists: no
-  return in the system has one, so Schedule 1 line 8z, 1040 line 25b and
-  Schedule A line 5a are unchanged everywhere else.
+- **Nothing moves.** Form 1310 is inert until a row exists, and no return has
+  one. The two lane additions (`taxpayer_date_of_death` /
+  `spouse_date_of_death` / `in_care_of`) only widen what a payload may carry.
+- **One refusal is REMOVED, not added**: a non-MFJ decedent return previously
+  could not compose for e-file at all — `_in_care_of_name` raised for want of a
+  personal-representative name. A Form 1310 claimant now supplies it.
+- Carried from s222: any Georgia return with a GA-withheld **W-2G** has a higher
+  GA-500 line 24 (and refund) than before; any Georgia return with a **1099-G**
+  row no longer 500s on the federal pull.
 
 ### ⚠ Known red / rotted (not this session's changes)
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock fixtures
@@ -91,74 +86,67 @@ reads the worksheet's share back from the worksheet's own row.
 - closeout↔cleanup SUITE-ORDER contamination in `test_backentry_cleanup.py`
   (3, on a `DiagnosticRule` unique-code collision). Green alone.
 - **Client typecheck**: 127 error lines on clean `main` (PdfViewer,
-  RenameClient, Clients, FormEditor). Baselined s220; **s222 re-measured at
+  RenameClient, Clients, FormEditor). Baselined s220; **s223 re-measured at
   exactly 127 and adds none.**
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB.
 - **The hazard is CROSS-REPO** (s221): `delvio-tax` and `delvio-rule-studio`
   both point at the same Supabase instance and both name their test database
-  `test_postgres`, so a rule-studio run collides with a tax-app one —
-  `--create-db` fails with "being accessed by other users". `--reuse-db` works.
+  `test_postgres`. `--reuse-db` works; `--create-db` collides.
 
-### Artifacts left on the shared DB (deliberate, s222)
-- **Migrations 0260 (new table `returns_form1099misc`) + 0261 (its RLS ALTER,
-  default-deny per the new-table rule)**, applied by the deploy.
-- A new seeded `FORM_1099MISC` FormDefinition (11 lines), picked up
-  automatically by `seed_all`'s name discovery — no registration needed.
-- Ten new `DiagnosticRule` rows (the `D_1099MISC_*` family).
-- No probe rows, no test data.
+### Artifacts left on the shared DB (deliberate, s223)
+- **Migrations 0262 (new table `returns_form1310`) + 0263 (its RLS ALTER,
+  default-deny per the new-table rule — this table carries a claimant SSN, so
+  it matters more than usual)**, applied by the deploy.
+- Five new `DiagnosticRule` rows (the `D_1310_*` family).
+- No seeded FormDefinition (Form 1310 has no computed face), no probe rows.
 
 ### ⛔ KEN DECISIONS OUTSTANDING
-- **NEW (s222)**: the **W-2G Georgia-withholding movement class** above — any
-  closed-out Georgia return with a GA-withheld W-2G had line 24 understated.
-  Worth deciding how far back to re-check.
-- **NEW (s222)**: **routing 1099-MISC boxes 13a/13b/14** (cash tips, TTOC,
-  overtime) into the OBBBA Schedule 1-A deductions is its own unit, not built.
-  The `Taxpayer` placeholder fields whose help text already names "1099-MISC
-  box 3" are the eventual consumers. Not urgent — the boxes do not exist on the
-  form that reports TY2025.
-- **NEW (s222)**: the stale duplicate `CC_CODE_CHANGES_BATCH-047 - 2.md` in the
-  1040 queue now contradicts the closed original (it lacks the annexes and
-  reads as if #13 is open). Deletion needs Ken's go — see the queue README.
-- Carried (s221): the **8582 MAGI movement class** — how far back to re-check
-  closed-out 1040s with rentals + nonpassive K-1 income; whether a return's
-  identity card should **read back** from `clients_tax_identity` when its own
-  snapshot is blank (a PII-plumbing call); the **duplicate client pairs**
-  sharing one SSN hash; **CR-2026-001 triage** in Rule Studio (proven a false
-  positive, still needs Ken's click); the **1040 v5.4 business rules** are still
-  not in hand, and the 1041 package that arrived is v5.3 where **v5.5** is
-  already extracted.
-- Carried (s219): the **1065 K15a credit-line contamination** — how far back to
-  re-check closed-out 1065s.
+- **NEW (s223)**: **box B's court certificate** is recorded as a
+  `ReturnAttachmentReference`, not a real PDF, so a box-B return still refuses
+  e-file. Producing a genuine `BinaryAttachment` needs the packet PDF the lane
+  never receives — worth deciding whether the browser lane should accept an
+  upload for this.
+- **NEW (s223)**: a **foreign claimant address** is refused at composition —
+  `IRS1310.xsd` supports it but no `ForeignAddressType` builder exists anywhere
+  in the 1040 mapper. Low priority; flagged rather than invented.
+- **NEW (s223)**: the stale duplicates `CC_CODE_CHANGES_BATCH-046 - 3.md` and
+  `CC_CODE_CHANGES_BATCH-047 - 2.md` now contradict the closed originals (they
+  lack the annexes and read as if the items are open). Deletion needs Ken's go.
+- Carried (s222): the **W-2G Georgia-withholding movement class** — how far back
+  to re-check closed-out Georgia returns; **routing 1099-MISC boxes 13a/13b/14**
+  into the OBBBA Schedule 1-A deductions is its own unit.
+- Carried (s221): the **8582 MAGI movement class**; whether a return's identity
+  card should **read back** from `clients_tax_identity`; the **duplicate client
+  pairs** sharing one SSN hash; **CR-2026-001 triage** in Rule Studio; the
+  **1040 v5.4 business rules** are still not in hand, and the 1041 package that
+  arrived is v5.3 where **v5.5** is already extracted.
+- Carried (s219): the **1065 K15a credit-line contamination**.
 - Carried (s220): the **Georgia sale-difference face destination** for a bulk
   sale; the two **e-file refusals** (aggregate Schedule D net; bulk sale).
 - Carried (s218): the **§213(d)(10) long-term-care age cap** needs the Rev.
-  Proc. table in Rule Studio. Form 4952's **1041 routing** out of scope.
+  Proc. table in Rule Studio.
 - Carried (s217): the closed suffix list (JR, SR, I–X) is OUR inference.
 - Carried (s216): `D_4562_BASIS` warning→error escalation; the L24d
   current-year book bridge needs ratification.
 - Carried (s215): `D_4562_VCLASS` warning→error escalation.
 - Form 6765: RS spec authored s212, ⏳ awaiting Ken's seed approval.
 
-### RS AGENDA (s222 additions)
-- **Form 1099-MISC**: there is no RS spec for ANY information return, and that
-  looks deliberate rather than accidental — worth Ken confirming, because if
-  information returns SHOULD be specced then W-2, 1099-INT/DIV/R/G and this one
-  are all carrying their box semantics in code + a source brief instead.
-- **Record the year-sensitivity**: the 1099-MISC box layout differs across
-  Rev. 1-2024 / Rev. 4-2025 / Rev. 12-2026, and box 14 means three different
-  things (golden parachute / reserved / overtime) across them.
-- **Record the double-count rule**: for any information return, the boxes that
-  are engine feeders are exactly those whose destination has no other keyed
-  source. Everything else belongs to an activity and must be reconciled, never
-  added.
-- Carried s221 (Form 8582 line-6 MAGI · Form 1040 line 35a identity · Form 4562
-  §179-before-§168(k) · 1120-S M-2 tax-exempt interest is OAA), s220, s219,
-  s218, s217, s216, s215, s214, s213, s212 items unchanged.
+### RS AGENDA (s223 additions)
+- **Form 1310**: record that it has NO computation and therefore no RS spec, and
+  that its real specification is the MeF business-rule set — box A not
+  e-fileable, box B amended-only + certificate, box C forced to 2a=No/2b=No/
+  3=Yes, `InCareOfNm` carrying the claimant name, `ValidProofOfDeathInd`
+  required with no printed box.
+- **A general pattern worth recording**: for any form, the MeF business rules
+  can be *narrower than the printed face*. Where they are, the face is still
+  the paper truth and the rules are the transmission truth — the app must
+  support both and refuse the difference by name.
+- Carried s222 (no RS spec exists for ANY information return · the 1099-MISC
+  year-sensitivity · the double-count rule), s221, s220, s219, s218, s217,
+  s216, s215, s214, s213, s212 items unchanged.
 
 ## ⚠ Open items for Ken — carried unchanged (see STATUS_ARCHIVE).
 ## The three K-1 → individual gaps (parked) — one NAMED in s221: the received
-## `ScheduleK1` has no fields for box 17 code K §179-disposition facts, so a
-## shareholder's pass-through 4797 gain must be re-keyed by hand with nothing
-## tying it back to the K-1 our own 1120-S produced.
+## `ScheduleK1` has no fields for box 17 code K §179-disposition facts.

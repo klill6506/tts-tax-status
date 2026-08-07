@@ -1,5 +1,94 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 223 — ★ FORM 1310 (Statement of Person Claiming Refund
+> Due a Deceased Taxpayer) — NEW UNIT, all legs green. BATCH-046 #1; batch 046
+> CLOSED, and with 047 closed in s222 BOTH 1040 batches are now closed.
+> Commit `658915e`; migrations 0262 (new table) + 0263 (default-deny RLS —
+> ⚠ this table carries a claimant SSN).**
+>
+> *Legs.* **source brief** `server/specs/_1310_source_brief.md` · **model**
+> `Form1310` (one per decedent; unique on (return, decedent)) · **gate/logic**
+> `apps/returns/form_1310.py` · **diagnostics** `rules_1310.py` (5) ·
+> **render** `render_1310` + `field_maps/f1310_2025.py` + the template
+> registered in the manifest (98 → 99) · **e-file** `build_irs1310` at
+> ReturnData1040 sequence 1123 · **input** CRUD + the `form_1310s`
+> `backentry.v1` section + `SlateForm1310Screen` + its nav tab (under Payments,
+> because the form gates the REFUND) · **tests** 26 + 9 staging + 3 commit.
+>
+> *⚠ NO COMPUTE LEG — the form has no arithmetic, and that is why there is NO
+> RULE STUDIO SPEC.* `1310`, `F1310` and `FORM_1310` all 404, and so do `8879`,
+> `2848`, `9465` and `8888`, while `3115` (which computes a §481(a) adjustment)
+> has one. Authority: **Form 1310 (Rev. December 2025)**, Cat. No. 11566B,
+> Attachment Sequence No. 87 · `IRS1310.xsd` · the `F1310-*` and
+> `IND-298/299/300` MeF business rules.
+>
+> *⚠⚠ THE BUSINESS RULES ARE THE REAL SPECIFICATION — and they are NARROWER
+> THAN THE PRINTED FACE.* Almost every rule on this form is a REJECT rule, so
+> the unit is mostly about refusing correctly:
+>
+> - **BOX A CAN NEVER BE E-FILED.** `IRS1310.xsd` carries the line-A element
+>   **commented out** ("not used for e-file at this time") and Part I is a
+>   strict `CourtOrPersonalRepGrp` XOR `RefundClaimWithProofOfDeathGrp` choice.
+>   It fits: box A asks the IRS to REISSUE a paper check already received in
+>   both names, returned marked "VOID" — not a claim made on a return. It
+>   prints; composition refuses and `build_irs1310` RAISES. A test re-reads the
+>   XSD so a schema drop that enables line A breaks the test.
+> - **BOX B is valid only on an AMENDED or SUPERSEDED return** (F1310-024-02 —
+>   the face limits it to a claim on Form 1040-X or Form 843) and needs a
+>   court-certificate attachment (F1310-023-03). On an ORIGINAL return a
+>   court-appointed representative attaches the certificate and files no Form
+>   1310 at all.
+> - **BOX C has exactly ONE e-fileable answer set**: 2a=No, 2b=No, 3=Yes
+>   (F1310-009/010/011). The face permits the others and explains what follows
+>   from each, so those are legitimate PAPER returns — printed, and refused at
+>   e-file with the rule named. This also settles a schema question: line 2b is
+>   REQUIRED by the XSD even though the face says to answer it only when 2a is
+>   No.
+>
+> *⚠⚠ TWO TRAPS BURIED IN SCHEMA COMMENTS.* The claimant's **NAME is not on
+> Form 1310 in MeF at all** — "Refund Claimant Name - Use 'InCareOfNm' from the
+> Return Header", and F1310-019 makes a missing header value a reject, so the
+> document carries only the name CONTROL and the SSN. And
+> **`ValidProofOfDeathInd` is REQUIRED inside the box-C group but is NOT A BOX
+> ON THE PRINTED FACE** — the face states the requirement only in the Line C
+> instructions, so e-file demands an assertion the paper form never collects.
+>
+> *⚠ THE WHO-MUST-FILE GATE IS CONDITIONED ON A REFUND.* IND-300-01 and
+> IND-298-01 both begin "If 'RefundAmt' … has a non-zero value", and the form
+> exists to *claim* a refund — so a balance-due decedent return needs no Form
+> 1310, and a diagnostic firing there would be an unclearable error on a return
+> that owes money (the s199 class). A court certificate discharges it, and a
+> surviving spouse filing a JOINT return must not file one at all.
+>
+> *⚠⚠ TWO GAPS FOUND WHILE BUILDING, neither reported.* **(1)**
+> `taxpayer_date_of_death`, `spouse_date_of_death` and `in_care_of` were **not
+> in the `backentry.v1` allowlist at all** — a deceased taxpayer's return could
+> not be back-entered, making this entire gate unreachable through the lane
+> (the dates also drive the printed "Died" literal, MeF's PrimaryDeathDt/
+> SpouseDeathDt and IND-424). **(2)** `_in_care_of_name` already RAISED on any
+> non-MFJ decedent return — "needs a personal-representative name, which the
+> app does not capture yet". The Form 1310 claimant IS that name, so this unit
+> **closes a pre-existing e-file refusal**.
+>
+> *Refuted before building on it:* IND-424 (MFJ + a death date requires
+> `SurvivingSpouseInd`) looked unhandled — it is a DIFFERENT element on the 1040
+> signature block and `builder.py` already emits it correctly.
+>
+> *Model + render notes.* The decedent's name, date of death and SSN are
+> **DERIVED from the return, never keyed** (F1310-002/004/008 compare them
+> against it). Part II answers are **tri-state** — unanswered ≠ No, which is
+> what Part II genuinely is on a box-A/B form. The field map is derived
+> **positionally** from the template's own geometry; **the Part III signature
+> and its Date have NO widget** (wet ink by design — `f1_14` aligns with "Phone
+> no. (optional)", not the Date), pinned so nobody invents a mapping. Two
+> decedents print as two forms, per the face.
+>
+> *Not built, flagged.* Form 1040-X / 843 routing of box B · the court
+> certificate as a real `BinaryAttachment` (the lane never receives packet PDFs,
+> so it is a `ReturnAttachmentReference` and e-file refuses) · a **foreign
+> claimant address** (the XSD supports it; no `ForeignAddressType` builder
+> exists anywhere in the 1040 mapper) · 1040-NR / 1040-SS.
+
 > **2026-08-06 session 222 — ★ FORM 1099-MISC (Miscellaneous Information) —
 > NEW UNIT, all legs green except render/e-file, which DO NOT EXIST for this
 > form (see below). BATCH-047 #13; batch 047 CLOSED. Commit `d885ab7`;
