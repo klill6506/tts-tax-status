@@ -1,5 +1,68 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-07 session 224 (part 2) — FORM 8889 / HSA: the import lane closed,
+> and Form 8889 LINE 4 built. NZ #4; the NZ list goes 6 → 7 of 10. No new form
+> ticks — 8889 was already covered; this closes its import leg and repairs a
+> limit that was computed too high. Commit `804b088`; migration 0265 (one column
+> on an existing table).**
+>
+> *⚠⚠ THE SAME FINDING AS NZ #9, ONE ITEM LATER — and this time the BUILD PLAN
+> shows why.* `HSAAccount`, `compute_8889` (Parts I–III → Schedule 1 lines 13
+> and 8f, Schedule 2 lines 17c and 17d), eight diagnostics and
+> `SlateForm8889Screen` all shipped Phase 2 on 2026-06-14. **The back-entry lane
+> had no `hsa_accounts` section**, so no packet carrying a Form 8889 could be
+> imported — the form was unreachable from the import path entirely. The source
+> brief's own build plan never named it: its `input` leg reads "an 'HSA (8889)'
+> tab + HSA CRUD", which is the BROWSER lane. **The two lanes are separate legs,
+> so a form's build plan can be fully ticked while the form stays
+> un-importable.** Twice in a row on this list now.
+>
+> *Every editable column is importable* — nothing on this model is
+> engine-written. It is all printed source facts, including the RED-deferred
+> line 10 (IRA→HSA funding distribution) and line 18 (testing-period failure)
+> amounts, so a packet's facts survive even where the math stays manual.
+>
+> *⚠⚠ THE ONE REAL COMPUTE GAP — FORM 8889 LINE 4, AND THE SIGN IS THE POINT.*
+> `owner_lines` carried the literal `line5 = line3  # line 4 (Archer) = 0`: no
+> column, no input, no diagnostic. Verified against the **2025** Form 8889
+> (`irs.gov/pub/irs-prior/f8889--2025.pdf`) — line 4 is "the amount you and your
+> employer contributed to your Archer MSAs for 2025 from Form 8853, lines 1 and
+> 2", and **line 5 = line 3 − line 4**. Omitting it left line 5 at the full line
+> 3, so the contribution limit came out **too LARGE** and the deduction could
+> exceed §223(b)(4)(A). **An omission is only safe when it errs AGAINST the
+> taxpayer; this one did not** (the s221 lesson, again). Now
+> `archer_msa_contributions`, floored at zero per the face.
+>
+> *⚠ A NEW PARAMETER HAS TO REACH ITS OTHER CALLER.* `D_8889_EXCESS` calls
+> `hsa_deduction` POSITIONALLY to price the 6% excess-contribution warning. Had
+> it not been updated it would have kept measuring against the old, too-large
+> limit — contributions that are now excess would go unflagged. Pinned by a test
+> that ties the two together. `D_8889_ARCHER` (an 8th diagnostic) names **Form
+> 8853, which is still not built**, rather than letting silence imply zero.
+>
+> *⚠ NO MOVEMENT CLASS.* The column defaults to 0 and `hsa_deduction`'s new
+> parameter defaults to 0, so every existing return and every existing caller
+> computes exactly as before.
+>
+> *Two staging warnings ride with the new section.* **Line 6 is THREE-STATE and
+> its two "empty" values do OPPOSITE things** — omitted/null takes the full line
+> 5, an explicit **0** zeroes the whole deduction (`D_8889_FAMILY_ZERO`, the
+> $8,550 → $0 swing from s137) — and the diagnostic only fires AFTER commit, so
+> a transcriber typing 0 for "no split" loses the deduction silently. And
+> **line 9 IS the W-2 box 12 code-W total**: a payload carrying both and
+> disagreeing has one of them mistranscribed, and the return can reconcile on
+> wages while still deducting the wrong amount.
+>
+> *Regression target met verbatim* (`test_form8889_nz4_s224.py`, 14 tests):
+> family HDHP, $3,250 employer contribution, $4,592 distributed against $4,592
+> of qualified medical expenses → a **$5,300** deduction on Schedule 1 line 13,
+> **zero** taxable distribution, **zero** HSA additional tax of either kind — and
+> the deduction proved above-the-line by reading 1040 line 11, not just line 13.
+>
+> *⚠ Client note.* The Slate 8889 test fixture is cast `as HSAAccountRow`, so a
+> **new required field does not fail the typecheck** — it silently reads
+> `undefined`. Kept in step by hand; worth removing the cast someday.
+
 > **2026-08-07 session 224 — FORM 1099-G: the import lane closed, and a THIRD
 > GA-500 line-24 roster defect. NZ #9; the NZ list goes 5 → 6 of 10. No new
 > form ticks — 1099-G was already covered; this closes its input leg and
