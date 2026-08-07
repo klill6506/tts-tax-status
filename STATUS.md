@@ -67,6 +67,20 @@ Everything below is ruled and buildable without asking:
 
 ## ▶ RESUME HERE
 
+### ⛔ FIRST THING NEXT SESSION — mixed-entity pilot #7 needs ONE answer
+Verify-first is **done** and the gap is real (our own `d_k1_basis` docstring says
+partner §704(d) basis is "not built here"). The law is verified from primary
+sources and the insertion point is a single function, `k1_sche_net()`. **The
+blocker is the Rule Studio gate: no spec exists for the §704(d) individual
+partner-basis limitation**, and CLAUDE.md says STOP rather than improvise.
+`SCHEDULE_K1_1065 R-K1-ITEM-L` is NOT it — that is the entity-side item L capital
+roll-forward, itself RED-deferred, and item L capital ≠ outside basis (§752).
+**The question and my recommendation are the FIRST item in `REVIEW_QUEUE.md`:
+(a) spec first, then build — recommended — or (b) build the preparer-asserted
+version now and spec it straight after.** ⚠ Scope finding recorded there: unlike
+Form 7203, a partner's basis worksheet is **NOT attached to the return**, so #7
+needs no MeF document and no render leg.
+
 ### The queue right now
 - **1120-S** (`1120S\CC Changes\`): **EMPTY** since batch-013 closed (s220).
   Sweep at boot; work batch-014 if Codex has posted one.
