@@ -27,8 +27,31 @@ Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
 find defects. State the finding and move on.
 
 ## ⚠ KEN IS AWAY 2026-08-09 → ~2026-08-19 (10 days)
-Nothing is on a clock in that window. The next hard deadline is 2026-09-15
-(extended entity returns).
+**He has his laptop — availability is MINIMAL BUT NOT ZERO** (Ken, 2026-08-07),
+so work can continue and questions can be asked. Batch them and keep them
+low-friction: a few crisp choices he can answer from a laptop in minutes, never
+a wall of prose. Nothing is on a clock in that window; the next hard deadline is
+2026-09-15 (extended entity returns).
+
+## ▶ THE QUEUE IS FULL — s224's decision pass cleared the backlog
+Ken settled **19 outstanding decisions** on 2026-08-07 (see DECISIONS.md
+"Scope + gate rulings"). Only ONE is still open: the **L24d book bridge**, which
+needs re-presenting in plainer terms. Everything below is ruled and buildable
+without asking:
+1. **`CC_A_M_REMAINING_BLOCKERS`** — work as a normal batch (six code requests;
+   it was never blocked on Ken)
+2. **NZ #5 Schedule F** and **NZ #6 SS lump-sum election** — ⚠ verify what
+   shipped first
+3. **Form 6765** — spec approved, build scheduled
+4. **Form 8853 Section C** (LTC only) — constants in hand: §7702B(d)(4) per diem
+   **$420/day** for 2025
+5. **§213(d)(10) LTC premium cap** — apply at all three touchpoints
+6. **1065 K17a** — build the partnership AMT adjustment (nothing computes it)
+7. **Georgia bulk-sale difference** → Other Subtractions + attached schedule
+8. **Both e-file refusals** — build out (⚠ the bulk-sale allocation is unsolved)
+9. **Identity read-back** — SSN *and* date of birth, from the master record
+10. **Form 1310 box B upload path** + a **shared `ForeignAddressType` builder**
+11. **CR-2026-001** — Rule Studio seeder fix (mine, no ruling needed)
 
 ---
 
@@ -134,7 +157,17 @@ gated; this lone exception credited any state's withholding to Georgia.
 - Two new `DiagnosticRule` rows: `D_1099G_STATE` and `D_8889_ARCHER`.
 - No seeded FormDefinition changes, no probe rows.
 
-### ⛔ KEN DECISIONS OUTSTANDING
+### ⛔ KEN DECISIONS OUTSTANDING — ALL BUT ONE CLEARED 2026-08-07
+**Only the L24d book bridge remains** (needs a plainer re-presentation). Every
+other item below was settled, closed by verification, or is an IRS errand — the
+full record is in DECISIONS.md. **⚠ Four of the eight items opened in the pass
+were already fixed or mislabelled**, so re-verify any "⛔ needs Ken" line against
+the code before raising it again. The one live external item: **1040 v5.4
+business rules are still not in hand and go active 2026-08-09** (the v5.4
+schemas ARE on disk; 1041 v5.5 arrived 2026-06-29 and that half is closed).
+
+*(Historic list retained below for the trail — treat as settled unless
+DECISIONS.md says otherwise.)*
 - **NEW (s224)**: **Form 8853 (Archer MSAs and Long-Term-Care Contracts) is not
   built.** Form 8889 line 4 now takes the Archer figure and reduces the HSA
   limit correctly, but the MSA side of such a return is entirely manual, and the
