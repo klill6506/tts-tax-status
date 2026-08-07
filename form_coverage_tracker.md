@@ -1,5 +1,77 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-06 session 221 — production support on ONE 1040; three defects
+> fixed, two long-standing ⛔ items closed. No form ticks — every change is a
+> correction to a form already covered. Commits `a57832c` · `e9fe025` ·
+> `e057fbb` · `11d4260` · `1c081ae`. No migrations.**
+>
+> *Form 8582 line 6 (MAGI)* — now includes **nonpassive and PTP Schedule E
+> page-2 income**, guaranteed payments and portfolio income, less nonpassive
+> losses and the §179 deduction. §469(i)(3)'s exclusion list is CLOSED and
+> i8582 says affirmatively "include any income that's treated as nonpassive
+> income". The old "v1 approx" omitted it, which UNDERSTATES MAGI — and a lower
+> MAGI buys a LARGER §469(i) special allowance. ⚠ **Movement class**: any 1040
+> with rentals AND nonpassive K-1/PTP income loses a special allowance it should
+> not have had; the deductible rental loss falls. The direction is always *less*
+> deduction, i.e. we were over-deducting. `magi_nonpassive` partitions against
+> `passive_k1_income` on the same condition the 8582 gather uses (`material or
+> is_ptp`), so no K-1 is counted twice or dropped. **PTPs had been missing from
+> MAGI entirely.**
+>
+> *Form 1040 line 35a* — now settles the line-38 estimated tax penalty:
+> `max(0, 34 − 36 − 38)`. IRS line-by-line instructions: "Line 38 is subtracted
+> from line 35a or added to line 37." Line 37 already added it; 35a was the
+> missing half, so a refund return paid the penalty out to the client. ⚠ The
+> mechanical half was SEQUENCING: line 38 is written after the formula passes
+> (compute_2210 needs the final lines 24/33) and the post-2210 refresh rewrote
+> line 37 only. **Line 34 does not move** — the overpayment is what it is.
+>
+> *The refund SURFACES* — the printed 1040, Form 8879, the Form 8888
+> direct-deposit split and the MeF `RefundAmt` element all read 35a and followed
+> automatically. **The Return Manager read line 34** (the OVERPAYMENT) and did
+> not; it was also overstating any return that applies part of an overpayment
+> forward to next year's estimates. Now 35a, with a test pinning all five
+> surfaces to one line.
+>
+> *Form 4562 — `D_4562_ELECTGAP`* — no longer fires on an asset whose §179
+> election consumed its whole basis. §179 comes first and permanently reduces
+> basis (§179(a)); §168(k) applies to what remains. A fully expensed asset has
+> nothing for bonus to attach to, so its zero bonus is arithmetic and there is
+> no §168(k)(7) election-out to make — the warning could not be cleared. New
+> shared helper `basis_remaining_after_179()` keeps the over-6,000-lb SUV cap,
+> which matters in the other direction: a CAPPED election does leave basis
+> behind and the warning should still fire there.
+>
+> *`D_1040_016`* — REWORKED, not retired. The ordinary refund-with-penalty case
+> is now arithmetic. What survives is the case the FACE cannot express: a
+> penalty LARGER than the overpayment floors 35a at zero and leaves a real
+> balance due with nowhere to print (line 37 computes only when the tax exceeds
+> the payments). The IRS bills the difference and nothing on the return says so.
+>
+> *`D_1040_012`* — the split identity learned the penalty arm:
+> `35a = max(0, 34 − 36 − 38)`. The offset fix shipped without it and turned a
+> CORRECTED refund into a false error. The floor case is deliberately NOT a 012
+> error — the split is not broken there, the penalty is simply larger than the
+> money to pay it, which is 016's finding. One fact, one finding.
+>
+> *1120-S Schedule M-2 (page 8)* — ⛔ **the ATS scenario-5 `M2_3a` question is
+> CLOSED and it never needed a ruling.** Tax-exempt interest is an OAA (column
+> d) item, never AAA: §1368(e)(1)(A) adjusts AAA "in a manner similar to" §1367
+> EXCEPT for income exempt from tax. The IRS key agrees — its own Attachment 9
+> is 2,800 + 3,625 = 6,425 with the 486 in column (d). The 5,461 in our test was
+> OUR arithmetic, frozen pre-batch-010 #8. ⚠ **And it hid a live e-file
+> defect**: batch-010 #8 moved K16a out of the M2_3a FORMULA but left it in
+> `_M2_3A_COMPONENTS`, the statement decomposition — so `_stmt_reconcile`
+> refused composition on ANY 1120-S with tax-exempt interest plus another AAA
+> other-addition, with a message pointing at a sub-schedule that was never the
+> problem.
+>
+> *Form 6252 template* — unchanged on irs.gov (CR-2026-001 was a false
+> positive: live page-1 text byte-identical, all 49 AcroForm field names
+> identical). The manifest now records `source_sha256`, the RAW download hash,
+> alongside the trimmed template's — f6252 is the only derived template of 98,
+> and comparing the derived hash against the source URL is what opened the item.
+
 > **2026-08-06 session 220 — CC BATCH-013 PART 2, batch CLOSED (items 2/4/5/8,
 > one deploy `0239b11`, migrations 0257–0259). ONE form ticks: Form 6252 gains
 > its ENTITY arm; the rest are new surfaces on forms already covered.**

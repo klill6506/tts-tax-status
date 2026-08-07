@@ -1,13 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-06 (s220). **BATCH-013 IS CLOSED** — the four remaining
-builds (items **2, 4, 5, 8**) all landed in ONE deploy, commit `0239b11`,
-migrations **0257–0259**. The batch file moved to `CC Changes Done` with a
-PART 2 annex. The 1120-S CC-Changes queue is **EMPTY**; the loop returns to the
-1040 lane.*
+*Last updated: 2026-08-06 (s221). A long production-support session on ONE 1040
+(the "Littleton" hold, referred to below by return id only). **Both originally
+reported blockers were REFUTED**; the real defects were three others, all fixed
+and deployed. Also closed the standing **ATS scenario-5 `M2_3a`** question — the
+engine was right and our own test was wrong — and **CR-2026-001** (a false
+positive). Commits: `a57832c`, `ce2ce1e`, `e9fe025`, `e057fbb`, `11d4260`,
+`1c081ae`; delvio-rule-studio `b7b5aeb`. No migrations.*
 
-*Previous (s219): BATCH-013 PART 1 — 7 of 11 (5 BUILT, 2 REFUTED), migration
-0256. (s218): BATCH-047 #15 Form 4952 BUILT. (s217): #11 name suffix BUILT.*
+*Previous (s220): BATCH-013 PART 2 — the four builds (2/4/5/8), batch CLOSED,
+migrations 0257–0259.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -27,47 +29,56 @@ Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
 find defects. State the finding and move on.
 
+## ⚠ KEN IS AWAY 2026-08-09 → ~2026-08-19 (10 days)
+Nothing is on a clock in that window. The next hard deadline is 2026-09-15
+(extended entity returns). Chat/Codex continues on the 1040 above.
+
 ---
 
 ## ▶ RESUME HERE
 
 ### The queue right now
-- **1120-S** (`1120S\CC Changes\`): **EMPTY** — batch-013 closed and filed to
-  `CC Changes Done`. Sweep it at boot; if Codex has posted batch-014, work it.
-- **1040** (`CC Code Changes\`): this is the pickup. **BATCH-047 #13** — the
-  source-level 1099-MISC rows, a full build — is the top item, plus BATCH-046
-  #1 (Form 1310) and NZ #4/#5/#6/#9.
+- **1120-S** (`1120S\CC Changes\`): **EMPTY** — batch-013 closed s220 and filed
+  to `CC Changes Done`. Sweep at boot; work batch-014 if Codex has posted one.
+- **1040** (`CC Code Changes\`): the pickup. **BATCH-047 #13** — the
+  source-level 1099-MISC rows, a genuine full build (model + migration +
+  routing 8z / Schedule E / Schedule C / withholding + lane + Slate +
+  diagnostics). Then BATCH-046 #1 (Form 1310) and NZ #4/#5/#6/#9.
+- **The 1040 under support is Chat's** — do not edit its data.
 
-### ✅ s220 in one paragraph
-All four were genuine builds, and the theme was **one engine, two lanes**.
-**#5** turned out to need no engine at all: `InstallmentSale` and
-`compute_6252` have been form-agnostic since the 1040 build, so the entity lane
-was missing only the *surface* — building a second gross-profit-percentage
-implementation was the trap. The frozen §453 percentage is honored rather than
-recomputed (450,000 × 0.8892 = 400,140; recomputing 844,777/950,000 would report
-400,157). **#2** is the consequential one: a bulk sale's regular AND AMT
-adjusted basis are now summed from the *linked asset rows*, which is exactly
-what makes K15b tie (−161,558 / −22,318) where an aggregate row that cannot see
-its members reports zero — and the members stop emitting the eleven-way
-zero-proceeds loss that had been carrying through K18, M-1/M-2, Schedule L and
-Georgia. **#8** added the `aggregate_gross` presentation and, with it,
-`sec_179_in_state_current` — the Georgia twin of the §179 component batch-013
-#10 introduced federally — so the pair subtracts the engine's own answer instead
-of re-deriving the election's caps. **#4** gave a net-only Schedule D surface
-that refuses to fabricate 8949 detail and refuses to e-file. Two Georgia/e-file
-boundaries were **stated, not guessed** (below).
+### ✅ s221 in one paragraph
+Verify-first paid four times and one of the four was **my own regression**. The
+hold reported a §179 business-income limitation capping the deduction and a
+persistence failure; **both were refuted against the live row** — §179 was
+already correct (s198's K-1 arm, 516,179 base against a 478,857 election) and
+the reported figure was the pre-s198 state, while the "lost" SSNs were sitting
+in the canonical `clients_tax_identity` store with **no read-back** into the
+return snapshot. The real defect was elsewhere: **Form 8582 line 6 MAGI omitted
+nonpassive Schedule E page-2 income**, understating MAGI 119,335 against 355,828
+and buying a §469(i) special allowance of 15,332 the return was not entitled to
+— the entire federal AND Georgia delta. Then **Form 1040 line 35a never settled
+the line-38 penalty** (the post-2210 refresh rewrote line 37 only), so a refund
+return paid the penalty out; fixing it exposed that **the Return Manager read
+line 34, the overpayment, not 35a**. And fixing THAT broke `D_1040_012`, whose
+`35a + 36 == 34` identity the offset made obsolete — a regression my own code
+comment had pointed at and I did not follow.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Nothing moves by default.** All three new columns default to blank/zero, so
-  a return only changes once a packet names a bulk-sale group, an aggregate
-  capital net, an installment sale, or the aggregate-gross GA presentation.
-- The Schedule K line-7/8a clear-then-write and the K9/line-4 clear are
-  unchanged; the new feeds are additive addends.
-- Carried from s219 and still true: the **1065 K15a credit-line
-  contamination** — every 1065 with a depreciation register had been writing a
-  depreciation adjustment into the Low-Income Housing Credit line, now 1120-S
-  only, so those returns blank on next recompute. ⛔ KEN: any closed-out 1065 is
-  worth re-checking.
+- **Every 1040 with rentals AND nonpassive K-1/PTP income**: the 8582 MAGI base
+  now includes that income, so a §469(i) special allowance that should never
+  have been granted disappears and the deductible rental loss falls. ⛔ KEN:
+  any closed-out 1040 of that shape is worth re-checking — the direction is
+  always *less* deductible loss, i.e. we were over-deducting.
+- **Every 1040 refund return carrying a line-38 penalty**: line 35a drops by
+  the penalty. The printed 1040, Form 8879, the 8888 direct-deposit split and
+  the MeF `RefundAmt` all follow automatically (they already read 35a).
+- **The Return Manager refund column and season totals** now read 35a, so they
+  fall on any return with a penalty or an applied-forward election.
+- `D_4562_ELECTGAP` stops firing on fully-§179-expensed assets;
+  `D_1040_016` stops firing on the ordinary refund-with-penalty case.
+- **1120-S Schedule M-2**: no value moves, but a return with tax-exempt
+  interest plus another AAA other-addition can now COMPOSE for e-file at all
+  (the statement decomposition disagreed with the face and refused).
 
 ### ⚠ Known red / rotted (not this session's changes)
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock fixtures
@@ -77,80 +88,100 @@ boundaries were **stated, not guessed** (below).
   is a real number, not a test artifact.
 - `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
   the batch-005 #9 PTET-gate class, red on main since s212.
-- `test_mef_scenario5_1120s_compute.py` (both) — `M2_3a` computes 4,975 against
-  an expected 5,461. ⛔ KEN: an IRS ATS scenario with a published answer key
-  needs a ruling, not a test edit.
 - closeout↔cleanup SUITE-ORDER contamination in `test_backentry_cleanup.py`
   (3, on a `DiagnosticRule` unique-code collision). Green alone.
-- **Client typecheck**: `npx tsc --noEmit -p client/tsconfig.renderer.json`
-  reports 127 error lines on clean `main` (PdfViewer, RenameClient, Clients,
-  FormEditor). Baselined this session by reverting — s220 adds none.
+- **Client typecheck**: 127 error lines on clean `main` (PdfViewer,
+  RenameClient, Clients, FormEditor). Baselined s220; s221 adds none.
+- *(FIXED this session: `test_mef_scenario5_1120s_compute.py` — see below.)*
 
-### ⚠ Test-run hazard (standing, confirmed s217, s219, s220)
-**Never run two `pytest` invocations concurrently** — they share one test
-database, so the second drops the first's seeded `FormLine` rows and produces
-*false* failures. Every s220 run was serial: 50 batch-013 · 67 entity lane ·
-46 diagnostics · 521 flow assertions · 203 depreciation + GA · 329
-renderer/4797/6252/Schedule D · 79 MeF 1120-S · 1,645 vitest — all green.
+### ⚠ Test-run hazards (standing)
+- **Never run two `pytest` invocations concurrently** — one shared test DB.
+- **NEW (s221): the hazard is CROSS-REPO.** `delvio-tax` and
+  `delvio-rule-studio` both point at the same Supabase instance and both name
+  their test database `test_postgres`, so a rule-studio run collides with a
+  tax-app one — `--create-db` fails with "being accessed by other users".
+  `--reuse-db` works. Proved pre-existing by stashing and reproducing worse.
 
-### Artifacts left on the shared DB (deliberate, s220)
-- Migrations **0257–0259** — three CharFields (`ga_depreciation_presentation`,
-  `bulk_sale_group` ×2), two engine-written Decimals (`sec_179_in_current`,
-  `sec_179_in_state_current`) and one nullable Decimal (`net_gain_loss`). Every
-  non-null add carries `db_default` (the s190 deploy-skew rule).
-- No new tables, no RLS pair, no seeded FormLines, no probe rows. Every test
-  ran against the test DB.
-- `D:\tax-test-data\Import Templates\entity-batch-import.schema.json`
-  regenerated from the lane's own allowlist (never hand-edited).
+### Artifacts left on the shared DB (deliberate, s221)
+- **None.** No migrations, no new tables, no seeded rows, no probe rows.
+- Every live investigation was **read-only**, or a `compute_return` inside
+  `transaction.atomic()` with a deliberate rollback and a re-read afterwards to
+  prove nothing persisted. Presence booleans were printed, never SSN values.
 
 ### ⛔ KEN DECISIONS OUTSTANDING
-- **NEW (s220)**: the **Georgia leg of batch-013 #2**. The item asks the grouped
-  bulk-sale computation to feed the Georgia gain/loss adjustment. The figure IS
-  computed and `D_SCHK_BULK_GA` reports it with its arithmetic — but it is NOT
-  written to a face line, because the GA-600S has no sale-difference line
-  (Schedules 7/8 carry the annual §168 pair only, which took its own ruling) and
-  **no non-bulk sale computes one either**. Where a sale difference belongs on
-  the Georgia face is an RS/Ken call, not a guess.
-- **NEW (s220)**: two **e-file boundaries** now refuse loudly rather than
-  emitting wrong XML — an aggregate Schedule D net (IRS8949 needs transaction
-  detail) and a bulk sale (the aggregate 4797 row has never been carried into
-  IRS4797). Both are honest refusals; both are real gaps if such a return ever
-  needs to e-file.
+- **NEW (s221)**: the **8582 MAGI movement class** above — how far back to
+  re-check closed-out 1040s with rentals + nonpassive K-1 income.
+- **NEW (s221)**: should a return's identity card **read back** from the
+  canonical `clients_tax_identity` store when its own snapshot is blank?
+  `sync_from_taxpayer` is write-only today. It is clearly right in principle but
+  changes where an SSN surfaces (today the only path outside the entry card is
+  the audited `reveal-ssn`), so it is a PII-plumbing call, not mine.
+  ⚠ `TaxIdentity` has **no date_of_birth column at all** — a DOB lives only on
+  the return's `Taxpayer` row, so a missing one cannot be recovered by code.
+- **NEW (s221)**: **duplicate client pairs** sharing one SSN hash (two pairs
+  found on this family). Near-matches stay advisory by design after s217's
+  exact-duplicate gate — but they split the identity trail. Worth merging.
+- **NEW (s221)**: **CR-2026-001 triage** in Rule Studio. Proven a FALSE
+  POSITIVE (Form 6252 unchanged — live page-1 text byte-identical, all 49
+  AcroForm field names identical). The seeder bug behind it is fixed both
+  sides; the register item itself still needs Ken's click, because the watcher
+  never overwrites the authority record on a detected change by design.
+- **NEW (s221)**: the **1040 v5.4 business rules** are still not in hand — what
+  arrived was v5.3, which we already had. Ken is re-sending to
+  `mefmailbox@irs.gov`. Also: the 1041 package that arrived is v5.3 where
+  **v5.5** is already extracted from the July BMF drop — confirm why v5.3 was
+  requested before using it.
 - Carried (s219): the **1065 K15a credit-line contamination** — how far back to
-  re-check closed-out 1065s. BATCH-013 item 6's repair asks Codex to confirm the
-  printed line 2.
-- Carried (s218): the **§213(d)(10) long-term-care age cap** needs the
-  authoritative Rev. Proc. table in Rule Studio. Form 4952's **1041 routing**
-  out of scope — confirm that season-one boundary. The 4952 spec's "not required
-  to file" condition names only two of three exception tests.
-- Carried (s217): the closed suffix list (JR, SR, I–X) is OUR inference; suffix
-  + DECD both want the third MeF name-line segment and the pub is silent.
+  re-check closed-out 1065s. BATCH-013 item 6's repair asks Codex to confirm
+  the printed line 2.
+- Carried (s220): the **Georgia sale-difference face destination** for a bulk
+  sale (reported by `D_SCHK_BULK_GA`, deliberately not auto-written); the two
+  **e-file refusals** (aggregate Schedule D net; bulk sale).
+- Carried (s218): the **§213(d)(10) long-term-care age cap** needs the Rev.
+  Proc. table in Rule Studio. Form 4952's **1041 routing** out of scope.
+- Carried (s217): the closed suffix list (JR, SR, I–X) is OUR inference.
 - Carried (s216): `D_4562_BASIS` warning→error escalation; the L24d
   current-year book bridge needs ratification.
-- Carried (s215): `D_4562_VCLASS` warning→error escalation; the ATS scenario-5
-  `M2_3a` expectation vs the s213 K16a→OAA routing — which is right?
+- Carried (s215): `D_4562_VCLASS` warning→error escalation.
 - Form 6765: RS spec authored s212, ⏳ awaiting Ken's seed approval.
-- M2_3a auto-rollup question (s213); the A–M item-7 asset decisions; states +
-  K-2/K-3 holds (unchanged).
+- **RESOLVED (s221)**: the ATS scenario-5 `M2_3a` question is CLOSED — it never
+  needed a ruling. See below.
 
-### RS AGENDA (s220 additions)
-- **GA-600S**: record the two depreciation-pair presentations
-  (`component_net` / `aggregate_gross`) and what `aggregate_gross` includes —
-  regular depreciation including a linked Form 4562 line-16 amount, excluding
-  amortization and separately passed-through §179.
-- **GA-600S**: the open question above — does a SALE's federal-vs-Georgia gain
-  difference have a face destination, or does it stay a keyed Schedule 7/8
-  "(Attach Schedule)" amount?
-- **Form 4797**: a bulk sale is one property computed over many register rows.
-  The spec should record that the aggregate row's own basis columns are ignored
-  and that a §179 asset cannot join a group (i4797 sends it to the K-1).
-- **Form 6252**: the entity arm exists. §453A interest has no entity
-  destination — record that boundary.
-- **Schedule D (1120-S)**: an aggregate net-only row is a legitimate source
-  shape; record that it prints no Form 8949 and cannot e-file.
-- Carried s219 (Form 4562 line-16 row property), s218 (Form 4952 v1
-  ratification · Form 7206's missing LTC fact), s217, s216, s215, s214, s213,
-  s212 items unchanged.
+### ✅ Closed this session — two long-standing ⛔ items
+- **ATS scenario-5 `M2_3a` (open since s213).** 5,461 − 4,975 = 486, exactly
+  K16a tax-exempt interest. Our own transcription of the printed IRS key records
+  the AAA other-additions schedule as 2,800 + 3,625 = 6,425 with **no 486 in
+  it**, and the 486 landing in "M-2 col (d) OAA". So 5,461 was OUR arithmetic,
+  frozen into an assertion pre-batch-010 #8 — never the IRS figure. §1368(e)(1)(A)
+  agrees (AAA excludes tax-exempt income). Engine, key and statute all agreed;
+  only the test dissented. **AND it uncovered a live e-file defect**:
+  `_M2_3A_COMPONENTS` still listed K16a, so the statement decomposition and the
+  face disagreed and `_stmt_reconcile` refused composition on any 1120-S with
+  tax-exempt interest plus another AAA addition.
+- **CR-2026-001 (Form 6252 "changed on irs.gov").** False positive. The
+  manifest's `sha256` is the hash of the TEMPLATE ON DISK, and f6252's is
+  trimmed to its one form page while the download bundles three instruction
+  pages — the only derived template of 98. New `source_sha256` records the raw
+  hash; the rule-studio seeder now prefers it and refuses to seed a derived hash
+  otherwise.
+
+### RS AGENDA (s221 additions)
+- **Form 8582**: record that line-6 MAGI includes nonpassive and PTP Schedule E
+  page-2 income, guaranteed payments and portfolio income — the exclusion list
+  in §469(i)(3) is closed and i8582 says "include any income that's treated as
+  nonpassive income".
+- **Form 1040**: record the line-35a identity — `max(0, 34 − 36 − 38)` — and
+  that line 38 is subtracted from 35a or added to 37, never both.
+- **Form 4562**: §179 reduces basis before §168(k), so a fully expensed asset
+  has no bonus to elect out of (the D_4562_ELECTGAP exemption).
+- **1120-S Schedule M-2**: tax-exempt interest is an OAA (column d) item, never
+  AAA — and the itemized-statement decomposition must track the face formula.
+- Carried s220 (GA depreciation-pair presentations · bulk sale as one 4797
+  property · entity 6252 · aggregate Schedule D), s219, s218, s217, s216, s215,
+  s214, s213, s212 items unchanged.
 
 ## ⚠ Open items for Ken — carried unchanged (see STATUS_ARCHIVE).
-## The three K-1 → individual gaps (parked) — unchanged.
+## The three K-1 → individual gaps (parked) — one NAMED this session: the
+## received `ScheduleK1` has no fields for box 17 code K §179-disposition
+## facts, so a shareholder's pass-through 4797 gain must be re-keyed by hand
+## with nothing tying it back to the K-1 our own 1120-S produced.
