@@ -1,8 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-07 (s224). **NZ #9 DONE — Form 1099-G through the
-back-entry lane**, plus a third GA-500 line-24 roster defect fixed in passing.
-One deploy: `e1a97ac`; migration 0264. The NZ list goes 5 → 6 of 10.*
+*Last updated: 2026-08-07 (s224). **NZ #9 and NZ #4 both DONE — Form 1099-G and
+Form 8889/HSA through the back-entry lane.** Two deploys: `e1a97ac` (migration
+0264) and `804b088` (migration 0265). Two defects fixed in passing: a third
+GA-500 line-24 roster arm, and Form 8889 line 4. **The NZ list goes 5 → 7 of 10.***
 
 *Previous (s223): BATCH-046 #1 — Form 1310 built end to end; batch 046 CLOSED
 (`658915e`, migrations 0262 + 0263).*
@@ -37,19 +38,35 @@ Nothing is on a clock in that window. The next hard deadline is 2026-09-15
 - **1120-S** (`1120S\CC Changes\`): **EMPTY** since batch-013 closed (s220).
   Sweep at boot; work batch-014 if Codex has posted one.
 - **1040** (`CC Code Changes\`): batches 046 and 047 both CLOSED. The pickup is
-  the **NZ list, now 6 of 10**: **#4 Form 8889/HSA · #5 Schedule F · #6 SS
-  lump-sum election**. Then the PULLIAM pilot **#7** (the K-1 basis/at-risk
-  allowed-loss worksheet). NZ #10 (multi-state) stays parked under Ken's
-  states-on-hold ruling, and `CC_A_M_REMAINING_BLOCKERS` stays blocked on Ken's
-  two asset decisions.
-- **⚠ VERIFY-FIRST ON NZ #4 — it looks like #9's twin.** `compute_8889.py`,
-  `rules_8889.py`, `_form_8889_source_brief.md` and `SlateForm8889Screen.tsx`
-  all exist; there is **no `Form8889` model** (the inputs appear to live on
-  `Taxpayer`) and the lane carries **no 8889 fields at all**. Confirm the
-  shipped shape before designing anything — twice now the NZ item has described
-  a full build where only the lane was missing.
+  the **NZ list, now 7 of 10**: **#5 Schedule F · #6 SS lump-sum election**.
+  Then the PULLIAM pilot **#7** (the K-1 basis/at-risk allowed-loss worksheet).
+  NZ #10 (multi-state) stays parked under Ken's states-on-hold ruling, and
+  `CC_A_M_REMAINING_BLOCKERS` stays blocked on Ken's two asset decisions.
+- **⚠⚠ VERIFY-FIRST ON #5 AND #6 — BOTH #9 AND #4 WERE LANE-ONLY GAPS ON FORMS
+  THAT WERE ALREADY BUILT.** Each item read like a full form unit; in each case
+  the model, compute, diagnostics and Slate screen had shipped in Phase 2 and
+  only the back-entry section was missing. **`compute_schedule_f.py`,
+  `rules_schedule_f.py` and `_schedule_f_source_brief.md` all exist** — check
+  what actually shipped before designing anything. The deeper reason: a source
+  brief's `input` build leg means the BROWSER lane, so a form's plan can be
+  fully ticked while the form stays un-importable.
 
-### ✅ s224 in one paragraph
+### ✅ s224 part 2 in one paragraph
+NZ #4 (Form 8889 / HSA) is #9's twin, and the source brief shows why. The model,
+`compute_8889` (Parts I–III → Schedule 1 lines 13 and 8f, Schedule 2 lines 17c
+and 17d), eight diagnostics and the Slate screen all shipped Phase 2; the
+back-entry lane had no `hsa_accounts` section, so no packet carrying a Form 8889
+could be imported. **The brief's build plan never named that leg** — its `input`
+step means the browser tab, and the two lanes are separate, so a form's plan can
+be fully ticked while the form stays un-importable. One real compute gap came
+with it: **Form 8889 line 4 (Archer MSA) was hardcoded to zero**, with no
+column, no input and no diagnostic, and since line 5 = line 3 − line 4 that left
+the contribution limit **too large** — an omission erring in the taxpayer's
+favour. Now stored and floored per the 2025 face, and pushed through
+`D_8889_EXCESS` too, since that diagnostic calls `hsa_deduction` positionally and
+would otherwise have kept pricing the 6% excess warning against the old limit.
+
+### ✅ s224 part 1 in one paragraph
 NZ #9 reads "Add 1099-G unemployment documents", which sounds like a form unit.
 It is not: the `Form1099G` model, `compute_1099g`, the 25b withholding roster,
 five diagnostics and the Slate screen all shipped in Phase 2 on 2026-06-14, and
@@ -66,7 +83,10 @@ absent column had been read as an absent box. Every sibling arm was already
 gated; this lone exception credited any state's withholding to Georgia.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Nothing moves — by design.** A **blank** box 10a still counts as Georgia on
+- **Nothing moves from either unit.** Form 8889's `archer_msa_contributions`
+  defaults to 0 and `hsa_deduction`'s new parameter defaults to 0, so every
+  existing return and every existing caller computes exactly as before.
+- **Nothing moves from NZ #9 either — by design.** A **blank** box 10a still counts as Georgia on
   GA-500 line 24: every 1099-G row keyed before s224 has a blank one because
   the column did not exist, and this practice files GA. The new
   `D_1099G_STATE` warning surfaces the fallback rather than letting it be
@@ -92,6 +112,9 @@ gated; this lone exception credited any state's withholding to Georgia.
   implicated. Worth fixing the fixtures with `update_or_create`.
 - **Client typecheck**: 127 error lines on clean `main` (PdfViewer,
   RenameClient, Clients, FormEditor). Re-measured s224 at exactly 127 — adds none.
+- ⚠ **The Slate 8889 test fixture is cast `as HSAAccountRow`**, so adding a
+  required field to that interface does NOT fail the typecheck — the fixture
+  silently reads `undefined`. Kept in step by hand s224; worth dropping the cast.
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB.
@@ -106,10 +129,17 @@ gated; this lone exception credited any state's withholding to Georgia.
 - **Migration 0264** — three columns on the EXISTING `returns_form1099g`
   table (`box10a_state`, `box10b_state_id`, `payer_tin`, all `db_default=""`
   per the deploy-skew rule). No new table, so no RLS migration.
-- One new `DiagnosticRule` row, `D_1099G_STATE`.
+- **Migration 0265** — one column on the EXISTING `returns_hsaaccount` table
+  (`archer_msa_contributions`, `db_default=0`). Likewise no RLS migration.
+- Two new `DiagnosticRule` rows: `D_1099G_STATE` and `D_8889_ARCHER`.
 - No seeded FormDefinition changes, no probe rows.
 
 ### ⛔ KEN DECISIONS OUTSTANDING
+- **NEW (s224)**: **Form 8853 (Archer MSAs and Long-Term-Care Contracts) is not
+  built.** Form 8889 line 4 now takes the Archer figure and reduces the HSA
+  limit correctly, but the MSA side of such a return is entirely manual, and the
+  8889's own face says "Complete Form 8853 ... if required" *before* you begin.
+  `D_8889_ARCHER` names it. Worth deciding whether 8853 is in season-one scope.
 - **NEW (s224)**: the **Rev. December 2026 Form 1099-G renumbers the boxes** —
   a new "Family leave benefits" money box takes 10 and the state trio moves to
   11a/11b/12. TY2026 needs its own columns *and* a routing decision for family
@@ -142,6 +172,13 @@ gated; this lone exception credited any state's withholding to Georgia.
 - Form 6765: RS spec authored s212, ⏳ awaiting Ken's seed approval.
 
 ### RS AGENDA (s224 additions)
+- **Form 8889**: record that **line 4 (Archer MSA) reduces the limit** — the
+  spec/loader had it as a constant zero — and that **Form 8853 is not built**.
+- **⚠⚠ A BUILD-PLAN PATTERN worth recording in every source brief**: the `input`
+  leg means the BROWSER lane. **The back-entry lane is a SEPARATE leg and no
+  brief names it**, so a form's build plan can be fully ticked while the form
+  remains un-importable. Both NZ #9 and NZ #4 were exactly this. Every future
+  brief's build plan should list the lane section explicitly.
 - **Form 1099-G**: record the revision authority — **Rev. March 2024** is the
   TY2025 form (10a/10b/11); **Rev. December 2026** renumbers to 11a/11b/12 and
   adds "Family leave benefits" at box 10.
