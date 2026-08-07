@@ -33,6 +33,15 @@ low-friction: a few crisp choices he can answer from a laptop in minutes, never
 a wall of prose. Nothing is on a clock in that window; the next hard deadline is
 2026-09-15 (extended entity returns).
 
+## ⭐ FIRST THING NEXT SESSION — before picking up any build
+Ken asked (2026-08-07) for the **Schedule L line 24d "book bridge"** to be
+explained in **plain language** — an earlier attempt led with the M-1 arithmetic
+and lost him. **The plain-language write-up is already written: it is the FIRST
+item in `REVIEW_QUEUE.md`.** Present it to him essentially as written, take his
+answer to the three questions at the end, and record the ruling in DECISIONS.md
+(section "Scope + gate rulings — Ken's decision pass"). Do not re-derive it and
+do not lead with the formula. It is the LAST open decision from the s224 pass.
+
 ## ▶ THE QUEUE IS FULL — s224's decision pass cleared the backlog
 Ken settled **19 outstanding decisions** on 2026-08-07 (see DECISIONS.md
 "Scope + gate rulings"). Only ONE is still open: the **L24d book bridge**, which
