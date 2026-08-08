@@ -1,5 +1,71 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 231 — FORM 3800 PART III PASS-THROUGH ROWS 1c / 4h / 4i
+> + THE §38(c)(5) ELIGIBLE-SMALL-BUSINESS DETERMINATION. Migration 0271.**
+> The unit Ken promoted off the s230 note: one build unblocking BOTH entity-lane
+> credits. Form 8941's K-1 box 13 code BA and Form 6765's code M each reached a
+> shareholder's 1040 and dead-ended — **the recipient `ScheduleK1` had no credit
+> field at all**, so the amount had nowhere to land.
+> **Verify-first**: Form 3800 was already substantially built (compute/render/
+> diagnostics/seed, 2026-07-04), so this is a GAP unit, not a from-scratch one.
+> **Row assignments are FACE-verified** against `resources/irs_forms/2025/
+> f3800.pdf` — page 3 line **1c = Form 6765**, page 4 **4h = Form 8941**,
+> **4i = Form 6765 (ESB)**. ⚠ The RS 3800 spec is WRONG here and was NOT
+> copied: its three newly-exported `line_map` rows `1a`/`1b`/`1c` describe the
+> PRE-2023 Part I structure ("General business credits from Part I"), carry no
+> facts and no rules, and there is no `4h`/`4i` row or §38(c)(5) rule anywhere
+> in it. The destinations came instead from the two source forms' own approved
+> DEST rules — R-6765-DEST ("ESB → Form 3800 Part III 4i; others → 1c") and
+> R-8941-DEST ("all others (1040/1120) → Form 3800 Part III line 4h") — plus
+> the face and the statute. All five spec defects are on the RS agenda.
+> **THE LAW (26 U.S.C. §38, read from the statute — it corrected recollection
+> twice):** §38(c)(4)(B)(ii) makes a §41 credit a *specified* credit only for
+> an eligible small business "as defined in **paragraph (5)(A)** after
+> application of the rules of **paragraph (5)(B)**" (not (5)(C)/(5)(D));
+> §38(c)(5)(A) sets the ≤$50,000,000 three-year average gross-receipts test
+> with §448(c)(2)/(3) rules; and **§38(c)(5)(B) applies that test to the
+> SHAREHOLDER, not the S corporation** — which is why it is ONE per-return
+> preparer assertion (`Taxpayer.f3800_esb_gross_receipts`), not a per-K-1
+> field. §38(c)(4)(B)(viii) makes §45R specified outright, so row 4h takes no
+> ESB test — pinned by a test that exercises all three ESB answers so a shared
+> router cannot pass by accident.
+> **⚠ THE SIGN**: a specified credit has TMT treated as zero
+> (§38(c)(4)(A)(ii)(I)), so row 4i is the MORE permissive placement. An
+> UNANSWERED ESB determination therefore routes to the REGULAR row 1c —
+> guessing can only under-allow, never over-allow. Pinned as an inequality
+> (`conservative <= permissive`), not just a value.
+> **Legs**: `ScheduleK1.credit_research_41` + `credit_small_employer_health_45r`
+> and `Taxpayer.f3800_esb_gross_receipts` (0271, `db_default` on the decimals)
+> → `form_3800_k1_credit_rows` returning (routable, deferred) → the rows joined
+> `_REGULAR_ROWS`/`_SPECIFIED_ROWS`, which the renderer now IMPORTS rather than
+> restating (it kept a private copy — the seam that silently drops a new row)
+> → field map Line1c/Line4h/Line4i incl. column (c) pass-through EIN → three
+> new `D_3800_007/008/009` (zero code collisions) → serializer + the K-1 box
+> registry + the Form 3800 tab's ESB selector.
+> **The loop closes**: `k1_import` now carries the s230 synthetic `K13g_M` /
+> `K13g_BA` share keys onto the recipient's credit fields, so an entity 6765 /
+> 8941 imports straight through to the shareholder's Form 3800.
+> **§469 posture reuses the K-1's own `material_participation`** — the same
+> question, already answered per activity, and non-null, so a K-1 credit can
+> never sit in the D_3800_002 unanswered state.
+> **Declared limits, each a RED rather than a silent gap**: `D_3800_007` (ESB
+> unanswered → row 1c), `D_3800_008` (a 1065/1041 K-1 credit is EXCLUDED — the
+> 1065 box-15 letter is still `[UNVERIFIED]` in the 6765 spec and unnamed in
+> the 8941 spec, so it is never placed on a guessed row), `D_3800_009` (two
+> entities on one row needs the face's column (a) + Part V, out of scope).
+> **⛔ SEPARATE DEFECT FOUND, NOT FIXED — §38(c)(6)(A)**: line 13 uses a flat
+> $25,000 threshold, but an MFS filer whose spouse also has a business credit
+> gets **$12,500**. A smaller threshold means a LARGER line 13 and LESS credit,
+> so the current code OVER-allows in that case. It needs a preparer assertion
+> about the SPOUSE's return, so it is its own unit — queued, not folded in.
+> Regression: NEW `tests/test_form3800_passthrough_esb.py` (16) + 2 new render-
+> leg tests; the row-identity test is anchored to the IRS's own semantic
+> subform names AND the printed row labels, because the band test derives its
+> expectation from the same map entry it renders with and could only ever prove
+> the renderer honours the map. Three negative controls each OBSERVED FAILING
+> (ESB routing disabled → 2 exact reds; §45R made ESB-sensitive → 1; row 4i
+> pointed at Line4j → the face-anchored test caught it).
+
 > **2026-08-07 session 230 — FORM 6765 BUILT (§41 credit for increasing
 > research activities; RS spec approved, Ken ruled BUILD — DECISIONS "Scope +
 > gate rulings" item 3). Migrations 0269 + 0270.** The unit is complete on the
