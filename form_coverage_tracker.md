@@ -1,5 +1,38 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 234 — 1040 LANE: BATCH-002 opened; items 2 and 5 built.
+> No new form, no migration. One deploy. No form's leg status changed** — the
+> 1040 standard-deduction chain and Form 8960 were both already built; this
+> session fixed defects inside them.
+> **1040 (compute leg) — the dependent standard deduction had a correct chain
+> and a starved input.** `R-STD-04` was right; the spec fact
+> `dependent_filer_earned_income` is a non-null Decimal defaulting to 0 and
+> **nothing anywhere populated it**, so every dependent filer with wages took
+> the bare $1,350 minimum. **The authority for the DERIVATION is not the RS
+> spec** — R-STD-04 is silent on where worksheet line 1 comes from. The
+> **Instructions for Form 1040 (2025), p.35** footnote gives it verbatim:
+> earned income is "the total of the amount(s) you reported on Form 1040 or
+> 1040-SR, line 1z, and Schedule 1, lines 3, 6, 8r, 8t, and 8u minus the
+> amount, if any, on Schedule 1, line 15" (§63(c)(5)(B) is bare; Pub 501 (2025)
+> Table 8 supplies the $1,350/$450 worksheet and "If none, enter -0-").
+> ⚠ Two more defects fell out of the one fix: line 12 was being written BEFORE
+> Schedule 1 existed (now re-settled on the final Schedule 1), and
+> `proforma._sr_py_facts` derives `did_itemize` as `line12 > std`, so a starved
+> standard deduction made **every dependent filer with wages look like they had
+> ITEMIZED** in next year's §111 state-refund worksheet.
+> ⚠ Sign check: this LOWERS federal tax on affected returns — correctly.
+> **Form 8960 (compute leg) — the reported cause was REFUTED and a worse one
+> found.** The form already engaged on interest-only income and already saw K-1
+> portfolio interest. The defect: line 4b's auto back-out is derived from the
+> K-1/rental MODELS while line 4a is read from Schedule 1 line 5 — two sources
+> for one relationship — so when they disagreed the subtraction ran past 4a and
+> consumed **portfolio interest**, driving NII negative and DISENGAGING the form
+> entirely (no line 17, no Schedule 2 line 12, no NIIT). **Instructions for Form
+> 8960 (2025), Line 4b** say it twice: it adjusts "the amounts included on line
+> 4a". Now clamped to 4a in BOTH directions.
+> ⚠ Sign check: this RAISES tax — correctly; the NIIT was being skipped outright.
+> Both fixes proven by revert. 25 new tests; all 526 flow assertions green.
+
 > **2026-08-08 session 233 — 1040 LANE: the CC queue reopened (2 batch files /
 > 20 items); BATCH-001 worked 4 of 10. No new form, no migration. One deploy.**
 > **No form's leg status changed** — GA-500 and the diagnostics engine were both

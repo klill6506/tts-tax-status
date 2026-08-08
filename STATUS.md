@@ -1,13 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-08 (s233). **1040 lane reopened: Codex posted TWO new
-batch files (20 items).** BATCH-001 worked 4 of 10 — items 1, 3, 9 (three
-defects in one Georgia RIE derive) BUILT, item 7 REFUTED as deploy skew with
-the underlying class built out. One deploy. BATCH-001 stays in the queue.*
+*Last updated: 2026-08-08 (s234). **1040 BATCH-002 opened: items 2 and 5 —
+the two live computed-tax defects — BUILT.** Item 5's reported CAUSE was
+refuted and a worse one found underneath. One deploy. BATCH-002 stays in the
+queue with 8 items open; BATCH-001 still has 6.*
 
-*Previous (s232): Form 8853 Section C spec authored, Gate-1 approved, seeded,
-exported, cached (`434ade4`). No app code — that build is still pending and
-still needs nothing from Ken.*
+*Previous (s233): GA RIE trio + the engine-fault gate (`8500744`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -30,126 +28,109 @@ find defects. State the finding and move on.
 ## ⚠ KEN IS AWAY 2026-08-09 → ~2026-08-19 (10 days)
 **Availability MINIMAL BUT NOT ZERO.** Batch questions; keep them low-friction.
 Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
-**There is now more unattended work than the away window can absorb** — the
-1040 queue alone holds 16 open items plus the 8853 build.
+**There is more unattended work than the away window can absorb** — 14 open
+1040 queue items plus the 8853 build.
 
 ---
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — FINISH 1040 BATCH-001 (6 items), THEN BATCH-002 (10)
-Both files are in `D:\tax-test-data\1040\CC Changes\`. BATCH-001 carries a
-**PARTIAL result annex** naming exactly what is done and what is not; read it
-before starting so nothing is re-triaged.
-
-**BATCH-001 open: items 2, 4, 5, 6, 8, 10.** Each is a build, not a defect fix:
-8582 AMT carryovers per activity · regular federal NOL carryovers by loss-year
-vintage · per-activity nonpassive rental treatment · Form 8862 · Georgia
-IND-CR 202 from the federal 2441 · Form 1099-Q Coverdell/QTP.
-
-**BATCH-002: all 10 open.** ⚠ Two of them are the highest-value items in either
-file and should probably jump the queue:
-- **#2 dependent standard deduction from earned income** — a LIVE computed-tax
-  defect, not a missing feature. A dependent with $10,699 of earned income gets
-  a $1,350 standard deduction instead of the filed $11,149, creating $933 of
-  federal tax where the filed return has zero, and turning a $478 refund into a
-  $455 balance due. §63(c)(5). Small, statutory, high blast radius.
-- **#5 Form 8960 not engaging on interest-only NII** — a $3,271 NIIT
-  understatement; also asks that K-1 portfolio interest count regardless of
-  material participation.
-
-### ⚠⚠ THE OVERLAP TO BUILD ONCE, NOT THREE TIMES
-**BATCH-001 #4, BATCH-001 #10, BATCH-002 #1, #9 and #10 are all the same
-shape**: a future-year tax attribute (regular NOL by vintage, §179 carryover,
-charitable carryover by year and limitation class, 1099-Q basis) that the
-current face ties without, and therefore silently discards. They want one
-attribute-preservation layer — source-year-keyed rows, independent roll-forward,
+### ⭐ NEXT UNIT — the attribute-preservation layer (design once, not five times)
+**BATCH-001 #4 and #10, and BATCH-002 #1, #9 and #10 are all one shape**: a
+future-year tax attribute — regular NOL by loss-year vintage, §179 carryover,
+charitable carryover by source year and limitation class, 1099-Q basis — that
+the current face ties *without*, and therefore silently discards. They want one
+attribute-preservation layer: source-year-keyed rows, independent roll-forward,
 and a cleanup diagnostic that refuses completion when a filed carryover
-worksheet has no home — not five bespoke sections. Design it once.
+worksheet has no home. **Read all five items before designing.** This is the
+single largest lever left in either file and needs nothing from Ken.
+
+### The rest of the queue
+- **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (items 2, 4, 5, 6, 8,
+  10) and **BATCH-002 — 8 open** (items 1, 3, 4, 6, 7, 8, 9, 10). Both carry
+  PARTIAL result annexes naming exactly what is done; read them before
+  starting so nothing is re-triaged.
+  - Cheapest remaining: **BATCH-002 #7** (add a `parent` dependent relationship
+    and flow it to GA-500 lines 7/14 — a missing enum value costing $207 of
+    Georgia tax) and **BATCH-002 #3** (another GA RIE partnership-loss owner
+    case, adjacent to everything s233 did).
+  - Largest: #4 Form 1116 FTC, #6 Form 8379 injured spouse, #10 Form 172 NOL.
+- **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
+- **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
+  #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
 ### ⭐ ALSO STILL PENDING AND STILL UNBLOCKED — the Form 8853 Section C build
-Unchanged from s232 and untouched this session. Spec cached at
+Unchanged from s232 and untouched for two sessions. Spec cached at
 `server/specs/8853_sec_c_spec.json`; deployed `lookup/8853_SEC_C/export/`
 returns 200. All four legs pending, none needs Ken. **The two things the build
 must not get wrong** (Schedule 1 line 8e is COMPOSED, not owned; line 25 FLOORS
 AT ZERO though the face does not say so) are written up in full in
 `STATUS_ARCHIVE.md` under s232 — read that before starting.
 
-### The queue right now
-- **1040** (`1040\CC Changes\`): **BATCH-001 (6 open, partial annex appended)
-  + BATCH-002 (10 open)**.
-- **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
-- **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
-  #10 multi-state parked under the states-on-hold ruling). Unchanged.
+### ✅ s234 in one paragraph
+Led with the two items STATUS flagged as live computed-tax defects rather than
+missing features. **Item 2 confirmed exactly as reported**: the R-STD-04
+dependent worksheet was correct but its INPUT was starved — the spec fact
+`dependent_filer_earned_income` is a non-null Decimal defaulting to 0 and
+**nothing anywhere populated it**, so every dependent filer with wages took the
+bare $1,350 minimum. The derivation now comes from the Instructions for Form
+1040 (2025) p.35 footnote (1z + Sch 1 lines 3/6/8r/8t/8u − Sch 1 line 15), and
+it exposed an ordering bug — line 12 was written before Schedule 1 existed — plus
+a second live defect in the proforma §111 snapshot, which decides `did_itemize`
+as `line12 > std` and so read **every dependent filer with wages as having
+itemized**. **Item 5's reported cause was REFUTED**: Form 8960 already engages
+on interest-only income (a clean repro computes the filed $3,271) and K-1
+portfolio interest already reaches line 2b. The real mechanism sat one line up
+and is worse — see below. Both fixes proven by revert. 545+ tests green
+including all 526 flow assertions.
 
-### ✅ s233 in one paragraph
-Boot sweep found the 1040 queue reopened with 20 items. Led with the one
-claiming a live production failure. **Item 7 REFUTED**: `rules_6765.py` was
-never missing — the failing run started 03:26:56Z and the commit adding the
-module landed **93 seconds later**. Deploy skew, because the Supabase DB is
-SHARED, so seeding rule rows from a laptop publishes rows naming a module prod
-does not yet have. Proved prod healthy rather than assuming: a fresh
-authenticated run on the same tax year went **24 findings → 12, zero execution
-failures**. The mechanism was real and unguarded though, so the class is now
-closed — see the movement note below. Then items **1, 3 and 9, which are three
-separate defects in the same Georgia RIE derive**: a 1041 K-1 box 5
-`other_portfolio` never reaching the base; federal interest fed whole so
-U.S.-obligation interest already subtracted on S1-10 was subtracted twice; and
-an owner-tagged capital LOSS split 50/50 onto the spouse because the allocator's
-weighting helper skipped `amt <= 0`. All three settled by one authority found
-this session — **Ga. Comp. R. & Regs. r. 560-7-4-.02**, which says in terms
-"Only retirement income that is **included in Georgia taxable income** shall be
-included when computing the retirement income exclusion" and "**One spouse may
-not use any income attributable to the other spouse**". 8 new RIE tests + 7 new
-engine-fault tests; 100 GA-500 tests and all 526 flow assertions green.
-
-### ⚠⚠ THE FINDING WORTH CARRYING — an engine fault wearing a taxpayer's face
-Twelve infrastructure failures were recorded as **error-severity findings on a
-real return**, and the run that produced them was stamped **COMPLETED**. Both
-halves were wrong: the reader cannot tell a deployment problem from a defect in
-the return, and nothing downstream could tell a degraded run from a clean one.
-Now: import failure and evaluation failure are distinguished and labelled
-`details.fault = "engine"`; **any run in which a rule failed to reach a verdict
-is FAILED, not COMPLETED** (this strengthens the cleanup gate — findings stay
-error-severity and unacknowledgeable); and a Django system check fails
-`manage.py check` on a rule the build cannot load.
-⚠ **Deliberate design call for Ken**: the system check validates the CODE-SIDE
-registry, **not** the DB rows. Hard-failing startup on an unresolvable DB row
-would let a rule seeded from a laptop take production down — strictly worse than
-degraded diagnostics. The DB side is covered at runtime by the FAILED-run change.
-**The lesson: when a shared DB names code, the DB can describe a build that does
-not exist — and the failure will surface wherever the code is read, not where
-the row was written.**
+### ⚠⚠ THE FINDING WORTH CARRYING — a back-out sourced from somewhere other than the line it adjusts
+Form 8960 line 4b's auto adjustment was computed from the K-1 / rental
+**models**, while line 4a is read from **Schedule 1 line 5**. Two sources for
+one relationship. When they disagreed, the subtraction ran past 4a and ate
+unrelated **portfolio interest** — net investment income went negative and
+`compute_8960_db` took its `niit <= 0` branch, **disengaging the form
+entirely**. No line 17, no Schedule 2 line 12, no NIIT. The Instructions for
+Form 8960 (2025) say it twice — line 4b adjusts "the amounts included on line
+4a" — so the auto back-out is now clamped to 4a in both directions.
+**The lesson: when an adjustment is derived from a different source than the
+line it adjusts, the two WILL disagree, and the error is unbounded — it does
+not stop at the boundary of the thing it was meant to adjust.** And a
+*disengaged* form is the worst failure shape available: it leaves no wrong
+number to notice, only an absent one.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Diagnostic runs**: a run containing any engine fault now reports **FAILED**
-  where it previously reported COMPLETED. Findings are unchanged in severity.
-- **GA RIE line 13**: a return with a 1041 K-1 carrying `other_portfolio` now
-  gets a LARGER exclusion (it was missing income it was entitled to exclude).
-- **GA RIE line 6**: a return with a nonzero S1-10 now gets a SMALLER exclusion.
-  ⚠ Sign check: this RAISES Georgia tax on affected returns — correctly, since
-  the same dollars were being subtracted twice.
-- **GA RIE line 9**: an MFJ return with owner-tagged capital rows in an all-loss
-  year reallocates. Joint/untagged is pinned unmoved by a movement guard.
-  ⚠ **Second-order**: current-year weights and carryover weights now COMBINE
-  where carryovers alone previously decided, so a return carrying both
-  allocates differently.
-- Carried from s227/s228: a 1065 K-1 whose §704(d) worksheet is SAVED moves;
-  a 1065 row with the basis checkbox ticked swaps its warning code;
-  #10 8959 single-W-2 engage (intended); #6 Sch 1 24k engine-fed blank→0.
+- **Dependent filers**: any return with 12a checked and earned income now gets
+  a LARGER standard deduction (up to the filing-status base). ⚠ Sign check:
+  this LOWERS federal tax on affected returns — correctly.
+- **Proforma / §111 snapshot**: `_sr_py_std_deduction` and the derived
+  `did_itemize` change for dependent filers. A return finalized before this
+  carries the wrong snapshot until re-finalized.
+- **Form 8960**: a return with a nonpassive K-1 or self-rental whose net is NOT
+  in Schedule 1 line 5 now ENGAGES where it previously vanished. ⚠ Sign check:
+  this RAISES tax — correctly; the NIIT was being skipped entirely.
+  A return whose line 4a already matched its back-out is unmoved (pinned).
+- Carried from s233: diagnostic runs report FAILED on any engine fault; the
+  three GA RIE line 6/9/13 movements.
 
-### ⚠ Known red / rotted (not this session's changes)
+### ⚠ Known red / rotted (NONE of it from this session)
+- **`test_1040.py` — 6 pipeline tests**, `MultipleObjectsReturned`. Their `_fv`
+  helper does an **unscoped** `FormFieldValue.objects.get()` that collides with
+  sibling-form rows. **NEW this session, and verified identical at pristine
+  `8500744` in a throwaway worktree** — pre-existing, not from s234.
+- **24 test files** assert registry wiring via
+  `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
+  iterate `all_registries()`, so these are **false REDs** — the registries are
+  still registered. Confirmed failing: `test_8615_diagnostics_leg`,
+  `test_schedule_e_8582_diagnostics_leg`. Spun off as its own task.
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
   `ValidationError`. Pre-existing (s219). Not diagnosed.
 - `test_4868.py` — 4 tests on the Schedule 3 line-10 feeder (s217). ⛔ KEN.
 - `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
   batch-005 #9 PTET-gate class, red since s212.
 - **DiagnosticRule unique-code contamination** (s225): `test_backentry_cleanup.py`
-  (red alone under `--reuse-db`), `test_ga500_auto_attach_s106.py`,
-  `test_ga500_rie_federal_pull.py` was NOT affected this session (100 green).
-- **Client typecheck**: 55 error lines standalone (untouched by s233 — no client code).
-- ⚠ The Slate 8889 fixture cast `as HSAAccountRow` still swallows new
-  required fields.
+  red under `--reuse-db`.
+- **Client typecheck**: 55 error lines standalone (untouched by s234 — no client code).
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB;
@@ -159,13 +140,28 @@ the row was written.**
 - ⚠ A `poetry run python script > file` redirect BUFFERS. Use `-u`.
 - ⚠ A stdout **redirect goes through cp1252** on this box and dies on ligatures
   and the U+2212 minus. Write UTF-8 from inside Python.
-- ⚠ `manage.py shell -c "..."` prints nothing — use a script file. **New (s233):
-  a multi-line `python -c` through the Bash tool also silently produced no
-  output; a script file worked.** Write the script.
-- ⚠ **New (s233)**: a `bash` heredoc carrying prose with apostrophes/backticks
-  failed to parse even quoted. Write the file with the Write tool and append it
-  from Python instead.
+- ⚠ `manage.py shell -c "..."` prints nothing; a multi-line `python -c` through
+  the Bash tool also silently produces no output. Write a script file.
 - ⚠ The Bash tool's cwd PERSISTS across calls — use absolute `cd` each call.
+  **New (s234)**: `/tmp` in the Bash tool and the Windows Python interpreter do
+  NOT resolve to the same place — write scratch files to the scratchpad path.
+- **New (s234)**: to test whether a red suite is pre-existing, `git worktree add`
+  a detached HEAD and run it with the MAIN venv's interpreter
+  (`.venv/Scripts/python.exe -m pytest`) — the worktree has no venv of its own,
+  and this needs no `git stash` and no `git checkout --`.
+
+### 🔎 Carried for triage — NOT claims
+- **NEW (s234), potentially large**: a materially-participating 1120-S K-1
+  carrying **$250,000 of nonpassive ordinary business income never reached
+  Schedule 1 line 5 or 1040 AGI** in the item-5 repro — line 9 was identical
+  with the K-1 at $0 and at $250,000 — and this held with `SCHEDULE_E` AND
+  `FORM_8582` both seeded, while `schedule_e_non_1411_income` *did* see the
+  same row. Either the fixture omits a required field, or a K-1's nonpassive
+  net is not reaching AGI. The second reading would dwarf anything in the
+  queue. Repro: `server/tests/test_8960_line4b_clamp.py`,
+  `_build(k1_ordinary="250000")`.
+- Carried (s229): a filed, exact-tie 1040 shows worksheet drift on a bare
+  recompute (`1040_SCHD_WS` clc_1/clc_3, −5,491 each), face still an exact TIE.
 
 ### ✅ KEN DECISIONS OUTSTANDING
 - **⛔ KEN (s231, carried): §38(c)(6)(A), the MFS threshold.**
@@ -175,32 +171,30 @@ the row was written.**
 - **⛔ KEN (s227)**: the out-of-scope-state packet-disposition marker.
 - **⛔ KEN (s230)**: Form 6765 Section G becomes REQUIRED for tax years
   beginning after 2025; the RS spec must be re-authored before a TY2026 season.
-- **NEW (s233), low-friction**: the CC-Changes **batch numbering collided** —
-  a second, unrelated `BATCH-001` was posted while the s227 `BATCH-001` sits in
-  Done. Nothing was lost. Worth telling Codex to skip to `BATCH-003`.
+- **Carried (s233), low-friction**: the CC-Changes **batch numbering collided**
+  — a second, unrelated `BATCH-001` was posted while the s227 `BATCH-001` sits
+  in Done. Nothing was lost. Worth telling Codex to skip to `BATCH-003`.
 - The one live external item: **1040 v5.4 business rules still not in hand,
   active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed).
 
-### 🔎 Carried for triage (s229) — not chased
-A filed, exact-tie 1040 shows **worksheet drift on a bare recompute**:
-`1040_SCHD_WS` `clc_1` 139,889 → 134,398 and `clc_3` 140,738 → 135,247 (−5,491
-each), face still an exact TIE. Worth a sweep: how many filed returns move a
-worksheet line on recompute?
-
 ### RS AGENDA
-- **NEW (s233)**: `compute_ga500.GA_RIE_EARNED_CAP` is **$5,000**, but
-  Ga. Comp. R. & Regs. r. 560-7-4-.02 says the earned-income portion is limited
-  to "**no more than $4,000.00**". The statute controls and has been amended
-  since the reg was written, and the code cites the statute — so this is very
-  likely a stale regulation, **not** a live defect. Nothing was changed. Worth
-  one re-verification against current §48-7-27(a)(5) to settle it on the record.
-- **NEW (s233)**: the GA-500 spec (`lookup/500/`) has no rule covering either
-  the Georgia-taxable-income limit on the RIE base or owner attribution of
-  capital losses — both were resolved this session from the regulation. Both
-  belong in `R-GA500-RIE` so the next build does not re-derive them.
-- Carried (s232): the `[WO-SOURCETYPE-RECON]` additions (Rev. Proc. 2024-40
-  under three `source_code`s; `TaxForm.status` carrying FlowAssertion
-  vocabulary); the export serializer omitting `requires_human_review`.
+- **NEW (s234)**: the 1040 SPINE spec's **R-STD-04 is silent on where worksheet
+  line 1 comes from** — it lists `dependent_filer_earned_income` as a keyed
+  fact with `default_value: "0"` and says nothing about deriving it, which is
+  exactly why nothing did. The rule should carry the i1040 p.35 derivation
+  (1z + Sch 1 3/6/8r/8t/8u − Sch 1 15) so the next build does not re-derive it,
+  and should note that the fact is an OVERRIDE, not the primary source.
+- **NEW (s234)**: the FORM_8960 spec's `R-8960-INCOME` describes line 4b only as
+  "nonpassive_adj(4b)" with no statement that it is bounded by line 4a. Add the
+  i8960 constraint — 4b adjusts "the amounts included on line 4a" — and the
+  §1411(c)(1)(A)(i) point that portfolio interest is NII regardless of material
+  participation.
+- Carried (s233): `compute_ga500.GA_RIE_EARNED_CAP` $5,000 vs the reg's
+  $4,000 — one re-verification against current §48-7-27(a)(5) to settle it;
+  and the GA-500 spec's missing RIE rules (Georgia-taxable-income limit on the
+  base; owner attribution of capital losses) belong in `R-GA500-RIE`.
+- Carried (s232): the `[WO-SOURCETYPE-RECON]` additions; the export serializer
+  omitting `requires_human_review`.
 - Carried: the s231 Form 3800 five spec defects; the s230 Form 6765 items
   (a)-(e); the **1065 Schedule K-1 box-15 letters** for §41 and §45R (still
   URGENT — `D_3800_008` excludes those credits until both are verified);
