@@ -1,5 +1,60 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 235 — the attribute-preservation layer + BATCH-002 #7.
+> ONE new table (`CarryforwardAttribute`), migrations 0272/0273/0274, TWO
+> deploys.** No form's compute leg CHANGED status; one new statement page.
+> **New — Carryforward Attribute Worksheet (render leg).** No IRS face; a
+> supporting statement listing every preserved future-year pool by source year.
+> It exists because the defect the five batch items report is INVISIBLE — the
+> current-year face ties, and the discarded attribute leaves no wrong number to
+> notice, only an absent one.
+> **New surface, deliberately NOT a compute leg — `CarryforwardAttribute`.**
+> One row per POOL (kind + source year + §170(b)(1) limitation class + owner +
+> description), with a back-entry section, browser CRUD, per-vintage
+> roll-forward and five `D_CFWD_*` rules. ⚠⚠ **The rows FEED NO TAX LINE** and
+> a test pins byte-identical output with and without them: §179 and charitable
+> already have an engine field that computes the current year, and a second
+> source for one relationship is the s234 Form 8960 line-4b shape.
+> `D_CFWD_002` reconciles rows against the engine field; `D_CFWD_001` fires
+> **error** for any kind no engine computes.
+> ⛔ **Form 172 / regular NOL has NO leg and cannot get one yet — there is no
+> Rule Studio spec** (`lookup/172/`, `lookup/NOL/`, `lookup/FORM_172/`,
+> `lookup/1045/` all 404). Preservation is built; the computation is BLOCKED at
+> the 404-STOP gate. Same for the Schedule A per-vintage charitable ordering,
+> whose RS rule models only an aggregate.
+> **Form 4562 (input leg) — CLOSED for the §179 carryover.** BATCH-002 #1 was a
+> LANE-ONLY gap: compute has owned lines 9/10/11/12/13 since the depreciation
+> build (4562 R001/R014/R015) and proforma already rolled line 13 forward, but
+> the batch lane could not carry line 10, so a packet's carryover vanished on
+> import. `sec_179_carryover_prior` + `taxable_income_limitation` are now
+> importable; line 13 stays out as a computed output.
+> **Form 1040 dependents (input leg) — the relationship enum now mirrors the
+> MeF authority**, `IRS1040.xsd` (2025v5.4) `DependentRelationshipCd`. Seven
+> codes had no app value: STEPCHILD, HALF BROTHER, HALF SISTER, PARENT,
+> GRANDPARENT, AUNT, UNCLE, plus NONE. `adopted_child` stays unmapped and still
+> refuses at compose (no such code; §152(f)(1)(B) makes it a child by blood, so
+> the return must say SON or DAUGHTER).
+> ⚠⚠ **Schedule 8812 (compute leg) — the CTC relationship test was a BLACKLIST
+> and adding those values would have broken it.** `relationship not in ("",
+> "other")` was correct only because every value that existed happened to
+> satisfy IRC §152(c)(2); a dependent AUNT under 17 would have taken a $2,200
+> credit. Now the statute enumerated as a whitelist, read by all THREE copies
+> (`compute_8812`, `credit_gates`, `rules_8812`).
+> **GA-500 (compute leg) — line 7a is now DERIVED from the federal Dependent
+> rows.** It was a bare preparer entry, so every imported Georgia return
+> silently carried zero dependents and lost $4,000 of line-14 exemption apiece
+> — $207.60 at the 2025 rate, which is exactly the reported $207. O.C.G.A.
+> §48-7-26(b)(3)/(a): the exemption is "for each dependent", and "dependent"
+> comes from the IRC, so CTC-vs-ODC never enters into it. Written
+> unconditionally including back to blank; a typed or batch-sent 7a still wins.
+> ⚠ Sign check: this LOWERS Georgia tax — correctly.
+> ⛔ **GA-500 (render leg) — line 7d, the per-dependent detail table, is still
+> NOT rendered.** The overlay carries only the 7a/7b/7c counts. No tax effect;
+> logged in DEFERRAL_AUDIT.
+> Statute verified this session (§152(c)(2)/(d)(2)/(f)(1)/(f)(4)). 67 new tests;
+> producer, reader and every diagnostic proven by revert or defect injection;
+> all 526 flow assertions green.
+
 > **2026-08-08 session 234 — 1040 LANE: BATCH-002 opened; items 2 and 5 built.
 > No new form, no migration. One deploy. No form's leg status changed** — the
 > 1040 standard-deduction chain and Form 8960 were both already built; this
