@@ -1,5 +1,38 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 233 — 1040 LANE: the CC queue reopened (2 batch files /
+> 20 items); BATCH-001 worked 4 of 10. No new form, no migration. One deploy.**
+> **No form's leg status changed** — GA-500 and the diagnostics engine were both
+> already built; this session fixed defects inside them.
+> **GA-500 (compute leg) — three defects in ONE derive, all confirmed in code
+> before a line was changed**: the RIE base never received a Form 1041 K-1's
+> `other_portfolio` (box 5); RIE line 6 was fed the FULL federal interest, so
+> U.S.-obligation interest already subtracted on Schedule 1 line 10 was
+> subtracted a second time through the exclusion; and an owner-tagged capital
+> LOSS was split 50/50 onto the spouse because the line-9 weighting helper
+> skipped `amt <= 0`.
+> **⚠⚠ THE AUTHORITY IS NOT THE RS SPEC** — `R-GA500-RIE` covers neither
+> question. **Ga. Comp. R. & Regs. r. 560-7-4-.02** settles all three verbatim:
+> "Only retirement income that is **included in Georgia taxable income** shall
+> be included when computing the retirement income exclusion" and "**One spouse
+> may not use any income attributable to the other spouse**". O.C.G.A.
+> §48-7-27(a)(5)(A) opens the same way. Both rules are agenda'd for the spec.
+> ⚠ **Sign check on the movement**: line 13 grows the exclusion, line 6 SHRINKS
+> it (this RAISES Georgia tax — correctly, the dollars were deducted twice), and
+> line 9 reallocates on MFJ all-loss years with joint/untagged pinned unmoved.
+> **Diagnostics engine — an engine fault was wearing a taxpayer's face.** Twelve
+> infrastructure failures were recorded as error-severity findings on a real
+> return and the run was still stamped COMPLETED (`RunStatus.FAILED` existed and
+> had never been used). Import failures and evaluation failures are now
+> distinguished and labelled `details.fault = "engine"`; a run in which any rule
+> failed to reach a verdict is FAILED; and a Django system check fails
+> `manage.py check` on a rule the build cannot load. ⚠ The check validates the
+> CODE-SIDE registry deliberately, NOT the DB rows — the DB is shared with prod,
+> so hard-failing startup on a row would let a laptop-seeded rule take
+> production down.
+> **⚠ Form 8853 Section C is UNCHANGED and still PENDING all four legs** — s233
+> did not touch it; the queue took precedence.
+>
 > **2026-08-08 session 232 — RS LANE: FORM 8853 SECTION C AUTHORED, GATE-1
 > APPROVED, SEEDED, EXPORTED, CACHED. No app code, no migration, no deploy.**
 > Ken picked spec-first for his last working day before a 10-day absence
