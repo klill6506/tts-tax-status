@@ -1,14 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-07 (s226). **One unit: mixed-entity pilot #7 UNBLOCKED —
-the `K1_BASIS_704D` spec (partner §704(d) basis limitation) was authored,
-Gate-1 approved by Ken in-session, seeded, export-verified and cached into
-`server/specs/k1_basis_704d_spec.json`. NO app code changed this session —
-the app build is the next unit.** RS commits `b4f147e`/`0dab0f3`/`ae228e9`;
-no delvio-tax deploy, no migrations.*
+*Last updated: 2026-08-07 (s227). **One unit: 1040 CC batch-001 worked
+end-to-end — all ten items confirmed on verify-first (none refuted), nine
+built in ONE deploy (`9b9673c`), #9 answered by the SEASON_PLAN states
+ruling with one ⛔ KEN sliver filed. Migration 0266 applied. Batch file
+annexed and moved to `1040\CC Changes Done\`.** Suites green: the new 30-test
+batch file, flow assertions, topic8/topic9/staging/reconcile/commit/RIE/7203;
+vitest 18; tsc no new errors.*
 
-*Previous (s225): L24d book bridge ratified + specced (RS R010); NZ #5/#6 done
-— lane-only gaps again. NZ is 9 of 10; the decision queue was emptied.*
+*Previous (s226): pilot #7 unblocked — K1_BASIS_704D spec authored, Gate-1
+approved, seeded, cached. No app code that session; the build is still the
+next unit.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -37,70 +39,70 @@ the next hard deadline is 2026-09-15 (extended entity returns).
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — BUILD pilot #7 against the approved spec
-**The Rule Studio gate is CLEARED.** `K1_BASIS_704D` (partner §704(d) basis
-limitation, preparer-asserted) is Gate-1 approved, seeded, and cached at
-`server/specs/k1_basis_704d_spec.json` (8 facts / 6 rules / 5 diagnostics /
-7 scenarios / 5 flow assertions FA-1040-K1B-01…05). Build to the spec:
-
-1. **Model**: a per-K-1 basis worksheet (the six preparer-asserted figures —
-   beginning basis, additions, distributions, current loss, allowed, suspended).
-   Existence = the confirm signal (the `IndividualForm7203` precedent).
-2. **Compute**: a partnership arm in `compute_schedule_k1.k1_sche_net()`
-   BESIDE the 7203 arm — cap = `max(raw, −allowed)`, applied ONCE. v1 scope:
-   1065 + materially participating only.
-3. **Diagnostics**: implement D_K1B_ARITH (**error** — allowed+suspended≠loss
-   or allowed>available; never acknowledgable), D_K1B_EXCESS_DISTRIB,
-   D_K1B_PASSIVE, D_K1B_UNASSERTED (the `d_k1_basis` warning becomes this —
-   saved worksheet clears it), D_K1B_FULLY_ALLOWED (info).
-4. **⚠⚠ BOTH LANES** — the Slate screen AND a `backentry.v1` section. Four
-   consecutive NZ items were lane-only gaps; do not repeat it on a new build.
-5. **Persistence** (the item's regression #4): suspended survives reload,
-   roll-forward, import/export. **NO MeF document, NO render leg** — the
-   Partner's Instructions impose no attachment (the s225 scope finding, now
-   spec-pinned in R-K1B-CARRY).
-6. **QBI**: Form 8995 consumes the K-1's §199A amount AS ENTERED — never apply
-   the worksheet cap to QBI (R-K1B-QBI; Reg §1.199A-3(b)(1)(iv)).
-7. **Pilot pins**: loss 26,850 / allowed 10,621 / suspended 16,229 → Sch E
-   line 41 90,041→106,270, AGI 195,006→211,235, GA follows. Wire the five RS
-   flow assertions.
-
-⚠ Movement class: returns with a partnership K-1 marked `basis_at_risk_limited`
-do NOT move until a worksheet is saved (no worksheet → today's behavior + the
-warning). The pilot return moves when its worksheet is entered — that is the fix.
+### ⭐ NEXT UNIT — BUILD pilot #7 against the approved spec (unchanged from s226)
+`K1_BASIS_704D` (partner §704(d) basis limitation, preparer-asserted) is
+Gate-1 approved, seeded, cached at `server/specs/k1_basis_704d_spec.json`
+(8 facts / 6 rules / 5 diagnostics / 7 scenarios / FA-1040-K1B-01…05).
+Build steps, pins and the movement class are written out in the s226 STATUS
+(STATUS_ARCHIVE) and the spec itself: per-K-1 worksheet model → partnership
+arm in `k1_sche_net()` beside the 7203 arm (`max(raw, −allowed)` once, 1065 +
+material participation v1) → the five D_K1B_* diagnostics → **BOTH lanes** →
+persistence (suspended survives reload/roll-forward/import) → NO MeF/render
+leg (spec-pinned R-K1B-CARRY) → QBI takes §199A as entered (R-K1B-QBI).
+Pilot pins: loss 26,850 / allowed 10,621 / suspended 16,229 → Sch E 41
+90,041→106,270, AGI 195,006→211,235, GA follows.
+⚠ s227's batch-001 #8 added `IndividualForm7203.nondeductible_expenses` and
+the nested lane `form_7203` — the K1_BASIS_704D build touches the SAME
+`k1_sche_net()` and K-1 lane; rebase mentally on `9b9673c`.
 
 ### The queue right now
-- **1120-S** (`1120S\CC Changes\`): EMPTY (swept at boot s226).
-- **1040** (`1040\CC Changes\`): EMPTY (swept at boot s226).
+- **1120-S** (`1120S\CC Changes\`): EMPTY (swept at boot s227).
+- **1040** (`1040\CC Changes\`): EMPTY — **batch-001 worked and moved to Done
+  this session** (10/10; annex in the Done file).
 - **Legacy root** (`CC Code Changes\`): 3 open files — the pilot batch (its #7
   is the unit above), `CC_A_M_REMAINING_BLOCKERS` (six code requests, never
-  blocked — DECISIONS item 1), and the NZ file (**9 of 10**; #10 multi-state
-  stays parked under the states-on-hold ruling).
+  blocked — DECISIONS item 1), and the NZ file (9 of 10; #10 multi-state
+  parked under the states-on-hold ruling).
 - After #7: the s224 ruled-and-buildable list stands — Form 6765 (RS spec
   approved), 8853 Section C, §213(d)(10) LTC cap, 1065 K17a, GA bulk-sale,
   both e-file refusals, identity read-back, 1310 box B upload +
   `ForeignAddressType`, CR-2026-001.
 
-### ✅ s226 in one paragraph
-Pilot #7's blocker was the missing RS spec; Ken chose spec-first (option (a)),
-then walked Gate 1 the same session. Authored `load_1040_k1_basis_704d.py` from
-freshly-fetched primary sources (§704(d) verbatim; the 2025 Partner's
-Instructions ordering basis→at-risk→passive→EBL, agreeing with FORM_6198 R008;
-Reg §1.199A-3(b)(1)(iv) QBI timing). The shape: the preparer ASSERTS allowed +
-suspended from the source return's worksheet; the app routes `max(raw,
-−allowed)` once in `k1_sche_net()`, checks the two identities, and diagnoses —
-never derives the limit. Integrity gate green (independent re-typing). ⚠ The RS
-source_type RATCHET caught the first draft copying `"statute"` from the 7206
-template — the valid choice is `code_section`; never copy an older loader's
-vocabulary without checking the enum. Two sources carry `requires_human_review`
-on verbatim status (Reg §1.704-1(d) — eCFR blocked the fetch; §704(d)(2)'s odd
-"repaid" sentence).
+### ✅ s227 in one paragraph
+Codex posted the first 1040-lane batch (10 findings from the source-entry
+loop); every claim verified TRUE against the code before building — four
+parallel verification passes, then one deploy. Landed: the schedule_fs
+nested-rows schema emission + a generator that tests can import (#1); the
+NOT-SUPPORTED doc purge with a doc-contract test (#2, plus the third stale
+entry — 1099-G); `f1040_fields` line-36 applied-forward election with the
+post-compute ≤34−38 refusal (#3); `35a`/`36` reconcilable + tolerance
+inheritance + the disposition staging warning (#4); the 2210
+documented-source trio + `t2210_prior_full_year` on the lane with the
+serializer's cross-field rule re-expressed at staging (#5); the 1041 K-1
+§67(e) box-11A field → SCH_1 24k feeder → AGI → GA, gated to 1041 rows in
+both lanes (#6); T/S/J carryover owners driving the GA RIE split ONLY in the
+no-current-gross branch — untagged returns provably do not move (#7);
+`nondeductible_expenses` → 7203 Part I 8a + the nested `form_7203` lane
+object (#8); CA Form 540 RULED out by SEASON_PLAN scope with the
+packet-disposition sliver ⛔ KEN in REVIEW_QUEUE (#9); and the 8959
+single-W-2 aggregate derivation that satisfies the pinned $200k-flat arm
+without touching the engage rule (#10).
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Nothing moves from s226** — no app code changed. The RS DB gained one form
-  spec (additive; RS suite green, 226+13).
-- ⚠ **NZ #2, when it is worked, WILL move returns** — worksheet rounding
-  touches the regular SS worksheet. Budget a movement analysis for it.
+- **#10 (intended)**: any 1040 with EXACTLY ONE W-2 row, no per-row box 5,
+  and `amt_medicare_wages_agg` > $200,000 newly engages Form 8959 on
+  recompute (writes the 8959 rows, Sch 2 line 11, and the line-24 → 25c
+  recovery). That is the fix's target class; anything under $200k or
+  multi-row is untouched.
+- **#6 (watch, cosmetic)**: Schedule 1 line 24k is now an engine-fed line
+  (the line-18 feeder convention), so a blank 24k becomes a stored "0" on
+  every recomputed 1040. Same class as line 18 has always been; flag if a
+  rendered face unexpectedly prints a 0 where blank was expected.
+- **#7 moves nothing untagged** (default joint = the old 50/50, regression-
+  pinned); an owner-tagged carryover moves only the GA RIE split — that is
+  the fix.
+- Old committed batches: reconciliation verdicts do NOT retro-change; the
+  new 35a/36 checks apply when a batch is re-staged/re-run.
 
 ### ⚠ Known red / rotted (not this session's changes)
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
@@ -112,8 +114,10 @@ on verbatim status (Reg §1.704-1(d) — eCFR blocked the fetch; §704(d)(2)'s o
 - **DiagnosticRule unique-code contamination** (s225 finding): fix the
   fixtures with `update_or_create` — `test_backentry_cleanup.py` (red alone
   under `--reuse-db`), `test_ga500_auto_attach_s106.py`,
-  `test_ga500_rie_federal_pull.py`.
-- **Client typecheck**: 127 error lines on clean `main` (re-measured s224).
+  `test_ga500_rie_federal_pull.py` *(ran green standalone this session)*.
+- **Client typecheck**: pre-existing error classes only (TaxpayerLike-null,
+  fixture `string|undefined`); re-measured s227 at 55 error lines standalone
+  — no NEW errors from s227 files.
 - ⚠ The Slate 8889 fixture is cast `as HSAAccountRow` — new required fields
   don't fail the typecheck; worth dropping the cast.
 
@@ -124,22 +128,27 @@ on verbatim status (Reg §1.704-1(d) — eCFR blocked the fetch; §704(d)(2)'s o
 - A long `pytest ... | Select-Object -Last N` that hits the 120s timeout loses
   ALL output — redirect to a file and tail it (s224).
 
-### ✅ KEN DECISIONS OUTSTANDING — none new; queue still empty
-Pilot #7's decision (spec-first) AND its Gate-1 walk both closed in-session
-s226. The one live external item: **1040 v5.4 business rules are still not in
-hand and go active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed).
-Carried items (8853 scope, 1099-G Rev-12-2026 renumbering, 1310 box B upload,
-`ForeignAddressType`, W-2G movement class, MISC 13a/13b/14 → Sch 1-A, 8582
-MAGI class, duplicate client pairs, K15a contamination, GA bulk-sale, §213(d)(10),
-suffix list, D_4562_BASIS/VCLASS escalations) — see DECISIONS.md / ARCHIVE.
+### ✅ KEN DECISIONS OUTSTANDING — one new
+- **NEW (s227) ⛔ KEN**: the out-of-scope-state packet-disposition marker
+  (batch-001 #9's fallback; full write-up top of REVIEW_QUEUE). Until ruled,
+  a federal-TIE packet with a CA return stays un-filed, state named in
+  `source.notes`.
+- The one live external item: **1040 v5.4 business rules still not in hand,
+  active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed).
+- Carried items unchanged — see DECISIONS.md / ARCHIVE.
 
 ### RS AGENDA
-- **NEW (s226)**: confirm the two `requires_human_review` verbatims on
-  K1_BASIS_704D's sources when convenient (Reg §1.704-1(d); §704(d)(2)).
-- Carried: s224 items (8889 line-4 Archer note — DONE in the 8889 spec?
-  verify; the build-plan lane-leg pattern; 1099-G revision authority; the
-  `f<form>.pdf`-is-next-revision pattern; missing-COLUMN-read-as-missing-BOX),
-  s223 and earlier unchanged.
+- **NEW (s227)**: three notes worth recording in specs — (a) 8959: the
+  engage input `amt_max_single_w2_medicare_wages` may be DERIVED from
+  `amt_medicare_wages_agg` when exactly one W-2 row exists (implemented;
+  rule text unchanged); (b) SCHEDULE_D: the two carryover facts gained
+  T/S/J owner companions consumed by R-GA500-RIE's per-spouse split —
+  worth adding as facts; (c) SCH_1: line 24k is now engine-fed from the
+  recipient-K-1 §67(e) field (spec types it input; the feeder is the
+  line-18 convention — consider typing it calculated with the K-1 fact as
+  source).
+- Carried: s226 (K1_BASIS_704D `requires_human_review` verbatims), s224
+  items, s223 and earlier unchanged.
 
 ## ⚠ Open items for Ken — carried unchanged (see STATUS_ARCHIVE).
 ## The three K-1 → individual gaps (parked) — one NAMED in s221: the received

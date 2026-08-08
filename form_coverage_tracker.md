@@ -1,5 +1,24 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-07 session 227 — 1040 CC BATCH-001: all ten items, one deploy
+> (`9b9673c`; migration 0266). No new form ticks — every item deepened a form
+> already covered.** Leg-level changes worth recording here:
+> **Schedule 1 line 24k** is no longer entry-only — it is now ENGINE-FED from
+> the new recipient-K-1 §67(e) field (`ScheduleK1.excess_deductions_67e`,
+> 1041 box 11 code A, both lanes, the line-18 feeder convention).
+> **Form 7203 (1040-side)** Part I line 8a is no longer structurally zero
+> (`nondeductible_expenses` → K16c), and the worksheet is now IMPORTABLE as a
+> nested `form_7203` object on its S-corp K-1 row — the stated input boundary
+> shrinks to line 3k (tax-exempt income). **Form 8959** now engages on a
+> single-W-2 aggregate-only packet over the $200k flat arm (derivation, not a
+> rule change). **Form 1040 line 36** (applied-forward election) gained its
+> first input surface outside the browser (`f1040_fields`), with 35a/36 now
+> reconcilable in the lane's answer key. **Form 2210**'s documented-source
+> trio + `t2210_prior_full_year` became importable. **GA-500 RIE** line 9 can
+> now honor a carryover's T/S/J owner in the carryover-only MFJ case.
+> Regressions: `test_1040_batch001_s227.py` (30) + 2 in the RIE file.
+> California Form 540 confirmed OUT of scope (SEASON_PLAN locked scope #1).
+
 > **2026-08-07 session 225 — NZ #5 (SCHEDULE F) + NZ #6 (SS LUMP-SUM): both
 > import lanes closed. The NZ list goes 7 → 9 of 10. No new form ticks — both
 > forms were already covered; this closes their import legs. Commit `18b4db2`;
