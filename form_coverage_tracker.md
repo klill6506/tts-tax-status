@@ -1,5 +1,54 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-07 session 230 — FORM 6765 BUILT (§41 credit for increasing
+> research activities; RS spec approved, Ken ruled BUILD — DECISIONS "Scope +
+> gate rulings" item 3). Migrations 0269 + 0270.** The unit is complete on the
+> 1120-S: input (`Form6765` singleton + the `form-6765` GET/PATCH endpoint +
+> `SlateForm6765Screen` under the `form_6765` tab) → compute
+> (`compute_6765.py`, R-6765-METHOD/QRESUM/REG/ASC/280C/DEST/SECTE; all six
+> spec pins F6765-T1…T6 matched to the dollar on the first run) → render
+> (`f6765` AcroForm, Rev. 12-2024 — a CONTINUOUS-USE form, so the 12-2024
+> revision IS the TY2025 face; every page-1/page-2 widget mapped, both pages
+> visually verified) → flow (line 30 → Schedule K line 13g → K-1 box 13
+> **code M**).
+> **⚠⚠ THE ARCHITECTURAL PIECE — K13g IS NOW COMPOSED, NOT OWNED.** Schedule K
+> line 13g had exactly one writer (Form 8941's §45R credit, code BA) and a
+> boolean bridge-gate (`k13g_is_8941_sourced`) read by the printed K-1, the MeF
+> K-1 mapper, and the read model. Adding a second credit form to the same line
+> would have STOMPED it — the RS spec's R-6765-DEST says so in as many words.
+> New `apps/returns/k13g.py` is the single registry: the entity line is the
+> SUM of every engaged source, and **each source is allocated to shareholders
+> in its OWN right** through the existing residual-offset allocator (synthetic
+> `K13g_BA` / `K13g_M` share keys) — so Σ over shareholders of each code equals
+> that form's entity amount EXACTLY, which a proportional split of an
+> already-rounded K13g share could not guarantee. Reconcile-or-refuse is
+> preserved: once the stored K13g stops equalling Σ sources, NO code is
+> emitted and both the print and the MeF mapper refuse, as an un-sourced K13g
+> always did.
+> **Declared limits, each a RED diagnostic rather than a silent gap**
+> (12 rules, `D_6765_*`): Section D payroll tax election (Ken D-16 #3),
+> controlled groups (Ken D-16 #4), estate/trust line 31, and — APP-ADDED
+> beyond the spec's ten — `D_6765_METHOD_MISSING` (QREs with no method chosen
+> computes nothing) and `D_6765_DEST_UNWIRED` (only the 1120-S Schedule K route
+> is built; Form 3800 Part III 1c/4i needs the §38(c)(5) ESB determination and
+> the 1065 box-15 letter is still UNVERIFIED in the spec). Section G is
+> OPTIONAL for tax years beginning before 2026 and REQUIRED after 2025
+> (i6765 verbatim) — out of scope, `D_6765_G_TY2026` carries the re-authoring.
+> An engaged 6765 REFUSES MeF composition: there is no IRS6765 schema on disk,
+> and transmitting a Schedule K credit with its substantiating form silently
+> omitted is worse than refusing.
+> Regression: `server/tests/test_form_6765.py` (27, incl. the spec's T1–T6
+> verbatim and the compose-never-stomp pin) +
+> `client/.../slateForm6765Screen.test.tsx` (11, incl. the fixed-base
+> percent ⇄ fraction round-trip both ways — a 100× slip there would silently
+> move the base amount).
+> ⚠ Movement class: **none on existing returns.** Nothing writes K13g unless a
+> credit form is engaged, and with only an 8941 engaged the composed sum is
+> that 8941's line 16 — byte-identical to the old single-writer behavior
+> (pinned by the unchanged 8941/MeF suites, 103 green).
+> ⚠ Date note: the s228/s229 entries below are labelled 2026-08-08; their
+> commits are both dated **2026-08-07**. The 08-08 labels are wrong.
+
 > **2026-08-08 session 228 — K1_BASIS_704D BUILT (mixed-entity pilot #7, the
 > batch's last open item). Deploy `165c972`; migrations 0267 + 0268. No new
 > form tick — the partner §704(d) basis limitation is a WORKSHEET on the
