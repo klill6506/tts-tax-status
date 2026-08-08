@@ -1,13 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-08 (s231). **One unit: Form 3800 Part III pass-through
-rows 1c / 4h / 4i + the §38(c)(5) eligible-small-business determination —
-BUILT.** The unit Ken promoted off the s230 note: one build unblocks BOTH
-entity-lane credits. Form 8941's K-1 box 13 code BA and Form 6765's code M each
-reached a shareholder's 1040 and dead-ended — the recipient `ScheduleK1` had no
-credit field at all. Migration 0271. No movement on any existing return.*
+*Last updated: 2026-08-08 (s232). **RS LANE: Form 8853 Section C — authored,
+Gate-1 APPROVED by Ken in-session, seeded, exported, cached.** No app code, no
+migration, no deploy. Ken picked spec-first for his last working day before a
+10-day absence, so the day went on the one thing that needs him; the app build
+now needs nothing further from him.*
 
-*Previous (s230): Form 6765 built; Schedule K line 13g became COMPOSED (`973a5b8`).*
+*Previous (s231): Form 3800 Part III pass-through rows 1c/4h/4i + the §38(c)(5)
+ESB determination, migration 0271 (`9905906`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -28,87 +28,118 @@ Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
 find defects. State the finding and move on.
 
 ## ⚠ KEN IS AWAY 2026-08-09 → ~2026-08-19 (10 days)
-**He has his laptop — availability is MINIMAL BUT NOT ZERO** (Ken, 2026-08-07).
-Batch questions; keep them low-friction. Nothing is on a clock in that window;
-the next hard deadline is 2026-09-15 (extended entity returns).
+**Availability MINIMAL BUT NOT ZERO** (Ken, 2026-08-07). Batch questions; keep
+them low-friction. Nothing is on a clock in that window; the next hard deadline
+is 2026-09-15 (extended entity returns). **s232 was deliberately spent on the
+Ken-gated item so the away window has unattended work ready.**
 
 ---
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — sweep the CC queues at boot, then the s224 ruled list
-All three CC queues were EMPTY (or parked) at s231 boot, unchanged from s230.
-The ruled backlog remains: **8853 Section C** (long-term care, §213(d)(10)
-cap), then the 1065 K17a, GA bulk-sale, both e-file refusals, identity
-read-back, 1310 box B upload + `ForeignAddressType`, CR-2026-001.
+### ⭐ NEXT UNIT — DISPATCH THE FORM 8853 SECTION C APP BUILD
+The spec is seeded, exported and cached at
+`server/specs/8853_sec_c_spec.json`; the deployed
+`lookup/8853_SEC_C/export/` returns 200. **All four legs are PENDING and none of
+them needs Ken.** Build order and every design decision are in the spec; the
+gotchas are in `f8853_1099ltc_source_brief.md` (RS repo).
 
-**⚠ New candidate from this session** — the **§38(c)(6)(A) MFS threshold**
-defect (below). It is small, it OVER-allows, and it is fully specified by the
-statute; it needs only a preparer assertion about the spouse's return.
+1. **Model + lane (input).** A Section C record per INSURED (not per policyholder,
+   not per 1099-LTC) + 1099-LTC source rows. Row shape and the full lane-registry
+   checklist are in the source brief. ⚠ **1099-LTC boxes 4 and 5 must be NULLABLE**
+   — they are OPTIONAL for the payer, so a `False` default silently encodes "not a
+   qualified contract". Box 3 likewise needs an `unchecked` state distinct from
+   both values (it "may not be checked" when the insured was terminally ill).
+2. **Compute.** `20 = 18+19` · `21 = 420 × days` · `23 = MAX(21,22)` ·
+   **`25 = MAX(0, 23−24)`** · `26 = MAX(0, 20−25)`, plus the terminally-ill short
+   circuit (needs BOTH line 16 = Yes AND ADB-only). Rate through
+   `_constants_for_year()` — it is indexed.
+3. **Render.** ⚠ f8853 is **absent from `forms_manifest.json`** — register the
+   2025 face with SHA256 `5582f8137b70251d6292426ee89b78862412cf48d76577b8407e5f5f8775e5e9`
+   and build an AcroForm map for Section C. ⚠ Three of the four Filing-Requirements
+   populations complete Section C only PARTIALLY (one fills line 17 and nothing
+   else) — lines outside the applicable set render BLANK, never zero.
+4. **MeF + flow assertions.** This form IS attached and IS transmitted (unlike the
+   s226 §704(d) worksheet). Wire FA-1040-8853C-01..05.
+
+**Acceptance criterion to delete:** `tests/test_form_manifest.py` currently pins
+the comment *"Form 8853 — never generated"*.
+
+### ⚠⚠ THE TWO THINGS THE BUILD MUST NOT GET WRONG
+1. **Schedule 1 line 8e is COMPOSED, not owned.** Its MeF element is
+   `TotArcherMSAMedcrLTCAmt` (Archer MSA + Medicare Advantage + LTC) and the face
+   says "include this amount in the **TOTAL** on line 8e". Per DECISIONS.md
+   (s230 K13g, extended by s232): `8e = Section C component + preparer-keyed A/B
+   residual`, and **a return with no Section C keeps whatever the preparer typed**
+   (zero-movement guarantee, scenario T13). A single-writer build silently erases a
+   keyed Archer figure — a DISAPPEARED number, which is why nobody would report it.
+2. **Line 25 FLOORS AT ZERO and the FACE DOES NOT SAY SO.** §7702B(d)(2) makes the
+   limitation "the **excess (if any)** of (A) … over (B)". The face prints "-0-"
+   guidance on line 26 only. Unfloored, line 26 exceeds line 20 — taxing more than
+   was received. Ken approved the floor explicitly at Gate 1. Scenario T14.
 
 ### The queue right now
-- **1120-S** (`1120S\CC Changes\`): EMPTY at s231 boot (README only).
-- **1040** (`1040\CC Changes\`): EMPTY at s231 boot (README only).
+- **1120-S** (`1120S\CC Changes\`): EMPTY at s232 boot (README only).
+- **1040** (`1040\CC Changes\`): EMPTY at s232 boot (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
-### ✅ s231 in one paragraph
-Built the **Form 3800 Part III pass-through leg**. Verify-first: Form 3800 was
-already substantially built (2026-07-04), so this was a GAP unit, not a
-from-scratch one — and the gap was literal, the recipient `ScheduleK1` carried
-no credit field of any kind. **Row assignments are FACE-verified** against the
-SHA-pinned 2025 f3800.pdf: page 3 **1c = Form 6765**, page 4 **4h = Form
-8941**, **4i = Form 6765 (ESB)**. ⚠ **The RS 3800 spec is wrong here and was
-NOT copied** — its three newly-exported `line_map` rows `1a`/`1b`/`1c` describe
-the PRE-2023 Part I structure, carry no facts and no rules, and the spec has no
-`4h`/`4i` row and no §38(c)(5) rule at all. The destinations came from the two
-source forms' own approved DEST rules (R-6765-DEST: "ESB → Form 3800 Part III
-4i; others → 1c"; R-8941-DEST: "all others (1040/1120) → line 4h") plus the
-face and the statute; five spec defects are on the RS agenda. **The statute
-corrected recollection twice**: §38(c)(4)(B)(ii) defines the ESB research
-credit by reference to **paragraph (5)(A)/(5)(B)** (not (5)(C)/(5)(D)), and
-**§38(c)(5)(B) applies the $50M gross-receipts test to the SHAREHOLDER, not the
-S corporation** — which is why the determination is ONE per-return assertion
-(`Taxpayer.f3800_esb_gross_receipts`), not a per-K-1 field. §38(c)(4)(B)(viii)
-makes §45R specified outright, so row 4h takes no ESB test. **⚠ The sign
-governs the default**: a specified credit has TMT treated as zero
-(§38(c)(4)(A)(ii)(I)), so 4i is the MORE permissive row — an UNANSWERED
-determination therefore routes to the REGULAR row 1c, where guessing can only
-under-allow. Legs: migration 0271 (two `ScheduleK1` credit decimals with
-`db_default` + the nullable `Taxpayer` assertion) → `form_3800_k1_credit_rows`
-returning (routable, deferred) → the new rows joined `_REGULAR_ROWS` /
-`_SPECIFIED_ROWS`, **which the renderer now IMPORTS instead of restating** (it
-kept a private copy — exactly the seam that silently drops a new row) → field
-map Line1c/Line4h/Line4i incl. column (c) pass-through EIN → three new
-`D_3800_007/008/009`, zero code collisions → serializer + the K-1 box registry
-+ the Form 3800 tab's ESB selector. **The loop closes**: `k1_import` now
-carries s230's synthetic `K13g_M` / `K13g_BA` share keys onto the recipient's
-credit fields, so an entity 6765/8941 imports straight through. The §469
-posture reuses the K-1's own `material_participation` — same question, already
-answered per activity, and non-null, so a K-1 credit can never sit in the
-D_3800_002 unanswered state.
+### After the 8853 build — the ruled backlog, unchanged
+**§38(c)(6)(A) MFS threshold** (below, needs nothing from Ken), then the 1065 K17a,
+GA bulk-sale, both e-file refusals, identity read-back, 1310 box B upload +
+`ForeignAddressType`, CR-2026-001.
 
-### ⚠⚠ THE FINDING THE UNIT ALMOST MISSED — MeF wrapper ORDER
-`IRS3800Type` declares the Part III wrappers inside an **`xsd:sequence`**, and
-`build_irs3800` emitted them in *inflow* order. That was correct only by
-coincidence — `form_3800_inflows` happened to append its sources in face order.
-The new rows sit at BOTH ends of the block (1c first, 4h/4i last), and putting
-K-1 credits at the head of the inflow list broke the coincidence outright. The
-builder now sorts into schema order, and a test VALIDATES a deliberately
-shuffled build against the live 2025v5.4 IRS3800.xsd — not merely against my
-reading of it. There was no schema validation of IRS3800 anywhere before this;
-with the sort removed the control fails with a real `SCHEMAV_ELEMENT_CONTENT`
-error, so the fix is load-bearing, not cosmetic.
-The three new wrappers (`Form6765CYCreditsGrp`, `Form8941CYCreditsGrp`,
-`Form6765ESBCYCreditsGrp`) all exist in the schema, so the rows transmit rather
-than refuse.
+### ✅ s232 in one paragraph
+Ken chose **spec-first** for 8853 Section C — the right call for the last day
+before a 10-day absence, since the Gate-1 walk was the only thing that needed him.
+Gap confirmed: `lookup/8853`, `lookup/1099LTC` and `lookup/1099_LTC` all 404, no
+cached spec, no source brief, and no app compute/model/field map/template.
+⚠ **The destination already existed and already failed** — Schedule 1 line 8e is
+seeded "Income from Form 8853" as a KEYED line and `form_manifest.py` already
+declares `AttachmentRequirement("Form 8853")` on it, so today an LTC client's
+taxable payments must be hand-keyed while the manifest correctly reports a required
+attachment the app cannot produce. Authored `8853_SEC_C`: 23 facts / 10 rules (all
+cited) / 14 face lines (14a-26) / 12 diagnostics / 14 scenarios / 5 flow
+assertions, with `check_8853_sec_c_integrity.py` sharing no math with the loader.
+**The $420 rate is confirmed three independent ways** (Rev. Proc. 2024-40 §2.62
+verbatim, printed on the 2025 face at line 21, and i8853 Example 1's own footnote)
+— and ⚠ it is §2.62, the cap on an **EXCLUSION**, not §3.28's age-band cap on
+deductible LTC **PREMIUMS** already in DECISIONS.md. **Scenarios T1-T3 transcribe
+the IRS's own worked examples verbatim**, so the rate, the greater-of and the zero
+floor are validated against an IRS answer key; the gate also reproduces Example 2
+Step 3's allocation on the **unrounded** ratio (33,311, not 33,308), confirming the
+s230 never-split-an-already-rounded-share rule from the IRS's own arithmetic.
+Refusals are declared, never silent, each with its sign checked. Ken approved at
+Gate 1 ("Approve as drafted", explicitly including the line 25 floor and the
+composed 8e) → sentinel flipped → seeded (135 forms, 18 authority links, all rules
+cited) → deployed export 200 → cached, with the cached file's contents **verified
+rather than assumed**. RS `a65ce4f` · `61dc5ae` · `f956f74` · `7451a27`.
+
+### ⚠⚠ THE FINDING THAT ALMOST SHIPPED — the statute corrected the draft
+§7702B(d)(2) defines the per diem limitation as **"the excess (if any) of (A) the
+greater of … over (B) … reimbursements."** "Excess (if any)" is the Code's
+floor-at-zero idiom — so **line 25 cannot go negative**. I drafted it UNFLOORED,
+because the face prints a floor only on line 26 and the first statute fetch (LII)
+returned a **paraphrase with the phrase silently dropped**. A second fetch from
+uscode.house.gov caught it. The defect was live, not theoretical: line 20 = 10,000
+with reimbursements driving line 25 to −5,000 produced line 26 = **15,000** —
+taxing half again more than the taxpayer ever received. Reachable on any short
+contract period with low costs and a large expected reimbursement.
+⚠ **My integrity gate had independently re-typed the same face-only reading**, so
+the two agreeing proved nothing — the s180 lesson (a value landing via two paths
+proves nothing) applied to a gate rather than a pin. Now fixed in the helper, the
+rule, the fact note and the gate, pinned by scenario T14 **plus a structural
+invariant hardcoded independently of the scenarios** (line 26 may never exceed
+line 20). The IRS examples still reproduce exactly, confirming the floor doesn't
+disturb the published cases.
+**The lesson: a paraphrase is not a verbatim, and the face is not the statute.**
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **s231: NONE.** Every new row is fed only by a K-1 credit field that did not
-  exist before this migration, so it is zero on every stored return. The row
-  tuples widened, but an absent row contributes zero to every total. The one
-  behavioural change to existing output is the MeF Part III wrapper ORDER,
-  which was already correct for the rows in play and is now enforced.
+- **s232: NONE.** Spec-only session — no app code, no migration, no deploy. The
+  cached JSON is inert until the build consumes it.
+- ⚠ **When the build lands**, making 8e engine-fed IS a movement class: any return
+  with a keyed 8e must be unchanged unless a Section C exists (scenario T13 is the
+  regression that pins it).
 - Carried from s227/s228: a 1065 K-1 whose §704(d) worksheet is SAVED moves;
   a 1065 row with the basis checkbox ticked swaps its warning code;
   #10 8959 single-W-2 engage (intended); #6 Sch 1 24k engine-fed blank→0.
@@ -121,10 +152,9 @@ than refuse.
   batch-005 #9 PTET-gate class, red since s212.
 - **DiagnosticRule unique-code contamination** (s225): `test_backentry_
   cleanup.py` (red alone under `--reuse-db`), `test_ga500_auto_attach_
-  s106.py`, `test_ga500_rie_federal_pull.py`. ⚠ The 3 new `D_3800_00*` codes
-  were checked against the live catalogue — **zero collisions**.
-- **Client typecheck**: 55 error lines standalone (**unchanged by s231** —
-  verified none of the 55 name any new field).
+  s106.py`, `test_ga500_rie_federal_pull.py`. ⚠ The 12 new `D_8853C_*` codes are
+  spec-side only — nothing seeded into the app catalogue this session.
+- **Client typecheck**: 55 error lines standalone (untouched by s232 — no client code).
 - ⚠ The Slate 8889 fixture cast `as HSAAccountRow` still swallows new
   required fields.
 
@@ -135,24 +165,27 @@ than refuse.
   loses ALL output — redirect to a file and tail it.
 - ⚠ A `poetry run python script > file` redirect BUFFERS. Use `-u`.
 - ⚠ `grep -rl ... tests/` matches `__pycache__/*.pyc` — pass `--include=*.py`.
-- ⚠ **New (s231)**: the Bash tool's cwd PERSISTS across calls — a `cd client`
-  in one call leaves `poetry` unable to find `pyproject.toml` several calls
-  later. Check `pwd` or use absolute `cd` in each call.
-- ⚠ **New (s231)**: Python launched from Git Bash does NOT resolve `/tmp` to
-  the same place the shell's heredoc wrote it. Write helper scripts with an
-  explicit Windows path.
+- ⚠ The Bash tool's cwd PERSISTS across calls — use absolute `cd` each call.
+- ⚠ **New (s232)**: a stdout **redirect goes through cp1252** on this box and dies
+  on ligatures (`ﬁ`) and the U+2212 minus that IRS PDFs and our own specs use.
+  Write UTF-8 from inside Python (`open(..., encoding="utf-8")`) rather than
+  redirecting; it killed an instruction dump mid-file at page 4 and truncated a
+  JSON inspection.
+- ⚠ **New (s232)**: a script that does `django.setup()` against the RS project
+  must run **from the RS repo root** or `server` is not importable. Copy a
+  scratchpad helper in, run, delete.
+- ⚠ **New (s232)**: `manage.py shell -c "..."` opens the interactive console and
+  prints nothing. Use a script file (the standing MEMORY.md note, now confirmed
+  for `shell -c` too).
 
 ### ✅ KEN DECISIONS OUTSTANDING
-- **⛔ KEN (s231, NEW — a real defect, queued not fixed): §38(c)(6)(A), the
-  MFS threshold.** `compute_3800.SEC38C1_THRESHOLD` is a flat $25,000. The
-  statute makes it **$12,500** for a married-filing-separately taxpayer whose
-  spouse has any business credit. **⚠ The sign: this OVER-allows** — a smaller
-  threshold gives a larger line 13 → larger line 15 → smaller line 16 → LESS
-  credit, so using $25,000 allows MORE than the law does. Pre-existing (this
-  session did not touch line 13). Not fixed here because the exception turns on
-  a fact about the SPOUSE's separate return, which this return cannot see: it
-  needs an assertion + UI + a diagnostic, i.e. its own unit. Full write-up in
-  `DEFERRAL_AUDIT.md`.
+- **⛔ KEN (s231, carried — a real defect, queued not fixed): §38(c)(6)(A), the
+  MFS threshold.** `compute_3800.SEC38C1_THRESHOLD` is a flat $25,000 (pinned by
+  `test_form3800_compute_leg.py:39`). The statute makes it **$12,500** for an MFS
+  taxpayer whose spouse has any business credit. **⚠ The sign: this OVER-allows.**
+  Needs a preparer assertion about the spouse's separate return + UI + a
+  diagnostic. **It requires nothing from Ken to BUILD** — it is the next unblocked
+  unit after the 8853 build. Full write-up in `DEFERRAL_AUDIT.md`.
 - **⛔ KEN (s227)**: the out-of-scope-state packet-disposition marker (full
   write-up top of REVIEW_QUEUE). Unchanged.
 - **⛔ KEN (s230)**: Form 6765 Section G becomes REQUIRED for tax years
@@ -168,31 +201,31 @@ each), face still an exact TIE. Worth a sweep: how many filed returns move a
 worksheet line on recompute?
 
 ### RS AGENDA
-- **NEW (s231), Form 3800 — five spec items. The 3800 spec does not describe
-  the pass-through rows at all; everything below was built from the face, the
-  statute, and the two source forms' own DEST rules instead.**
-  (a) **The `1a`/`1b`/`1c` `line_map` rows are WRONG for the 2025 face.** They
-  read "General business credits from Part I", "Passive activity credits from
-  Part II", "Total current year general business credits" — the PRE-2023 Part
-  I structure. The 2025 face has 1a = Form 3468 Part II, 1b = Form 7207,
-  **1c = Form 6765**. They also carry no `source_facts` and no `source_rules`.
-  (b) **There is no `4h` or `4i` row in the spec** even though R-8941-DEST and
-  R-6765-DEST both name them as destinations. Add them (4h = Form 8941, 4i =
-  Form 6765 (ESB)).
-  (c) **No rule encodes §38(c)(5).** `R-3800-P3-INFLOW` enumerates only the
-  1f/1s/1y/1aa/1zz/4e/4z rows. The ESB determination — and specifically
-  §38(c)(5)(B)'s "such partner or shareholder", which puts the test on the
-  RECIPIENT — needs to be a rule with its own fact.
-  (d) **The bare Part III line numbering is ambiguous.** The spec prefixes
-  Part III rows `P3-` (P3-1f, P3-4e) but the three new rows were exported
-  bare (`1a`/`1b`/`1c`), where bare numbers already mean Part I/II lines.
-  (e) **Three app-added diagnostics want adopting**: `D_3800_007` (ESB
-  unanswered → row 1c), `D_3800_008` (1065/1041 box letter unverified →
-  credit EXCLUDED), `D_3800_009` (two entities on one row → Part V not built).
-- **Carried and now URGENT for the 1065 arm**: the **1065 Schedule K-1 box-15
+- **NEW (s232), folded into the existing `[WO-SOURCETYPE-RECON]` order rather
+  than opened as new orders** — two adjacent findings with the same root cause
+  (Django does not enforce `choices`): (a) **Rev. Proc. 2024-40 lives under THREE
+  `source_code`s** (`RP_2024_40` / `REV_PROC_2024_40` / `IRS_RP_2024_40`); s232
+  reused `RP_2024_40` and attached its §2.62 excerpt there rather than minting a
+  fourth, and deliberately did NOT repair that row's own invalid
+  `source_type="revenue_procedure"` (that rewrites published exports).
+  (b) **`TaxForm.status` has 5 rows carrying `active`**, which is the
+  *FlowAssertion* vocabulary — the two Status classes have cross-contaminated
+  exactly as `source_type` did. ✔ Re-ran that order's survey: counts match its
+  2026-08-05 figures, and the alarming-looking `1065`/`1041`/`1120s` values are
+  precisely its documented 13 false positives (TestScenario `inputs` payloads) —
+  the caveat earned its keep.
+- **NEW (s232), small and unowned**: the RS **export serializer omits
+  `requires_human_review`**, so a build session reading `server/specs/*.json`
+  cannot see which authorities are flagged unverified. For `8853_SEC_C` the one
+  live flag is `IRC_101_G` (§101(g)(3) conditions), recorded in
+  `DEFERRAL_AUDIT.md` and the work order instead.
+- Carried: the s231 Form 3800 five spec defects (the `1a`/`1b`/`1c` `line_map`
+  rows describing the PRE-2023 face; no `4h`/`4i` row; no §38(c)(5) rule; the
+  ambiguous bare Part III numbering; the three app-added `D_3800_00*`
+  diagnostics wanting adoption).
+- **Carried and still URGENT for the 1065 arm**: the **1065 Schedule K-1 box-15
   letters** for §41 (6765 spec: `[UNVERIFIED]`) and §45R (8941 spec: unnamed).
-  `D_3800_008` excludes those credits until both are verified — this is the
-  single thing blocking the 1065 pass-through arm.
+  `D_3800_008` excludes those credits until both are verified.
 - Carried: s230 Form 6765 items (a)-(e); s228 `D_K1B_FULLY_ALLOWED`; the s226
   `requires_human_review` verbatims; s227, s224, s223 and earlier unchanged.
 
