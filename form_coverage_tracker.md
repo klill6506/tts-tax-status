@@ -1,5 +1,53 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 236 — 1040 BATCH-002 #3 and #8. One migration (0275),
+> one deploy.** No form gains or loses a leg; two existing legs stop being
+> silently wrong, and one form's INPUT leg closes.
+> **GA-500 (compute leg) — the RIE worksheet's line-13 K-1 feeder now reads the
+> AFTER-§469 amount.** It read each K-1's RAW box amounts, so a passive
+> partnership loss that Form 8582 suspended in FULL — never in federal AGI at
+> all — still shrank the Georgia exclusion dollar for dollar. Schedule E PAGE 1
+> has read the post-§469 result since s199; this is its page-2 twin. New
+> `k1_sche_included(k1)` returns what one K-1 actually contributed to Schedule E
+> line 32/37, term for term with `schedule_e_p2_totals_from_rows`, and a test
+> pins the two against each other so Georgia can never disagree with the federal
+> face. Authority: Ga. Comp. R. & Regs. r. 560-7-4-.02, fetched and quoted —
+> *"Only retirement income that is included in Georgia taxable income shall be
+> included when computing the retirement income exclusion."* ⚠ Sign check: a
+> suspended loss leaving the base RAISES the exclusion and LOWERS Georgia tax.
+> ⚠⚠ **The reported ANSWER is refuted, and the packet's own forms prove it** —
+> filed spouse RIE $7,672 is unreachable (Form 8582 Part VIII: allowed $0;
+> Schedule E line 41 is the taxpayer's −$2,948 alone; no $2,948 of spouse
+> partnership INCOME exists anywhere). The correct figure is $4,724. **Georgia
+> will NOT tie on that packet, by $153, and should not.**
+> **Schedule K-1 (input leg) — CLOSED for pass-through charitable
+> contributions.** Three fields by §170(b) bucket (1120-S box 12 / 1065 box 13
+> codes A, C, E), migration 0275 with `db_default`.
+> **Form 7203, 1040-side (compute leg) — Part III line 42 is now FED.** The
+> shared engine has mapped 42 to K12a/K12b since s205 and the MeF builder
+> already emitted `CharitableContributionAmt`, but `ScheduleK1` had no
+> charitable field, so a shareholder's contribution reduced NOTHING and ending
+> stock basis ran high by exactly that amount. Reported case reproduces to the
+> dollar: 8,058 before deduction items, $700 allowed, ending basis $7,358.
+> **Schedule A (compute leg) — lines 11/12 now COMPOSE.** The K-1 buckets ADD to
+> the flat facts (different contributions, not a competing measurement of one —
+> deliberately NOT the 8283 flat-wins rule); `D_SCHA_012` (info) shows the
+> composition. The engagement gate now also fires on a K-1-only gift, which
+> previously produced `blank_rows()` and lost the deduction entirely.
+> ⛔ **Box 12 codes B, D, F and G still have NO bucket and are REFUSED** at both
+> write paths — the same gap `D_SCHA_007` RED-defers on the taxpayer side. ⚠
+> Sign: a refused code is NOT deducted at all, so it OVERSTATES tax. Logged in
+> DEFERRAL_AUDIT; needs `R-SCHA-CHARITABLE` amended to model all seven.
+> ⚠⚠ **Form 7203 (render leg) — the field map's Part III COMMENTS were a row
+> off** from line 38 down (`42: Section 179 deductions`, `43: Charitable
+> contributions`), contradicting the compute engine beside them. **Nothing ever
+> rendered wrong** — read positionally off `f7203.pdf`, every `LineNN[0]` widget
+> sits on the row printed NN, and the MeF builder agrees; the AcroForm NAMES
+> were right. A fossil of a pre-2022 face that split ST and LT capital losses.
+> Comments corrected and a test now anchors each row to the PDF's own printed
+> text, proven by injecting the shift.
+> 27 new tests; both units proven by revert. 526 flow assertions green.
+
 > **2026-08-08 session 235 — the attribute-preservation layer + BATCH-002 #7.
 > ONE new table (`CarryforwardAttribute`), migrations 0272/0273/0274, TWO
 > deploys.** No form's compute leg CHANGED status; one new statement page.
