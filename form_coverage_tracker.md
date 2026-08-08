@@ -1,5 +1,29 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 228 — K1_BASIS_704D BUILT (mixed-entity pilot #7, the
+> batch's last open item). Deploy `165c972`; migrations 0267 + 0268. No new
+> form tick — the partner §704(d) basis limitation is a WORKSHEET on the
+> recipient K-1 (Schedule E page 2), deliberately with NO render/MeF leg:
+> the spec's R-K1B-CARRY ruling is that the Partner's Instructions make
+> basis tracking the partner's own record, never an attachment, so
+> storing-and-surviving IS the complete chain.** Leg detail:
+> `K1Basis704dWorksheet` (one per 1065 K-1; six preparer-asserted figures) →
+> the `max(raw, −allowed)` cap applied ONCE in `k1_sche_net()`
+> (materially-participating partners only; a passive basis-limited K-1 keeps
+> the 8582 path and warns) → five `D_K1B_*` diagnostics (ARITH = an
+> unacknowledgable error; UNASSERTED succeeds the old D_K1_BASIS warning for
+> 1065 rows, which now covers only 1120-S/1041) → BOTH lanes (browser panel
+> + `basis-704d` upsert endpoint; nested `basis_704d` lane object, schema
+> regenerated) → persistence (proforma `_k1_basis_704d` + roll-forward seeds
+> a shell K-1 + everything-still-suspended worksheet). FA-1040-K1B-01…05
+> active in the flow-assertion gate. Regression:
+> `server/tests/test_k1_basis_704d.py` (25) incl. the spec's T1–T7 verbatim
+> and the pilot movement pin (line 41 −26,850 → −10,621, Δ +16,229 → Sch 1
+> line 5 → AGI; QBI consumes the source −10,621 un-double-limited).
+> ⚠ Movement class (intended): only a 1065 K-1 whose worksheet is SAVED
+> moves; the flag-only checkbox still moves nothing, now with
+> D_K1B_UNASSERTED naming the gap.
+
 > **2026-08-07 session 227 — 1040 CC BATCH-001: all ten items, one deploy
 > (`9b9673c`; migration 0266). No new form ticks — every item deepened a form
 > already covered.** Leg-level changes worth recording here:
