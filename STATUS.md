@@ -94,8 +94,11 @@ D_3800_002 unanswered state.
 coincidence — `form_3800_inflows` happened to append its sources in face order.
 The new rows sit at BOTH ends of the block (1c first, 4h/4i last), and putting
 K-1 credits at the head of the inflow list broke the coincidence outright. The
-builder now sorts into schema order, taken from the 2025v5.4 IRS3800.xsd
-element declarations, and a test pins it with a deliberately shuffled input.
+builder now sorts into schema order, and a test VALIDATES a deliberately
+shuffled build against the live 2025v5.4 IRS3800.xsd — not merely against my
+reading of it. There was no schema validation of IRS3800 anywhere before this;
+with the sort removed the control fails with a real `SCHEMAV_ELEMENT_CONTENT`
+error, so the fix is load-bearing, not cosmetic.
 The three new wrappers (`Form6765CYCreditsGrp`, `Form8941CYCreditsGrp`,
 `Form6765ESBCYCreditsGrp`) all exist in the schema, so the rows transmit rather
 than refuse.

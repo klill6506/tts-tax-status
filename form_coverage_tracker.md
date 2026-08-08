@@ -58,7 +58,7 @@
 > gets **$12,500**. A smaller threshold means a LARGER line 13 and LESS credit,
 > so the current code OVER-allows in that case. It needs a preparer assertion
 > about the SPOUSE's return, so it is its own unit — queued, not folded in.
-> Regression: NEW `tests/test_form3800_passthrough_esb.py` (16) + 2 new render-
+> Regression: NEW `tests/test_form3800_passthrough_esb.py` (20) + 2 new render-
 > leg tests; the row-identity test is anchored to the IRS's own semantic
 > subform names AND the printed row labels, because the band test derives its
 > expectation from the same map entry it renders with and could only ever prove
