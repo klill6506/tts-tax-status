@@ -1,12 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-09 (s239). **1040 BATCH-003 opened; the three live
-computed defects (#4, #5, #7) BUILT.** Each of the three concealed a defect
-bigger than the one reported. One deploy (`4f924ac`), no migrations. BATCH-003 stays OPEN
-(7 of 10 are unbuilt multi-leg form builds); BATCH-004 arrived this session and
-is untouched.*
+*Last updated: 2026-08-09 (s240). **1040 BATCH-004 opened and triaged 10/10;
+item #4 BUILT.** The report was stale and the neighborhood held TWO live
+defects — a passive §1231 loss with no §469 limitation and no diagnostic, and
+every 1040 with a Form 4797 being a rejected transmission. One deploy, no
+migrations. BATCH-004 stays OPEN (9 queued builds).*
 
-*Previous (s238): Form 8379 across all seven legs (`4ca1019` · `21d5eee`).*
+*Previous (s239): 1040 BATCH-003 #4/#5/#7 — three live defects (`4f924ac` · `e7803eb`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -34,147 +34,135 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — 1040 BATCH-004, or finish BATCH-003
-**BATCH-004 was posted this session (2026-08-09 05:58) and has not been
-triaged at all.** Ten items; from the titles they are mostly new-form builds
-(1040-X lifecycle, GA education credits + IT-QEE-TP2, pre-2019 alimony,
-Schedule H, Form 8863, Form 5329 Part III, Form 8862, 1099-PATR, Form 4547 /
-8879-TA), plus **#4 K-1 §1231 → Form 4797 → Schedule 1, which is a live
-RED-defer with an exact repro** — the same "live defect, not a missing form"
-class this session led with, and the natural first item.
+### ⭐ NEXT UNIT — pick from BATCH-004's queued nine, or finish BATCH-003
+**BATCH-004 is now fully triaged** (annex in the batch file names each item,
+what exists today, and its size). Nothing in it is un-scoped any more.
 
-⚠ **BATCH-004 #10 needs a source check before anything is built.** It cites
-"Form 4547 Trump Account elections and Form 8879-TA". Neither form has ever
-been touched here. Verify both exist for TY2025 and get the actual faces off
-irs.gov before designing — the 404-STOP reflex applies to the FORM's existence,
-not just to a Rule Studio spec.
+**The two cheapest real wins are #6 (Form 8863) and #7 (Form 5329 Part III) —
+both are LANE-ONLY gaps on forms that are already fully built**, so the work is
+a `backentry.v1` importer family plus an end-to-end verification, not a form.
+#7 is the smaller of the two.
 
-The seven QUEUED BATCH-003 items are all confirmed-real multi-leg builds; the
-annex in the batch file names each one and what was verified. **#3 (mixed
-passive/nonpassive on one K-1) should be built together with the s239 Georgia
-work, not beside it** — a partnership row already splits its ordinary income by
-SE subjection for Georgia, so a component-level design wants to be shared.
+The rest are genuine builds, roughly by size: #8 Form 8862 (render + MeF exist;
+input model missing) < #3 pre-2019 alimony ≈ #9 Form 1099-PATR ≈ #10 Form 4547
++ 8879-TA ≈ #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X
+amended lifecycle (large).
 
-### ⭐ STILL UNBLOCKED, still passed over — now SEVEN sessions
+⚠ **#10's source check is CLOSED — the form is REAL.** Form 4547, *Trump
+Account Election(s)*, Rev. December 2025, created by OBBBA; instructions same
+revision. The IRS states the election is filed **with the current-year e-filed
+return**, so its MeF leg is part of the build. STATUS's prior "verify both
+exist before designing" flag is answered.
+
+⚠ **#9 does NOT go through the 404-STOP gate** — per s222 no RS spec exists for
+any information return; build from the IRS form + a `_source_brief.md`.
+
+### ⭐ STILL UNBLOCKED, still passed over — now EIGHT sessions
 - **Form 8853 Section C.** Spec cached at `server/specs/8853_sec_c_spec.json`;
   `lookup/8853_SEC_C/export/` returns 200; all four legs pending. Read the s232
   write-up in `STATUS_ARCHIVE.md` first — Schedule 1 line 8e is COMPOSED not
   owned, and line 25 FLOORS AT ZERO though the printed face does not say so.
-- **The `IRS1116` e-file document** — the oldest live e-file gap. A full-path
-  Form 1116 return is paper-only in code. s238's `IRS8379` build is a worked
-  example end to end.
+
+### ⛔⛔ THE E-FILE GAP LIST GREW — it is now TWO named documents
+- **`IRS1116`** — the oldest live e-file gap. A full-path Form 1116 return is
+  paper-only in code. s238's `IRS8379` build is a worked example end to end.
+- **`IRS4797` (NEW, s240)** — there is no 1040-side Form 4797 document builder
+  at all, and **MeF rejects the return without it** (`S1-F1040-118-01`, Reject,
+  Active). s240 added the refusal so it fails loudly at composition; the
+  document itself is unbuilt. **This is the higher-volume of the two** — every
+  disposition, installment sale, like-kind exchange AND K-1 §1231 return needs
+  it. The 1120-S `IRS4797` builder is the worked example.
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — items 9 and 10 open as to their COMPUTE half only** (both
   RS-blocked on the missing NOL spec); **BATCH-003 — 7 open** (1, 2, 3, 6, 8,
-  9, 10, all confirmed real builds); **BATCH-004 — 10, untriaged**. Every file
-  carries a result annex naming what is done and what is blocked; read it
-  before starting. ⚠ None of the four has moved to Done, deliberately.
+  9, 10, all confirmed real builds); **BATCH-004 — 9 open, all triaged**.
+  Every file carries a result annex naming what is done and what is blocked;
+  read it before starting. ⚠ None of the four has moved to Done, deliberately.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
-### ✅ s239 in one paragraph
-Three items, and **every one of them concealed a defect larger than the one
-reported**. Code U was reported as a missing code; the loss was that an
-unsupported code blanks the WHOLE pension column, so a $7 ESOP dividend
-suppressed an unrelated $671 row. Codes J/T were reported as a false-blocking
-diagnostic; admitting them alone would have taxed a Roth distribution twice.
-The Georgia RIE was reported as omitting three K-1 amounts; the omission was
-real but the earned/unearned TEST was also wrong, and two further feeds were
-missing entirely. No migrations — all four defects were in the rules, not the
-schema.
+### ✅ s240 in one paragraph
+One item worked, and it was refuted as reported — the §1231 → 4797 → Schedule 1
+chain has been complete since 2026-06-30 and ties the filed return to the
+dollar. Behind it sat two defects the report never mentioned, **both created by
+that same feed**: a passive activity's §1231 loss reaches AGI with no §469
+limitation and no diagnostic, and a non-zero Schedule 1 line 4 makes the whole
+return un-transmittable. Both fixed. Nine remaining items triaged; three of the
+ten (#4, #6, #7) turned out to be already-built forms with import-lane gaps.
 
-### ⚠⚠ THE FINDING WORTH CARRYING — two instructions can disagree on their face
-A Roth IRA 1099-R arrives with the box-7 IRA/SEP/SIMPLE checkbox **FALSE**
-(i1099-R Box 7: "Do not check the box for a distribution from a Roth IRA that
-is not a Roth SIMPLE IRA"), and the 1040 nevertheless reports it on **lines
-4a/4b** (i1040 "Lines 4a and 4b": "an IRA includes a traditional IRA ..., Roth
-IRA ..., and a SIMPLE IRA"). The engine had taken the stored checkbox as the
-answer to "IRA or pension?", so a Roth distribution's gross sat on 5a while its
-taxable came from Form 8606 on 4b — two halves of one distribution on two
-different line pairs. Because box 2a is blank on a Roth 1099-R **by
-instruction**, the generic no-basis fallback taxes the gross, so admitting
-codes J/T without fixing the routing would have taxed $3,600 in full on 5b
-while the 8606 wrote $0 on 4b. *The general shape: a stored INPUT field that
-mirrors a source document's checkbox is not the same fact as the DESTINATION
-form's category, even when they share a name. `doc_is_ira_path` is now the one
-place that answers it.*
+### ⚠⚠ THE FINDING WORTH CARRYING — retiring a RED can silently void a DIFFERENT rule's safety argument
+`R-8582-MULTIFORM` RED-defers Form 8582 Part IX and justifies itself in
+writing: *"The common Part IX triggers (section 1231, 28%-rate) are already
+RED-deferred upstream in the K-1 router, so no NEW silent gap."* That sentence
+was true when written. On 2026-06-30 the §1231 → Form 4797 feed was built and
+`D_K1_SEC1231` was **retired as newly-supported** — a correct, well-tested
+change that nevertheless **knocked the leg out from under a rule in a different
+module**, whose own code and tests were untouched and stayed green. The two
+guards left standing both tested `k1_sche_net < 0` (K-1 boxes 1/2/3), so the
+one case that mattered — a K-1 whose ONLY loss is its §1231 amount — was
+invisible to both, and a $50,000 passive loss reduced AGI in full in silence.
+*The general shape: when you RETIRE a diagnostic because its subject is now
+supported, grep for every rule that CITED it as its own coverage. A spec's
+"no new silent gap" clause is a dependency, not a comment — and nothing in the
+test suite can fail when a dependency like that expires.* This is the fourth
+time here that adding support made an existing rule wrong (s225, s233, s238).
 
-### ⚠⚠ THE OTHER ONE — one sentence, two different tests
-Ga. Comp. R. & Regs. r. 560-7-4-.02(4)(b)1 splits the retirement exclusion's
-earned and unearned portions, and it uses **a different test for partnerships
-than for S corporations in the same sentence**: partnership income is earned
-when "subject to Federal FICA tax or Federal self employment tax";
-S-corporation income is earned when the taxpayer "materially participates".
-The engine applied the S-corp test to both. They routinely disagree — under
-§1402(a)(13) a limited partner's distributive share is outside the SE base
-however much they participate — and it costs real money because the earned
-portion is capped at $5,000 while the unearned portion is not, so the income is
-silently absorbed by the cap. ⚠ **Sign is not character**: the test is
-`box 14A != guaranteed payments`, not `> 0`, because a general partner's SE
-LOSS is equally SE-subject. That distinction is what reconciles two filed
-worksheets that look like they contradict each other — s236's carries a
-materially-participating partnership LOSS as earned, this one carries
-partnership INCOME as unearned. Both are correct; they are different kinds of
-partner. *A rule that reads correctly for one entity type is not thereby
-verified for the others that share the code path.*
+### ⚠⚠ THE OTHER ONE — a correct new feed can make an OLD seam start rejecting
+Schedule 1 line 4 is written by `compute_4797_db`. Adding the K-1 §1231 feed
+gave that line a non-zero value on returns that carry **no disposition at all**
+— and the 1040 MeF builder has no `IRS4797` document, so `S1-F1040-118-01`
+(Reject, Active) bounces them. No e-file code changed; no test failed; the
+failure is an IRS reject arriving days later, which no internal reconciliation
+catches. *When a feed newly populates a line, check what the MeF business rules
+require to accompany that line — the reject list is the spec for the seam.*
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **Roth IRA 1099-Rs (codes J/T/Q) move from lines 5a/5b to 4a/4b**, and the
-  Georgia RIE worksheet moves them from L12 to L11. Both are unearned, so no
-  Georgia dollar changes; the federal face and the MeF payload do.
-- **Any Georgia return with a partnership K-1**: ordinary business income moves
-  between RIE L2 and L13 unless box 14A was keyed, and guaranteed payments,
-  box-5 interest and box-6a dividends now enter the base for the first time.
-  Direction is case-by-case; where it moves L2 → L13 the exclusion GROWS.
-- **Any Georgia return with an engaged Form 8606**: RIE L11 now takes the
-  8606's taxable total instead of the box-2a sum, so a basis recovery no longer
-  inflates the base.
-- **Any return with a code-U 1099-R**: the whole pension taxable column
-  un-blanks. This is the largest mover in the batch.
-- Carried from s238: none (the 8888/8379 bar reaches only a combination the
-  IRS rejects today).
+- **s240 (diagnostics only, no number moves):** a passive or PTP K-1 carrying a
+  net §1231 LOSS now fires `D_8582_MULTIFORM` (RED) or `D_K1_PTP_LOSS`
+  (warning) where it was silent. No computed value changes — the loss still
+  flows; it is now *stated* that §469 was not applied to it.
+- **s240 (e-file REFUSAL, this one blocks):** any 1040 with a non-zero Schedule
+  1 line 4 now refuses at MeF composition with "no IRS4797". These returns were
+  already un-transmittable — they now fail at our seam instead of the IRS's.
+- Carried from s239: Roth 1099-Rs (codes J/T/Q) move from 5a/5b to 4a/4b; any
+  Georgia return with a partnership K-1 moves income between RIE L2 and L13;
+  an engaged Form 8606 changes RIE L11; a code-U 1099-R un-blanks the whole
+  pension taxable column (the largest mover).
 - Carried from s236: a Georgia return with a passive K-1 whose loss was partly
   or wholly suspended gets a different RIE line 13.
 - Carried from s235: Georgia dependent exemptions on an untouched 7a.
 
-### ⚠ Known red / rotted (one is NEW from this session, and it is not mine)
+### ⚠ Known red / rotted (unchanged from s239 — s240 added none)
 - **~24 test files** assert registry wiring via
   `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
   iterate `all_registries()`, so these are **false REDs**. Hit again this
-  session in `test_form8606_diagnostics_leg.py::test_runner_registers_8606`.
-  Still spun off as its own task.
-- ✅ **FIXED in s239**: `test_ga500_diagnostics_leg.py` pinned a hand-counted
-  `len(codes) == 17`. Retired rather than re-pinned (the s238 manifest
-  precedent) — it now asserts that the DB set equals what `RULES_GA500`
-  declares, so the count follows the module instead of a person.
+  session in `test_schedule_e_8582_diagnostics_leg.py::test_runner_registers_sche`
+  and `test_schedule_k1_diagnostics_leg.py::test_runner_registers_schedule_e_p2`.
+  Still spun off as its own task. **This is now the single most frequent
+  false-red in the repo — it has cost time in four consecutive sessions.**
 - **`test_topic7_input_leg.py::TestEICFacts::test_non_engaged_return_leaves_27a_quiet`**
   — pre-existing, verified at pristine `6e819b5` in a worktree (s235). Not diagnosed.
 - **`test_1040.py` — 6 pipeline tests**, `MultipleObjectsReturned`. Their `_fv`
-  helper does an **unscoped** `FormFieldValue.objects.get()`. Pre-existing (s234);
-  re-confirmed as all 6 in s239.
+  helper does an **unscoped** `FormFieldValue.objects.get()`. Pre-existing (s234).
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
   `ValidationError`. Pre-existing (s219). Not diagnosed.
 - `test_4868.py` — 4 tests on the Schedule 3 line-10 feeder (s217). ⛔ KEN.
 - `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
   batch-005 #9 PTET-gate class, red since s212.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
-  DiagnosticRule unique code, s225) and — **newly observed in s239, not
-  diagnosed** — `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3
-  errors, `returns_formdefinition_code_tax_year_applicable` unique violation on
-  `(1120-S, 2025)`). Same shape: a fixture re-creating a row a prior module's
-  seed already left behind. Nothing in s239 creates FormDefinitions.
-- **Client typecheck**: 55 error lines standalone. s239 touched no .tsx.
+  s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
+- **Client typecheck**: 55 error lines standalone. s240 touched no .tsx.
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB;
   the hazard is CROSS-REPO (both repos name it `test_postgres`). `--reuse-db`.
 - **A broad `-k` sweep is SLOW and blows the 600s Bash timeout** — s236's
-  ~1,100-test sweep took **21½ minutes**. Run it with `run_in_background: true`
-  and collect it later. ⚠ Keep the `-k` terms tight: `k1` matches hundreds of
-  node ids, and `rie` matches "ret**rie**ve".
+  ~1,100-test sweep took **21½ minutes**. Run it with `run_in_background: true`.
+  ⚠ Keep the `-k` terms tight: `k1` matches hundreds of node ids, `rie` matches
+  "ret**rie**ve". (s240's `-k "efile or mef"` sweep = 543 tests / 3m11s — fine.)
 - ⚠ `--create-db` does NOT reliably drop an existing test DB here. To prove a
   red is pre-existing, use a `git worktree` at a pristine SHA with the MAIN
   venv's interpreter, and copy `server/.env` in (s235).
@@ -186,14 +174,17 @@ verified for the others that share the code path.*
 - ⚠ `manage.py shell -c "..."` prints nothing; a multi-line `python -c` through
   the Bash tool also silently produces no output. **A script file under the
   scratchpad also fails — `config` is not importable from there.** Copy the
-  script INTO `server\`, run it, delete it (s239).
+  script INTO `server\`, run it, delete it (s239). **Simplest reliable probe: a
+  throwaway `tests/test_zz_*.py` with `-s` print statements, deleted after
+  (s240) — it gets fixtures, the DB and the app context for free.**
 - ⚠ **`poetry run` must be invoked from `D:\dev\delvio-tax\server`** — from the
   repo root it fails with "could not find a pyproject.toml". The Bash tool's
   cwd persists across calls, so `cd` absolutely, every call.
+- ⚠ **Windows `python` cannot read the Bash tool's `/tmp`** — they are different
+  filesystems. Write shared files to the scratchpad path, not `/tmp` (s240).
 - ⚠ A Cloudflare-protected law site (justia) 403s both WebFetch and curl.
   **The in-app browser (`preview_start` + `get_page_text`) got the full
-  verbatim Georgia reg** where both failed (s239) — it is the fallback for any
-  JS-rendered or bot-gated authoritative source.
+  verbatim Georgia reg** where both failed (s239).
 
 ### 🔎 Carried for triage — NOT claims
 - **From s234, potentially large and still unchased**: a materially-participating
@@ -213,15 +204,9 @@ verified for the others that share the code path.*
 - **⛔ KEN (s227)**: the out-of-scope-state packet-disposition marker.
 - **⛔ KEN (s230)**: Form 6765 Section G becomes REQUIRED for tax years
   beginning after 2025; the RS spec must be re-authored before a TY2026 season.
-- ✅ **CLOSED s239 (was carried since s233)**: `GA_RIE_EARNED_CAP` $5,000 vs
-  the reg's $4,000. **The statute controls and says $5,000** —
-  §48-7-27(a)(5)(E)(i), verbatim, twice. The reg's $4,000 is the
-  pre-amendment figure (last amended April 2011). The code value was always
-  right; the conflict is now recorded in the comment.
-- ✅ **CLOSED s239 (was carried since s233)**: the batch-numbering collision.
-  Codex took the instruction — BATCH-003 and BATCH-004 are correctly numbered.
 - The one live external item: **1040 v5.4 business rules still not in hand,
-  active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed).
+  active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed). ⚠ s240 read
+  the **v5.3** rules for `S1-F1040-118-01`; re-check it against v5.4 on arrival.
 
 ### RS AGENDA
 - **⛔ BLOCKING two batch items: THERE IS NO NOL SPEC.** `lookup/172/`,
@@ -230,22 +215,26 @@ verified for the others that share the code path.*
   limitation and the utilization ordering. **The preservation half is built and
   the pools are safe — only the computation waits.** Still the single
   highest-value RS authoring order on this list.
-- **NEW (s239): `R-RET-CODE` has now been outrun three times.** Its v1
-  supported set omits code 6 (admitted s176 on Ken's ruling), code W (s199) and
-  now code U (s239), and it says nothing about the conditional J/T admission.
-  Each was built from a verified i1099-R Table 1 reading. Worth re-authoring
-  the rule from the current table in one pass rather than a fourth exception.
-- **NEW (s239): the `500` spec still has NO rule governing what feeds RIE lines
-  1/2/6-13**, which is where four defects have now been found (s199, s233,
-  s236, s239). The earned/unearned split BY ENTITY TYPE — partnerships by SE
-  subjection, S corporations by material participation — is the single most
-  valuable thing that spec could gain, and `D_GA500_018` currently has no spec
-  condition to diverge from. The line_map should also record that the $5,000
-  earned cap is statutory and that the reg's $4,000 is superseded.
+- **NEW (s240): `R-8582-MULTIFORM`'s no-silent-gap clause is now FALSE as
+  written** and should be re-authored. It cites an upstream RED (`D_K1_SEC1231`)
+  that was retired 2026-06-30. The app-side coverage is restored, but the spec
+  still tells the next reader that §1231 is RED-deferred upstream, which it is
+  not. While it is open: `R-8582-WS-NET` describes the Parts IV/V per-activity
+  gathering purely in Schedule-E terms and **says nothing about which OTHER
+  forms an activity's losses can land on** — that silence is what let the §1231
+  component fall outside the engine in the first place.
+- **NEW (s240): the `4797` spec has no rule for the K-1 §1231 feed.** The feed
+  exists in code (`k1_section_1231_total` → Part I line 2) and is correct per
+  i4797, but no spec rule governs it, so nothing declares whether the amount is
+  pre- or post-§469. That ordering is the whole of the defect above.
+- Carried (s239): `R-RET-CODE` has been outrun three times (codes 6, W, U) —
+  re-author from the current i1099-R Table 1 in one pass. The `500` spec still
+  has NO rule governing what feeds RIE lines 1/2/6-13, where four defects have
+  now been found; record the earned/unearned split BY ENTITY TYPE and that the
+  $5,000 earned cap is statutory.
 - Carried (s238): the `8379` spec is a DRAFT whose `line_map` covers 4 of ~20
-  lines and returns 200, so the 404-STOP gate waved it through. The build is
-  complete, so promoting it is documentation — but **the export's `status`
-  field is still not checked anywhere**.
+  lines and returns 200, so the 404-STOP gate waved it through. **The export's
+  `status` field is still not checked anywhere.**
 - Carried (s236): `R-SCHA-CHARITABLE` models only three buckets while the K-1
   states **seven** — 1120-S box 12 codes A–G — so **B, D, F and G have no home
   and are REFUSED at both write paths**. ⚠ Sign: a refused code is not deducted
