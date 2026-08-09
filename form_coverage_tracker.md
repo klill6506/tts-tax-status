@@ -1,5 +1,49 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-08 session 237 — 1040 BATCH-002 #4 (the individual foreign tax
+> credit). No migration, one deploy.** No form gains a compute or render leg;
+> one form becomes IMPORTABLE and one e-file seam becomes HONEST.
+> **⚠⚠ TWO THIRDS OF THE REPORTED GAP WAS ALREADY CLOSED.** The item says the
+> import lane has "no source-level foreign-tax amount on interest or dividend
+> rows" and "no supported direct input for Schedule 3 line 1". Both REFUTED:
+> `foreign_tax_paid` has been in `INT_FIELDS` AND `DIV_FIELDS` since the lane's
+> first commit (`4926fa4`), and the **§904(j) de minimis AUTO-election** has
+> landed `min(foreign tax, regular tax)` on Schedule 3 line 1 — no Form 1116
+> engaged, no face — since 2026-07-01. That IS the reported shape (a $97 credit,
+> no printed 1116 in 43 pages), so the reported packet imports today unchanged.
+> A direct line-1 input would be a defect: the credit is DERIVED, and an
+> importable line 1 lets a payload contradict the engine. Both now pinned.
+> **Form 1116 (input leg) — the FULL §904 path becomes importable.** The real
+> gap: every fact that FORCES the full limitation (tax over the $300/$600
+> ceiling, a K-1's foreign tax, a §904(c) carryover, a non-passive category)
+> lives on the `Form1116` row, and the lane could not create one — those packets
+> were un-importable outright. New `form_1116s`, the lane's **first SINGLETON
+> section**. ⚠ The trap the next one will hit: a **OneToOne reverse accessor
+> RAISES when absent and has no `.count()`**, so the merge gate, the replace
+> pass and the cleanup persistence gate now all read one `_section_qs` helper.
+> **⚠⚠ A SECOND GAP THE AUTO-ELECTION HAD OPENED** — `ftc_deminimis_optout` is
+> now importable. It was not, and the auto-credit fires on ANY 1099 foreign tax
+> under the ceiling, so a packet whose preparer deliberately did NOT claim it
+> imported WITH a credit the filed return lacks and nothing could suppress it.
+> ⚠ Sign: the lane OVERSTATED the refund, and reconciliation blamed the engine.
+> **⚠⚠ Form 1116 (e-file leg) — the missing document is now REFUSED, not
+> silently filed.** Schedule 3 line 1 transmits as a bare `ForeignTaxCreditAmt`
+> and there is still **no `IRS1116` builder** (the s148 sweep's 4th
+> missing-document occurrence). Correct on the §904(j) paths — no Form 1116 is
+> due — but a FULL-path return would file a credit with its required form
+> missing, and **no MeF business rule catches it** (every `F1116-*` rule in
+> `1040_Business_Rules_2025v5.3.csv` presumes the form is present). Now
+> `extract_return` refuses by name. A refusal, not a fix: the full path was
+> already paper-only in fact and is now paper-only in code. **Building `IRS1116`
+> is the follow-up.**
+> **Answer key hand-derived, not read back:** single, $90,000 wages, $12,000
+> foreign source income, $2,500 foreign tax → L3f 0.1333, L3g 2,099, L7 9,901,
+> L19 0.1333, **L20 11,255 — the TAX TABLE's $50-band midpoint, not the bracket
+> formula's 11,249** — L21 1,500 = the §904 cap, credit 1,500. That $6 is why
+> the key was derived by hand first.
+> 14 new tests. Lane suite 181 green, efile+mef 469, flow assertions + the four
+> 1116 legs 574.
+
 > **2026-08-08 session 236 — 1040 BATCH-002 #3 and #8. One migration (0275),
 > one deploy.** No form gains or loses a leg; two existing legs stop being
 > silently wrong, and one form's INPUT leg closes.
