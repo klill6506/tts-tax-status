@@ -1,5 +1,50 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-09 session 240 — 1040 BATCH-004 item #4 (K-1 §1231 → Form 4797 →
+> Schedule 1). No migration, one deploy.** No form gains or loses a leg; the
+> reported defect does not exist and two others do.
+> **The report is STALE.** `D_K1_SEC1231` was retired 2026-06-30 when the
+> §1231 → Form 4797 Part I line 2 feed was built, and the chain ties the filed
+> return to the dollar (line 2 detail row, lines 7/11/17/18b, Schedule 1 line 4,
+> 1040 line 8, AGI). Partnership and S-corp rows both feed it; the import lane
+> already carries `section_1231`; the face already renders a Part I line-2 row
+> per K-1. **This is the third BATCH-004 item refuted the same way** — #6 (Form
+> 8863) and #7 (Form 5329 Part III) are also fully-built forms whose only gap is
+> the `backentry.v1` importer. **⚠ On this queue "the schema has no X" is
+> usually true AND usually not the whole story.**
+> **⚠⚠ BOTH REAL DEFECTS WERE CREATED BY THAT SAME 2026-06-30 FEED, and neither
+> could fail a test.**
+> **(1) RETIRING A RED VOIDED A DIFFERENT MODULE'S SAFETY ARGUMENT.** RS
+> `R-8582-MULTIFORM` RED-defers Form 8582 Part IX and justifies itself in
+> writing: *"the common Part IX triggers (section 1231, 28%-rate) are already
+> RED-deferred upstream in the K-1 router, so no NEW silent gap."* True when
+> written; false from the day `D_K1_SEC1231` retired. The two guards left
+> standing (`D_8582_MULTIFORM`, `D_K1_PTP_LOSS`) both tested `k1_sche_net < 0`
+> — K-1 boxes 1/2/3 only — so a K-1 whose ONLY loss is its §1231 amount was
+> invisible to both, and a passive $50,000 §1231 loss reduced AGI in full with
+> not one diagnostic. A passive activity's §1231 loss IS a passive activity
+> deduction; the v1 8582 engine gathers only the Schedule-E net, which is
+> exactly what Part IX exists for. New `k1_activity_net()` (= `k1_sche_net` +
+> §1231) feeds both triggers as `min(sche, activity) < 0` — a UNION, never a
+> narrowing. 28%-rate and §1250 are untouched: `D_K1_SPECIAL_GAIN` still REDs
+> those unconditionally, which is why the fix is §1231-only.
+> **Sign: OVERSTATES the deduction.**
+> **(2) A NEW FEED MADE AN OLD SEAM START REJECTING.** Schedule 1 line 4 is
+> written by `compute_4797_db`, so the §1231 feed gave that line a non-zero
+> value on returns carrying **no disposition at all** — a retiree with one
+> partnership K-1. The 1040 MeF builder has **no `IRS4797` document** (the only
+> one in the repo is the 1120-S builder), and `S1-F1040-118-01` (Reject, Active)
+> requires Schedule 1's `OtherGainLossAmt` to equal Form 4797's. There is
+> nothing to equal, so the return bounces. `_refuse_unattachable_form_4797` now
+> refuses by name at composition (the `_refuse_unattachable_form_1116`
+> precedent), keyed to a **non-zero line 4** rather than to engagement — a
+> §1231 GAIN routes to Schedule D line 11, leaves line 4 at zero, and must still
+> transmit. **Sign: a rejected transmission, which no reconciliation catches.**
+> The `IRS4797` document itself is UNBUILT and is now a named e-file gap
+> alongside `IRS1116` — and the higher-volume of the two.
+> Tests: 6 diagnostics + 3 refusal. Flow-assertion gate green (603); e-file
+> suite green (543).
+
 > **2026-08-09 session 239 — 1040 BATCH-003 items #5, #7 and #4. No migration, one
 > deploy (`4f924ac`).** No form gains a leg; four wrong RULES on already-built forms are
 > corrected. **⚠⚠ ALL THREE ITEMS CONCEALED A DEFECT LARGER THAN THE REPORTED
