@@ -1,5 +1,50 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-09 session 238 — 1040 BATCH-002 #6, Form 8379 (Injured Spouse
+> Allocation). Two migrations (0276 model, 0277 RLS), one deploy.**
+> **A NEW FORM GAINS ALL SEVEN LEGS AT ONCE** — model, compute, AcroForm
+> render, diagnostics, MeF document, import lane, browser card. Nothing
+> existed before: the only trace of Form 8379 anywhere was
+> `Form8888.filed_form_8379`, a boolean firing `D_8888_8379`.
+> **⚠⚠ THE RS SPEC RETURNED 200 AND WAS STILL NOT THE SPECIFICATION.** The
+> 404-STOP gate never fired, which is what made reading it first worth doing:
+> the export is `"status": "draft"` with a **4-entry `line_map` for a NINE-line
+> Part III grid**, and its `R-8379-ALLOC` states the column constraint for TWO
+> of the nine. Building it as written ships **seven unguarded reject
+> conditions** — every line carries its own Active rule (13a F8379-015 · 13b
+> -004 · 14 -016 · 15 -005 · 16 -024 · 17 -023 · 18 -017 · 19 -018 · 20 -009) —
+> plus no exactly-one-injured-spouse pair (-001/-002), no MFJ requirement
+> (-013), no foreign/PR/VI address bars (-011, -012-01), no barred-companion
+> list (-019-01). The s222/s223 shape: face + `IRS8379.xsd` 2025v5.4 + the 18
+> `F8379-*` rules are the real spec, written up in `specs/_8379_source_brief.md`.
+> **⚠⚠ COLUMN (a) IS DERIVED, NEVER KEYED** — "Amount shown on joint return"
+> restates the return the form rides on, so all nine come from the 1040 and the
+> lane refuses an `l*_joint` key BY NAME. Two of the nine are settled by the
+> XSD, not the face: **line 13a is 1040 line 1a (both named `WagesAmt`), not
+> the 1z total** — 1z also carries tips and household wages, none of them "on
+> Form(s) W-2" — and **line 20 is `EstimatedTaxPaymentAmt`, i.e. line 26**, not
+> total payments, which would double-count line 19's withholding.
+> **⚠⚠ COLUMN (c) IS DELIBERATELY *NOT* DERIVED as `a − b`.** Deriving it
+> satisfies all nine balance rules by construction and throws away the filed
+> packet's own redundancy; keying both makes `a != b + c` catch a keying slip
+> OR an app return that does not match the filed one.
+> **⚠⚠ ADDING THE FORM MADE AN EXISTING RULE WRONG, fixed in the same pass** —
+> "is a Form 8379 on this return?" now has TWO sources, and `d_8888_8379` /
+> `analyze_8888` / `_extract_f8888` all read only the checkbox. A return with a
+> genuine Form 8379 and the box unticked would have kept a refund split the IRS
+> rejects outright. One shared `form_8379_present()`; both directions pinned.
+> **Answer key hand-derived from the packet's own filed 8379**, and line 15's
+> $15,750 halves checked against the app's OWN 2025 MFJ constant (31,500):
+> 13a 88,080 = 51,360 + 36,720 · 13b 183 = 92 + 91 · 14 175 = 0 + 175 ·
+> 15 31,500 = 15,750 + 15,750 · 16 2,700 = 0 + 2,700 · 17 8,060 = 4,030 +
+> 4,030 · 19 2,385 = 575 + 1,810.
+> ⚠ Boundary stated, not implied: four of the six forms `F8379-019-01` bars
+> (8833, 4563, 5074, 8689) are not modeled at all — DEFERRAL_AUDIT.
+> ⚠ Retired a stale literal in passing: `test_tts_forms`'s hand-counted
+> `len(forms) == 100`; three prior sessions record missing that re-pin.
+> 64 new tests (the MeF document validates against the real XSD, which caught
+> a hyphenated SSN in the fixture). Regression 230 / 726 / 481 green.
+
 > **2026-08-08 session 237 — 1040 BATCH-002 #4 (the individual foreign tax
 > credit). No migration, one deploy.** No form gains a compute or render leg;
 > one form becomes IMPORTABLE and one e-file seam becomes HONEST.
