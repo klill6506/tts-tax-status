@@ -1,12 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-08 (s237). **1040 BATCH-002 #4 BUILT** — the individual
-foreign tax credit. Two thirds of its reported cause was already closed and is
-now pinned; the real gap was the full Form 1116 lane section. One deploy.
-BATCH-002 now has 1 item open, BATCH-001 has 6.*
+*Last updated: 2026-08-09 (s238). **1040 BATCH-002 #6 BUILT** — Form 8379,
+Injured Spouse Allocation, a new form gaining all seven legs at once. The RS
+spec answered 200 but covered 2 of its 9 balance rules. One deploy (`4ca1019`),
+two migrations. BATCH-002 now has 0 fully-open items (9 and 10 are open as to
+their RS-blocked COMPUTE half only); BATCH-001 has 6.*
 
-*Previous (s236): the Georgia RIE suspended-K-1-loss feeder + the S-corp K-1
-charitable carry (`9215797` · `7b96ab0` · `d2b78d5` · `b05e1b2`).*
+*Previous (s237): the individual foreign tax credit and the Form 1116 lane
+section (`75c53a7` · `bece549`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -34,115 +35,109 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — 1040 BATCH-002 #6, the Form 8379 build
-Unblocked, needs nothing from Ken, and **already triaged in s237** — read the
-scoping note in the batch file's s237 annex before starting. What that triage
-found:
+### ⭐ NEXT UNIT — the Form 8853 Section C build
+Unblocked, needs nothing from Ken, and now untouched for **six** sessions —
+it has been the runner-up every session since s232 and keeps being passed over
+for batch items. Spec cached at `server/specs/8853_sec_c_spec.json`; deployed
+`lookup/8853_SEC_C/export/` returns 200. All four legs pending.
 
-- **Nothing exists.** No `Form8379` model, no compute, no render, no MeF, no
-  lane section. The only trace anywhere is `Form8888.filed_form_8379`, a
-  boolean whose sole job is to fire `D_8888_8379` (F8379-019-01 bars Form 8888
-  and Form 8379 from riding one return).
-- **The 404-STOP gate does NOT block** — `lookup/8379/export/` returns 200 and
-  the spec is cached at `server/specs/8379_spec.json`. ⚠ **But it is
-  `"status": "draft"`, version 1, with a `line_map` of FOUR entries** (`P1_ELIG`,
-  `L13a`, `L15`, `L19`) for a Part III allocation grid of roughly twenty lines.
-  Its four rules are sound as far as they go (the Part I eligibility chain;
-  `col a == col b + col c`; the one-half standard-deduction split; the
-  community-property carve-out for AZ/CA/ID/LA/NV/NM/TX/WA/WI where the IRS
-  divides the overpayment by state law, not by the Part III entries) — they
-  just do not describe the whole face.
-- Not a 404, so not a STOP: this is the s222/s223 shape, where **the IRS form
-  face + `IRS8379.xsd` + the `F8379-*` business rules are the real
-  specification** and the build carries a `_source_brief.md`.
-- **Size it honestly — a full seven-leg form build** (model + migration, seed,
-  compute, AcroForm render, diagnostics, MeF document, lane section, tests).
-  s237 stopped rather than start it half-built.
+**The two things the build must not get wrong** are written up in full in
+`STATUS_ARCHIVE.md` under s232 — read that first:
+- Schedule 1 line 8e is **COMPOSED, not owned** (the s230 shared-line lesson —
+  a second writer would silently overwrite the first).
+- Line 25 **FLOORS AT ZERO** though the printed face does not say so; the
+  statute's "excess (if any)" is the floor, and LII had DROPPED that phrase
+  while uscode.house.gov carried it. Unfloored, line 26 exceeds line 20.
 
-### ⭐ ALSO STILL PENDING AND STILL UNBLOCKED — the Form 8853 Section C build
-Unchanged from s232, untouched for five sessions. Spec cached at
-`server/specs/8853_sec_c_spec.json`; deployed `lookup/8853_SEC_C/export/`
-returns 200. All four legs pending, none needs Ken. **The two things the build
-must not get wrong** (Schedule 1 line 8e is COMPOSED, not owned; line 25 FLOORS
-AT ZERO though the face does not say so) are written up in full in
-`STATUS_ARCHIVE.md` under s232 — read that before starting.
+### ⭐ ALSO UNBLOCKED — build the `IRS1116` e-file document
+Named as the follow-up in s237 and now the oldest live e-file gap. A FULL-path
+Form 1116 return is **paper-only in code** (`extract_return` refuses it by
+name) because no `IRS1116` builder exists — the s148 sweep's 4th
+missing-document occurrence. The s238 `IRS8379` build is a fresh worked example
+of the whole shape: source dataclass → builder in `xsd:sequence` order → the
+ReturnData1040 slot read off the schema → a test that validates real XML
+against the real XSD. That last one earns its keep; it caught a bad SSN format
+in s238 within seconds.
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10) and
-  **BATCH-002 — 1 open** (6; 9 and 10 are open only as to their COMPUTE half,
-  both RS-blocked). Both carry result annexes naming exactly what is done and
-  what is blocked; read them before starting.
+  **BATCH-002 — items 9 and 10 open as to their COMPUTE half only**, both
+  RS-blocked. Both files carry result annexes naming exactly what is done and
+  what is blocked; read them before starting. ⚠ BATCH-002 deliberately did
+  **not** move to Done — the README lets a batch move with an unresolved ⛔ KEN
+  item, but an RS-blocked build is different: two computations are genuinely
+  unbuilt, and filing the batch away would record them as finished.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
-### ✅ s237 in one paragraph
-One item, and verify-first paid for itself before a line was written. The batch
-item's three claims about the lane were checked first: **two were already
-false.** `foreign_tax_paid` has been in `INT_FIELDS` and `DIV_FIELDS` since the
-lane's first commit, and the §904(j) de minimis AUTO-election has landed
-`min(foreign tax, regular tax)` on Schedule 3 line 1 — no Form 1116 engaged, no
-face — since 2026-07-01, which is exactly the reported shape (a $97 credit with
-no printed 1116). **The reported packet imports today, unchanged**, and both
-facts are now pinned so they cannot silently regress. The real gap was the
-FULL §904 path: every fact that forces it lives on the `Form1116` row and the
-lane could not create one, so those packets were un-importable outright. Built
-`form_1116s`, the lane's first SINGLETON section, plus the importable
-`ftc_deminimis_optout`.
+### ✅ s238 in one paragraph
+One item, and it was a whole form. Form 8379 had **nothing** — no model,
+compute, render, MeF, diagnostics or lane section; the only trace anywhere was
+`Form8888.filed_form_8379`, a boolean firing `D_8888_8379`. All seven legs
+built in one pass, plus a browser card, against a governing specification that
+was **not** the Rule Studio spec.
 
-### ⚠⚠ THE FINDING WORTH CARRYING — a helper that fires an auto-credit needs an off switch
-`ftc_deminimis_optout` existed on the model and in the browser but **not in the
-lane**, while the auto-election fires on ANY 1099 foreign tax at or under the
-ceiling. So a packet whose preparer **deliberately did not claim the credit**
-(deducted the foreign tax on Schedule A, or let it go) imported **with a credit
-the filed return does not have**, and nothing in the lane could suppress it.
-⚠ Sign: the lane OVERSTATED the refund on exactly those returns, and the
-reconciliation would have named the engine as the culprit. *The general shape:
-when a convenience auto-derivation is added, the fact that TURNS IT OFF becomes
-a required input on every import surface, not an optional preference.*
+### ⚠⚠ THE FINDING WORTH CARRYING — a 200 from Rule Studio is not a green light
+The 404-STOP gate exists to stop CC improvising a form with no spec. `8379`
+answers **200**, so the gate never fired — and the export turned out to be
+`"status": "draft"`, version 1, with a **4-entry `line_map` for a nine-line
+Part III grid**, whose one allocation rule states the column constraint for
+**two** of the nine lines. Implementing it faithfully would have shipped a form
+with **seven unguarded reject conditions**, plus no exactly-one-injured-spouse
+rule, no MFJ requirement, no address bars and no barred-companion list — every
+one of them an Active/Reject MeF rule. *The general shape: the 404 gate tests
+for the EXISTENCE of a spec, and nothing tests its COVERAGE. Read the
+`line_map` against the form's own face before trusting a 200 — a draft spec is
+the most dangerous kind, because it looks like permission to proceed.*
 
-### ⚠⚠ THE OTHER ONE — a OneToOne cannot answer the questions a FK family answers
-`form_1116s` is the lane's first singleton section, and the reverse accessor
-**raises `RelatedObjectDoesNotExist` when absent** and returns a bare model
-instance (no `.count()`, no set `.delete()`) when present. The merge gate, the
-replace pass and the cleanup persistence gate all called `getattr(target, rel)`
-— every one of them would have broken. They now go through one `_section_qs`
-helper. **The next singleton section will hit this exact trap**; it is not
-specific to Form 1116.
+### ⚠⚠ THE OTHER ONE — adding a form made an existing rule wrong, again
+Before this build, "is a Form 8379 on this return?" had exactly one possible
+answer: the `Form8888.filed_form_8379` checkbox. A real `Form8379` row is now a
+**second source for the same fact**, and `d_8888_8379`, `analyze_8888` and
+`_extract_f8888` all read only the checkbox. A return carrying a genuine Form
+8379 with that box unticked would have kept a refund split the IRS rejects
+outright (F8379-019-01). One shared `compute_8888.form_8379_present()` now
+serves all three, and both directions are pinned — the row alone bars the
+split, and the checkbox alone still bars it (a preparer stating that an 8379 is
+being filed SEPARATELY on paper bars it just the same). ⚠ Sign: **a rejected
+transmission, not a wrong number** — the return looks correct and comes back
+rejected, which is why it would have survived every reconciliation.
+*This is s225's lesson for the third time: adding a rule usually makes an
+existing rule wrong. Grep for who else answers the question you just gave a
+second answer to.*
 
-### ⚠⚠ AND ONE SEAM CLOSED BY REFUSAL, NOT BY BUILDING
-Schedule 3 line 1 transmits as a bare `ForeignTaxCreditAmt` and **there is
-still no `IRS1116` e-file document builder** (the s148 sweep already named this
-as the 4th occurrence of the missing-document shape). Correct on the §904(j)
-paths — no Form 1116 is due — but a FULL-path return would file a credit with
-its required form MISSING, and **no MeF business rule catches it**: every
-`F1116-*` rule in `1040_Business_Rules_2025v5.3.csv` presumes the form is
-already present. `extract_return` now refuses a full-path return by name, with
-the §904(j) path pinned to keep extracting so a future blanket guard cannot
-ground every retiree with an international fund. **It is a refusal, not a fix —
-the full path was already paper-only in fact and is now paper-only in code.
-Building `IRS1116` is the follow-up.**
+### ⚠ THE DESIGN CALL TO KNOW ABOUT — column (a) derived, column (c) NOT
+Part III column (a) ("Amount shown on joint return") is **derived** from the
+return the form rides on; the lane refuses an `l*_joint` key by name. Column
+(c) is arithmetically redundant (`c = a − b`) and is **deliberately still
+keyed** — deriving it would satisfy all nine balance rules by construction and
+throw away the filed packet's own redundancy. Keeping both makes `a != b + c` a
+real check that catches a transcription slip *or* an app return that does not
+match the filed one.
+
+⚠ Two column-(a) sources are settled by the XSD, not the printed face:
+**line 13a is 1040 line 1a, not 1z** (both are named `WagesAmt`; 1z also
+carries tips and household wages, none of them "reported on Form(s) W-2"), and
+**line 20 is `EstimatedTaxPaymentAmt` = line 26**, not total payments, which
+would double-count line 19's withholding.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **NONE from s237.** No compute code changed; `form_1116s` rows can only exist
-  where a payload creates one, and `ftc_deminimis_optout` defaults false (the
-  old behavior). The one behavior change is the **e-file refusal**, and it
-  reaches only returns already computing a full Form 1116 — which could not
-  have been validly transmitted before either.
+- **NONE from s238.** No existing compute code changed. `Form8379` rows are new
+  and can only exist where a payload or preparer creates one. The single
+  behavior change is the 8888 bar, and it reaches only a return carrying BOTH a
+  Form 8888 and a real Form 8379 — a combination the IRS rejects today.
+- Carried from s237: none (the e-file refusal reaches only full-path 1116
+  returns, which could not have been validly transmitted before either).
 - Carried from s236: a Georgia return with a passive K-1 whose loss was partly
-  or wholly suspended gets a different RIE line 13 (a suspended loss leaving
-  the base RAISES the exclusion and LOWERS Georgia tax — correctly); a
-  materially-participating K-1 carrying box 2 or 3 amounts.
+  or wholly suspended gets a different RIE line 13; a materially-participating
+  K-1 carrying box 2 or 3 amounts.
 - Carried from s235: Georgia dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted (NONE of it from this session)
 - **~24 test files** assert registry wiring via
   `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
-  iterate `all_registries()`, so these are **false REDs** — the registries are
-  still registered. s237 hit one of them
-  (`test_1116_diagnostics_leg.py::test_rules_1116_registered_in_runner`) and
-  **verified rather than assumed**: `RULES_1116` is registered at
-  `runner.py:262`. Spun off as its own task.
+  iterate `all_registries()`, so these are **false REDs**. Spun off as its own task.
 - **`test_topic7_input_leg.py::TestEICFacts::test_non_engaged_return_leaves_27a_quiet`**
   — pre-existing, verified at pristine `6e819b5` in a worktree (s235). Not diagnosed.
 - **`test_1040.py` — 6 pipeline tests**, `MultipleObjectsReturned`. Their `_fv`
@@ -153,31 +148,38 @@ Building `IRS1116` is the follow-up.**
 - `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
   batch-005 #9 PTET-gate class, red since s212.
 - **DiagnosticRule unique-code contamination** (s225): `test_backentry_cleanup.py`
-  red under `--reuse-db` (3 tests) — hit again in s237's regression run.
-- **Client typecheck**: 55 error lines standalone. s237 touched no .tsx.
+  red under `--reuse-db` (3 tests) — hit again in s238's regression run
+  (`D_PREPARER_001`), unrelated to the 17 new `D_8379_*` codes.
+- **Client typecheck**: 55 error lines standalone. s238 touched no .tsx.
+- ✅ **FIXED in s238**: `test_tts_forms.py::TestManifest::test_manifest_is_valid_json`
+  pinned a hand-counted `len(forms) == 100`. Retired rather than re-pinned —
+  three prior sessions (s124, s219, s230) recorded MISSING that re-pin, so it
+  was failing for bookkeeping, never for a real defect. It now asserts
+  non-empty + no duplicate `form_id`.
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB;
   the hazard is CROSS-REPO (both repos name it `test_postgres`). `--reuse-db`.
 - **A broad `-k` sweep is SLOW and blows the 600s Bash timeout** — s236's
   ~1,100-test sweep took **21½ minutes**. Run it with `run_in_background: true`
-  and collect it later; do NOT start a second pytest while it runs. ⚠ And keep
-  the `-k` terms tight: `k1` matches hundreds of node ids, and `rie` matches
-  "ret**rie**ve".
-- ⚠ `--create-db` does NOT reliably drop a test DB that already exists here
-  ("database test_postgres already exists" → it silently reuses). To prove a red
-  is pre-existing, use a `git worktree` at a pristine SHA with the MAIN venv's
-  interpreter, and copy `server/.env` in (s235).
+  and collect it later. ⚠ Keep the `-k` terms tight: `k1` matches hundreds of
+  node ids, and `rie` matches "ret**rie**ve".
+- ⚠ `--create-db` does NOT reliably drop an existing test DB here. To prove a
+  red is pre-existing, use a `git worktree` at a pristine SHA with the MAIN
+  venv's interpreter, and copy `server/.env` in (s235).
 - A long `pytest ... | Select-Object -Last N` that hits the 120s timeout
   loses ALL output — redirect to a file and tail it.
 - ⚠ A `poetry run python script > file` redirect BUFFERS. Use `-u`.
 - ⚠ A stdout **redirect goes through cp1252** on this box and dies on ligatures
   and the U+2212 minus. Write UTF-8 from inside Python.
 - ⚠ `manage.py shell -c "..."` prints nothing; a multi-line `python -c` through
-  the Bash tool also silently produces no output — **s237 lost an append to a
-  batch file to exactly this** and had to redo it as a script file. A bash
-  heredoc into `python -` DOES work.
-- ⚠ The Bash tool's cwd PERSISTS across calls — use absolute `cd` each call.
+  the Bash tool also silently produces no output. A bash heredoc into
+  `python -` DOES work — **but s238 lost a heredoc to apostrophes in the body
+  when it was chained with a following command.** For any long prose payload,
+  write the file with the Write tool and run a tiny script file against it.
+- ⚠ **`poetry run` must be invoked from `D:\dev\delvio-tax\server`** — from the
+  repo root it fails with "could not find a pyproject.toml". The Bash tool's
+  cwd persists across calls, so `cd` absolutely, every call.
 
 ### 🔎 Carried for triage — NOT claims
 - **From s234, potentially large and still unchased**: a materially-participating
@@ -212,22 +214,22 @@ Building `IRS1116` is the follow-up.**
   limitation and the utilization ordering; the 404-STOP gate forbids
   improvising them. **The preservation half is built and the pools are safe —
   only the computation waits.** Still the single highest-value RS authoring
-  order on this list.
-- **NEW (s237)**: the **`8379` spec is a DRAFT with a 4-entry `line_map`**
-  (`P1_ELIG`, `L13a`, `L15`, `L19`) for a Part III grid of ~20 lines. Its four
-  rules are correct as far as they go; they simply do not cover the face. The
-  build can proceed off the IRS form + `IRS8379.xsd` + the `F8379-*` rules
-  (the s222/s223 shape), but promoting the spec out of draft with the full
-  allocation grid would make it a transcription instead.
+  order on this list, and it is now the ONLY thing keeping BATCH-002 open.
+- **NEW (s238), and it generalizes**: the **`8379` spec is a DRAFT whose
+  `line_map` covers 4 of ~20 lines**, and because it returns 200 the 404-STOP
+  gate waved it through. The build proceeded off the face + `IRS8379.xsd` + the
+  18 `F8379-*` rules (the s222/s223 shape) and is complete, so promoting the
+  spec is now **documentation, not a blocker** — but the general point stands:
+  **the export's `status` field is not checked anywhere.** A `draft` spec that
+  answers 200 is indistinguishable from an approved one at the gate. Worth
+  either promoting drafts promptly or having CC read `metadata.status` and say
+  so out loud.
 - Carried (s236): `R-SCHA-CHARITABLE` models only three buckets while the K-1
   states **seven** — 1120-S box 12 codes A–G — so **B, D, F and G have no home
-  and are REFUSED at both write paths**, the same gap `D_SCHA_007` RED-defers
-  on the taxpayer side. ⚠ Sign: a refused code is not deducted AT ALL — it
-  overstates tax.
+  and are REFUSED at both write paths**. ⚠ Sign: a refused code is not deducted
+  AT ALL — it overstates tax.
 - Carried (s236): the `500` spec's RIE line_map has no **RIE-13**, and no rule
-  governs what FEEDS lines 1/2/6-13 at all. Two sessions running (s233, s236)
-  the app settled a sourcing question from Ga. Comp. R. & Regs. r. 560-7-4-.02
-  directly because `R-GA500-RIE` does not exist.
+  governs what FEEDS lines 1/2/6-13 at all.
 - Carried (s235): the `SCHEDULE_A` charitable carryover modelled as ONE
   aggregate (BATCH-002 #9 needs pools by source year AND limitation class); the
   `500` spec typing line 7a as `input` when the app now DERIVES it.
