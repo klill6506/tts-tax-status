@@ -1,5 +1,67 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-09 session 239 — 1040 BATCH-003 items #5, #7 and #4. No migration, one
+> deploy (`4f924ac`).** No form gains a leg; four wrong RULES on already-built forms are
+> corrected. **⚠⚠ ALL THREE ITEMS CONCEALED A DEFECT LARGER THAN THE REPORTED
+> ONE**, and in each case the reported symptom was the small half.
+> **#5 code U** was reported as a missing 1099-R distribution code. Verified
+> from the source PDF: i1099-R (2025) Table 1 — "U—Dividends distributed from
+> an ESOP under section 404(k)". The real loss is that an unsupported code
+> BLANKS THE WHOLE PENSION TAXABLE COLUMN (the no-silent-gap rule), so a $7 ESOP
+> dividend suppressed an unrelated $671 code-1 row — the reported $678 out of
+> AGI. Deliberately NOT an early code: §72(t)(2)(A)(vi) excepts §404(k)
+> dividends, which is why the filed return charged $67 and not $67.70.
+> **#7 codes J/T** are now admitted CONDITIONALLY — only when an owner-matched
+> Form 8606 reports Part III Roth facts; fail-closed otherwise, so D_RET_003
+> still fires with no 8606 and a spouse's 8606 does not admit the taxpayer's.
+> **⚠⚠ ADMITTING THEM ALONE WOULD HAVE TAXED THE DISTRIBUTION TWICE.** Two
+> instructions disagree on their face: a Roth 1099-R carries the box-7
+> IRA/SEP/SIMPLE checkbox FALSE (i1099-R Box 7 — "Do not check the box for a
+> distribution from a Roth IRA that is not a Roth SIMPLE IRA") while the 1040
+> reports it on lines 4a/4b (i1040 "Lines 4a and 4b" — "an IRA includes a
+> traditional IRA ..., Roth IRA ..., and a SIMPLE IRA"), which is also where
+> Form 8606 line 25c lands. The gross sat on 5a and the taxable on 4b; and box
+> 2a is blank on a Roth BY INSTRUCTION, so the no-basis fallback would have
+> taxed $3,600 in full on 5b while the 8606 wrote $0 on 4b. `doc_is_ira_path`
+> is now the single source for IRA-vs-pension; `doc_taxable` returns zero for
+> any Roth code (a §408A(d)(4) ordering result is never a box-2a fact). The
+> §72(t) half is DECLARED, not omitted — new `D_RET_011` (error; the sign
+> understates tax) fires only when Part III is actually taxable, because
+> feeding Form 5329 line 1 from the blank box 2a would charge 10% of the GROSS,
+> a penalty on returned contributions.
+> **#4 Georgia RIE — FOUR defects, and the reported one is the smallest.**
+> Authority fetched verbatim: Ga. Comp. R. & Regs. r. 560-7-4-.02(4)(b)1.
+> **⚠⚠ ONE SENTENCE, TWO DIFFERENT TESTS** — partnership income is earned when
+> "subject to Federal FICA tax or Federal self employment tax"; S-corporation
+> income is earned when the taxpayer "materially participates". The engine
+> applied the S-corp test to both, and they routinely disagree (§1402(a)(13): a
+> limited partner's share is outside the SE base however much they
+> participate). It costs money because the earned portion is capped at $5,000
+> and the unearned portion is not, so $2,252 was absorbed by the cap and
+> vanished. The K-1's box 14 code A states the fact. ⚠ **Sign is not
+> character** — the test is `14A != guaranteed payments`, not `> 0`, because a
+> general partner's SE LOSS is equally SE-subject; that is what reconciles
+> s236's filed worksheet (mat.-part. partnership LOSS as earned) with this
+> one's (partnership INCOME as unearned). Both are right; different partners.
+> Three further feeds were reaching NO RIE line at all: the K-1's own box-5
+> interest and box-6a dividends (the reg's unearned list opens with "interest
+> income, dividend income", no entity qualifier), guaranteed payments (§1402(a),
+> always earned), and — pre-existing — RIE L11 summed box 2a while an engaged
+> Form 8606 SUPERSEDES federal 4b, so a basis recovery inflated the base.
+> New `D_GA500_018` (warning) on a blank box 14A; ⚠ the default there ENLARGES
+> the exclusion and understates Georgia tax, so it is loud.
+> ✅ Closed a carried RS item at no cost: `GA_RIE_EARNED_CAP` $5,000 vs the
+> reg's $4,000 — **the statute controls**, §48-7-27(a)(5)(E)(i) says $5,000
+> twice; the reg's figure is pre-2011-amendment. The code was always right.
+> ⚠ Two s236 tests and one flow assertion changed and NEITHER was weakened:
+> the s236 fixtures never stated box 14A (they key it now, making them general
+> partners, which is what their filed worksheet shows), and FA-1040-RET-07
+> asserted a blocked code-J doc blanks 5b — a code-J doc is a Roth and blanks
+> 4b, so it had been passing while naming the wrong line.
+> ⚠ Retired a stale literal in passing: `test_ga500_diagnostics_leg`'s
+> hand-counted `len(codes) == 17` now asserts the DB set equals `RULES_GA500`.
+> 18 new tests + 2 in the s236 file. Flow-assertion gate green (526).
+
 > **2026-08-09 session 238 — 1040 BATCH-002 #6, Form 8379 (Injured Spouse
 > Allocation). Two migrations (0276 model, 0277 RLS), one deploy.**
 > **A NEW FORM GAINS ALL SEVEN LEGS AT ONCE** — model, compute, AcroForm
