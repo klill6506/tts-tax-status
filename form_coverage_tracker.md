@@ -1,5 +1,25 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241i — ✅✅ FORM 8862 IS COMPLETE (all legs).** Section A
+> shipped with its PRINT and its TRANSMISSION in one unit, deliberately: line 6
+> and line 8 were in the XSD and unemitted while also unprinted, and splitting
+> them is how s241e's paper-vs-XML gap opened.
+> **⚠ Line 6 is the Section A/B ROUTER**, so the box and the branch derive from
+> ONE list (two derivations of one fact is how they drift — s234).
+> **⚠⚠ Line 8 carries a condition the SCHEMA does not state** — "If the child
+> was born or died during the year … **Otherwise, skip this line**" — so a
+> birth date prints/transmits ONLY for an in-year birth; a date for a child born
+> earlier **answers a question the form did not ask**.
+> ⚠ The DEATH half is never filled: `Dependent` has no date-of-death field.
+> Real EIC case (the residency test has an exception) → DEFERRAL_AUDIT.
+> ⚠ Line 7 wants DAYS, the app records MONTHS: 12 → 365, less is left blank,
+> because under 183 days BARS the EIC for that child.
+> ⚠ The new blank-check reported a false positive (child 2 showing child 1's
+> "07") — the rows ABUT at y=672, so the READING was loose, not the map. Inset
+> 2pt, then re-proven by dropping the in-year condition (failed with "03").
+> **FORM 8862 — all seven legs green** (s241c→s241i): model + migs 0279/0280,
+> MeF, print (16 → ~100 map entries), CRUD + lane, `D_8862_002`/`D_8862_003`.
+
 > **2026-08-10 session 241h — Form 8862 Parts III + IV PRINT. No migration, one
 > deploy. ⚠ STILL PARTIAL — do NOT tick** (Part II Section A print/emit left).
 > They were TRANSMITTED but printed blank, so a preparer reviewing the paper saw
