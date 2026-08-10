@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241f). **BATCH-004 #8's diagnostics built** —
-`D_8862_002` (required but incomplete, naming the missing lines) and
-`D_8862_003` (Part I line 2 vs the credits actually claimed). One deploy
-(`35a406a`), no migration. ⛔ #8 STILL NOT FINISHED — the Parts II-A/III/IV
-print remains. ⭐⭐ **But do the `inspect.getsource` false-red sweep FIRST** —
-sixth consecutive session, and it cost this one an hour.*
+*Last updated: 2026-08-10 (s241g). **THE `inspect.getsource` FALSE-RED CLASS IS
+RETIRED** — 24 assertions across 24 files replaced with a check that has teeth;
+the `-k "diagnostic"` sweep went 22 failed → **900 passed, 0 failed**. It had
+cost six consecutive sessions. One deploy (`cdbec66`), no migration.
+⛔ BATCH-004 #8 still not finished — the Parts II-A/III/IV print remains.*
+
+*Previous (s241f): the 8862 diagnostics `D_8862_002` / `D_8862_003`
+(`35a406a`); (s241e) the printed 8862 caught up with the transmission
+(`1f5355c`); (s241d) Section B + the ODC split (`7ebd348`); (s241c) five
+fabricated sworn answers removed (`3a87b2f`, migrations 0279 + 0280).*
 
 *Previous (s241e): the printed 8862 caught up with what we transmit
 (`1f5355c`); (s241d) Section B + the ODC split (`7ebd348`); (s241c) five
@@ -87,31 +91,7 @@ line 2 vs the credits actually claimed, both directions).
 8. **Section A lines 6 and 8** (`QualifyingChildInd`, `BirthMonthDayDt` /
    `DeathMonthDayDt`) are in the XSD and still not emitted.
 
-### ⭐⭐ ACTUALLY DO THIS FIRST — the `inspect.getsource` false-red class
-**It has now cost time in SIX consecutive sessions and it cost s241f roughly an
-hour**, because a 22-failure sweep had to be run twice and read in full to prove
-that none of the 22 was mine. That is the real price, and it is paid again every
-session. Stop deferring it.
-
-**The defect**: ~21 test files assert registry wiring with
-`assert "RULES_X" in inspect.getsource(seed_builtin_rules)`. s233 refactored
-that function to iterate `all_registries()`, so the literal is no longer in its
-source and every one of these is a FALSE red. They also no longer test anything:
-a genuinely unregistered rule family would still pass if its name appeared in a
-comment.
-
-**The fix** is mechanical and s233 already built the seam — `all_registered_rules()`
-was split out of `seed_builtin_rules()` precisely so a check and the seeder
-share ONE list. Replace each assertion with one that asks the registry (or the
-DB) whether that family's codes are actually registered, e.g.
-`assert {r["code"] for r in RULES_X} <= {r["code"] for r in all_registered_rules()}`.
-⚠ Assert against what the module DECLARES, never a hand count (s241's lesson,
-and s239 shipped two stale counts exactly that way).
-Files: `grep -l 'getsource(seed_builtin_rules)' server/tests/*.py` (19), plus
-`test_w2_unit3_diagnostics_leg.py::test_rules_7206_registered_in_runner` and
-`test_w2_unit4_diagnostics_leg.py::test_rules_minister_registered_in_runner`.
-⚠ Prove the replacement has teeth on at least one file by removing a family
-from the registry and watching it fail (s232).
+### ✅ DONE in s241g — the false-red class is retired (see Known red / rotted)
 
 ⚠ **Carry the s241c design rule forward**: lines 4 and 11 DERIVE from the EIC
 engine's own Rule 13 / Rule 12 gates and must never gain a keyed copy (s234 —
@@ -346,6 +326,27 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241g in one paragraph — the lesson is about what a test PROVES
+Retired the `inspect.getsource(seed_builtin_rules)` class: 24 assertions, 24
+files, now `assert_registry_wired()` in `tests/registry_asserts.py`. The sweep
+went **22 failed / 878 passed → 900 passed, 0 failed**. **⚠⚠ THE CHEAP REPAIR
+WAS REJECTED AND THAT IS THE WHOLE POINT.** `all_registered_rules()` imports
+each registry by name, so repointing the same sniff at it would have gone green
+in one line — and still proved nothing. **Demonstrated, not argued**: the teeth
+test injected `RULES_8889 = []` into that function, which CONTAINS the literal
+`"RULES_8889"`, so a repointed sniff would have PASSED while the family reached
+neither the seeder nor the database. The new assertion failed instead, naming
+all 8 orphaned codes. *A test that searches for a NAME proves the name exists;
+only a test that follows the VALUE proves the wiring.*
+
+### ✅ s241f in one paragraph
+BATCH-004 #8's diagnostics: `D_8862_002` (required but incomplete, naming the
+missing lines — every unanswered question on that form has an answer that BARS
+the credit) and `D_8862_003` (Part I line 2 vs the credits actually claimed,
+both directions). One of its 12 tests caught a trap in its own setup: the
+8862-row helper was a filter-and-update against rows that only exist after an
+engaged-EIC recompute, so two tests had been passing by absence.
+
 ### ✅ s241e in one paragraph — and the lesson is about MY OWN earlier change
 The Form 8862 field map was a deliberate coarse data-map whose docstring said
 the granular sections were *"left blank for the preparer to complete by hand — a
@@ -438,14 +439,17 @@ fails loudly instead of silently dropping a student's credit.
 - Carried from s235: Georgia dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted
-- **21 test files** assert registry wiring via
-  `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
-  iterate `all_registries()`, so these are **false REDs**. **s241f enumerated
-  the whole class for the first time: a `-k "diagnostic"` sweep is 22 failed /
-  878 passed, and ALL 22 are this.** ⚠ **SIXTH consecutive session, and it cost
-  s241f about an hour** — the sweep had to be run twice and read in full purely
-  to prove none of the 22 belonged to that session's change. **It is now
-  promoted to the next unit** (see ⭐⭐ above) rather than deferred again.
+- ✅ **RETIRED IN s241g — the `inspect.getsource(seed_builtin_rules)` class is
+  GONE.** 24 assertions across 24 files, all replaced by
+  `tests/registry_asserts.assert_registry_wired()`, which checks that every code
+  a registry DECLARES is actually returned by `all_registered_rules()`. The
+  `-k "diagnostic"` sweep went from **22 failed / 878 passed → 900 passed, 0
+  failed**. It had cost time in six consecutive sessions. ⚠ **The cheap repair
+  was deliberately rejected**: repointing the sniff at `all_registered_rules`
+  would have gone green instantly (that function imports each registry by name)
+  but still proved nothing — the teeth test injected `RULES_8889 = []`, which
+  CONTAINS the literal, so a repointed sniff would have passed while the family
+  reached neither the seeder nor the DB.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
   s225 — a `D_PREPARER_001` duplicate-key on rule seeding; fails alone too) and
   `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
