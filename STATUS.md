@@ -1,10 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241i). **✅ BATCH-004 #8 (Form 8862) IS COMPLETE** —
-Section A's print and transmission landed together, deliberately, because
-splitting them is how the paper-vs-XML gap opened in the first place. One deploy
-(`87979f2`), no migration. Nine units shipped today; the next is BATCH-004 #3,
-pre-2019 alimony — the first in a while that moves computed tax.*
+*Last updated: 2026-08-10 (s241j). **BATCH-004 #3 (alimony) — the deduction was
+allowed under ANY instrument date.** `D_SCH1_003` checked only that the line-19c
+date was PRESENT, so a post-2018 divorce deducted alimony and reduced AGI.
+⚠ Sign: OVERSTATES the deduction. `D_SCH1_007` now enforces the TCJA §11051
+repeal; the movement was PROVED (AGI down exactly $8,400) rather than asserted.
+One deploy (`fdd2459`), no migration. Ten units today; BATCH-004 is 5 of 10.*
+
+*Previous (s241i): ✅ Form 8862 COMPLETE, Section A print + transmission
+together (`87979f2`); (s241g) the `inspect.getsource` false-red class RETIRED,
+22 failed → 900 passed (`cdbec66`).*
 
 *Previous (s241g): the `inspect.getsource` false-red class RETIRED — 24
 assertions, `-k "diagnostic"` 22 failed → **900 passed, 0 failed** (`cdbec66`);
@@ -71,33 +76,37 @@ entries) · browser CRUD + lane section · `D_8862_002` / `D_8862_003`.
 ⛔ One data gap NAMED, not hidden: `Dependent` has no date-of-death field, so
 line 8's death half cannot derive (DEFERRAL_AUDIT).
 
-### ⭐ NEXT UNIT — **BATCH-004 #3, pre-2019 alimony paid**
-The cheapest remaining genuine build, and unlike the last several it changes
-**computed tax**, not just a lane or a face: the filed Schedule 1 line 19a is an
-$8,400 deduction that drops AGI from $98,978 to $90,578, which then moves Social
-Security taxability, the enhanced-senior deduction, federal tax/refund AND the
-Georgia starting income.
+### ✅ BATCH-004 #3 (alimony) DONE — s241j, `fdd2459`
+Mostly refuted: 19a/19b/19c already existed as spec inputs and 19a already
+reached AGI. The real finding was that **nothing checked the instrument DATE**,
+so a post-2018 divorce deducted alimony and reduced AGI (⚠ overstates the
+deduction). `D_SCH1_007` now enforces the repeal; `D_SCH1_008` prompts on the
+modification arm the app cannot decide. Lane gained 19a/19b/19c.
 
-**Before building, in this order:**
-1. **404-STOP gate** — check `lookup/SCH_1/export/` (or whichever spec owns
-   line 19) for a rule governing alimony. ⚠ And check its `status` field:
-   **a `"draft"` export has now waved through twice** (s238's 8379, s241c's
-   8862), and both times the spec described a fraction of the face.
-2. **Verify-first**: grep for `alimony` before assuming nothing exists. Twelve
-   of the last fourteen items were narrower than reported.
-3. ⚠ **The TCJA transition rule is the whole point.** §11051 repealed the
-   deduction for instruments executed after 2018 — the deduction survives only
-   for a pre-2019 instrument, and a post-2018 MODIFICATION can opt in to the
-   new treatment. So the instrument date and the modification date are both
-   REQUIRED facts, not metadata: without them the engine cannot know whether
-   the amount is deductible at all. Verify against the statute, not recall.
-4. ⚠ **Recipient TIN is PII** — the item asks explicitly for it to be protected
-   in logs and UI. Schedule 1 line 19b transmits it; do not log it.
+### ⭐ NEXT UNIT — **BATCH-004 #9, Form 1099-PATR** (patronage dividends)
+The reported packet has $1,004 of `FARM CREDIT PATRONAGE DIVIDENDS` on Schedule
+1 line 8z, flowing to 1040 line 8 and AGI, and participating in the Georgia
+retirement-income exclusion.
 
-Then the rest of BATCH-004 by size: #9 Form 1099-PATR ≈ #10 Form 4547 +
-8879-TA ≈ #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X
-(large). ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 no RS spec
-exists for any information return; build from the IRS form + a `_source_brief.md`.
+**Before building:**
+1. ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 **no RS spec
+   exists for any information return**. Build from the IRS form + a
+   `server/specs/_1099patr_source_brief.md`, the s222/s223 shape.
+2. **Verify-first, and expect it to be narrower than written.** ⚠ The item
+   itself says the only existing 8z lane is 1099-MISC boxes 3/8 — check
+   whether `sch1_fields` or a flat 8z surface already carries this, the way
+   19a/19b/19c turned out to already exist in #3.
+3. ⚠ **The routing is the tax question, not the boxes.** Patronage dividends
+   can land on Schedule 1 line 8z, on Schedule C, or on Schedule F depending on
+   the activity they arose from, and the item explicitly warns against
+   double-feeding where the amount is already in Schedule C/F gross income.
+   The `misc_1099s` `routing` + `link_key` pattern (s222) is the worked
+   precedent — reuse it rather than inventing a second shape.
+
+Then the rest of BATCH-004 by size: #10 Form 4547 + 8879-TA ≈ #2 GA education
+credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X (large). ✅ #10's source check
+is CLOSED (s240) — Form 4547 is real, Rev. December 2025, filed WITH the
+e-filed return, so its MeF leg is part of that build.
 
 ### ✅ DONE in s241g — the false-red class is retired (see Known red / rotted)
 
@@ -334,6 +343,27 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241j in one paragraph — a completeness check is not a correctness check
+BATCH-004 #3 asked for an alimony document model; 19a/19b/19c already existed as
+spec inputs, already required the SSN and the date, and 19a already reached AGI.
+**The defect was one level down: `D_SCH1_003` checked that the line-19c date was
+PRESENT and never what it SAID.** So a divorce executed in 2020 deducted alimony
+and reduced AGI — ⚠ overstating the deduction — while a rule named "alimony
+completeness" reported the return clean. *A rule that validates the SHAPE of a
+fact can read as though it validates the FACT; check what it actually asserts.*
+`D_SCH1_007` now enforces the TCJA §11051 repeal (Topic 452 fetched verbatim,
+boundaries pinned at 12/31/2018 and 01/01/2019), and `D_SCH1_008` prompts on the
+modification arm because **a post-2018 modification alone does not end the
+deduction** and the app stores neither the date nor the express election —
+guessing there would deny a deduction, the opposite sign. ⚠ The severity was
+**proved**: a two-way compute pins AGI down by exactly $8,400.
+
+### ✅ s241i in one paragraph
+Form 8862 COMPLETE. Section A's print and transmission shipped together
+deliberately; line 6 is the Section A/B router (one fact, one derivation); line
+8 prints only for an in-year birth ("Otherwise, skip this line"); the death half
+is blank because `Dependent` has no date-of-death field.
+
 ### ✅ s241h in one paragraph — I found the hole in my OWN guard first
 Parts III/IV of Form 8862 now print (16 → 87 map entries), with the render feed
 mirroring `build_irs8862` so paper and XML cannot diverge. **⚠ The widget
@@ -422,6 +452,12 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s241j MOVES DIAGNOSTICS, and one class of return should CHANGE.** Any
+  return deducting alimony under a line-19c instrument dated 2019 or later now
+  fires `D_SCH1_007` (**error**) where it was silent — and that deduction is
+  genuinely not allowed, so those returns are wrong today and the AGI must
+  come back up when the amount is removed. Every pre-2019 alimony return gains
+  `D_SCH1_008` (info). No computed value changes on its own.
 - **⚠ s241h MOVES PRINTED OUTPUT.** A rendered Form 8862 now fills Part III's
   child and other-dependent grids (lines 12-17) and Part IV's student grid
   (18-19), where they were blank. The values are the same ones already being
