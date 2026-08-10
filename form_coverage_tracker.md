@@ -1,6 +1,71 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241r — ✅✅ FORM 4547 (Trump Account Election(s)) IS
+> COMPLETE, ALL SIX LEGS. BATCH-004 #10. No migration; one deploy.**
+>
+> *⚠⚠ PRINT AND TRANSMIT HAVE GENUINELY DIFFERENT SHAPES, and that is the whole
+> risk of this unit.* The Instructions say *"If you have more than two
+> children…attach as many copies of Form 4547 as are needed"* while
+> `TrumpAccountChildInfoGrp` is `maxOccurs="100"` in ONE document. So
+> **`render_4547` emits ⌈children/2⌉ pages** and **`build_irs4547` emits ONE
+> document carrying every child** — and both directions are pinned facing each
+> other. A renderer mirroring the face would silently drop children 3+ (nothing
+> downstream would notice, because the XML still has them); a builder copying
+> the renderer's split would create documents the IRS reads as SEPARATE
+> elections. The render test asserts child 3 is in **column 1 of page 2** and
+> that page 2 does not repeat child 1 — "present somewhere" would pass for a
+> renderer that drifts a column per page.
+>
+> *⚠ THE COLUMN ASSIGNMENT WAS VERIFIED POSITIONALLY*, not by trusting the
+> `_NN` suffix order (the s236 Form-7203 trap, the s241h guard-with-a-hole): a
+> test reads every mapped widget's rect from the PDF and asserts, on all 18
+> rows, that child 1 is the LEFT widget in x 260-417 and child 2 the RIGHT in
+> 419-576, sharing a y.
+>
+> *⚠ THE SIGN-HERE AND PAID-PREPARER BLOCKS ARE DELIBERATELY UNMAPPED — a
+> finding, not an omission.* The taxpayer signature row carries **no widgets at
+> all** (hand-signed), and the seven preparer widgets were identified **from
+> their own printed labels** (firm's name / EIN / address / phone /
+> self-employed) rather than guessed — firm facts this form does not hold
+> separately from the 1040's own preparer record. Mapping by inference would
+> assert a wrong field on a signed consent.
+>
+> *MeF.* `IRS4547` sits between `IRS4255` and `IRS4562` in the ReturnData1040
+> sequence (after `IRS3800`, before `IRS4835`) — verified across 2025v5.3,
+> 2025v5.4 and 2026v1.0 and **pinned by a test that re-derives the position from
+> the schema file**, so a TY rollover fails there rather than at transmission.
+> The intra-document element order is pinned the same way (s231: an
+> `xsd:sequence` emitter can validate BY COINCIDENCE).
+> ⚠ Line 5's `xsd:choice` is resolved in the SOURCE dataclass so the builder
+> never decides; lines 6/7 are `minOccurs="0"` so an unelected box is **ABSENT,
+> never `"false"`** — both directions tested, since the absence test alone
+> would pass for a builder that emitted nothing.
+> ⚠⚠ **The `IND-476` refusal is BUILT** — a Form 4547 on an amended return is a
+> hard reject, and the message carries its remedy (*"can be filed at any
+> time"*), so a preparer does not abandon a valid election.
+> ⚠ Everything the schema makes mandatory REFUSES rather than substituting
+> (s241c). A foreign address refuses for the Form 1310 reason.
+>
+> *⚠⚠ A TEST THAT WAS PASSING FOR THE WRONG REASON, CAUGHT AND FIXED.* The six
+> "missing mandatory fact REFUSES" cases were green before the fixture was
+> complete — `extract_return` refuses on the unanswered digital-asset question
+> long before reaching Form 4547, so `pytest.raises(UnmappableValue)` was
+> satisfied by an unrelated exception (**the s241f passing-by-absence trap**).
+> The fixture now answers it and every case asserts the message is OURS. The
+> XSD-order test had the same hazard from the other end (an empty regex match
+> makes `[] == sorted([])` pass) and now asserts both ends are non-trivial.
+>
+> *Legs, all six.* ✅ brief · ✅ model (migs 0283/0284) · ✅ lane · ✅
+> diagnostics (8) · ✅ **render** · ✅ **MeF**. **No compute leg, deliberately.**
+> Form 8879-TA stays print-only and ERO-retained by its own printed
+> instruction, with no element anywhere in the MeF schema set.
+> 27 tests here (+45 lane/diagnostics, +35 model); a 1,996-test sweep across
+> render / e-file / manifest / flow assertions with only the one known
+> pre-existing `test_mar30_session4` red.
+> ⛔ One item ask still open and NAMED: duplicate child elections across TWO
+> elections on one return (the DB constraint is per-election).
+
 > **2026-08-10 session 241q — FORM 4547: the LANE and the DIAGNOSTICS (legs 3
 > and 6 of 6). BATCH-004 #10. No migration; one deploy.**
 >
