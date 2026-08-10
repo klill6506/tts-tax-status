@@ -1,6 +1,67 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241q — FORM 4547: the LANE and the DIAGNOSTICS (legs 3
+> and 6 of 6). BATCH-004 #10. No migration; one deploy.**
+>
+> *Lane.* `form_4547s` is a **parent-plus-children** section (the
+> `form_1095as`/`allocations` precedent): the parent is one FILED FORM, the
+> nested `children` list is Parts II/III, and `form_8879ta` rides as a single
+> nested dict (the `form_7203` shape). Ordered after `dependents` because each
+> child's `dependent_key` resolves against those rows; an unmatched key commits
+> **UNLINKED with a warning** — the election still files (name, SSN, DOB and
+> relationship are all on the row), and what is lost is only the pilot
+> program's citizenship check.
+>
+> *⚠ Staging refuses ONLY the untransmittable* — whether a child QUALIFIES is a
+> preparer assertion the packet shows on its face, so it is transcribed and the
+> diagnostics speak (the s222 doctrine). Refused: line 5's `xsd:choice` violated
+> (the same-address indicator beside an address, or domestic beside foreign), a
+> US address with **no county** (`CountyNm` is NOT `minOccurs=0` in that
+> branch), "not the same address" with no address at all, an election with no
+> children, an unnamed responsible party, >100 children, and the Part I
+> address/phone choices.
+>
+> *⚠⚠ FORM 8879-TA PART I IS REFUSED BY NAME.* All six lines are copies of the
+> Form 4547 and every caption says so; Part II swears they came from that form.
+> Keying them would be the s234 two-sources defect on a signed document (the
+> s238 column-(a) doctrine).
+>
+> *⚠⚠ THE GENERATOR HAD ALREADY DRIFTED — and `children` is REQUIRED.* Staging
+> validated both nested families from the moment they were written, but the
+> published schema emitted NEITHER, so a payload author could not have
+> discovered a field the server insists on and would have had a correct payload
+> rejected client-side. **The s227 class exactly**, and the same defect
+> `schedule_fs.other_expenses` was (validated since s225, unemitted until
+> batch-001 #1). Fixed, and pinned by a test that reads the **generator's own
+> `defs`** rather than the written `.json`, so a stale artifact cannot hide it
+> either. *The pin is proven by history — it fails against the code as it stood
+> an hour earlier.*
+>
+> *Eight diagnostics, and the shape of the set is that **line 6 and line 7 are
+> different tests***: `D_4547_AGE` (error — the ACCOUNT test alone),
+> `_PILOT` (error — the birth window, **and its message says the line 6 account
+> election may still be correct**), `_CITIZEN` (error — narrower than CTC/ODC),
+> `_LINK` (warning, and ONLY when the pilot is elected, because otherwise the
+> missing link costs nothing), `_UNKNOWN` (info — the two conditions the app
+> CANNOT evaluate, stated rather than guessed), `_AUTH` (error — line 6
+> unchecked), `_AMENDED` (error — `IND-476`, **and it says the form "can be
+> filed at any time"** so the fix is to file separately, not abandon),
+> `_8879TA` (error — an authorization with nothing to authorize).
+> ⚠ **Every rule that can be quiet is tested quiet as well as loud** (s241o:
+> only the quiet case proves a comparison is real). An unknown DOB and an
+> unanswered citizenship are silent everywhere — an unanswered question is not
+> a failed test, and the sign runs against the taxpayer.
+> ⚠ A test pins the headline case: **a child born in 2020 gets the account and
+> NOT the contribution.** A rule conflating them would block a valid election
+> AND give the wrong reason.
+>
+> 45 lane/diagnostic tests + the 35 from s241p; a 1,105-test sweep with only
+> the three known `test_backentry_cleanup` reds.
+> ⛔ **STILL OPEN on #10: the render leg and the MeF builder.** Also named
+> rather than hidden: duplicate child elections are caught within ONE election
+> by the DB constraint, but not across two elections on the same return.
+
 > **2026-08-10 session 241p — ★ FORM 4547 (Trump Account Election(s)) + FORM
 > 8879-TA — NEW UNIT OPENED, legs 1-2 of 6. BATCH-004 #10. Migrations 0283
 > (three tables) + 0284 (RLS default-deny on all three). One deploy.**

@@ -1,10 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241p). **BATCH-004 #10 (Form 4547 + 8879-TA) —
-legs 1-2 built** (`c113bd3`, migrations 0283 + 0284): the source brief, three
-models, and the eligibility predicates. ⛔ #10 NOT finished — lane, render,
-MeF and diagnostics remain. Fourteen units today; BATCH-004 is 6 of 10 with
-#10 opened.*
+*Last updated: 2026-08-10 (s241q). **BATCH-004 #10 (Form 4547) — legs 3 and 6
+built** (`1158887`, no migration): the `form_4547s` lane section and eight
+diagnostics. ⛔ #10 NOT finished — **render and MeF remain**. Fifteen units
+today; BATCH-004 is 6 of 10 with #10 four legs of six done.*
+
+*Previous (s241p): legs 1-2 — the source brief, three models, the eligibility
+predicates (`c113bd3`, migrations 0283 + 0284).*
 
 *Previous (s241o): ✅ BATCH-004 #9 (Form 1099-PATR) COMPLETE — the Georgia RIE
 feed and the browser CRUD surface, and the unit found a defect in its OWN
@@ -107,11 +109,21 @@ is printed verbatim by the IRS. **The precedent is exact: `lookup/1310/` ALSO
 rules, with a source brief — and 1310 is a *filed* form, so this is not the s222
 information-return carve-out being stretched. Both forms are on the RS agenda.
 
+✅ **LEGS 3 + 6 DONE (s241q, `1158887`, no migration):** the `form_4547s` lane
+section (parent + nested `children` + a nested `form_8879ta`, ordered after
+`dependents`; staging refuses only the UNTRANSMITTABLE — line 5's `xsd:choice`
+violated, a US address with no county, no children, an unnamed responsible
+party, >100 children; and **Form 8879-TA's Part I refused BY NAME**) and
+**eight diagnostics** (`D_4547_AGE`, `_PILOT`, `_CITIZEN`, `_LINK`, `_UNKNOWN`,
+`_AUTH`, `_AMENDED`, `_8879TA`).
+⚠⚠ **The generator had ALREADY drifted and `children` is REQUIRED** — staging
+validated both nested families but the published schema emitted neither, so an
+author could not have discovered a field the server insists on (the s227 class,
+same as `schedule_fs.other_expenses`). Fixed and pinned by a test reading the
+generator's own `defs`, not the written `.json`.
+
 **⛔ Remaining legs — do NOT record #10 as finished until these land:**
-1. **The lane section** (`form_4547s` with nested `children`, the `misc_1099s`
-   shape; ⚠ a `dependent_key` carrier, the s241b shape, since a packet cannot
-   know a Dependent UUID).
-2. **The render leg.** ⚠ The face **HAS AcroForm widgets** and they are
+1. **The render leg.** ⚠ The face **HAS AcroForm widgets** and they are
    row-named, two per row (`Table_Part2[0].Row1a[0].f1_17` = child 1,
    `f1_18` = child 2) — far friendlier than the 8862 grid. **Verify the column
    assignment POSITIONALLY** (child 1 x 260-417, child 2 x 419-576; checkboxes
@@ -120,20 +132,21 @@ information-return carve-out being stretched. Both forms are on the RS agenda.
    `maxOccurs="100"` in the XML. `compute_4547.page_count()` is the helper and
    a test already pins 3 children → 2 pages.
    ⚠ Register `f4547.pdf` in `forms_manifest.json` first (it is absent).
-3. **The MeF builder** (`IRS4547`, `maxOccurs="unbounded"` on the return).
+2. **The MeF builder** (`IRS4547`, `maxOccurs="unbounded"` on the return).
    ⚠ Line 5 is an `xsd:choice` — the same-address indicator **or** a US address
    + county **or** a foreign address; emitting the indicator beside an address
    is schema-invalid. ⚠ Lines 6/7 are `CheckboxType minOccurs="0"` — unchecked
-   means ABSENT, never `false`.
+   means ABSENT, never `false`. ⚠ The staging validator already refuses both
+   violations, so the builder can trust the row — but pin it anyway.
    ⚠⚠ **REFUSE a Form 4547 on an amended return** — `IND-476`, Reject, Active,
    and the Instructions say *"Do not amend Form 1040, 1040-SR, or 1040-NR to
    attach Form 4547."* A test already pins the rule; the refusal is not built.
-4. **Diagnostics** — the item's list: duplicate child elections (the DB
-   constraint covers within one form; across forms it does not), mismatched
-   dependents, missing authorization, **incompatible pilot eligibility** (birth
-   window + citizenship are computable; the qualifying-child anticipation and
-   the prior-election history are NOT — state them, never guess), and a filed
-   8879-TA with no Form 4547.
+
+⚠ **ONE ITEM ASK IS STILL OPEN inside the diagnostics leg**: *duplicate child
+elections* are covered **within one election** by the DB constraint
+(`uniq_form4547_child_per_dependent`), but a return carrying TWO elections that
+both name the same dependent is not caught. Cheap to add when the render/MeF
+legs land; named here rather than left as an unstated gap.
 
 **⚠⚠ Form 8879-TA DOES NOT TRANSMIT and the batch item says it does.** Its
 printed header: *"ERO must obtain and retain completed Form 8879-TA."* There is
@@ -218,6 +231,11 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241q: NONE.** Eight new diagnostics that all no-op unless the return
+  carries a `Form4547` row, and no such row exists until a preparer or payload
+  makes one. No compute changed. ⚠ The published import schema DID change
+  (`form_4547s` gains `children` + `form_8879ta`) — additive, so no existing
+  payload becomes invalid.
 - **s241p: NONE.** Three new tables and a pure-predicate module that nothing
   calls yet. No compute changed, no existing row touched; `Form4547` rows only
   exist where a preparer or payload makes one. The migrations are additive
