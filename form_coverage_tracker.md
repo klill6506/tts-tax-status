@@ -1,5 +1,26 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241f — Form 8862 DIAGNOSTICS leg. No migration, one
+> deploy. ⚠ STILL PARTIAL — do NOT tick this form** (Parts II-A/III/IV print).
+> `D_8862_002` (error) — required but INCOMPLETE, naming the missing lines.
+> `D_EIC_008` states the requirement as a warning; this states the shortfall,
+> because **every unanswered question on this form has an answer that BARS the
+> credit**. The MeF builder refuses on the same facts but only at composition,
+> so a return reviewed or abandoned before transmission said nothing.
+> `D_8862_003` (error) — Part I line 2 vs the credits actually claimed, BOTH
+> directions: a ticked box with no claim attaches a certification for a
+> re-claim that is not being made; a claimed credit with no ticked box files
+> the form without the part that supports it (only the second changes what the
+> taxpayer receives). Both no-op on a math-error disallowance.
+> 12 tests. ⚠ One caught a trap in its OWN setup — the 8862-row helper was a
+> filter-and-update, and those rows are backfilled only on an engaged-EIC
+> recompute, so on a fresh fixture it silently did nothing and two tests
+> **passed by absence rather than by behaviour**. Now creates and asserts.
+> ⚠⚠ **The `inspect.getsource(seed_builtin_rules)` false-red class was
+> enumerated in full for the first time: `-k "diagnostic"` = 22 failed / 878
+> passed, ALL 22 that class.** Sixth session it has cost time; ~1 hour here just
+> to prove none was ours. Promoted to the next unit.
+
 > **2026-08-10 session 241e — Form 8862 RENDER leg extended. No migration, one
 > deploy. ⚠ STILL PARTIAL — do NOT tick this form.**
 > **⚠⚠ MY OWN EARLIER CHANGE MADE A CORRECT BOUNDARY WRONG.** The field map was
