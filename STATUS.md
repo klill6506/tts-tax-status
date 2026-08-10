@@ -1,12 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241q). **BATCH-004 #10 (Form 4547) — legs 3 and 6
-built** (`1158887`, no migration): the `form_4547s` lane section and eight
-diagnostics. ⛔ #10 NOT finished — **render and MeF remain**. Fifteen units
-today; BATCH-004 is 6 of 10 with #10 four legs of six done.*
+*Last updated: 2026-08-10 (s241r). **✅✅ BATCH-004 #10 (Form 4547 + 8879-TA)
+IS COMPLETE — all six legs** (`e2dce0e`): the render leg and the MeF builder
+landed. Sixteen units today; **BATCH-004 is 7 of 10.***
 
-*Previous (s241p): legs 1-2 — the source brief, three models, the eligibility
-predicates (`c113bd3`, migrations 0283 + 0284).*
+*Previous (s241q): the lane + eight diagnostics (`1158887`); (s241p) the source
+brief, three models, the eligibility predicates (`c113bd3`, migs 0283 + 0284).*
 
 *Previous (s241o): ✅ BATCH-004 #9 (Form 1099-PATR) COMPLETE — the Georgia RIE
 feed and the browser CRUD surface, and the unit found a defect in its OWN
@@ -89,9 +88,19 @@ is CONFIRMED, with two qualifications the item does not state:
   same dollars are subtracted twice.
 - **(2)**: per owner — and a 1099-PATR is issued to ONE recipient TIN.
 
-### ⭐ NEXT UNIT — **BATCH-004 #10, Form 4547, legs 3-6.** ⛔ **THE DESIGN IS
-### SETTLED AND WRITTEN DOWN — read `server/specs/_4547_source_brief.md` and
-### BUILD; do not re-triage and do not re-fetch the IRS artifacts.**
+### ⭐ NEXT UNIT — **BATCH-004 #2, the Georgia qualified-education-expense
+### credit + IT-QEE-TP2** (or #5 Schedule H — similar size; #1 1040-X is large).
+⚠ **#1 must honour `IND-476`** when it is built: a Form 4547 on an amended
+return is a hard MeF reject, and s241r's refusal is what enforces it.
+⚠ For #2, run the **404-STOP gate** on the GA credit spec first — **and check
+the export's `status`**, because a `"draft"` has waved the gate through twice.
+⚠ Read `server/specs/_ga500_source_brief.md` and the s233/s236/s239/s241o
+Georgia history before touching anything GA — that feed has been wrong four
+separate ways, and the `500` spec still has NO rule for what feeds RIE lines.
+
+### ✅✅ BATCH-004 #10 (Form 4547 + 8879-TA) IS COMPLETE — s241p → s241r
+⛔ **The design record is `server/specs/_4547_source_brief.md`** — do not
+re-triage and do not re-fetch the IRS artifacts.
 
 ✅ **LEGS 1-2 DONE (s241p, `c113bd3`, migrations 0283 + 0284 RLS):** the source
 brief, `Form4547` / `Form4547Child` / `Form8879TA`, and `compute_4547.py` (pure
@@ -122,31 +131,34 @@ author could not have discovered a field the server insists on (the s227 class,
 same as `schedule_fs.other_expenses`). Fixed and pinned by a test reading the
 generator's own `defs`, not the written `.json`.
 
-**⛔ Remaining legs — do NOT record #10 as finished until these land:**
-1. **The render leg.** ⚠ The face **HAS AcroForm widgets** and they are
-   row-named, two per row (`Table_Part2[0].Row1a[0].f1_17` = child 1,
-   `f1_18` = child 2) — far friendlier than the 8862 grid. **Verify the column
-   assignment POSITIONALLY** (child 1 x 260-417, child 2 x 419-576; checkboxes
-   at x≈334 / x≈492) — the s236 Form-7203 trap and the s241h guard-with-a-hole.
-   ⚠⚠ **One election may need SEVERAL PAGES**: two child columns on paper vs
-   `maxOccurs="100"` in the XML. `compute_4547.page_count()` is the helper and
-   a test already pins 3 children → 2 pages.
-   ⚠ Register `f4547.pdf` in `forms_manifest.json` first (it is absent).
-2. **The MeF builder** (`IRS4547`, `maxOccurs="unbounded"` on the return).
-   ⚠ Line 5 is an `xsd:choice` — the same-address indicator **or** a US address
-   + county **or** a foreign address; emitting the indicator beside an address
-   is schema-invalid. ⚠ Lines 6/7 are `CheckboxType minOccurs="0"` — unchecked
-   means ABSENT, never `false`. ⚠ The staging validator already refuses both
-   violations, so the builder can trust the row — but pin it anyway.
-   ⚠⚠ **REFUSE a Form 4547 on an amended return** — `IND-476`, Reject, Active,
-   and the Instructions say *"Do not amend Form 1040, 1040-SR, or 1040-NR to
-   attach Form 4547."* A test already pins the rule; the refusal is not built.
+✅ **LEGS 4 + 5 DONE (s241r, `e2dce0e`, no migration) — #10 IS COMPLETE.**
+`f4547.pdf` registered in the manifest with its SHA256; `f4547_2025.py`;
+`render_4547`; `build_irs4547` + `Form4547Source` / `Form4547ChildSource` +
+`_extract_f4547s`, wired at the XSD position between `IRS4255` and `IRS4562`.
 
-⚠ **ONE ITEM ASK IS STILL OPEN inside the diagnostics leg**: *duplicate child
+⚠⚠ **PRINT AND TRANSMIT HAVE DIFFERENT SHAPES, and that is the unit's whole
+risk.** Two child columns on paper vs `maxOccurs="100"` in one document, so
+`render_4547` emits **⌈children/2⌉ pages** while the builder emits **ONE
+document with every child**. Both directions are pinned facing each other: a
+test asserts child 3 lands in **column 1 of page 2** (not merely "present") and
+that page 2 does not repeat child 1; another asserts the extract yields ONE
+source with three children.
+⚠ The column assignment was **verified positionally** on all 18 rows — child 1
+in the x 260-417 band, child 2 in 419-576, sharing a y (s236/s241h).
+⚠ **The Sign-Here and Paid-Preparer blocks are deliberately UNMAPPED**, and
+that is a finding: the taxpayer signature row has **no widgets at all** (it is
+hand-signed), and the seven preparer widgets were identified from their own
+printed labels as firm facts this form does not hold. Mapping by inference
+would assert a wrong field on a signed consent.
+⚠ **The `IND-476` refusal is BUILT** and its message carries the remedy — the
+Instructions say the form *"can be filed at any time"*, so it says file it
+separately rather than abandon the election.
+
+⚠ **ONE ITEM ASK REMAINS OPEN, named rather than hidden**: *duplicate child
 elections* are covered **within one election** by the DB constraint
 (`uniq_form4547_child_per_dependent`), but a return carrying TWO elections that
-both name the same dependent is not caught. Cheap to add when the render/MeF
-legs land; named here rather than left as an unstated gap.
+both name the same dependent is not caught. A cheap follow-up; logged in
+DEFERRAL_AUDIT rather than left unstated.
 
 **⚠⚠ Form 8879-TA DOES NOT TRANSMIT and the batch item says it does.** Its
 printed header: *"ERO must obtain and retain completed Form 8879-TA."* There is
@@ -231,6 +243,12 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241r: NONE.** A new render function and a new MeF document, both reached
+  only when the return carries a `Form4547` row — and none exists until a
+  preparer or payload makes one. ⚠ **The one behaviour change that CAN bite:**
+  an amended return carrying a Form 4547 now **refuses at composition**
+  (`IND-476`) where it previously composed and would have been rejected by the
+  IRS days later. That reaches only returns that were already un-transmittable.
 - **s241q: NONE.** Eight new diagnostics that all no-op unless the return
   carries a `Form4547` row, and no such row exists until a preparer or payload
   makes one. No compute changed. ⚠ The published import schema DID change
