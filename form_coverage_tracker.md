@@ -1,6 +1,77 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 sessions 241l/m/n/o — ★ FORM 1099-PATR (Taxable Distributions
+> Received From Cooperatives) — NEW UNIT, COMPLETE. BATCH-004 #9. Migrations
+> 0281 + 0282 (RLS default-deny — the new-table rule); one deploy for the
+> Georgia + CRUD legs.**
+>
+> *⚠ NO RENDER LEG AND NO E-FILE LEG — a finding, not a deferral* (the s222
+> 1099-MISC position verbatim): an information return received by the taxpayer
+> is an INPUT document. No `f1099patr` field map or manifest entry exists for
+> ANY 1099, and `IRS1099R` is the only 1099 element in the 1040 MeF schema set.
+> The item's "render and transmit the source form" is therefore N/A, stated
+> rather than skipped.
+>
+> *⚠ THE AUTHORITY IS THE FORM.* No RS spec exists for any information return
+> (s222), so the 404-STOP gate does not apply and leg 1 was a source brief —
+> `server/specs/_1099patr_source_brief.md`, verbatim from **Rev. April 2025**.
+>
+> *⚠⚠ BOX 1 IS NOT UNCONDITIONALLY INCOME*, which the batch item's "$1,004 →
+> 8z" glosses over. *"Any dividends paid on (1) property bought for personal use
+> or (2) capital assets or depreciable property used in your business are not
+> taxable. However, if (2) applies, reduce the basis of the assets by this
+> amount."* A blind feed TAXES A NON-TAXABLE AMOUNT (⚠ overstates income). The
+> carve-out is a preparer assertion; the basis reduction is recorded and NOT
+> applied, because the app cannot know which assets. And the income set is
+> boxes **1, 2, 3 and 5**, not box 1 — while boxes 8/9 are *subsets of* those.
+>
+> *⚠⚠ THE FIX WAS ONE LINE FROM REPRODUCING THE BUG IT PREVENTS.* Schedule 1
+> line 8z has a SINGLE final writer, so PATR had to EXTEND that composition (the
+> s230 rule, already learned once on this very line) — but that writer **returns
+> early when there is no 1099-MISC**, so a PATR-only return would have had its
+> income silently dropped. Both the early return AND the disengage path now
+> carry the share, both pinned.
+>
+> *GEORGIA — the item's claim CONFIRMED, with two qualifications it does not
+> state.* Ga. Comp. R. & Regs. r. 560-7-4-.02 fetched verbatim first (s233/s236/
+> s239 each found this feed wrong a different way). **(4)(b)1**'s unearned list
+> closes with *"and other similar income"* → UNEARNED, worksheet **L10**, which
+> mirrors the federal line the income sits on (never L7 — the 1099-DIV pull owns
+> that). **(4)(b)1**'s earned list opens with *"net business income earned by an
+> individual from any trade or business"* → a Schedule C/F-routed row is EARNED
+> and is ALREADY in the base via that schedule's net profit, so **only the 8z
+> route contributes**. **(3)**: *"Only retirement income that is included in
+> Georgia taxable income"* → the box-1 nontaxable part must not reach Georgia.
+> **(2)**: per owner; a 1099-PATR has ONE recipient TIN.
+>
+> *⚠⚠ THE FEEDER MADE AN EXISTING RULE WRONG — 7th occurrence, and it would have
+> opened a NEW silent gap.* The L10 derive is PARTIAL. `D_GA500_017` asked "is
+> L10 blank?", so a return with a 1099-PATR *and* other 8-line income would have
+> read as complete while short. New trigger: "is L10 still only what the
+> software derived, while federal other income is larger?" — reduces to the old
+> test with no 1099-PATR, and deliberately NOT a strict `<` because (4)(b)2
+> excludes gambling from retirement income, which would false-alarm forever.
+>
+> *⚠⚠ AND A DEFECT IN MY OWN s241n RULE, caught by the CLIENT TYPECHECK.*
+> `qbi_is_patron` is a **per-activity** field on ScheduleC/ScheduleF, never on
+> Taxpayer. `D_1099PATR_199A` read it off the taxpayer through a
+> `getattr(..., False)`, so it answered "not a patron" on EVERY return and the
+> warning fired unconditionally and could not be cleared by doing what it asks.
+> *A `getattr` default turns a wrong attribute name into a plausible answer.*
+> The firing test had passed either way — only the QUIET case has teeth.
+>
+> *Legs.* **model** `Form1099PATR` (13 boxes + the two box-1 carve-out fields +
+> payer identity + routing) · **compute** `compute_1099patr` (pure; writes
+> nothing) + the 8z composition + box 4 → 1040 line 25b · **state** the GA RIE
+> L10 pull · **lane** `patr_1099s` (routing + `link_key`, ordered after
+> `schedule_cs`/`schedule_fs`; unresolved key → committed UNLINKED with a
+> warning) · **diagnostics** five `D_1099PATR_*` + `D_GA500_019` · **client**
+> `patr-1099s` CRUD + `SlateForm1099PATRScreen` + its own nav tab, shipped WITH
+> the rules (the s241c lesson: a refusal with no input surface is a dead end) ·
+> **tests** 65 across two files + the `D_GA500_017` regression pinned in the
+> existing RIE pull suite.
+
 > **2026-08-10 session 241j — Schedule 1 alimony (BATCH-004 #3). No migration,
 > one deploy.** Lines 19a/19b/19c gain their LANE leg; the form's other legs
 > were already green.
