@@ -1,10 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241h). **Form 8862 Parts III and IV now PRINT** —
-they were transmitted but printed blank, and the paper is what a preparer
-signs. 87 field-map entries; every index read off the PDF because the widget
-numbering is NOT contiguous across lines. One deploy (`5940233`), no migration.
-⛔ #8 has ONE print gap left: Part II Section A.*
+*Last updated: 2026-08-10 (s241i). **✅ BATCH-004 #8 (Form 8862) IS COMPLETE** —
+Section A's print and transmission landed together, deliberately, because
+splitting them is how the paper-vs-XML gap opened in the first place. One deploy
+(`87979f2`), no migration. Nine units shipped today; the next is BATCH-004 #3,
+pre-2019 alimony — the first in a while that moves computed tax.*
 
 *Previous (s241g): the `inspect.getsource` false-red class RETIRED — 24
 assertions, `-k "diagnostic"` 22 failed → **900 passed, 0 failed** (`cdbec66`);
@@ -64,47 +64,40 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **finish BATCH-004 #8 (Form 8862)**. Steps 1-3 shipped in
-### s241c (`3a87b2f`); steps 4-6 remain and are what the item still needs.
+### ✅✅ BATCH-004 #8 (Form 8862) IS COMPLETE — s241c → s241i, seven units
+Model + migrations 0279/0280 · MeF (five fabricated sworn answers removed,
+Section B, the ODC group, lines 6 and 8) · print (Parts I-IV, 16 → ~100 map
+entries) · browser CRUD + lane section · `D_8862_002` / `D_8862_003`.
+⛔ One data gap NAMED, not hidden: `Dependent` has no date-of-death field, so
+line 8's death half cannot derive (DEFERRAL_AUDIT).
 
-✅ **Done (s241c):** the `Form8862` model (migrations 0279 + 0280 RLS), the MeF
-rewire that ended five fabricated sworn answers, the `form-8862` browser CRUD
-(PUT upserts — singleton), and the `form_8862s` lane section.
+### ⭐ NEXT UNIT — **BATCH-004 #3, pre-2019 alimony paid**
+The cheapest remaining genuine build, and unlike the last several it changes
+**computed tax**, not just a lane or a face: the filed Schedule 1 line 19a is an
+$8,400 deduction that drops AGI from $98,978 to $90,578, which then moves Social
+Security taxability, the enhanced-senior deduction, federal tax/refund AND the
+Georgia starting income.
 
-✅ **Also done (s241d, `7ebd348`):** Part II **Section B** now transmits
-(`Primary`/`SpouseNoQualifyingChildGrp`; all three members REQUIRED by the XSD
-so a missing one refuses; age derived from the DOB, line 11 from Rule 12, only
-the day count keyed), and **ODC persons moved out of `CTCACTCChildInformationGrp`
-into their own `ODCPersonInformationGrp`** — they had been asserting
-`QualifyingChildInd`, a claim an ODC qualifying relative cannot make.
+**Before building, in this order:**
+1. **404-STOP gate** — check `lookup/SCH_1/export/` (or whichever spec owns
+   line 19) for a rule governing alimony. ⚠ And check its `status` field:
+   **a `"draft"` export has now waved through twice** (s238's 8379, s241c's
+   8862), and both times the spec described a fraction of the face.
+2. **Verify-first**: grep for `alimony` before assuming nothing exists. Twelve
+   of the last fourteen items were narrower than reported.
+3. ⚠ **The TCJA transition rule is the whole point.** §11051 repealed the
+   deduction for instruments executed after 2018 — the deduction survives only
+   for a pre-2019 instrument, and a post-2018 MODIFICATION can opt in to the
+   new treatment. So the instrument date and the modification date are both
+   REQUIRED facts, not metadata: without them the engine cannot know whether
+   the amount is deductible at all. Verify against the statute, not recall.
+4. ⚠ **Recipient TIN is PII** — the item asks explicitly for it to be protected
+   in logs and UI. Schedule 1 line 19b transmits it; do not log it.
 
-✅ **Also done (s241e, `1f5355c`):** the PRINTED form now carries every Part I
-and Part II line the app knows — lines 3/4 and Section B's 9a/9b, 10a/10b,
-11a/11b. ⚠ `[0]`=Yes / `[1]`=No verified POSITIONALLY against the printed
-labels, with a test that re-derives it from the PDF and was proven by injecting
-the swap.
-
-✅ **Also done (s241f, `35a406a`):** the item's diagnostics — **`D_8862_002`**
-(required but incomplete; names the missing lines, because every unanswered
-question here has an answer that BARS the credit) and **`D_8862_003`** (Part I
-line 2 vs the credits actually claimed, both directions).
-
-✅ **Also done (s241h, `5940233`):** Parts III and IV now PRINT — 87 field-map
-entries, the render feed mirroring `build_irs8862` so paper and XML cannot
-diverge. ⚠ Every index read off the PDF: **the widget numbering is not
-contiguous across lines** (16's children `c2_11..c2_14`, its other dependents
-`c2_15..c2_18`, then 17 restarts at `c2_19`), so "eight per line" would put
-other-dependent 1 in child 4's column.
-
-⛔ **Remaining — do NOT record #8 as finished until these land:**
-7. **Part II Section A print (lines 5-8)** — the EIC-with-children grid, the
-   last print gap. ⚠ Line 8 is birth/death **month/day** pairs (12 text
-   widgets, `Child1_Birth_Ln8` …), a different shape from the Yes/No columns,
-   so size it as its own small unit.
-8. **Section A lines 6 and 8 in the XSD** (`QualifyingChildInd`,
-   `BirthMonthDayDt` / `DeathMonthDayDt`) are still not EMITTED either — do
-   the print and the transmission together so they cannot drift apart, which
-   is the whole lesson of s241e.
+Then the rest of BATCH-004 by size: #9 Form 1099-PATR ≈ #10 Form 4547 +
+8879-TA ≈ #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X
+(large). ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 no RS spec
+exists for any information return; build from the IRS form + a `_source_brief.md`.
 
 ### ✅ DONE in s241g — the false-red class is retired (see Known red / rotted)
 
