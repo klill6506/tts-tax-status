@@ -1,12 +1,14 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241). **1040 BATCH-004 #7 AND BATCH-003 #2 BUILT
-TOGETHER — they were one section.** The `form_5329s` lane closes both, and
-behind them sat a live defect: a second Form 5329 row for the same owner made
-the first row's additional tax DISAPPEAR from Schedule 2 line 8. One deploy,
-migration 0278. Both batches stay OPEN.*
+*Last updated: 2026-08-10 (s241b). **BATCH-004 #6 BUILT — the `education_students`
+lane.** Form 8863 was complete except its importer; the notable part is that the
+uniqueness constraint s241 had just added to Form 5329 would have been a DEFECT
+here, and checking rather than pattern-matching is what caught it. One deploy
+(`d55ff15`), no migration.*
 
-*Previous (s240): 1040 BATCH-004 opened + triaged 10/10, #4 built (`c6aab19` · `d7740ad`).*
+*Previous (s241): BATCH-004 #7 + BATCH-003 #2 built together as one `form_5329s`
+section; a duplicate-owner row made $110.40 of tax vanish (`97ea4a5`, migration
+0278). (s240): BATCH-004 opened + triaged 10/10, #4 built (`c6aab19`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -34,27 +36,30 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — BATCH-004 #6 (Form 8863), then the rest of the queue
-**#6 is now the cheapest remaining item and the last of the three lane-only
-ones** (s240 refuted #4, #6 and #7 as the same shape; #4 and #7 are done).
-Form 8863 is fully built — model with Part III student rows, `compute_8863.py`,
-field map `f8863_2025.py`, the `IRS8863` MeF document, `rules_8863.py`,
-`seed_form_8863.py`. **The work is a `backentry.v1` importer family plus
-verifying the student-to-dependent link end to end** — not the credit, the MAGI
-limits, or the refundable/nonrefundable split.
+### ⭐ NEXT UNIT — BATCH-004 #8 (Form 8862), then the rest of the queue
+**#8 is the smallest remaining item.** `f8862_2025.py` (render) + the `IRS8862`
+MeF document + `seed_8862.py` all exist — this is the SPRINT_SCOPE Topic-7
+"data-mapped render, no compute" boundary. **What is missing is the input model
+itself**, and then the lane family on top of it. So unlike #4/#6/#7 this is a
+genuine build, not a lane-only gap: a model + migration + RLS (the new-table
+rule) + compute/validation + the `backentry.v1` section.
 
-⚠ Two things s241 learned that apply directly to #6:
-- **Check whether the engine keys its rows by anything** before adding the
-  section. The 5329 defect was a `{r.owner: r for r in ...}` dict; 8863's
-  student rows are per-student and may have the same shape. Grep for a dict
-  comprehension over the row set in `compute_8863` FIRST.
-- **A derived column must be refused BY NAME**, not left to fall through as an
-  unknown field (s238's doctrine, applied twice now).
+⚠ Read the s241/s241b pair before starting — **the two sessions reached OPPOSITE
+answers on the same question**, and that contrast is the reusable lesson:
+- Form 5329's compute reduced its rows to `{r.owner: r for r in ...}`, so one
+  row per owner was a real contract the DB did not enforce → constraint added.
+- Form 8863's compute ITERATES a list and Parts I/II aggregate, so several rows
+  are normal → **a constraint would have been a defect**, and a test now pins
+  that compute still iterates so the reasoning cannot be silently outrun.
+**Check the consumer before deciding uniqueness. Do not pattern-match.**
 
-The rest, roughly by size: #8 Form 8862 (render + MeF exist; input model
-missing) < #3 pre-2019 alimony ≈ #9 Form 1099-PATR ≈ #10 Form 4547 + 8879-TA ≈
-#2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X amended
-lifecycle (large).
+⚠ Also carried from both: refuse derived/aggregate columns **BY NAME**
+(s238 doctrine, now applied three times), and use the `link_key` carrier shape
+for any FK a packet cannot know as a UUID.
+
+The rest, roughly by size: #3 pre-2019 alimony ≈ #9 Form 1099-PATR ≈ #10 Form
+4547 + 8879-TA ≈ #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1
+1040-X amended lifecycle (large).
 
 ⚠ **#10's source check is CLOSED — Form 4547 is REAL** (Rev. December 2025,
 created by OBBBA; filed WITH the current-year e-filed return, so its MeF leg is
@@ -92,6 +97,20 @@ RS spec exists for any information return.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
+
+### ✅ s241b in one paragraph
+BATCH-004 #6 built: `education_students`, one row per Form 8863 Part III
+student. Refuted as stated, real as a lane gap — the form has been complete
+since migration 0071 and only the importer was missing. **The finding worth
+carrying is a negative one**: the uniqueness constraint s241 had added to Form
+5329 hours earlier would have been a *defect* here, because `compute_8863`
+iterates its rows and Parts I/II aggregate across students. Checking the
+consumer rather than pattern-matching the previous session is what caught it,
+and a test now pins that compute still iterates. Also settled that
+`student_name`/`student_ssn` live on the row rather than on the dependent link
+(MeF refuses a student without them), and built the `dependent_key` carrier for
+the student-to-dependent link. §25A answer key hand-derived and tied: $2,500 →
+$1,000 refundable + $1,500 nonrefundable.
 
 ### ✅ s241 in one paragraph
 Two batch items turned out to be one section. BATCH-004 #7 (Form 5329 Part III,
@@ -134,7 +153,22 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ⚠⚠ THE s241 / s241b PAIR — the same question, OPPOSITE right answers
+s241 found that `compute_5329_db` reduced its rows to `{r.owner: r for r in …}`,
+making a duplicate row VANISH, and closed it with a DB constraint. Hours later
+s241b faced the identical question on `EducationStudent` — and the right answer
+was the reverse: `compute_8863` **iterates** a list and Parts I/II aggregate
+across students, so several rows per return is the normal case and a constraint
+would have destroyed the multi-student return. *The transferable rule is not
+"add the constraint" — it is **read what the consumer does with the row set,
+every time**. A dict-by-attribute is a uniqueness contract; a list is not, and
+the two are one character apart at the call site.* s241b pins the premise with a
+test asserting `compute_8863_db` still iterates, so a future refactor to a dict
+fails loudly instead of silently dropping a student's credit.
+
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241b: NONE.** No compute changed; `education_students` rows only exist
+  where a payload or preparer creates one.
 - **s241: NONE.** No compute changed. `form_5329s` rows only exist where a
   payload or preparer creates one; `D_5329_006` fires only where a Form 5329 row
   and an HSA for the same owner already disagree; the roll-forward touches only
