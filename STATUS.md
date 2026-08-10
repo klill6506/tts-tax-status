@@ -1,11 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241r). **✅✅ BATCH-004 #10 (Form 4547 + 8879-TA)
-IS COMPLETE — all six legs** (`e2dce0e`): the render leg and the MeF builder
-landed. Sixteen units today; **BATCH-004 is 7 of 10.***
+*Last updated: 2026-08-10 (s241s). **BATCH-004 #2 (Georgia QEE credit) OPENED —
+leg 1, the source brief** (`52c08ec`, no production code, no migration).
+⛔ #2 NOT finished — model, lane, compute, render and diagnostics remain.
+Seventeen units today; **BATCH-004 is 7 of 10 with #2 opened.***
 
-*Previous (s241q): the lane + eight diagnostics (`1158887`); (s241p) the source
-brief, three models, the eligibility predicates (`c113bd3`, migs 0283 + 0284).*
+*Previous (s241r): ✅✅ #10 (Form 4547) COMPLETE, all six legs (`e2dce0e`);
+(s241q) its lane + eight diagnostics (`1158887`); (s241p) brief + models
+(`c113bd3`, migs 0283 + 0284).*
 
 *Previous (s241o): ✅ BATCH-004 #9 (Form 1099-PATR) COMPLETE — the Georgia RIE
 feed and the browser CRUD surface, and the unit found a defect in its OWN
@@ -88,15 +90,66 @@ is CONFIRMED, with two qualifications the item does not state:
   same dollars are subtracted twice.
 - **(2)**: per owner — and a 1099-PATR is issued to ONE recipient TIN.
 
-### ⭐ NEXT UNIT — **BATCH-004 #2, the Georgia qualified-education-expense
-### credit + IT-QEE-TP2** (or #5 Schedule H — similar size; #1 1040-X is large).
-⚠ **#1 must honour `IND-476`** when it is built: a Form 4547 on an amended
-return is a hard MeF reject, and s241r's refusal is what enforces it.
-⚠ For #2, run the **404-STOP gate** on the GA credit spec first — **and check
-the export's `status`**, because a `"draft"` has waved the gate through twice.
-⚠ Read `server/specs/_ga500_source_brief.md` and the s233/s236/s239/s241o
-Georgia history before touching anything GA — that feed has been wrong four
-separate ways, and the `500` spec still has NO rule for what feeds RIE lines.
+### ⭐ NEXT UNIT — **BATCH-004 #2, the Georgia QEE credit — legs 2-6.**
+### ⛔ **THE DESIGN IS SETTLED: read `server/specs/_ga_qee_credit_source_brief.md`
+### and BUILD. Do not re-triage, do not re-fetch the statute.**
+
+✅ **LEG 1 DONE (s241s, `52c08ec`):** the source brief, carrying O.C.G.A.
+§48-7-29.16 verbatim. The **404-STOP call is made and recorded** — every alias
+(`IT_QEE_TP2`, `IT-QEE-TP2`, `ITQEETP2`, `500_SCH2`, `GA_QEE`, `QEE`) 404s, but
+the statute states every limit, the liability cap, **both** carryforward regimes
+and the no-double-benefit rule, so there is nothing to improvise (the s241p
+three-part test; `lookup/1310/` and `lookup/4547/` are the precedents).
+
+**⚠⚠ THE FINDING THAT DECIDES THE MODEL: TY2025 RUNS TWO CARRYFORWARD REGIMES
+SIDE BY SIDE.** Current text = *"succeeding **three** years"*; pre-amendment
+text = *"the succeeding **five** years"*; and **2024 Ga. Laws 598 §1-7, eff.
+1/1/2025, applies "only to unused tax credits generated during taxable years
+beginning on or after 1/1/2025."** So a TY2025-generated credit carries 3 years
+and an older one carries 5, **both live in the same return**. ⚠ A single
+`CARRYFORWARD_YEARS` constant is right for one population and wrong for the
+other, and the error surfaces YEARS later when a pool expires early or late —
+**the carryover pool must key its GENERATION YEAR**, not a remaining-years
+counter. Both regimes were read from primary text (2024 code + 2022 code).
+
+**⛔ Remaining legs — do NOT record #2 as finished until these land:**
+1. **Model** — per CERTIFICATE, not per return: code + certificate number +
+   generated/used/carryover, with the IT-QEE-TP2 facts (expended, pre-approved,
+   tentatively allowed, approval date, SSO name) hanging off it. ⚠ Series-100
+   credit codes are an **OPEN ENUM** (GA has dozens) — model code+description
+   and **REFUSE computation for any code but 125 BY NAME** (s235: a negative
+   test over an enum about to grow is a bug with a delayed trigger).
+   ⚠ New tables → **RLS default-deny**.
+2. **Lane** · 3. **Compute** (the §2 caps, the liability limit, both regimes)
+   · 4. **Render** · 5. **Diagnostics**.
+
+**⚠ VERIFY-FIRST CORRECTED THE ITEM — carry this forward.** GA-500 **line 21**
+and Schedule 1 **line S1-5** are BOTH already seeded as preparer inputs, so the
+packet's $5,000 is **enterable today** in flattened form and the return is not
+wrong. The gap is the DOCUMENT DETAIL (code, certificate, generated-vs-used,
+carryover, the credit↔addback link), which is what the item's own second
+paragraph says. *A build that "fixes" a correct return is measuring the wrong
+thing.*
+
+**⚠⚠ `S1-5` IS RECONCILED, NEVER WRITTEN.** §48-7-29.16(h)(1) makes the addback
+a CONDITION ON THE CREDIT, and `S1-5` is *"Add: **other** additions"* — a shared
+preparer line. Writing into it is the s230 shared-line defect (a DISAPPEARED
+number). Compare, as `D_5329_006` and `D_1099PATR_199A` do.
+
+**⚠ THE PACKET CANNOT TEST THE CAP.** MFJ with $5,000 expended is *exactly* the
+(b)(2) limit, so it cannot tell capped from uncapped — and all five of its
+figures being equal is a coincidence, not a rule (s219). **Use a capped case
+too.** ⚠ (b)(3) is an OVERRIDE, not a fourth status: an LLC member / S-corp
+shareholder / partner gets **$25,000** even when MFJ, and its "portion of income
+on which such tax was actually paid" proviso needs a KEYED assertion.
+**⚠ The pre-approved amount is NOT computable** — a statewide first-come queue
+against a $120m cap that may be PRORATED. Transcribe it.
+
+⚠ Then #5 Schedule H << #1 1040-X (large). ⚠ **#1 must honour `IND-476`** — a
+Form 4547 on an amended return is a hard MeF reject and s241r's refusal enforces
+it. ⚠ Read the s233/s236/s239/s241o Georgia history before any other GA work:
+that feed has been wrong four separate ways and the `500` spec still has NO rule
+for what feeds the RIE lines.
 
 ### ✅✅ BATCH-004 #10 (Form 4547 + 8879-TA) IS COMPLETE — s241p → s241r
 ⛔ **The design record is `server/specs/_4547_source_brief.md`** — do not
@@ -243,6 +296,7 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241s: NONE.** A source brief and its tests. No production code changed.
 - **s241r: NONE.** A new render function and a new MeF document, both reached
   only when the return carries a `Form4547` row — and none exists until a
   preparer or payload makes one. ⚠ **The one behaviour change that CAN bite:**
@@ -417,6 +471,15 @@ s241e, s241o ×2).
   limitation and the utilization ordering. **The preservation half is built and
   the pools are safe — only the computation waits.** Still the single
   highest-value RS authoring order on this list.
+- **NEW (s241s): the GA QEE credit has NO SPEC — `IT_QEE_TP2`, `IT-QEE-TP2`,
+  `ITQEETP2`, `500_SCH2`, `GA_QEE` and `QEE` all 404**, while the `500` spec
+  models only the destination (line 21, typed `input`). s241s built the brief
+  from O.C.G.A. §48-7-29.16 on the s223/s241p precedent. **Author both** — a
+  Schedule 2 credit-detail spec and `IT_QEE_TP2` — with the brief as input.
+  ⚠ Whatever is authored MUST carry the **two carryforward regimes** (3 years
+  for credits generated in TY2025+, 5 for older ones, per 2024 Ga. Laws 598
+  §1-7) and must record that **line 21 is `input` today**, so a build that
+  derives it re-authors the spec rather than diverging (the s142 rule).
 - **NEW (s241p): `4547` and `8879_TA` have NO SPEC AT ALL.** `lookup/4547/`,
   `F4547`, `FORM_4547`, `8879_TA` and `8879TA` all 404. s241p built the form
   from the IRS artifacts on the s223 Form-1310 precedent (which also 404s) and

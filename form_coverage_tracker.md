@@ -1,6 +1,66 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241s — GEORGIA QEE CREDIT + IT-QEE-TP2 OPENED (leg 1 of
+> 6: the source brief). BATCH-004 #2. No production code; no migration.**
+>
+> *⚠ BUILT THROUGH A 404-STOP.* `IT_QEE_TP2`, `IT-QEE-TP2`, `ITQEETP2`,
+> `500_SCH2`, `GA_QEE` and `QEE` **all 404**. The `500` spec answers 200 but
+> models only the DESTINATION — **line 21 "Total credits used from Schedule 2
+> (series-100)", typed `input`** — and says nothing about where the total comes
+> from. Built on the s241p three-part test: **O.C.G.A. §48-7-29.16 states every
+> limit, the liability cap, both carryforward regimes and the no-double-benefit
+> rule verbatim**, so there is nothing to improvise; `lookup/1310/` (s223) and
+> `lookup/4547/` (s241p) are the precedents. Both specs on the RS agenda.
+>
+> *⚠⚠ THE FINDING THAT DECIDES THE MODEL — TY2025 RUNS TWO CARRYFORWARD REGIMES
+> SIDE BY SIDE.* Current text: *"succeeding **three** years' tax liability"*.
+> Pre-amendment text: *"the succeeding **five** years' tax liability"*. And
+> **2024 Ga. Laws 598 §1-7, eff. 1/1/2025, applies "only to unused tax credits
+> generated during taxable years beginning on or after 1/1/2025."** So a
+> TY2025-generated credit carries **3** years and an older one carries **5**,
+> and both are live in the same return. ⚠ A single `CARRYFORWARD_YEARS`
+> constant is correct for one population and wrong for the other, and the error
+> surfaces **years later** when a pool expires early or late — so **the pool
+> keys its GENERATION YEAR**, not a remaining-years counter. Both regimes read
+> from primary text (2024 code + 2022 code), not from a summary (s232/s239).
+>
+> *⚠ VERIFY-FIRST CORRECTED THE ITEM.* GA-500 **line 21** and Schedule 1 **line
+> S1-5** are BOTH already seeded as preparer inputs, so the reported packet's
+> $5,000 is **enterable today** in flattened form — the return is not wrong.
+> The genuine gap is the DOCUMENT DETAIL (credit code, certificate identity,
+> generated-vs-used, carryover, the credit↔addback link), which is exactly what
+> the item's own second paragraph says. *A build that "fixes" a correct return
+> is measuring the wrong thing.*
+>
+> *⚠⚠ THE SCHEDULE 1 ADDBACK IS A CONDITION ON THE CREDIT, NOT AN ADDITION.*
+> §48-7-29.16(h)(1): *"No credit shall be allowed … with respect to any amount
+> deducted … as a charitable contribution …"*. And `S1-5` is *"Add: **other**
+> additions"* — SHARED and preparer-keyed — so the build **RECONCILES** against
+> it and never writes into it (s230: a shared line's first writer must not
+> become its owner; the failure mode is a DISAPPEARED number).
+>
+> *⚠ THE PACKET CANNOT TEST THE CAP.* MFJ with $5,000 expended is **exactly**
+> the (b)(2) limit, so it cannot distinguish capped from uncapped, and all five
+> of its figures being equal is a coincidence of this packet rather than a rule
+> (s219 — a value that cancels by luck). ⚠ **(b)(3) is an OVERRIDE, not a
+> fourth filing status**: an LLC member / S-corp shareholder / partner gets
+> **$25,000** even when MFJ, and its "portion of the income on which such tax
+> was actually paid" proviso needs a KEYED assertion. ⚠ **The pre-approved
+> amount is NOT computable** — a statewide first-come-first-served queue against
+> a **$120 million** annual cap that the commissioner may **prorate**.
+> Transcribed from IT-QEE-TP2, never derived.
+>
+> *Legs.* ✅ **brief** `_ga_qee_credit_source_brief.md` (a build leg, not a note
+> — s222/s223/s241p) · ❌ model (⚠ per CERTIFICATE; series-100 codes are an
+> **OPEN ENUM**, so refuse computation for any code but 125 **by name** — s235;
+> new tables → RLS default-deny) · ❌ lane · ❌ compute · ❌ render · ❌
+> diagnostics. **No federal effect at all** — this is a Georgia credit.
+> 17 tests pinning the statute's presence in the brief and the two verify-first
+> findings against the seeded DB. ⚠ The content tests **strip markdown** before
+> comparing: blockquote markers and emphasis fall INSIDE the quoted phrases, so
+> a naive search would pass or fail on reformatting rather than on content.
+
 > **2026-08-10 session 241r — ✅✅ FORM 4547 (Trump Account Election(s)) IS
 > COMPLETE, ALL SIX LEGS. BATCH-004 #10. No migration; one deploy.**
 >
