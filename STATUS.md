@@ -1,10 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241d). **BATCH-004 #8 — Part II Section B now
-TRANSMITS (the reported packet's own childless-EIC path), and ODC persons stop
-posing as CTC children.** Both found by reading `IRS8862.xsd`, not the face.
-One deploy (`7ebd348`), no migration. ⛔ #8 is STILL NOT FINISHED — the printed
-form and the diagnostics remain.*
+*Last updated: 2026-08-10 (s241e). **BATCH-004 #8 — the PRINTED Form 8862 now
+carries what we transmit for Parts I and II.** ⚠ My own s241c/d work had made
+the render leg's "leave it blank for the preparer" boundary wrong: honest while
+the app held no answers, dishonest once it held and transmitted them. One
+deploy (`1f5355c`), no migration. ⛔ #8 STILL NOT FINISHED — the diagnostics and
+the Parts II-A/III/IV print remain.*
+
+*Previous (s241d): Part II Section B transmits and ODC persons stop posing as
+CTC children (`7ebd348`); (s241c) five fabricated sworn answers removed
+(`3a87b2f`, migrations 0279 + 0280).*
 
 *Previous (s241c): the same form's MeF builder had been fabricating FIVE of the
 taxpayer's sworn answers while its docstring promised it did not; two overrode
@@ -59,19 +64,23 @@ the day count keyed), and **ODC persons moved out of `CTCACTCChildInformationGrp
 into their own `ODCPersonInformationGrp`** — they had been asserting
 `QualifyingChildInd`, a claim an ODC qualifying relative cannot make.
 
-⛔ **Remaining, in order — do NOT record #8 as finished until these land:**
-5. **Re-cut `f8862_2025.py` + `seed_8862.py` onto the real line inventory** —
-   the largest remaining piece. Both are still keyed to the draft spec's
-   collapsed `part_ii`/`part_iii`/`part_iv` booleans, so the **PRINTED** form
-   does not carry the real answers even though the transmitted one now does.
-   ⚠ Dump the AcroForm field names first (`scripts/dump_acroform_fields.py`) —
-   the current map has 5 entries for a ~40-line face.
+✅ **Also done (s241e, `1f5355c`):** the PRINTED form now carries every Part I
+and Part II line the app knows — lines 3/4 and Section B's 9a/9b, 10a/10b,
+11a/11b. ⚠ `[0]`=Yes / `[1]`=No verified POSITIONALLY against the printed
+labels, with a test that re-derives it from the PDF and was proven by injecting
+the swap.
+
+⛔ **Remaining — do NOT record #8 as finished until these land:**
 6. **The diagnostics the item asks for**: missing answers, incompatible credit
    claims, and claiming a previously-disallowed credit with no certification.
    The MeF refusals cover the transmission path only — a return that never
-   reaches composition currently says nothing.
-7. **Part II Section A lines 6 and 8** (`QualifyingChildInd`,
-   `BirthMonthDayDt` / `DeathMonthDayDt`) are in the XSD and still not emitted.
+   reaches composition currently says nothing. **This is the next piece.**
+7. **Parts II-A / III / IV print**: still preparer-completed on paper while
+   being TRANSMITTED (the same paper-vs-XML gap s241e closed for Part II).
+   ~100 widgets of four-column per-person grid — its own unit. ⚠ Reuse
+   `_yesno()` and the positional guard; do not hand-assume any index.
+8. **Section A lines 6 and 8** (`QualifyingChildInd`, `BirthMonthDayDt` /
+   `DeathMonthDayDt`) are in the XSD and still not emitted.
 
 ⚠ **Carry the s241c design rule forward**: lines 4 and 11 DERIVE from the EIC
 engine's own Rule 13 / Rule 12 gates and must never gain a keyed copy (s234 —
@@ -306,6 +315,19 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241e in one paragraph — and the lesson is about MY OWN earlier change
+The Form 8862 field map was a deliberate coarse data-map whose docstring said
+the granular sections were *"left blank for the preparer to complete by hand — a
+faithful data-map, not an adjudication."* **True until s241c/s241d gave the app
+real answers and began transmitting them** — after which a blank printed face
+beside a populated transmission is the paper and the XML disagreeing about what
+the taxpayer swore. *Fifth occurrence here of "adding support makes an existing,
+correct rule wrong" (s225, s233, s238, s240) — and the first where the earlier
+change was mine, two sessions back.* Mapped every Part I/II line the app knows.
+⚠ `[0]`=Yes / `[1]`=No was **verified positionally** against the printed labels
+(the s236 Form-7203 trap), with a test that re-derives it from the PDF and was
+**proven by injecting the swap**.
+
 ### ✅ s241d in one paragraph
 Two more Form 8862 legs, **both found in the XSD rather than on the printed
 face** (the s223 rule: the schema decides what transmits). Part II **Section B**
@@ -346,6 +368,10 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s241e MOVES PRINTED OUTPUT.** A rendered Form 8862 now shows Part II
+  lines 3 and 4, and on a childless EIC claim Section B's 9a/9b, 10a/10b and
+  11a/11b, where those areas were blank. ⚠ An unanswered question still prints
+  BLANK, never "No". No dollar figure changes.
 - **⚠ s241d MOVES E-FILE OUTPUT.** (a) A childless EIC 8862 now emits Part II
   Section B, and **refuses** when the line-9 day count, a date of birth, or the
   Rule 12 answer is missing — those returns previously transmitted with Section

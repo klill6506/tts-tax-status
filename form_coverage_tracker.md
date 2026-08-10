@@ -1,5 +1,31 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241e — Form 8862 RENDER leg extended. No migration, one
+> deploy. ⚠ STILL PARTIAL — do NOT tick this form.**
+> **⚠⚠ MY OWN EARLIER CHANGE MADE A CORRECT BOUNDARY WRONG.** The field map was
+> a deliberate coarse data-map whose docstring said the granular sections were
+> *"left blank for the preparer to complete by hand — a faithful data-map, not
+> an adjudication."* True while the app held no answers; s241c/s241d gave it
+> real ones AND transmitted them, after which a blank printed face beside a
+> populated transmission is **the paper and the XML disagreeing about what the
+> taxpayer swore**. *Fifth occurrence of "adding support makes an existing
+> correct rule wrong" (s225/s233/s238/s240), and the first where the earlier
+> change was ours two sessions back. It generalizes past specs and diagnostics
+> to RENDERING: a "we deliberately leave this blank" comment is a claim about
+> what the app KNOWS, and it expires when the app learns it.*
+> Now printed: Part II lines 3/4 and Section B's 9a/9b, 10a/10b, 11a/11b, fed
+> from the `Form8862` row plus the derived facts. ⚠ An unanswered question
+> leaves BOTH boxes blank — never printed as "No". Section B prints only on the
+> childless path, per the face's own instruction.
+> **⚠⚠ [0]=Yes / [1]=No VERIFIED POSITIONALLY, and the guard PROVEN by injecting
+> the swap** (s236 + s232): `c1_4[0]` x=504.00 y=301.00 with the printed "Yes"
+> at x=517.00 on the same row; the test re-derives this from the PDF instead of
+> trusting the comment. Also retired a frozen four-key trip-wire that fired on
+> legitimate growth rather than on a wrong mapping.
+> ⛔ **Open:** the item's diagnostics (next, and smallest); Parts II-A/III/IV
+> print (~100 widgets of per-person grid, still transmitted-but-not-printed);
+> Section A lines 6 and 8. ⚠ MOVEMENT: printed output moves; no dollars.
+
 > **2026-08-10 session 241d — Form 8862, two more legs. No migration, one
 > deploy. ⚠ STILL PARTIAL — do NOT tick this form.** Both found by reading
 > **`IRS8862.xsd`**, not the printed face (the s223 rule: the schema decides
