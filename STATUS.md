@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241m). **BATCH-004 #9 (Form 1099-PATR) — model,
-income rules and the 8z composition built** (`b4c949e`, migrations 0281+0282).
-⚠ The riskiest edit of the day: 8z has a SINGLE writer that returned early
-without a 1099-MISC, so a PATR-only return would have silently dropped its
-income. Both paths now carry the share. ⛔ #9 NOT finished — lane, diagnostics
-and the Georgia feed remain. Eleven units today; BATCH-004 is 5 of 10.*
+*Last updated: 2026-08-10 (s241n). **BATCH-004 #9 (Form 1099-PATR) — lane and
+five diagnostics built** (`a841368`, no migration). ⛔ #9 NOT finished: the
+Georgia RIE feed and a CRUD surface remain. Twelve units today; BATCH-004 is 5
+of 10 with #9 close.*
+
+*Previous (s241m): the PATR model + 8z composition (`b4c949e`, migs 0281+0282)
+— ⚠ 8z has a SINGLE writer that returned early without a 1099-MISC, so a
+PATR-only return would have silently dropped its income; (s241j) the alimony
+TCJA repeal gate; (s241i) ✅ Form 8862 COMPLETE; (s241g) the false-red class
+RETIRED.*
 
 *Previous (s241j): the alimony TCJA repeal gate — `D_SCH1_003` checked the
 instrument date was PRESENT, never what it SAID (`fdd2459`); (s241i) ✅ Form
@@ -157,24 +161,29 @@ by the fix meant to avoid it. Both the early return AND the disengage path now
 carry the patronage share, and both are pinned by tests (a PATR-only return
 writes 8z; deleting a 1099-MISC hands the line back rather than blanking it).
 
+✅ **LEGS 4-5 DONE (s241n, `a841368`):** the `patr_1099s` lane section
+(`routing` + `link_key`, ordered after `schedule_cs`/`schedule_fs`, unresolved
+key → committed UNLINKED with a warning rather than a guess) and **five
+diagnostics** — `D_1099PATR_LINK` (error), `_BOX1` (warning, the nontaxable
+carve-out), `_BASIS` (info, recorded not applied), `_199A` (warning, reconciled
+against `qbi_is_patron` and never fed — s234) and `_CREDIT` (error, an
+unmodelled credit REFUSED BY NAME — s236, since a dropped credit overstates
+tax). Staging also catches a carve-out larger than box 1, and a basis reduction
+larger than the carve-out.
+
 ⛔ **Remaining legs — do NOT record #9 as finished until these land:**
-1. **The lane section** (`patr_1099s`) with `routing` + `link_key`, the
-   `misc_1099s` shape verbatim. ⚠ Order it AFTER `schedule_cs`/`schedule_fs` in
-   `LIST_SECTIONS` so the link resolves, exactly as `misc_1099s` is.
-2. **Diagnostics**, four of them: the box-1 taxable/nontaxable split (⚠ it is a
-   preparer assertion, so an unsplit box 1 on a return with any farm/business
-   activity deserves a prompt); the boxes 6-9 **reconciliation** against
-   `qbi_is_patron` / `qbi_patron_alloc_*` (⚠ reconcile, never feed — s234);
-   the `box1_basis_reduction` (reported, never applied — the app does not know
-   which assets); and boxes 10-12, where ⚠ **an unmodelled credit must be
-   REFUSED BY NAME, not dropped** (s236 — a refused amount is not claimed at
-   all, so it overstates tax).
-3. **The Georgia RIE feed** the item names. ⚠ **Verify against Ga. Comp. R. &
-   Regs. r. 560-7-4-.02 FIRST** — s233, s236 and s239 each found that feed
-   wrong in a different way, and the reg's unearned list is the controlling
-   text, not the item's assertion.
-4. A browser CRUD surface, so the new refusals are actionable (the s241c
-   lesson: ship the input surface with the rule that needs it).
+1. **The Georgia RIE feed** the item names ("it participates in the filed
+   Georgia taxpayer retirement-income exclusion"). ⚠⚠ **VERIFY AGAINST Ga.
+   Comp. R. & Regs. r. 560-7-4-.02 FIRST, and treat the item's assertion as a
+   hypothesis** — s233, s236 AND s239 each found that feed wrong in a different
+   way, and the reg's own unearned list is the controlling text. ⚠ The s239
+   finding especially: the reg uses DIFFERENT TESTS for different entity types
+   in one sentence, so "patronage dividends are unearned" needs reading, not
+   assuming. ⚠ And check the s241 lesson: the RIE base is *income included in
+   Georgia taxable income*, so the box-1 NONTAXABLE part must not reach it.
+2. **A browser CRUD surface** (`patr-1099s`), so the five new diagnostics are
+   actionable — the s241c lesson: ship the input surface with the rule that
+   needs it, or the refusal is a dead end.
 
 Then the rest of BATCH-004 by size: #10 Form 4547 + 8879-TA ≈ #2 GA education
 credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X (large). ✅ #10's source check
@@ -539,6 +548,8 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241n: NONE.** The five `D_1099PATR_*` rules fire only on returns that
+  carry a 1099-PATR row, and none exists until a preparer or payload makes one.
 - **s241m: NONE.** `Form1099PATR` rows only exist where a preparer creates one,
   and the 8z composition is unchanged on every return without one — the
   existing 27 1099-MISC/8z tests are green and the sweep was 537/0.
