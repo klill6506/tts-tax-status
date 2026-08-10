@@ -1,5 +1,39 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241c — 1040 BATCH-004 #8 (Form 8862). Migrations 0279 +
+> 0280 (RLS), one deploy. ⚠ PARTIAL — do NOT tick this form.** Form 8862 gains
+> an **input model, an MeF leg that is finally truthful, a browser CRUD and a
+> lane section**; its RENDER leg and its diagnostics are still open, and Part II
+> Section B does not yet emit.
+> **⚠⚠ THE DEFECT: the MeF builder FABRICATED FIVE SWORN ANSWERS while its own
+> docstring promised it did not** — *"Every per-child/per-student answer derives
+> from the SAME model facts the credits computed from (bridge-gate: the 8862
+> can't contradict the claim)."* False. Line 3 and line 4 emitted `"false"`,
+> lines 16/17 and 19a emitted `"true"`. **Lines 17 and 19a were the worst,
+> because the app STORES those facts and USES them to compute the credit being
+> certified**: `Dependent.citizenship_status` (five choices, help_text citing
+> §152(b)(3)) and the `EducationStudent` AOTC facts. A nonresident-alien
+> dependent therefore certified line 17 = "true" against the face's caution
+> *"If the answer is 'No' for question 14, 15, 16, or 17, you cannot claim the
+> CTC/ACTC/ODC for that child."* ⚠ **Sign: OVERSTATES the credit on a signed
+> return.** All five now derive or refuse; a test fails if a literal returns.
+> **⚠ THE DESIGN CORRECTION CAME FROM THE FIXTURE, NOT THE TRIAGE.** Line 4 was
+> going to be keyed until ATS scenario 5 showed the Taxpayer already carries
+> `eic_qualifying_child_of_another` (childless Rule 13) and
+> `eic_claimed_as_dependent` (Rule 12) — and line 1 is the CURRENT tax year, so
+> lines 4 and 11 ask exactly what the credit already gates on. A keyed copy
+> would have been the s234 two-sources-for-one-relationship defect.
+> **⚠ Unanswered is REFUSED, not assumed** — line 4 = Yes means the EIC cannot
+> be claimed at all, so a fabricated "No" transmits a barred claim. The browser
+> CRUD shipped in the same change so the refusal is actionable.
+> ⛔ **Open:** Part II Section B (9a/9b, 10a/10b, 11a/11b) stored but not
+> emitted — **the reported packet is exactly that path**; `f8862_2025.py` +
+> `seed_8862.py` still cut to the draft spec's collapsed per-Part booleans; the
+> item's diagnostics unbuilt.
+> ⚠ RS: the `8862` spec is the s238 trap a second time — 200, `status: draft`,
+> six pseudo-lines for a ~40-line face. **The export's `status` is still checked
+> nowhere.** 20 tests; flow 546. ⚠ MOVEMENT: e-file output moves (conservatively).
+
 > **2026-08-10 session 241b — 1040 BATCH-004 #6 (Form 8863 education credits).
 > No migration, one deploy.** **Form 8863 gains its INPUT-LANE leg** — the last
 > one it was missing. Model (`EducationStudent`, migration 0071; `dependent` FK
