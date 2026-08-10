@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241j). **BATCH-004 #3 (alimony) — the deduction was
-allowed under ANY instrument date.** `D_SCH1_003` checked only that the line-19c
-date was PRESENT, so a post-2018 divorce deducted alimony and reduced AGI.
-⚠ Sign: OVERSTATES the deduction. `D_SCH1_007` now enforces the TCJA §11051
-repeal; the movement was PROVED (AGI down exactly $8,400) rather than asserted.
-One deploy (`fdd2459`), no migration. Ten units today; BATCH-004 is 5 of 10.*
+*Last updated: 2026-08-10 (s241m). **BATCH-004 #9 (Form 1099-PATR) — model,
+income rules and the 8z composition built** (`b4c949e`, migrations 0281+0282).
+⚠ The riskiest edit of the day: 8z has a SINGLE writer that returned early
+without a 1099-MISC, so a PATR-only return would have silently dropped its
+income. Both paths now carry the share. ⛔ #9 NOT finished — lane, diagnostics
+and the Georgia feed remain. Eleven units today; BATCH-004 is 5 of 10.*
+
+*Previous (s241j): the alimony TCJA repeal gate — `D_SCH1_003` checked the
+instrument date was PRESENT, never what it SAID (`fdd2459`); (s241i) ✅ Form
+8862 COMPLETE; (s241g) the `inspect.getsource` false-red class RETIRED.*
 
 *Previous (s241i): ✅ Form 8862 COMPLETE, Section A print + transmission
 together (`87979f2`); (s241g) the `inspect.getsource` false-red class RETIRED,
@@ -83,25 +87,94 @@ so a post-2018 divorce deducted alimony and reduced AGI (⚠ overstates the
 deduction). `D_SCH1_007` now enforces the repeal; `D_SCH1_008` prompts on the
 modification arm the app cannot decide. Lane gained 19a/19b/19c.
 
-### ⭐ NEXT UNIT — **BATCH-004 #9, Form 1099-PATR** (patronage dividends)
+### ⭐ NEXT UNIT — **BATCH-004 #9, Form 1099-PATR**. ⛔ **TRIAGED 2026-08-10 —
+### the design below is settled. BUILD IT; do not re-triage.**
 The reported packet has $1,004 of `FARM CREDIT PATRONAGE DIVIDENDS` on Schedule
-1 line 8z, flowing to 1040 line 8 and AGI, and participating in the Georgia
+1 line 8z → 1040 line 8 → AGI, and it participates in the Georgia
 retirement-income exclusion.
 
-**Before building:**
-1. ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 **no RS spec
-   exists for any information return**. Build from the IRS form + a
-   `server/specs/_1099patr_source_brief.md`, the s222/s223 shape.
-2. **Verify-first, and expect it to be narrower than written.** ⚠ The item
-   itself says the only existing 8z lane is 1099-MISC boxes 3/8 — check
-   whether `sch1_fields` or a flat 8z surface already carries this, the way
-   19a/19b/19c turned out to already exist in #3.
-3. ⚠ **The routing is the tax question, not the boxes.** Patronage dividends
-   can land on Schedule 1 line 8z, on Schedule C, or on Schedule F depending on
-   the activity they arose from, and the item explicitly warns against
-   double-feeding where the amount is already in Schedule C/F gross income.
-   The `misc_1099s` `routing` + `link_key` pattern (s222) is the worked
-   precedent — reuse it rather than inventing a second shape.
+**Triage findings — verified in code, do NOT re-derive:**
+- ✅ **The item is REAL.** There is no `Form1099PATR` model, no PATR field, no
+  patronage source anywhere. The `patronage` hits in the tree are all
+  **8995-A / 8835 QBI context** (the §199A(b)(7) patron reduction), a different
+  thing entirely — exactly as s240's triage predicted.
+- ⚠⚠ **THE CRUX: SCHEDULE 1 LINE 8z ALREADY HAS TWO OWNERS, AND THE COMPOSITION
+  IS ALREADY BUILT.** `compute_1099misc.py`'s own docstring: *"SCHEDULE 1 LINE
+  8z ALREADY HAD AN OWNER … Two unconditional writers would fight — last one
+  wins, and the state-refund disengage path would erase a 1099-MISC amount. So
+  8z is COMPOSED by a single final writer: 8z = the STATE_REFUND worksheet's own
+  `sch1_8z` output row + Σ (box 3 + box 8) on rows routed to 8z."*
+  **1099-PATR is the THIRD contributor**, so it must EXTEND that composition,
+  never add a fourth writer. This is the s230 "a shared line's first writer must
+  not become its owner" rule, already learned once on this very line — the
+  failure mode is a DISAPPEARED number, which nobody reports.
+  ⚠ `compute_1099misc_db` runs after `compute_state_refund_db` and before
+  `compute_sch123`; PATR has to slot into that same ordering.
+- ⚠ **The `8z_type` LITERAL also composes** — it names each source present. PATR
+  must join it, or the face will describe the wrong payment.
+- ⚠ **ROUTING IS THE TAX QUESTION, NOT THE BOXES.** Patronage dividends land on
+  8z, Schedule C **or** Schedule F depending on the activity they arose from,
+  and the item explicitly warns against double-feeding where the amount is
+  already in Schedule C/F gross income. **Reuse the `misc_1099s` `routing` +
+  `link_key` pattern (s222) verbatim** — same carrier, same commit-time
+  resolution, same "unresolved → warn + leave unlinked, never guess".
+- ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 **no RS spec exists
+  for any information return**. Build from the IRS form + a
+  `server/specs/_1099patr_source_brief.md` (the s222/s223 shape).
+
+✅ **LEG 1 DONE (s241l, `f04d351`): `server/specs/_1099patr_source_brief.md`.**
+The IRS form IS the specification here, so the brief is the first leg, not a
+note. It holds the **verbatim** box captions and Instructions for Recipient from
+**Rev. April 2025** (the CY2025 revision) — **read it before writing code; do
+not re-fetch.** Two traps it names that the batch item does not:
+
+- **⚠⚠ BOX 1 IS NOT UNCONDITIONALLY INCOME.** Verbatim: *"Any dividends paid on
+  (1) property bought for personal use or (2) capital assets or depreciable
+  property used in your business are not taxable. However, if (2) applies,
+  reduce the basis of the assets by this amount."* A blind box-1 → 8z feed
+  **taxes a non-taxable amount** (⚠ overstates income), and the basis reduction
+  is a future-year attribute of exactly the s235 `CarryforwardAttribute` kind.
+  Box 1 needs a taxable/nontaxable split (a preparer assertion — the app cannot
+  know what the purchase was for), never an unconditional route.
+- **⚠⚠ BOXES 6-9 MUST NOT FEED ANYTHING.** The app already carries
+  `qbi_is_patron` / `qbi_patron_alloc_qbi` / `qbi_patron_alloc_wages` and
+  `compute_8995a` already implements the §199A(b)(7) patron reduction. Feeding
+  them would be the **s234 two-sources defect**. Transcribe and RECONCILE (the
+  `D_CFWD_002` doctrine). ⚠ And boxes 8/9 are *subsets of* boxes 1/2/3/5 by
+  their own wording — never add them to income.
+- The ordinary-income set is **boxes 1, 2, 3 and 5**, not box 1 alone.
+- Box 4 → 1040 line 25b. Boxes 10-12 are credit pass-throughs — ⚠ **refuse an
+  unmodelled credit BY NAME rather than dropping it** (s236: a refused amount
+  is not claimed at all, so it overstates tax).
+
+✅ **LEGS 2-3 DONE (s241m, `b4c949e`):** the `Form1099PATR` model (migrations
+0281 + 0282 RLS), `compute_1099patr.py`, and the **8z composition**.
+⚠⚠ **The trap that was live and is now pinned:** `compute_1099misc_db` is the
+SINGLE 8z writer and **returns early when there is no 1099-MISC**, so a
+PATR-only return would have had its patronage income silently dropped — the
+exact disappeared-number failure the composition exists to prevent, reproduced
+by the fix meant to avoid it. Both the early return AND the disengage path now
+carry the patronage share, and both are pinned by tests (a PATR-only return
+writes 8z; deleting a 1099-MISC hands the line back rather than blanking it).
+
+⛔ **Remaining legs — do NOT record #9 as finished until these land:**
+1. **The lane section** (`patr_1099s`) with `routing` + `link_key`, the
+   `misc_1099s` shape verbatim. ⚠ Order it AFTER `schedule_cs`/`schedule_fs` in
+   `LIST_SECTIONS` so the link resolves, exactly as `misc_1099s` is.
+2. **Diagnostics**, four of them: the box-1 taxable/nontaxable split (⚠ it is a
+   preparer assertion, so an unsplit box 1 on a return with any farm/business
+   activity deserves a prompt); the boxes 6-9 **reconciliation** against
+   `qbi_is_patron` / `qbi_patron_alloc_*` (⚠ reconcile, never feed — s234);
+   the `box1_basis_reduction` (reported, never applied — the app does not know
+   which assets); and boxes 10-12, where ⚠ **an unmodelled credit must be
+   REFUSED BY NAME, not dropped** (s236 — a refused amount is not claimed at
+   all, so it overstates tax).
+3. **The Georgia RIE feed** the item names. ⚠ **Verify against Ga. Comp. R. &
+   Regs. r. 560-7-4-.02 FIRST** — s233, s236 and s239 each found that feed
+   wrong in a different way, and the reg's unearned list is the controlling
+   text, not the item's assertion.
+4. A browser CRUD surface, so the new refusals are actionable (the s241c
+   lesson: ship the input surface with the rule that needs it).
 
 Then the rest of BATCH-004 by size: #10 Form 4547 + 8879-TA ≈ #2 GA education
 credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X (large). ✅ #10's source check
@@ -343,6 +416,20 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241m in one paragraph — the fix nearly reproduced the bug it prevents
+Form 1099-PATR's model, income rules and 8z composition. Two things the batch
+item never mentioned came out of the IRS instructions: **box 1 is not
+unconditionally income** (dividends on personal-use or capital/depreciable
+business property "are not taxable", and the second case *reduces asset basis*),
+and **boxes 6-9 must not feed anything** because the app already keys the patron
+§199A facts — routing them would be s234 all over again. ⚠⚠ **But the sharpest
+moment was the composition itself.** Line 8z tolerates one final writer, so PATR
+had to ride `compute_1099misc_db` rather than add a fourth — and that writer
+*returns early when there is no 1099-MISC*, so a PATR-only return would have had
+its patronage income **silently dropped**. *The fix for a disappeared-number
+class was one line away from creating a new instance of it.* Both the early
+return and the disengage path now carry the share, and both are pinned.
+
 ### ✅ s241j in one paragraph — a completeness check is not a correctness check
 BATCH-004 #3 asked for an alimony document model; 19a/19b/19c already existed as
 spec inputs, already required the SSN and the date, and 19a already reached AGI.
@@ -452,6 +539,9 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241m: NONE.** `Form1099PATR` rows only exist where a preparer creates one,
+  and the 8z composition is unchanged on every return without one — the
+  existing 27 1099-MISC/8z tests are green and the sweep was 537/0.
 - **⚠ s241j MOVES DIAGNOSTICS, and one class of return should CHANGE.** Any
   return deducting alimony under a line-19c instrument dated 2019 or later now
   fires `D_SCH1_007` (**error**) where it was silent — and that deduction is
