@@ -1,9 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241s). **BATCH-004 #2 (Georgia QEE credit) OPENED —
-leg 1, the source brief** (`52c08ec`, no production code, no migration).
-⛔ #2 NOT finished — model, lane, compute, render and diagnostics remain.
-Seventeen units today; **BATCH-004 is 7 of 10 with #2 opened.***
+*Last updated: 2026-08-10 (s241t). **BATCH-004 #2 (Georgia QEE credit) — legs
+2-3 built** (`ce8fd6b`, migrations 0285 + 0286 RLS): `GeorgiaCredit` /
+`GeorgiaQEEDetail` and `compute_ga_qee.py` carrying the statute, **both
+carryforward regimes included**. ⛔ #2 NOT finished — lane, render and
+diagnostics remain. Eighteen units today; **BATCH-004 is 7 of 10 with #2 three
+legs of six done.***
 
 *Previous (s241r): ✅✅ #10 (Form 4547) COMPLETE, all six legs (`e2dce0e`);
 (s241q) its lane + eight diagnostics (`1158887`); (s241p) brief + models
@@ -112,16 +114,27 @@ other, and the error surfaces YEARS later when a pool expires early or late —
 **the carryover pool must key its GENERATION YEAR**, not a remaining-years
 counter. Both regimes were read from primary text (2024 code + 2022 code).
 
+✅ **LEGS 2-3 DONE (s241t, `ce8fd6b`, migrations 0285 + 0286 RLS):**
+`GeorgiaCredit` (one row per **CERTIFICATE**, with `source_year` as the
+carryforward discriminator and a conditional unique constraint on the
+certificate number) + `GeorgiaQEEDetail` (the IT-QEE-TP2 facts) +
+`compute_ga_qee.py` (**writes nothing** — the statute expressed once, for the
+diagnostics/render/reconciliation to share).
+⚠ **MFS is NOT NAMED by §(b) and is REFUSED** — `cap_for` returns None, so the
+caller refuses rather than guessing half-of-MFJ. ⚠ Only code 125 computes;
+every other series-100 code is **reported by name**. ⚠ An unknown
+`source_year` returns **None, not a default** — the sign cuts both ways.
+
 **⛔ Remaining legs — do NOT record #2 as finished until these land:**
-1. **Model** — per CERTIFICATE, not per return: code + certificate number +
-   generated/used/carryover, with the IT-QEE-TP2 facts (expended, pre-approved,
-   tentatively allowed, approval date, SSO name) hanging off it. ⚠ Series-100
-   credit codes are an **OPEN ENUM** (GA has dozens) — model code+description
-   and **REFUSE computation for any code but 125 BY NAME** (s235: a negative
-   test over an enum about to grow is a bug with a delayed trigger).
-   ⚠ New tables → **RLS default-deny**.
-2. **Lane** · 3. **Compute** (the §2 caps, the liability limit, both regimes)
-   · 4. **Render** · 5. **Diagnostics**.
+1. **Lane** — a `georgia_credits` section with a nested `qee_detail` dict (the
+   `form_4547s` parent+child shape). ⚠ Register it in the **generator** too —
+   that drifted twice (s227, s241q).
+2. **Render** — the Georgia Schedule 2 grid + IT-QEE-TP2. ⚠ Neither is in
+   `forms_manifest.json` yet.
+3. **Diagnostics** — the item's list: reconciliation against GA-500 line 21,
+   the **S1-5 addback reconciliation** (⚠ compare, never write), an unmodelled
+   credit code, an expired carryforward pool, a missing certificate, and
+   `sold_transferred` non-zero on code 125 (§48-7-29.16 permits no transfer).
 
 **⚠ VERIFY-FIRST CORRECTED THE ITEM — carry this forward.** GA-500 **line 21**
 and Schedule 1 **line S1-5** are BOTH already seeded as preparer inputs, so the
@@ -296,6 +309,10 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241t: NONE.** Two new tables and a pure-function module nothing calls yet.
+  No compute changed; `GeorgiaCredit` rows only exist where a preparer or
+  payload makes one. Migrations are additive (CreateModel + RLS ALTER), so the
+  s190 `db_default` trap does not apply.
 - **s241s: NONE.** A source brief and its tests. No production code changed.
 - **s241r: NONE.** A new render function and a new MeF document, both reached
   only when the return carries a `Form4547` row — and none exists until a
