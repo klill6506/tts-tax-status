@@ -1,10 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241b). **BATCH-004 #6 BUILT — the `education_students`
-lane.** Form 8863 was complete except its importer; the notable part is that the
-uniqueness constraint s241 had just added to Form 5329 would have been a DEFECT
-here, and checking rather than pattern-matching is what caught it. One deploy
-(`d55ff15`), no migration.*
+*Last updated: 2026-08-10 (s241c). **BATCH-004 #8 PARTIALLY BUILT — Form 8862's
+sworn answers stop being literals.** The MeF builder had been fabricating FIVE
+of the taxpayer's answers while its docstring promised it did not; two of them
+overrode facts the app stores and uses to compute the very credit being
+certified. One deploy (`3a87b2f`), migrations 0279 + 0280. ⛔ The render/seed
+re-cut, Part II Section B emission, and the diagnostics are STILL OPEN — the
+reported packet cannot yet be fully reproduced.*
+
+*Previous (s241b): BATCH-004 #6, the `education_students` lane (`d55ff15`) —
+the uniqueness constraint s241 had just added to Form 5329 would have been a
+DEFECT there, and checking rather than pattern-matching is what caught it.*
 
 *Previous (s241): BATCH-004 #7 + BATCH-003 #2 built together as one `form_5329s`
 section; a duplicate-owner row made $110.40 of tax vanish (`97ea4a5`, migration
@@ -36,13 +42,152 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — BATCH-004 #8 (Form 8862), then the rest of the queue
-**#8 is the smallest remaining item.** `f8862_2025.py` (render) + the `IRS8862`
-MeF document + `seed_8862.py` all exist — this is the SPRINT_SCOPE Topic-7
-"data-mapped render, no compute" boundary. **What is missing is the input model
-itself**, and then the lane family on top of it. So unlike #4/#6/#7 this is a
-genuine build, not a lane-only gap: a model + migration + RLS (the new-table
-rule) + compute/validation + the `backentry.v1` section.
+### ⭐ NEXT UNIT — **finish BATCH-004 #8 (Form 8862)**. Steps 1-3 shipped in
+### s241c (`3a87b2f`); steps 4-6 remain and are what the item still needs.
+
+✅ **Done (s241c):** the `Form8862` model (migrations 0279 + 0280 RLS), the MeF
+rewire that ended five fabricated sworn answers, the `form-8862` browser CRUD
+(PUT upserts — singleton), and the `form_8862s` lane section.
+
+⛔ **Remaining, in order — do NOT record #8 as finished until these land:**
+4. **Part II Section B is stored but NOT EMITTED.** 9a/9b (day counts, keyed),
+   10a/10b (ages — DERIVE from the DOBs against the line-1 year), 11a/11b
+   (DERIVE from `Taxpayer.eic_claimed_as_dependent`). ⚠ **The reported packet is
+   exactly this childless-EIC path**, so until Section B renders and transmits,
+   that packet still cannot be reproduced. Check `IRS8862.xsd` for the Section B
+   element names first — the schema, not the face, decides what transmits.
+5. **Re-cut `f8862_2025.py` + `seed_8862.py` onto the real line inventory.**
+   Both are still keyed to the draft spec's collapsed `part_ii`/`part_iii`/
+   `part_iv` booleans, so the PRINTED form does not carry the real answers even
+   though the transmitted one now does.
+6. **The diagnostics the item asks for**: missing answers, incompatible credit
+   claims, and claiming a previously-disallowed credit with no certification.
+   The MeF refusal covers the transmission path only — a return that never
+   reaches composition currently says nothing.
+
+⚠ **Carry the s241c design rule forward**: lines 4 and 11 DERIVE from the EIC
+engine's own Rule 13 / Rule 12 gates and must never gain a keyed copy (s234 —
+two sources for one relationship). Ages likewise derive from the DOBs. Only
+line 3 and the 9a/9b day counts are genuinely keyed.
+
+**⚠⚠ THE MeF BUILDER FABRICATES FIVE OF THE TAXPAYER'S SWORN ANSWERS — AND ITS
+OWN DOCSTRING SAYS IT DOES NOT.** `build_irs8862` opens with: *"Every
+per-child/per-student answer derives from the SAME model facts the credits
+computed from (bridge-gate: the 8862 can't contradict the claim)."* **That
+sentence is false.** Hardcoded literals (`builder.py:1486-1518`):
+
+| Face line | Element | Emitted | Is there a real fact? |
+|---|---|---|---|
+| II-3 | `EICEligClmIncmIncorrectRptInd` | `"false"` | **No** — nothing stores it |
+| II-4 | `EICEligClmQlfyChldOfOtherInd` | `"false"` | **No** — nothing stores it |
+| III-16 | `DependentInd` | `"true"` | derivable (the dependent row exists) — defensible |
+| III-17 | `USCitizenOrNationalInd` | `"true"` | **YES — `Dependent.citizenship_status`** |
+| IV-19a | `EligibleStudentInd` | `"true"` | **YES — the `EducationStudent` AOTC flags / `aotc_elected()`** |
+
+⚠ **The two marked YES are the worst of the five**, because the app stores the
+fact, USES it to compute the credit, and then transmits the opposite of it on
+the certification for that same credit. `Dependent.citizenship_status` has five
+choices and its own help_text says *"CTC/ODC require US citizen / national /
+resident alien per §152(b)(3)"* — so a `nonresident_alien` or
+`mexico_canada_resident` dependent must answer **No** to line 17, and the face's
+caution is *"If the answer is 'No' for question 14, 15, 16, or 17, you cannot
+claim the CTC/ACTC/ODC for that child."* ⚠ **Sign: it certifies eligibility the
+taxpayer does not have — it OVERSTATES the credit, on a sworn statement.**
+Same shape for 19a against `aotc_elected()`.
+
+**Nothing stores the Part II answers at all** — the only 8862 facts in the repo
+are `Taxpayer.eic_disallowed_prior_year` (a boolean that merely says the form is
+required) and FormFieldValue line "1", the tax year. So lines 3 and 4 go to the
+IRS without the taxpayer having been asked.
+**Both cautions are verbatim off the printed 2025 face** (`resources/irs_forms/
+2025/f8862.pdf`, Rev. December 2025):
+- **Line 3** — *"If the only reason your EIC was reduced or disallowed was
+  because you incorrectly reported your earned income or investment income,
+  check 'Yes.' Otherwise, check 'No.'"* Caution: *"If you checked 'Yes,' **do
+  not complete the rest of Part II.**"* ⚠ Hardcoding "No" both contradicts that
+  taxpayer's answer AND transmits the rest of Part II, which the form says to
+  omit.
+- **Line 4** — *"Could you (or your spouse if filing jointly) be claimed as a
+  qualifying child of another taxpayer for the year entered on line 1?"*
+  Caution: *"If you (or your spouse if filing jointly) answer 'Yes' to question
+  4, **you cannot claim the EIC.**"* ⚠ **Sign: hardcoding "No" transmits an EIC
+  claim the taxpayer is BARRED from — it OVERSTATES the refund, on a sworn
+  statement.** `taxpayer_claimed_as_dependent` is NOT this fact ("claimed as a
+  dependent" ≠ "could be claimed as a qualifying child"); verify before reusing.
+*This is the item's "preserve every required Part I-IV answer" ask, and it is a
+live e-file defect rather than a lane gap.* Fix it in the same unit.
+
+**⚠⚠ THE RULE STUDIO SPEC IS THE s238 TRAP AGAIN — a 200 that is not a green
+light.** `lookup/8862/export/` answers 200 so the 404-STOP gate does not fire,
+and the export is **`"status": "draft"`, version 1, with 6 facts, ONE rule, 6
+`line_map` entries, 1 diagnostic and 2 tests**. Four of those six line_map
+entries are pseudo-lines (`part_ii`, `part_iii`, `part_iv`, `part_v`) that
+collapse an **entire Part into a single boolean**. The printed face has ~40
+numbered lines, and the batch item itself names answers the spec cannot
+represent at all — residency days, age, the line-3 income-reporting question,
+the line-4 qualifying-child-of-another question, per-child Section A rows.
+**Implementing it faithfully would ship exactly the form we already have.**
+Build the s222/s223/s238 way instead: the IRS face + `IRS8862.xsd` + the
+`F8862-*` business rules are the real specification, written up in
+`server/specs/_8862_source_brief.md`. ⚠ **Grep the business rules FIRST**
+(`1040_Business_Rules_2025v5.*.csv`) — s223's lesson is that MeF rules are often
+NARROWER than the printed face and are the real spec.
+
+**The face's real line inventory (dumped from `f8862.pdf`, Rev. 12-2025 — the
+draft spec's six pseudo-lines do not describe this form):**
+- **Part I**: 1 tax year · 2 credit checkboxes (EIC / CTC-ACTC-ODC / AOTC).
+- **Part II (EIC)**: 3 income-report-only? · 4 QC-of-another? · **Section A
+  (with children)** 5a-c child names, 6 Schedule EIC shows a QC?, 7, 8 ·
+  **Section B (childless)** 9a/9b days in the US, 10a/10b ages, 11a/11b
+  claimed as a dependent?
+- **Part III (CTC/ACTC/ODC)**: 12a-d child names · 13a-d other-dependent names ·
+  14, 15 per child · 16, 17 per child AND per other dependent.
+- **Part IV (AOTC)**: 18a-c student names · 19a, 19b per student.
+- **Part V**: qualifying child of more than one person.
+
+⚠ **The reported packet is the Part II SECTION B (childless EIC) path** — line
+9a days in the US, line 10a age, line 11a claimed-as-a-dependent — and **Section
+B has no representation anywhere in the app**: not in the model, not in the
+render map, not in the MeF builder. That is the actual reason the packet cannot
+be entered.
+
+**Derivable vs. must-be-keyed (the item says "derive taxpayer/spouse age where
+appropriate", so decide each one deliberately):**
+- **10a/10b ages — DERIVE** from `date_of_birth` against the line-1 year. Never
+  key an age; it would let a payload contradict the DOB on the same return.
+- **11a/11b claimed-as-a-dependent — DERIVE** from
+  `Taxpayer.taxpayer_claimed_as_dependent` (and the spouse twin, if one exists —
+  check).
+- **Line 4 QC-of-another — KEY IT.** ⚠ This is NOT the same fact as 11a:
+  "could be claimed as a **qualifying child**" (§152(c)) is narrower than
+  "claimed as a **dependent**", and the face asks both separately with different
+  cautions. Reusing 11a for 4 would be the s239 "one sentence, two tests" error.
+- **Line 3, 9a/9b — KEY THEM.** Nothing in the app knows either.
+- **16/17/19a — DERIVE** from the existing dependent/student facts (that is the
+  fabrication fix above).
+
+**What exists / what is missing:**
+- EXISTS: `f8862_2025.py` (render, but keyed to the same collapsed
+  `part_ii`/`part_iii`/`part_iv` booleans), the `IRS8862` MeF document,
+  `seed_8862.py` (FormFieldValue lines on the same collapsed shape),
+  `renderer.render_8862` gated on `eic_disallowed_prior_year` AND not a math
+  error, and `D_EIC_008` which surfaces the requirement.
+- MISSING: the input model entirely (→ migration + **RLS default-deny, the
+  new-table rule**), the real per-line facts, the `backentry.v1` section, and
+  the diagnostics the item asks for (missing answers, incompatible credit
+  claims, claiming a disallowed credit with no certification).
+- ⚠ The render map and `seed_8862.py` will BOTH need re-cutting onto the real
+  line inventory — they were built to the draft spec's collapsed shape, so
+  "render and transmit the filed form" is not satisfied by what exists today.
+
+⚠ Read the s241/s241b pair before starting — **the two sessions reached OPPOSITE
+answers on the same question**, and that contrast is the reusable lesson:
+- Form 5329's compute reduced its rows to `{r.owner: r for r in ...}`, so one
+  row per owner was a real contract the DB did not enforce → constraint added.
+- Form 8863's compute ITERATES a list and Parts I/II aggregate, so several rows
+  are normal → **a constraint would have been a defect**, and a test now pins
+  that compute still iterates so the reasoning cannot be silently outrun.
+**Check the consumer before deciding uniqueness. Do not pattern-match.**
 
 ⚠ Read the s241/s241b pair before starting — **the two sessions reached OPPOSITE
 answers on the same question**, and that contrast is the reusable lesson:
@@ -153,6 +298,20 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241c in one paragraph
+BATCH-004 #8 partially built. The item reads as "no input model", but the real
+defect was that `build_irs8862` **fabricated five of the taxpayer's sworn
+answers** while its own docstring promised *"the 8862 can't contradict the
+claim"*. Two of the five overrode facts the app stores AND uses to compute the
+credit being certified (`Dependent.citizenship_status`, the student AOTC facts),
+so the certification could contradict its own claim. All five now derive or
+refuse. New `Form8862` model holds only the three facts the return cannot
+otherwise know. **The correction worth remembering came from reading the ATS
+fixture, not the triage**: line 4 was going to be keyed until scenario 5 showed
+the taxpayer already carries `eic_qualifying_child_of_another` — so it derives,
+and a keyed copy would have been the s234 two-sources defect. Render, Section B
+emission and diagnostics remain open and are named in the annex.
+
 ### ⚠⚠ THE s241 / s241b PAIR — the same question, OPPOSITE right answers
 s241 found that `compute_5329_db` reduced its rows to `{r.owner: r for r in …}`,
 making a duplicate row VANISH, and closed it with a DB constraint. Hours later
@@ -167,6 +326,15 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s241c MOVES E-FILE OUTPUT, and this one is not "none".** Any return
+  transmitting a Form 8862 changes: (a) an EIC 8862 whose line 3 is unanswered
+  now **REFUSES at composition** instead of transmitting a fabricated "No" —
+  answer it on the new `form-8862` endpoint; (b) a CTC/ODC dependent whose
+  `citizenship_status` is `nonresident_alien` or `mexico_canada_resident` now
+  transmits line 17 = **false** where it said true; (c) a student failing the
+  half-time / first-4-years / felony tests now transmits line 19a = **false**.
+  ⚠ Sign on (b) and (c): the OLD value overstated eligibility, so the new one is
+  the correct, more conservative answer. No dollar figure changes.
 - **s241b: NONE.** No compute changed; `education_students` rows only exist
   where a payload or preparer creates one.
 - **s241: NONE.** No compute changed. `form_5329s` rows only exist where a
@@ -291,6 +459,16 @@ fails loudly instead of silently dropping a student's credit.
   limitation and the utilization ordering. **The preservation half is built and
   the pools are safe — only the computation waits.** Still the single
   highest-value RS authoring order on this list.
+- **NEW (s241b/triage): the `8862` spec is a DRAFT that collapses each PART into
+  one boolean.** `lookup/8862/export/` answers **200** — so the 404-STOP gate
+  waves it through — and the export is `"status": "draft"`, version 1, with 6
+  facts, ONE rule, 6 `line_map` entries (four of them pseudo-lines `part_ii` …
+  `part_v`), 1 diagnostic and 2 tests, against a printed face of ~40 numbered
+  lines. **This is the second time a draft spec has looked like permission**
+  (s238's `8379` was the first, and its `status` field is STILL not checked
+  anywhere). Re-author `8862` per-line, or mark it clearly as non-authoritative.
+  ⚠ The app-side consequence is already live and is NOT cosmetic — see the
+  fabricated Part II line 3/4 answers under NEXT UNIT.
 - **NEW (s241): the `5329` spec says nothing about the roll-forward or about
   Part VIII.** Two gaps. (a) The spec has no rule stating that each part's
   total-excess line becomes next year's prior-excess line — s241 built the roll
