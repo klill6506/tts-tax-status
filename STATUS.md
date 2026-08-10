@@ -1,12 +1,12 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-09 (s240). **1040 BATCH-004 opened and triaged 10/10;
-item #4 BUILT.** The report was stale and the neighborhood held TWO live
-defects — a passive §1231 loss with no §469 limitation and no diagnostic, and
-every 1040 with a Form 4797 being a rejected transmission. One deploy, no
-migrations. BATCH-004 stays OPEN (9 queued builds).*
+*Last updated: 2026-08-10 (s241). **1040 BATCH-004 #7 AND BATCH-003 #2 BUILT
+TOGETHER — they were one section.** The `form_5329s` lane closes both, and
+behind them sat a live defect: a second Form 5329 row for the same owner made
+the first row's additional tax DISAPPEAR from Schedule 2 line 8. One deploy,
+migration 0278. Both batches stay OPEN.*
 
-*Previous (s239): 1040 BATCH-003 #4/#5/#7 — three live defects (`4f924ac` · `e7803eb`).*
+*Previous (s240): 1040 BATCH-004 opened + triaged 10/10, #4 built (`c6aab19` · `d7740ad`).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -34,99 +34,115 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — pick from BATCH-004's queued nine, or finish BATCH-003
-**BATCH-004 is now fully triaged** (annex in the batch file names each item,
-what exists today, and its size). Nothing in it is un-scoped any more.
+### ⭐ NEXT UNIT — BATCH-004 #6 (Form 8863), then the rest of the queue
+**#6 is now the cheapest remaining item and the last of the three lane-only
+ones** (s240 refuted #4, #6 and #7 as the same shape; #4 and #7 are done).
+Form 8863 is fully built — model with Part III student rows, `compute_8863.py`,
+field map `f8863_2025.py`, the `IRS8863` MeF document, `rules_8863.py`,
+`seed_form_8863.py`. **The work is a `backentry.v1` importer family plus
+verifying the student-to-dependent link end to end** — not the credit, the MAGI
+limits, or the refundable/nonrefundable split.
 
-**The two cheapest real wins are #6 (Form 8863) and #7 (Form 5329 Part III) —
-both are LANE-ONLY gaps on forms that are already fully built**, so the work is
-a `backentry.v1` importer family plus an end-to-end verification, not a form.
-#7 is the smaller of the two.
+⚠ Two things s241 learned that apply directly to #6:
+- **Check whether the engine keys its rows by anything** before adding the
+  section. The 5329 defect was a `{r.owner: r for r in ...}` dict; 8863's
+  student rows are per-student and may have the same shape. Grep for a dict
+  comprehension over the row set in `compute_8863` FIRST.
+- **A derived column must be refused BY NAME**, not left to fall through as an
+  unknown field (s238's doctrine, applied twice now).
 
-The rest are genuine builds, roughly by size: #8 Form 8862 (render + MeF exist;
-input model missing) < #3 pre-2019 alimony ≈ #9 Form 1099-PATR ≈ #10 Form 4547
-+ 8879-TA ≈ #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X
-amended lifecycle (large).
+The rest, roughly by size: #8 Form 8862 (render + MeF exist; input model
+missing) < #3 pre-2019 alimony ≈ #9 Form 1099-PATR ≈ #10 Form 4547 + 8879-TA ≈
+#2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X amended
+lifecycle (large).
 
-⚠ **#10's source check is CLOSED — the form is REAL.** Form 4547, *Trump
-Account Election(s)*, Rev. December 2025, created by OBBBA; instructions same
-revision. The IRS states the election is filed **with the current-year e-filed
-return**, so its MeF leg is part of the build. STATUS's prior "verify both
-exist before designing" flag is answered.
+⚠ **#10's source check is CLOSED — Form 4547 is REAL** (Rev. December 2025,
+created by OBBBA; filed WITH the current-year e-filed return, so its MeF leg is
+part of the build). ⚠ **#9 does NOT go through the 404-STOP gate** — per s222 no
+RS spec exists for any information return.
 
-⚠ **#9 does NOT go through the 404-STOP gate** — per s222 no RS spec exists for
-any information return; build from the IRS form + a `_source_brief.md`.
-
-### ⭐ STILL UNBLOCKED, still passed over — now EIGHT sessions
+### ⭐ STILL UNBLOCKED, still passed over — now NINE sessions
 - **Form 8853 Section C.** Spec cached at `server/specs/8853_sec_c_spec.json`;
   `lookup/8853_SEC_C/export/` returns 200; all four legs pending. Read the s232
   write-up in `STATUS_ARCHIVE.md` first — Schedule 1 line 8e is COMPOSED not
   owned, and line 25 FLOORS AT ZERO though the printed face does not say so.
+  ⚠ **s241 gave this a second reason to happen**: Form 5329 line 36 takes its
+  value "from Form 8853, line 8" and **no `Form8853` model exists at all**, so
+  the Archer arm of the 5329 excess chain cannot be reconciled the way the HSA
+  arm now is (`D_5329_006`). Sections A/B and Section C are near neighbours —
+  doing them in one pass is the cheap order.
 
-### ⛔⛔ THE E-FILE GAP LIST GREW — it is now TWO named documents
+### ⛔⛔ THE E-FILE GAP LIST — still TWO named documents, unchanged
+- **`IRS4797` (s240)** — no 1040-side Form 4797 document builder; MeF rejects
+  the return without it (`S1-F1040-118-01`, Reject, Active). s240 added a
+  refusal so it fails loudly at composition. **The higher-volume of the two** —
+  every disposition, installment sale, like-kind exchange AND K-1 §1231 return.
+  The 1120-S `IRS4797` builder is the worked example.
 - **`IRS1116`** — the oldest live e-file gap. A full-path Form 1116 return is
   paper-only in code. s238's `IRS8379` build is a worked example end to end.
-- **`IRS4797` (NEW, s240)** — there is no 1040-side Form 4797 document builder
-  at all, and **MeF rejects the return without it** (`S1-F1040-118-01`, Reject,
-  Active). s240 added the refusal so it fails loudly at composition; the
-  document itself is unbuilt. **This is the higher-volume of the two** — every
-  disposition, installment sale, like-kind exchange AND K-1 §1231 return needs
-  it. The 1120-S `IRS4797` builder is the worked example.
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — items 9 and 10 open as to their COMPUTE half only** (both
-  RS-blocked on the missing NOL spec); **BATCH-003 — 7 open** (1, 2, 3, 6, 8,
-  9, 10, all confirmed real builds); **BATCH-004 — 9 open, all triaged**.
-  Every file carries a result annex naming what is done and what is blocked;
-  read it before starting. ⚠ None of the four has moved to Done, deliberately.
+  RS-blocked on the missing NOL spec); **BATCH-003 — 6 open** (1, 3, 6, 8, 9,
+  10 — ⚠ build #3, mixed passive/nonpassive on one K-1, TOGETHER with the s239
+  Georgia work); **BATCH-004 — 8 open, all triaged**. Every file carries a
+  result annex naming what is done and what is blocked; read it before
+  starting. ⚠ None of the four has moved to Done, deliberately.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
-### ✅ s240 in one paragraph
-One item worked, and it was refuted as reported — the §1231 → 4797 → Schedule 1
-chain has been complete since 2026-06-30 and ties the filed return to the
-dollar. Behind it sat two defects the report never mentioned, **both created by
-that same feed**: a passive activity's §1231 loss reaches AGI with no §469
-limitation and no diagnostic, and a non-zero Schedule 1 line 4 makes the whole
-return un-transmittable. Both fixed. Nine remaining items triaged; three of the
-ten (#4, #6, #7) turned out to be already-built forms with import-lane gaps.
+### ✅ s241 in one paragraph
+Two batch items turned out to be one section. BATCH-004 #7 (Form 5329 Part III,
+traditional-IRA excess) and BATCH-003 #2 (Part VII, HSA excess) are the same
+`_excess_part()` helper inside one function, and both were lane-only gaps — the
+engine has computed Parts I–IX and routed both owners' totals to Schedule 2 line
+8 since migration 0119. Built `form_5329s` carrying the leaves of **all nine
+parts**, with `owner` required and every derived line refused by name; built the
+excess roll-forward the item asked for; added `D_5329_006` reconciling line 44
+against the return's own Form 8889 line 16. Behind them sat a defect nothing
+could report. Both answer keys tie to the filed returns ($110 and $15).
 
-### ⚠⚠ THE FINDING WORTH CARRYING — retiring a RED can silently void a DIFFERENT rule's safety argument
-`R-8582-MULTIFORM` RED-defers Form 8582 Part IX and justifies itself in
-writing: *"The common Part IX triggers (section 1231, 28%-rate) are already
-RED-deferred upstream in the K-1 router, so no NEW silent gap."* That sentence
-was true when written. On 2026-06-30 the §1231 → Form 4797 feed was built and
-`D_K1_SEC1231` was **retired as newly-supported** — a correct, well-tested
-change that nevertheless **knocked the leg out from under a rule in a different
-module**, whose own code and tests were untouched and stayed green. The two
-guards left standing both tested `k1_sche_net < 0` (K-1 boxes 1/2/3), so the
-one case that mattered — a K-1 whose ONLY loss is its §1231 amount — was
-invisible to both, and a $50,000 passive loss reduced AGI in full in silence.
-*The general shape: when you RETIRE a diagnostic because its subject is now
-supported, grep for every rule that CITED it as its own coverage. A spec's
-"no new silent gap" clause is a dependency, not a comment — and nothing in the
-test suite can fail when a dependency like that expires.* This is the fourth
-time here that adding support made an existing rule wrong (s225, s233, s238).
+### ⚠⚠ THE FINDING WORTH CARRYING — a dict keyed by a row attribute makes duplicates VANISH, not double
+`compute_5329_db` and the diagnostics' `_f5329_state` both do
+`{r.owner: r for r in Form5329.objects.filter(...)}`. That is an ordinary,
+readable line of Python, and it silently encodes a uniqueness contract the
+database never enforced. A second row for the same owner does not double-count —
+**the last one wins and every earlier row's additional tax is dropped**, with no
+error, no diagnostic and no rendered form. Measured before the fix: a taxpayer
+row with $1,840 of prior traditional-IRA excess plus a second taxpayer row with
+$250 of prior HSA excess wrote Schedule 2 line 8 = **$15.00 instead of $125.40**.
+*The general shape: when compute reduces a row SET to a dict keyed by one field,
+that key is a uniqueness constraint — and if the DB does not have it, the
+overflow is invisible rather than wrong.* The contrast is the tell: this form's
+own siblings, `Form8606` and `HSAAccount`, ITERATE their rows, so a duplicate
+there at least shows up as a double count someone would notice. ⚠ **Sign:
+UNDERSTATES tax** — the direction nobody reports. Now closed at the DB
+(migration 0278), the browser POST, the re-owner PATCH, and staging.
+⚠ An independent confirmation nobody had connected: `ReturnData1040.xsd` caps
+`IRS5329` at **maxOccurs 2** — the schema has said "one per owner" all along.
 
-### ⚠⚠ THE OTHER ONE — a correct new feed can make an OLD seam start rejecting
-Schedule 1 line 4 is written by `compute_4797_db`. Adding the K-1 §1231 feed
-gave that line a non-zero value on returns that carry **no disposition at all**
-— and the 1040 MeF builder has no `IRS4797` document, so `S1-F1040-118-01`
-(Reject, Active) bounces them. No e-file code changed; no test failed; the
-failure is an IRS reject arriving days later, which no internal reconciliation
-catches. *When a feed newly populates a line, check what the MeF business rules
-require to accompany that line — the reject list is the spec for the seam.*
+### ⚠ THE SECOND ONE — a form that names its own source is telling you what to reconcile
+Form 5329 line 44 reads, on the printed face, *"2025 distributions from your
+HSAs **from Form 8889, line 16**"*. Line 16 is the TAXABLE portion; a fully
+qualified distribution puts -0- there. The reported packet has a fully qualified
+$631 distribution, so keying the gross on line 44 wipes out the $250 carried
+excess and its $15 tax — **and nothing visible changes on the face, because the
+part just prints as zero**. Where a form line states its source in words, that
+sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
+says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
+no Form8853 model** (DEFERRAL_AUDIT).
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
-- **s240 (diagnostics only, no number moves):** a passive or PTP K-1 carrying a
-  net §1231 LOSS now fires `D_8582_MULTIFORM` (RED) or `D_K1_PTP_LOSS`
-  (warning) where it was silent. No computed value changes — the loss still
-  flows; it is now *stated* that §469 was not applied to it.
-- **s240 (e-file REFUSAL, this one blocks):** any 1040 with a non-zero Schedule
-  1 line 4 now refuses at MeF composition with "no IRS4797". These returns were
-  already un-transmittable — they now fail at our seam instead of the IRS's.
+- **s241: NONE.** No compute changed. `form_5329s` rows only exist where a
+  payload or preparer creates one; `D_5329_006` fires only where a Form 5329 row
+  and an HSA for the same owner already disagree; the roll-forward touches only
+  a NEW year's return being seeded. The one blocking change (the duplicate-owner
+  refusal) reaches only a state that was already producing a wrong number.
+- Carried from s240: a passive or PTP K-1 carrying a net §1231 LOSS now fires
+  `D_8582_MULTIFORM` (RED) or `D_K1_PTP_LOSS` (warning) where it was silent; any
+  1040 with a non-zero Schedule 1 line 4 now refuses at MeF composition.
 - Carried from s239: Roth 1099-Rs (codes J/T/Q) move from 5a/5b to 4a/4b; any
   Georgia return with a partnership K-1 moves income between RIE L2 and L13;
   an engaged Form 8606 changes RIE L11; a code-U 1099-R un-blanks the whole
@@ -135,14 +151,19 @@ require to accompany that line — the reject list is the spec for the seam.*
   or wholly suspended gets a different RIE line 13.
 - Carried from s235: Georgia dependent exemptions on an untouched 7a.
 
-### ⚠ Known red / rotted (unchanged from s239 — s240 added none)
+### ⚠ Known red / rotted
 - **~24 test files** assert registry wiring via
   `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
   iterate `all_registries()`, so these are **false REDs**. Hit again this
-  session in `test_schedule_e_8582_diagnostics_leg.py::test_runner_registers_sche`
-  and `test_schedule_k1_diagnostics_leg.py::test_runner_registers_schedule_e_p2`.
-  Still spun off as its own task. **This is now the single most frequent
-  false-red in the repo — it has cost time in four consecutive sessions.**
+  session in `test_form8889_diagnostics_leg.py::test_runner_registers_8889`.
+  **This is now its FIFTH consecutive session and it is the single most frequent
+  false-red in the repo.** Still spun off as its own task — the fix is
+  mechanical (assert against `all_registered_rules()` instead of source text)
+  but touches ~24 files, which is why it keeps being deferred. It should stop
+  being deferred.
+- **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
+  s225 — a `D_PREPARER_001` duplicate-key on rule seeding; fails alone too) and
+  `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
 - **`test_topic7_input_leg.py::TestEICFacts::test_non_engaged_return_leaves_27a_quiet`**
   — pre-existing, verified at pristine `6e819b5` in a worktree (s235). Not diagnosed.
 - **`test_1040.py` — 6 pipeline tests**, `MultipleObjectsReturned`. Their `_fv`
@@ -152,9 +173,14 @@ require to accompany that line — the reject list is the spec for the seam.*
 - `test_4868.py` — 4 tests on the Schedule 3 line-10 feeder (s217). ⛔ KEN.
 - `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
   batch-005 #9 PTET-gate class, red since s212.
-- **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
-  s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
-- **Client typecheck**: 55 error lines standalone. s240 touched no .tsx.
+- ✅ **FIXED in s241 (they had been red and unlisted):** the two `D_RET_`
+  registration counts in `test_topic5_compute_leg.py` and
+  `test_topic5_diagnostics_leg.py` — hand-counted `== 10`, RED since s239 added
+  D_RET_011 without re-pinning them. Both now read the roster from
+  `RULES_RETIREMENT`. Also the proforma producer's key-contract guard, which had
+  never gained `_k1_basis_704d` (s228) or `_carryforward_attributes` (s235) and
+  was passing only because its fixture emits neither.
+- **Client typecheck**: 55 error lines standalone. s241 touched no .tsx.
 
 ### ⚠ Test-run hazards (standing)
 - **Never run two `pytest` invocations concurrently** — one shared test DB;
@@ -162,7 +188,8 @@ require to accompany that line — the reject list is the spec for the seam.*
 - **A broad `-k` sweep is SLOW and blows the 600s Bash timeout** — s236's
   ~1,100-test sweep took **21½ minutes**. Run it with `run_in_background: true`.
   ⚠ Keep the `-k` terms tight: `k1` matches hundreds of node ids, `rie` matches
-  "ret**rie**ve". (s240's `-k "efile or mef"` sweep = 543 tests / 3m11s — fine.)
+  "ret**rie**ve". (s241's `-k "retirement or 5329 or 8889 or backentry or
+  schema"` = 685 tests / 7m38s — fine, and it ran in the background.)
 - ⚠ `--create-db` does NOT reliably drop an existing test DB here. To prove a
   red is pre-existing, use a `git worktree` at a pristine SHA with the MAIN
   venv's interpreter, and copy `server/.env` in (s235).
@@ -176,17 +203,32 @@ require to accompany that line — the reject list is the spec for the seam.*
   scratchpad also fails — `config` is not importable from there.** Copy the
   script INTO `server\`, run it, delete it (s239). **Simplest reliable probe: a
   throwaway `tests/test_zz_*.py` with `-s` print statements, deleted after
-  (s240) — it gets fixtures, the DB and the app context for free.**
+  (s240/s241) — it gets fixtures, the DB and the app context for free. s241 used
+  exactly this to MEASURE the duplicate-owner drop before fixing it.**
 - ⚠ **`poetry run` must be invoked from `D:\dev\delvio-tax\server`** — from the
-  repo root it fails with "could not find a pyproject.toml". The Bash tool's
-  cwd persists across calls, so `cd` absolutely, every call.
+  repo root it fails with "could not find a pyproject.toml". This bites the
+  schema generator too: run it as `poetry run python -u ..\scripts\gen_backentry_schema.py`
+  FROM `server\`, never from the repo root.
 - ⚠ **Windows `python` cannot read the Bash tool's `/tmp`** — they are different
   filesystems. Write shared files to the scratchpad path, not `/tmp` (s240).
+- ⚠ The Bash tool produced NO output at all for a `poetry run python -c` this
+  session where the identical PowerShell command worked. **Prefer PowerShell for
+  `poetry run` on this box** (s241).
 - ⚠ A Cloudflare-protected law site (justia) 403s both WebFetch and curl.
   **The in-app browser (`preview_start` + `get_page_text`) got the full
   verbatim Georgia reg** where both failed (s239).
+- ⚠ Lane API shapes that cost time (s241): **staging answers 201 even for an
+  invalid payload** — the verdict is `row["status"]`, not the HTTP code; the
+  return CRUD routes are `/api/v1/tax-returns/…` (not `/returns/`) and the
+  detail route **needs its trailing slash** or you get a 301; `filing_status`
+  is `"mfj"`, not `"married_joint"` (varchar(10)).
 
 ### 🔎 Carried for triage — NOT claims
+- **From s241**: `Form8606` and `HSAAccount` both allow duplicate owners and
+  their compute ITERATES, so a duplicate DOUBLE-COUNTS rather than vanishing.
+  `views.py:623` (the 8606 proforma roll) guards with `.exists()`, but the
+  browser POST does not. Not measured; not a claim. The 5329 constraint is the
+  worked example if it turns out to be real.
 - **From s234, potentially large and still unchased**: a materially-participating
   1120-S K-1 carrying **$250,000 of nonpassive ordinary business income never
   reached Schedule 1 line 5 or 1040 AGI** — line 9 was identical with the K-1 at
@@ -205,7 +247,7 @@ require to accompany that line — the reject list is the spec for the seam.*
 - **⛔ KEN (s230)**: Form 6765 Section G becomes REQUIRED for tax years
   beginning after 2025; the RS spec must be re-authored before a TY2026 season.
 - The one live external item: **1040 v5.4 business rules still not in hand,
-  active 2026-08-09** (v5.4 schemas ARE on disk; 1041 v5.5 closed). ⚠ s240 read
+  active 2026-08-10** (v5.4 schemas ARE on disk; 1041 v5.5 closed). ⚠ s240 read
   the **v5.3** rules for `S1-F1040-118-01`; re-check it against v5.4 on arrival.
 
 ### RS AGENDA
@@ -215,18 +257,25 @@ require to accompany that line — the reject list is the spec for the seam.*
   limitation and the utilization ordering. **The preservation half is built and
   the pools are safe — only the computation waits.** Still the single
   highest-value RS authoring order on this list.
-- **NEW (s240): `R-8582-MULTIFORM`'s no-silent-gap clause is now FALSE as
-  written** and should be re-authored. It cites an upstream RED (`D_K1_SEC1231`)
-  that was retired 2026-06-30. The app-side coverage is restored, but the spec
-  still tells the next reader that §1231 is RED-deferred upstream, which it is
-  not. While it is open: `R-8582-WS-NET` describes the Parts IV/V per-activity
-  gathering purely in Schedule-E terms and **says nothing about which OTHER
-  forms an activity's losses can land on** — that silence is what let the §1231
-  component fall outside the engine in the first place.
-- **NEW (s240): the `4797` spec has no rule for the K-1 §1231 feed.** The feed
-  exists in code (`k1_section_1231_total` → Part I line 2) and is correct per
-  i4797, but no spec rule governs it, so nothing declares whether the amount is
-  pre- or post-§469. That ordering is the whole of the defect above.
+- **NEW (s241): the `5329` spec says nothing about the roll-forward or about
+  Part VIII.** Two gaps. (a) The spec has no rule stating that each part's
+  total-excess line becomes next year's prior-excess line — s241 built the roll
+  from the printed FACE's own wording (line 9 = "line 16 of your 2024 Form
+  5329"), which is sound but unspecced. (b) **Part VIII (ABLE) has line 50 and
+  no prior-year line at all**, so the form provides no chain — but whether an
+  uncorrected ABLE excess is in fact taxed again the following year is a §529A
+  question the FORM does not answer. s241 deliberately did not guess; the roll
+  omits Part VIII and a test pins the omission. **Author the answer.**
+- **NEW (s241): the `5329` spec does not state where lines 36 and 44 come
+  from.** Both name a source ON THE PRINTED FACE — line 44 "from Form 8889, line
+  16", line 36 "from Form 8853, line 8" — and neither has a spec rule, so
+  nothing declared that line 44 is the TAXABLE distribution rather than the
+  gross. That silence is the whole of `D_5329_006`'s defect.
+- Carried (s240): `R-8582-MULTIFORM`'s no-silent-gap clause is now FALSE as
+  written (it cites `D_K1_SEC1231`, retired 2026-06-30) and should be
+  re-authored; `R-8582-WS-NET` says nothing about which OTHER forms an
+  activity's losses can land on; the `4797` spec has no rule for the K-1 §1231
+  feed, so nothing declares whether the amount is pre- or post-§469.
 - Carried (s239): `R-RET-CODE` has been outrun three times (codes 6, W, U) —
   re-author from the current i1099-R Table 1 in one pass. The `500` spec still
   has NO rule governing what feeds RIE lines 1/2/6-13, where four defects have
