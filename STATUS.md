@@ -1,12 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241c). **BATCH-004 #8 PARTIALLY BUILT — Form 8862's
-sworn answers stop being literals.** The MeF builder had been fabricating FIVE
-of the taxpayer's answers while its docstring promised it did not; two of them
-overrode facts the app stores and uses to compute the very credit being
-certified. One deploy (`3a87b2f`), migrations 0279 + 0280. ⛔ The render/seed
-re-cut, Part II Section B emission, and the diagnostics are STILL OPEN — the
-reported packet cannot yet be fully reproduced.*
+*Last updated: 2026-08-10 (s241d). **BATCH-004 #8 — Part II Section B now
+TRANSMITS (the reported packet's own childless-EIC path), and ODC persons stop
+posing as CTC children.** Both found by reading `IRS8862.xsd`, not the face.
+One deploy (`7ebd348`), no migration. ⛔ #8 is STILL NOT FINISHED — the printed
+form and the diagnostics remain.*
+
+*Previous (s241c): the same form's MeF builder had been fabricating FIVE of the
+taxpayer's sworn answers while its docstring promised it did not; two overrode
+facts the app stores and uses to compute the credit being certified
+(`3a87b2f`, migrations 0279 + 0280).*
 
 *Previous (s241b): BATCH-004 #6, the `education_students` lane (`d55ff15`) —
 the uniqueness constraint s241 had just added to Form 5329 would have been a
@@ -49,21 +52,26 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 rewire that ended five fabricated sworn answers, the `form-8862` browser CRUD
 (PUT upserts — singleton), and the `form_8862s` lane section.
 
+✅ **Also done (s241d, `7ebd348`):** Part II **Section B** now transmits
+(`Primary`/`SpouseNoQualifyingChildGrp`; all three members REQUIRED by the XSD
+so a missing one refuses; age derived from the DOB, line 11 from Rule 12, only
+the day count keyed), and **ODC persons moved out of `CTCACTCChildInformationGrp`
+into their own `ODCPersonInformationGrp`** — they had been asserting
+`QualifyingChildInd`, a claim an ODC qualifying relative cannot make.
+
 ⛔ **Remaining, in order — do NOT record #8 as finished until these land:**
-4. **Part II Section B is stored but NOT EMITTED.** 9a/9b (day counts, keyed),
-   10a/10b (ages — DERIVE from the DOBs against the line-1 year), 11a/11b
-   (DERIVE from `Taxpayer.eic_claimed_as_dependent`). ⚠ **The reported packet is
-   exactly this childless-EIC path**, so until Section B renders and transmits,
-   that packet still cannot be reproduced. Check `IRS8862.xsd` for the Section B
-   element names first — the schema, not the face, decides what transmits.
-5. **Re-cut `f8862_2025.py` + `seed_8862.py` onto the real line inventory.**
-   Both are still keyed to the draft spec's collapsed `part_ii`/`part_iii`/
-   `part_iv` booleans, so the PRINTED form does not carry the real answers even
-   though the transmitted one now does.
+5. **Re-cut `f8862_2025.py` + `seed_8862.py` onto the real line inventory** —
+   the largest remaining piece. Both are still keyed to the draft spec's
+   collapsed `part_ii`/`part_iii`/`part_iv` booleans, so the **PRINTED** form
+   does not carry the real answers even though the transmitted one now does.
+   ⚠ Dump the AcroForm field names first (`scripts/dump_acroform_fields.py`) —
+   the current map has 5 entries for a ~40-line face.
 6. **The diagnostics the item asks for**: missing answers, incompatible credit
    claims, and claiming a previously-disallowed credit with no certification.
-   The MeF refusal covers the transmission path only — a return that never
+   The MeF refusals cover the transmission path only — a return that never
    reaches composition currently says nothing.
+7. **Part II Section A lines 6 and 8** (`QualifyingChildInd`,
+   `BirthMonthDayDt` / `DeathMonthDayDt`) are in the XSD and still not emitted.
 
 ⚠ **Carry the s241c design rule forward**: lines 4 and 11 DERIVE from the EIC
 engine's own Rule 13 / Rule 12 gates and must never gain a keyed copy (s234 —
@@ -298,6 +306,18 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241d in one paragraph
+Two more Form 8862 legs, **both found in the XSD rather than on the printed
+face** (the s223 rule: the schema decides what transmits). Part II **Section B**
+— the childless-EIC path, which is exactly the reported packet's shape — was
+stored after s241c but never emitted; it now is, with all three of its
+schema-required members present or a refusal, because each one carries a caution
+that bars the EIC outright. And **`ODCPersonInformationGrp` had never been
+emitted at all**: every ODC person was travelling inside
+`CTCACTCChildInformationGrp`, asserting `QualifyingChildInd` — a qualifying-child
+claim an ODC qualifying relative cannot make, on the wrong line of the form.
+Full e-file sweep 1,132 passed / 0 failed.
+
 ### ✅ s241c in one paragraph
 BATCH-004 #8 partially built. The item reads as "no input model", but the real
 defect was that `build_irs8862` **fabricated five of the taxpayer's sworn
@@ -326,6 +346,13 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s241d MOVES E-FILE OUTPUT.** (a) A childless EIC 8862 now emits Part II
+  Section B, and **refuses** when the line-9 day count, a date of birth, or the
+  Rule 12 answer is missing — those returns previously transmitted with Section
+  B silently absent. (b) An ODC-only dependent moves from
+  `CTCACTCChildInformationGrp` to `ODCPersonInformationGrp` and **stops
+  asserting `QualifyingChildInd`**. ⚠ Sign: both are corrections toward the
+  truthful, narrower claim. No dollar figure changes.
 - **⚠ s241c MOVES E-FILE OUTPUT, and this one is not "none".** Any return
   transmitting a Form 8862 changes: (a) an EIC 8862 whose line 3 is unanswered
   now **REFUSES at composition** instead of transmitting a fabricated "No" —

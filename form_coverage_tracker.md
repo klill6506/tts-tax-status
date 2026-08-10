@@ -1,5 +1,29 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241d — Form 8862, two more legs. No migration, one
+> deploy. ⚠ STILL PARTIAL — do NOT tick this form.** Both found by reading
+> **`IRS8862.xsd`**, not the printed face (the s223 rule: the schema decides
+> what transmits).
+> **Part II SECTION B now transmits** — the childless-EIC path, which is exactly
+> the reported packet's shape. `Primary`/`SpouseNoQualifyingChildGrp`, each of
+> `NoQualifyingChildGrpType`: day count (9), age (10), other-person-claims (11).
+> ⚠ **All three REQUIRED** (no `minOccurs="0"`), so no half-filled group — and
+> each carries a caution that BARS the EIC, so a missing member REFUSES rather
+> than assuming. Age derives from the DOB; line 11 from the EIC childless Rule
+> 12 gate; only the day count is keyed.
+> **⚠ ODC PERSONS WERE POSING AS CTC CHILDREN.** `ODCPersonInformationGrp`
+> (line 13) existed in the schema and was never emitted — every ODC person
+> travelled in `CTCACTCChildInformationGrp` (line 12), asserting
+> `QualifyingChildInd` (line 15), a qualifying-CHILD claim an ODC qualifying
+> relative cannot make. The schema gives the ODC group no line 14/15 precisely
+> because those are child questions. Now split on `ctc_eligible`.
+> 33 tests in the file; **full e-file sweep 1,132 passed / 0 failed.**
+> ⛔ **Open:** `f8862_2025.py` + `seed_8862.py` still cut to the draft spec's
+> collapsed per-Part booleans (the PRINTED form lacks the real answers); the
+> item's diagnostics; Section A lines 6 and 8.
+> ⚠ MOVEMENT: e-file output moves, conservatively (Section B emits or refuses;
+> ODC stops asserting qualifying-child status). No dollars move.
+
 > **2026-08-10 session 241c — 1040 BATCH-004 #8 (Form 8862). Migrations 0279 +
 > 0280 (RLS), one deploy. ⚠ PARTIAL — do NOT tick this form.** Form 8862 gains
 > an **input model, an MeF leg that is finally truthful, a browser CRUD and a
