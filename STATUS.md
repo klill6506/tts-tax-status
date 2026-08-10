@@ -1,11 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241e). **BATCH-004 #8 — the PRINTED Form 8862 now
-carries what we transmit for Parts I and II.** ⚠ My own s241c/d work had made
-the render leg's "leave it blank for the preparer" boundary wrong: honest while
-the app held no answers, dishonest once it held and transmitted them. One
-deploy (`1f5355c`), no migration. ⛔ #8 STILL NOT FINISHED — the diagnostics and
-the Parts II-A/III/IV print remain.*
+*Last updated: 2026-08-10 (s241f). **BATCH-004 #8's diagnostics built** —
+`D_8862_002` (required but incomplete, naming the missing lines) and
+`D_8862_003` (Part I line 2 vs the credits actually claimed). One deploy
+(`35a406a`), no migration. ⛔ #8 STILL NOT FINISHED — the Parts II-A/III/IV
+print remains. ⭐⭐ **But do the `inspect.getsource` false-red sweep FIRST** —
+sixth consecutive session, and it cost this one an hour.*
+
+*Previous (s241e): the printed 8862 caught up with what we transmit
+(`1f5355c`); (s241d) Section B + the ODC split (`7ebd348`); (s241c) five
+fabricated sworn answers removed (`3a87b2f`, migrations 0279 + 0280).*
 
 *Previous (s241d): Part II Section B transmits and ODC persons stop posing as
 CTC children (`7ebd348`); (s241c) five fabricated sworn answers removed
@@ -70,17 +74,44 @@ and Part II line the app knows — lines 3/4 and Section B's 9a/9b, 10a/10b,
 labels, with a test that re-derives it from the PDF and was proven by injecting
 the swap.
 
+✅ **Also done (s241f, `35a406a`):** the item's diagnostics — **`D_8862_002`**
+(required but incomplete; names the missing lines, because every unanswered
+question here has an answer that BARS the credit) and **`D_8862_003`** (Part I
+line 2 vs the credits actually claimed, both directions).
+
 ⛔ **Remaining — do NOT record #8 as finished until these land:**
-6. **The diagnostics the item asks for**: missing answers, incompatible credit
-   claims, and claiming a previously-disallowed credit with no certification.
-   The MeF refusals cover the transmission path only — a return that never
-   reaches composition currently says nothing. **This is the next piece.**
 7. **Parts II-A / III / IV print**: still preparer-completed on paper while
    being TRANSMITTED (the same paper-vs-XML gap s241e closed for Part II).
    ~100 widgets of four-column per-person grid — its own unit. ⚠ Reuse
    `_yesno()` and the positional guard; do not hand-assume any index.
 8. **Section A lines 6 and 8** (`QualifyingChildInd`, `BirthMonthDayDt` /
    `DeathMonthDayDt`) are in the XSD and still not emitted.
+
+### ⭐⭐ ACTUALLY DO THIS FIRST — the `inspect.getsource` false-red class
+**It has now cost time in SIX consecutive sessions and it cost s241f roughly an
+hour**, because a 22-failure sweep had to be run twice and read in full to prove
+that none of the 22 was mine. That is the real price, and it is paid again every
+session. Stop deferring it.
+
+**The defect**: ~21 test files assert registry wiring with
+`assert "RULES_X" in inspect.getsource(seed_builtin_rules)`. s233 refactored
+that function to iterate `all_registries()`, so the literal is no longer in its
+source and every one of these is a FALSE red. They also no longer test anything:
+a genuinely unregistered rule family would still pass if its name appeared in a
+comment.
+
+**The fix** is mechanical and s233 already built the seam — `all_registered_rules()`
+was split out of `seed_builtin_rules()` precisely so a check and the seeder
+share ONE list. Replace each assertion with one that asks the registry (or the
+DB) whether that family's codes are actually registered, e.g.
+`assert {r["code"] for r in RULES_X} <= {r["code"] for r in all_registered_rules()}`.
+⚠ Assert against what the module DECLARES, never a hand count (s241's lesson,
+and s239 shipped two stale counts exactly that way).
+Files: `grep -l 'getsource(seed_builtin_rules)' server/tests/*.py` (19), plus
+`test_w2_unit3_diagnostics_leg.py::test_rules_7206_registered_in_runner` and
+`test_w2_unit4_diagnostics_leg.py::test_rules_minister_registered_in_runner`.
+⚠ Prove the replacement has teeth on at least one file by removing a family
+from the registry and watching it fail (s232).
 
 ⚠ **Carry the s241c design rule forward**: lines 4 and 11 DERIVE from the EIC
 engine's own Rule 13 / Rule 12 gates and must never gain a keyed copy (s234 —
@@ -407,15 +438,14 @@ fails loudly instead of silently dropping a student's credit.
 - Carried from s235: Georgia dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted
-- **~24 test files** assert registry wiring via
+- **21 test files** assert registry wiring via
   `inspect.getsource(seed_builtin_rules)`; s233 refactored that function to
-  iterate `all_registries()`, so these are **false REDs**. Hit again this
-  session in `test_form8889_diagnostics_leg.py::test_runner_registers_8889`.
-  **This is now its FIFTH consecutive session and it is the single most frequent
-  false-red in the repo.** Still spun off as its own task — the fix is
-  mechanical (assert against `all_registered_rules()` instead of source text)
-  but touches ~24 files, which is why it keeps being deferred. It should stop
-  being deferred.
+  iterate `all_registries()`, so these are **false REDs**. **s241f enumerated
+  the whole class for the first time: a `-k "diagnostic"` sweep is 22 failed /
+  878 passed, and ALL 22 are this.** ⚠ **SIXTH consecutive session, and it cost
+  s241f about an hour** — the sweep had to be run twice and read in full purely
+  to prove none of the 22 belonged to that session's change. **It is now
+  promoted to the next unit** (see ⭐⭐ above) rather than deferred again.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
   s225 — a `D_PREPARER_001` duplicate-key on rule seeding; fails alone too) and
   `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
