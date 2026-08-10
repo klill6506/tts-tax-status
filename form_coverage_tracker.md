@@ -1,5 +1,41 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241b — 1040 BATCH-004 #6 (Form 8863 education credits).
+> No migration, one deploy.** **Form 8863 gains its INPUT-LANE leg** — the last
+> one it was missing. Model (`EducationStudent`, migration 0071; `dependent` FK
+> 0093), compute, render, diagnostics, MeF and seed have all been green since
+> the Topic-8 build; only `backentry.v1` could not carry a student, so a packet
+> with a filed 8863 could not be back-entered without dropping the credit.
+> New `education_students` section: one row per Part III STUDENT, who may be the
+> taxpayer, the spouse or a dependent.
+> **⚠⚠ THE FINDING IS A NEGATIVE ONE AND IT MIRRORS s241's.** Hours earlier s241
+> closed a Form 5329 hole where compute reduced its rows to a dict keyed by
+> owner, so a duplicate VANISHED — fixed with a DB uniqueness constraint. The
+> obvious move here was the same constraint. **It would have been a defect:**
+> `compute_8863` ITERATES a list and Parts I/II aggregate across students
+> (L1 = Σ line 30, L10 = Σ line 31), so several students per return is the
+> normal case and a uniqueness rule would have destroyed the multi-student
+> return. *The rule is not "add the constraint" — it is **read what the consumer
+> does with the row set, every time**; a dict-by-attribute is a uniqueness
+> contract, a list is not, and they are one character apart at the call site.*
+> Pinned by a test asserting compute still iterates.
+> ⚠ **`student_name` / `student_ssn` are STORED on the row, not derived from the
+> dependent link** — the renderer, `rules_8863` and BOTH MeF paths read them
+> there, and `read_model` refuses a student without a name and 9 SSN digits, so
+> a row missing either is un-transmittable. Both required.
+> **Student→dependent link** via the `misc_1099s.link_key` carrier shape
+> (`dependent_key`, by name or SSN digits); required for a dependent student,
+> rejected for a taxpayer/spouse one. ⚠ An unmatched key commits UNLINKED with a
+> warning — the credit is unaffected and `rules_8863` still reports in full;
+> only `credit_gates.d_credit_aotc` (which filters `dependent__isnull=False`)
+> loses the per-dependent message. Diagnostic specificity, not money.
+> Staging also refuses a student carrying BOTH credits (§25A(c)(2)(A)) and every
+> computed/aggregate line BY NAME.
+> Answer key hand-derived from §25A(b)(1)/(i): $4,000 → **$2,500**, 40%
+> refundable **$1,000**, nonrefundable **$1,500** — matches the filed packet;
+> tied end to end onto 1040 line 29 and Schedule 3 line 3. 25 tests; flow
+> assertions 526. **⚠ MOVEMENT: none.**
+
 > **2026-08-10 session 241 — 1040 BATCH-004 #7 + BATCH-003 #2 (Form 5329 Parts
 > III and VII). Migration 0278, one deploy.** **Form 5329 gains its INPUT-LANE
 > leg** — the last one it was missing. Its other six legs (spec / compute /
