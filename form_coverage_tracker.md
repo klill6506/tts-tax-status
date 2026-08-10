@@ -1,6 +1,68 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241t — GEORGIA QEE CREDIT: the MODEL and the STATUTE
+> (legs 2-3 of 6). BATCH-004 #2. Migrations 0285 (two tables) + 0286 (RLS
+> default-deny on both). One deploy.**
+>
+> *⚠⚠ THE MODEL IS SHAPED BY THE TWO CARRYFORWARD REGIMES.* §48-7-29.16(e) now
+> allows an unused credit against *"up to its **succeeding three years'** tax
+> liability"*; the pre-amendment text said *"the **succeeding five years'**"*;
+> and **2024 Ga. Laws 598 §1-7, eff. 1/1/2025, applies "only to unused tax
+> credits generated during taxable years beginning on or after 1/1/2025."** So
+> `GeorgiaCredit.source_year` is the discriminator — **never a remaining-years
+> countdown**, which could not survive a rollover. Both edges are pinned
+> (2024 → 5, 2025 → 3), and so is the counter-intuitive consequence: **the
+> OLDER credit outlives the newer one** (2024 → 2029, 2025 → 2028). That
+> inversion is exactly what a single constant would smooth over, and the error
+> would not surface until a pool expired early or late.
+> ⚠ An unknown `source_year` returns **None, not a default** — the sign cuts
+> both ways: a confident "not expired" lets a dead pool keep cutting Georgia
+> tax; a confident "expired" throws away a live credit.
+>
+> *ONE ROW PER CERTIFICATE*, which is the item's whole point — Georgia issues a
+> numbered certificate per approved contribution and a taxpayer may hold
+> several, of different codes and generation years. A **conditional** unique
+> constraint on (return, certificate number) refuses the same certificate
+> twice; ⚠ the consumer was checked first (the s241/s241b pair) — the compute
+> ITERATES and SUMS, so a duplicate **double-counts** rather than vanishing.
+> Blank numbers are exempt, because the field is optional.
+>
+> *⚠ §(b)(3) IS AN OVERRIDE, NOT A FOURTH FILING STATUS.* *"[A]nything to the
+> contrary contained in paragraph (1) or (2) … notwithstanding"* — a MARRIED
+> COUPLE who are S-corp shareholders get **$25,000**, not $5,000. Reading it as
+> a status would cap them at the joint limit: an **UNDERSTATED** credit, the
+> direction nobody reports.
+>
+> *⚠⚠ MFS IS NOT NAMED BY THE STATUTE AND IS REFUSED.* §(b) enumerates *"a
+> single individual or a head of household"* and *"a married couple filing a
+> joint return"*; neither describes a separate filer. So the cap is **UNKNOWN**
+> — not half of MFJ, not equal to single — and `cap_for` returns None so the
+> caller refuses. Guessing there is what the 404-STOP gate exists to prevent.
+>
+> *⚠ THE REPORTED PACKET CANNOT TEST THE CAP*, and that is now a test in its
+> own right: MFJ at $5,000 expended sits **exactly AT** the (b)(2) limit, so
+> the filed figures agree with an uncapped reading too (s219). Every cap
+> assertion uses a case where the cap actually binds.
+>
+> ⚠ Series-100 codes are an **OPEN ENUM**, so only code 125 computes and every
+> other code present is **reported BY NAME** (s235 + s236). ⚠ The
+> federally-deducted total is the figure the Schedule 1 addback is
+> **RECONCILED** against — never written into `S1-5`, a shared preparer line
+> (s230). ⚠ Attached to the **FEDERAL** return like every other document
+> family: a certificate exists whether or not a GA-500 is attached, and
+> detaching one must not lose it. ⚠ **`compute_ga_qee` WRITES NOTHING** —
+> GA-500 line 21 stays preparer-keyed, because the `500` spec types it `input`
+> and deriving it means re-authoring that spec (s142).
+>
+> *Legs.* ✅ brief · ✅ **model** · ✅ **compute** · ❌ lane (⚠ register it in
+> the GENERATOR too — that drifted twice, s227/s241q) · ❌ render (⚠ neither
+> the GA Schedule 2 grid nor IT-QEE-TP2 is in `forms_manifest.json`) · ❌
+> diagnostics. **No federal effect at all.**
+> 34 tests; 577 green across the QEE suites and the flow-assertion gate.
+> ⚠ Also flipped s241s's deliberately-inverted test (it asserted the model did
+> NOT exist so the suite would go red the moment the gap closed — it did).
+
 > **2026-08-10 session 241s — GEORGIA QEE CREDIT + IT-QEE-TP2 OPENED (leg 1 of
 > 6: the source brief). BATCH-004 #2. No production code; no migration.**
 >
