@@ -1,6 +1,83 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241p — ★ FORM 4547 (Trump Account Election(s)) + FORM
+> 8879-TA — NEW UNIT OPENED, legs 1-2 of 6. BATCH-004 #10. Migrations 0283
+> (three tables) + 0284 (RLS default-deny on all three). One deploy.**
+>
+> *⚠⚠ BUILT THROUGH A 404-STOP, DELIBERATELY.* `lookup/4547/`, `F4547`,
+> `FORM_4547`, `8879_TA` and `8879TA` **all return 404** and nothing is cached.
+> The gate's own words are *"do NOT improvise the implementation"* — and there
+> is nothing here to improvise: `IRS4547.xsd` puts a `<LineNumber>` on every
+> element and carries **no amount** except `PriorYearAGIAmt` (a
+> signature-authentication input), so **the form computes nothing**, and every
+> eligibility test is printed verbatim by the IRS. **The precedent is exact:
+> `lookup/1310/` ALSO 404s and s223 built Form 1310 end to end** from the IRS
+> form + XSD + business rules with a source brief — and 1310 is a *filed* form,
+> so this is not the s222 information-return carve-out being stretched. Both
+> forms logged on the RS agenda.
+>
+> *⚠⚠ LINE 6 AND LINE 7 ARE DIFFERENT TESTS AND THE FORM ASKS THEM
+> SEPARATELY.* Line 6 (open the account): under 18 at year end, valid SSN
+> issued before the election, no prior election. Line 7 (the $1,000 pilot
+> contribution) ADDS: *"born after December 31, 2024, and before January 1,
+> 2029"*, *"be a U.S. citizen"*, and anticipated qualifying-child status. **A
+> child born in 2020 qualifies for the account and NOT for the contribution.**
+> Collapsing them would be the s239 one-sentence-two-tests error.
+> ⚠ The FACE states the window as a year list ("born in 2025–2028"), the
+> INSTRUCTIONS as open boundaries — the date form is pinned, because a year
+> list is where an off-by-one comes from. All four boundary dates tested.
+> ⚠ US citizenship here is NARROWER than the CTC/ODC test, which a national or
+> a resident alien passes.
+> ⚠ Unknown DOB / unanswered citizenship return **None, not False** — the sign:
+> reporting "not eligible" for an unanswered question would talk a preparer out
+> of a $1,000 contribution (s241c).
+>
+> *⚠⚠ THE SCHEMA DECIDED TWO DESIGN QUESTIONS TASTE WOULD HAVE GOT WRONG.*
+> `IRS4547` is `maxOccurs="unbounded"` on the return and
+> `TrumpAccountChildInfoGrp` is `maxOccurs="100"` → the model is REPEATABLE,
+> and one document carries up to a hundred children. But the printed face has
+> **two child columns** and the Instructions say to attach as many copies as
+> needed → **print and transmit have genuinely different shapes**,
+> ⌈children/2⌉ pages vs one XML document. A renderer mirroring the face would
+> silently drop children 3+.
+> ⚠ The relationship enum is the XSD's, **re-derived from the schema file by
+> the test** so a TY rollover fails here, not at transmission. What it EXCLUDES
+> matters: PARENT / GRANDPARENT / AUNT / UNCLE are valid `Dependent`
+> relationships and absent here, so a mapping must REFUSE — falling through to
+> OTHER would assert a different fact (s235 verbatim).
+>
+> *⚠⚠ FORM 8879-TA DOES NOT TRANSMIT, AND THE BATCH ITEM SAYS IT DOES.* Its
+> printed header: *"ERO must obtain and retain completed Form 8879-TA."* There
+> is **no `IRS8879TA` element anywhere in the MeF schema set** (2025v5.3,
+> 2025v5.4 and 2026v1.0 searched). The IRS's own *About* page reads as though it
+> transmits — **the face and the schema win** (s239/s241o: a summary is not the
+> artifact). Same position the app already takes for Form 8879. Its Part I is a
+> **COPY** — all six lines name their own source ("First name of Child 1 *from
+> Form 4547, line 1(a)(i)*") and Part II swears they came from that form — so
+> they DERIVE and are never keyed; a test asserts the model exposes no field to
+> key one into (s234 + the s238 column-(a) ruling).
+>
+> *⚠⚠ `IND-476` IS A LIVE CONSTRAINT ON A BATCH ITEM NOT YET BUILT.* *"Form
+> 4547 must not be present in a post-original return."* **Reject, Active** —
+> and the Instructions agree: *"Do not amend Form 1040, 1040-SR, or 1040-NR to
+> attach Form 4547."* **BATCH-004 #1 is the 1040-X lifecycle.** Pinned by a test
+> that re-reads the business-rules CSV so #1 cannot quietly undo it (s240: the
+> reject list is the spec for the seam). `IND-475` is only an Alert and is
+> pinned as such.
+>
+> *Legs.* ✅ **brief** `_4547_source_brief.md` (a build leg, not a note — s222/
+> s223) · ✅ **model** `Form4547` + `Form4547Child` + `Form8879TA` + the
+> eligibility predicates · ❌ **lane** · ❌ **render** (⚠ the face HAS AcroForm
+> widgets, row-named two-per-row; verify columns POSITIONALLY — s236/s241h; and
+> `f4547.pdf` is **absent from `forms_manifest.json`**) · ❌ **MeF** · ❌
+> **diagnostics**. **No compute leg, deliberately** — nothing on this form
+> reaches the 1040, Schedule 1, AGI or tax.
+> 35 tests, **teeth proven by injection before being trusted** (s232) —
+> including a check that the "no `IRS8879TA` anywhere" assertion reads real
+> files rather than passing by absence (s241f); 721-test regression set green
+> including flow assertions, plus 127 model/migration/schema tests.
+
 > **2026-08-10 sessions 241l/m/n/o — ★ FORM 1099-PATR (Taxable Distributions
 > Received From Cooperatives) — NEW UNIT, COMPLETE. BATCH-004 #9. Migrations
 > 0281 + 0282 (RLS default-deny — the new-table rule); one deploy for the
