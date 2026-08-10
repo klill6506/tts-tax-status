@@ -1,5 +1,30 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241h — Form 8862 Parts III + IV PRINT. No migration, one
+> deploy. ⚠ STILL PARTIAL — do NOT tick** (Part II Section A print/emit left).
+> They were TRANSMITTED but printed blank, so a preparer reviewing the paper saw
+> empty per-child grids while the e-filed version asserted answers — **and the
+> paper is what they sign**. Field map 16 → **87** entries. The render feed
+> MIRRORS `build_irs8862` (same `classify_dependent_ctc`, same CTC-vs-ODC split,
+> same caps, same `citizenship_status` for line 17, same eligibility trio for
+> 19a) so paper and XML cannot diverge.
+> **⚠⚠ THE WIDGET NUMBERING IS NOT CONTIGUOUS ACROSS LINES.** Line 16's four
+> children are `c2_11..c2_14` on one full-width row; its four OTHER DEPENDENTS
+> are `c2_15..c2_18` on two half-width rows below; line 17 restarts at `c2_19`.
+> "Eight consecutive widgets per line" would put other-dependent 1 into **child
+> 4's column** — a wrong Yes/No on a signed form, nothing looking out of place.
+> Every index read off the PDF (anchors in the field-map docstring).
+> **⚠ THE GUARD ITSELF HAD A HOLE, FOUND BEFORE TRUSTING IT.** The per-column
+> check re-derives each box from its printed label — but "Other dependent 1" is
+> printed on BOTH line 16's row and line 17's, so a copy-paste between them
+> would have passed. Added a row-identity check and **injected exactly that
+> copy-paste**: it failed, naming the duplicated row. (An existing
+> `test_no_duplicate_widget_targets` caught it too.) *A positional guard is only
+> as good as what distinguishes the rows — ask what your own test cannot see.*
+> Gates: 601 across the 8862 + flow suites; 1,494-test render/e-file sweep with
+> only the two known pre-existing reds. ⚠ MOVEMENT: printed output only — the
+> values were already transmitted.
+
 > **2026-08-10 session 241f — Form 8862 DIAGNOSTICS leg. No migration, one
 > deploy. ⚠ STILL PARTIAL — do NOT tick this form** (Parts II-A/III/IV print).
 > `D_8862_002` (error) — required but INCOMPLETE, naming the missing lines.

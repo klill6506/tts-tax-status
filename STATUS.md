@@ -1,10 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241g). **THE `inspect.getsource` FALSE-RED CLASS IS
-RETIRED** — 24 assertions across 24 files replaced with a check that has teeth;
-the `-k "diagnostic"` sweep went 22 failed → **900 passed, 0 failed**. It had
-cost six consecutive sessions. One deploy (`cdbec66`), no migration.
-⛔ BATCH-004 #8 still not finished — the Parts II-A/III/IV print remains.*
+*Last updated: 2026-08-10 (s241h). **Form 8862 Parts III and IV now PRINT** —
+they were transmitted but printed blank, and the paper is what a preparer
+signs. 87 field-map entries; every index read off the PDF because the widget
+numbering is NOT contiguous across lines. One deploy (`5940233`), no migration.
+⛔ #8 has ONE print gap left: Part II Section A.*
+
+*Previous (s241g): the `inspect.getsource` false-red class RETIRED — 24
+assertions, `-k "diagnostic"` 22 failed → **900 passed, 0 failed** (`cdbec66`);
+(s241f) the 8862 diagnostics (`35a406a`); (s241e) the printed 8862 caught up
+with Part II (`1f5355c`); (s241d) Section B + the ODC split (`7ebd348`);
+(s241c) five fabricated sworn answers removed (`3a87b2f`, migs 0279 + 0280).*
 
 *Previous (s241f): the 8862 diagnostics `D_8862_002` / `D_8862_003`
 (`35a406a`); (s241e) the printed 8862 caught up with the transmission
@@ -83,13 +89,22 @@ the swap.
 question here has an answer that BARS the credit) and **`D_8862_003`** (Part I
 line 2 vs the credits actually claimed, both directions).
 
+✅ **Also done (s241h, `5940233`):** Parts III and IV now PRINT — 87 field-map
+entries, the render feed mirroring `build_irs8862` so paper and XML cannot
+diverge. ⚠ Every index read off the PDF: **the widget numbering is not
+contiguous across lines** (16's children `c2_11..c2_14`, its other dependents
+`c2_15..c2_18`, then 17 restarts at `c2_19`), so "eight per line" would put
+other-dependent 1 in child 4's column.
+
 ⛔ **Remaining — do NOT record #8 as finished until these land:**
-7. **Parts II-A / III / IV print**: still preparer-completed on paper while
-   being TRANSMITTED (the same paper-vs-XML gap s241e closed for Part II).
-   ~100 widgets of four-column per-person grid — its own unit. ⚠ Reuse
-   `_yesno()` and the positional guard; do not hand-assume any index.
-8. **Section A lines 6 and 8** (`QualifyingChildInd`, `BirthMonthDayDt` /
-   `DeathMonthDayDt`) are in the XSD and still not emitted.
+7. **Part II Section A print (lines 5-8)** — the EIC-with-children grid, the
+   last print gap. ⚠ Line 8 is birth/death **month/day** pairs (12 text
+   widgets, `Child1_Birth_Ln8` …), a different shape from the Yes/No columns,
+   so size it as its own small unit.
+8. **Section A lines 6 and 8 in the XSD** (`QualifyingChildInd`,
+   `BirthMonthDayDt` / `DeathMonthDayDt`) are still not EMITTED either — do
+   the print and the transmission together so they cannot drift apart, which
+   is the whole lesson of s241e.
 
 ### ✅ DONE in s241g — the false-red class is retired (see Known red / rotted)
 
@@ -326,6 +341,20 @@ sentence is a reconciliation the app can run; `D_5329_006` runs it. ⚠ Line 36
 says the same thing about Form 8853 line 8 and **cannot be reconciled — there is
 no Form8853 model** (DEFERRAL_AUDIT).
 
+### ✅ s241h in one paragraph — I found the hole in my OWN guard first
+Parts III/IV of Form 8862 now print (16 → 87 map entries), with the render feed
+mirroring `build_irs8862` so paper and XML cannot diverge. **⚠ The widget
+numbering is not contiguous across lines** — line 16's children are
+`c2_11..c2_14`, its OTHER DEPENDENTS `c2_15..c2_18`, and line 17 restarts at
+`c2_19` — so "eight consecutive widgets per line" would put other-dependent 1 in
+child 4's column. Every index was read off the PDF. **Then the guard itself was
+audited before being trusted**: the per-column check re-derives each box from its
+printed label, but "Other dependent 1" is printed on BOTH line 16's row and line
+17's, so a copy-paste between them would have satisfied it. Added a row-identity
+check and injected exactly that copy-paste — it failed, naming the duplicated
+row. *A positional guard is only as good as the thing that distinguishes the
+rows; check what your own test CANNOT see.*
+
 ### ✅ s241g in one paragraph — the lesson is about what a test PROVES
 Retired the `inspect.getsource(seed_builtin_rules)` class: 24 assertions, 24
 files, now `assert_registry_wired()` in `tests/registry_asserts.py`. The sweep
@@ -400,6 +429,11 @@ test asserting `compute_8863_db` still iterates, so a future refactor to a dict
 fails loudly instead of silently dropping a student's credit.
 
 ### ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s241h MOVES PRINTED OUTPUT.** A rendered Form 8862 now fills Part III's
+  child and other-dependent grids (lines 12-17) and Part IV's student grid
+  (18-19), where they were blank. The values are the same ones already being
+  transmitted, so nothing new is asserted — the paper simply stops lagging the
+  XML. No dollar figure changes.
 - **⚠ s241e MOVES PRINTED OUTPUT.** A rendered Form 8862 now shows Part II
   lines 3 and 4, and on a childless EIC claim Section B's 9a/9b, 10a/10b and
   11a/11b, where those areas were blank. ⚠ An unanswered question still prints
