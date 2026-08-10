@@ -1,5 +1,54 @@
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241 — 1040 BATCH-004 #7 + BATCH-003 #2 (Form 5329 Parts
+> III and VII). Migration 0278, one deploy.** **Form 5329 gains its INPUT-LANE
+> leg** — the last one it was missing. Its other six legs (spec / compute /
+> render / diagnostics / MeF / flow) have been green since the 2026-06-25
+> `1040-5329-full-complete` tag; only `backentry.v1` could not carry it, so a
+> packet with a filed 5329 could not be back-entered without dropping an excess
+> contribution. **Two batch items, ONE section**: #7 asks for Part III
+> (traditional-IRA excess) and #2 for Part VII (HSA excess), and they are the
+> same `_excess_part()` helper inside one function. The new `form_5329s` section
+> carries the preparer-keyed leaves of **all nine parts**, so no other part is
+> left un-importable. Also new: the excess **roll-forward** (each part's
+> total-excess line → next year's prior-excess line, in the printed face's own
+> wording) and **`D_5329_006`**.
+> **⚠⚠ THE DEFECT BEHIND IT — A DICT KEYED BY A ROW ATTRIBUTE MAKES DUPLICATES
+> VANISH, NOT DOUBLE.** `compute_5329_db` and the diagnostics' `_f5329_state`
+> both do `{r.owner: r for r in Form5329.objects.filter(...)}` — an ordinary,
+> readable line that silently encodes a uniqueness contract the database never
+> enforced. A second row for the same owner does not double-count; the last one
+> wins and every earlier row's additional tax is **dropped**, with no error, no
+> diagnostic and no rendered form. Measured before the fix: $1,840 of prior
+> traditional-IRA excess plus a second taxpayer row with $250 of prior HSA
+> excess wrote Schedule 2 line 8 = **$15.00, not $125.40**. *When compute
+> reduces a row SET to a dict keyed by one field, that key IS a uniqueness
+> constraint — and if the DB lacks it, the overflow is invisible rather than
+> wrong.* The contrast is the tell: `Form8606` and `HSAAccount` ITERATE, so a
+> duplicate there at least shows as a double count. **⚠ Sign: UNDERSTATES tax.**
+> Closed at the DB (0278), the browser POST, the re-owner PATCH and staging.
+> ⚠ Independent confirmation nobody had connected: `ReturnData1040.xsd` caps
+> **`IRS5329` at maxOccurs 2** — the schema has said "one per owner" all along.
+> **⚠ A FORM LINE THAT NAMES ITS OWN SOURCE IS TELLING YOU WHAT TO RECONCILE.**
+> Line 44 reads *"2025 distributions from your HSAs from Form 8889, line 16"* —
+> the TAXABLE portion, so a fully qualified distribution puts -0- there.
+> BATCH-003 #2's packet has a fully qualified $631 distribution, which is exactly
+> why its $250 excess survives; keying the gross wipes out the excess and its $15
+> tax **with nothing visible changing on the face**. `D_5329_006` runs that
+> sentence as a reconciliation, both directions, matched by owner. ⛔ Line 36
+> says the same about **Form 8853 line 8 and cannot be reconciled — no
+> `Form8853` model exists** (DEFERRAL_AUDIT; a second reason to build 8853).
+> ⚠ **Part VIII (ABLE) does NOT roll forward** — its face is line 50 alone with
+> no prior-year line, so the form provides no chain; whether §529A taxes an
+> uncorrected ABLE excess again is agenda'd for RS, not guessed.
+> Answer keys hand-derived from the printed face: #7 → line 16 = 1,840, line 17
+> = 110.40 → Sch 2 L8 **110**; #2 → line 48 = 250, line 49 = **15.00**. Both tie
+> end to end. 48 tests; flow assertions 526. **⚠ MOVEMENT: none.**
+> Also retired three stale hand-counted literals: the two `D_RET_` registration
+> counts (RED since s239 added D_RET_011 and never re-pinned them) and the
+> proforma key-contract guard, which had never gained `_k1_basis_704d` or
+> `_carryforward_attributes` and passed only by their absence.
+
 > **2026-08-09 session 240 — 1040 BATCH-004 item #4 (K-1 §1231 → Form 4797 →
 > Schedule 1). No migration, one deploy.** No form gains or loses a leg; the
 > reported defect does not exist and two others do.
