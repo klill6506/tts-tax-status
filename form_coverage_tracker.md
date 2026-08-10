@@ -1,4 +1,27 @@
+
 # Form Coverage Tracker — tts-tax-app
+
+> **2026-08-10 session 241j — Schedule 1 alimony (BATCH-004 #3). No migration,
+> one deploy.** Lines 19a/19b/19c gain their LANE leg; the form's other legs
+> were already green.
+> **⚠⚠ THE DEFECT: `D_SCH1_003` checked that the line-19c date was PRESENT and
+> never what it SAID.** So a divorce executed in 2020 deducted alimony and
+> reduced AGI — **while a rule named "alimony completeness" reported the return
+> clean.** ⚠ Sign: OVERSTATES the deduction, understates tax, and moves taxable
+> Social Security / the enhanced-senior deduction / the Georgia starting income
+> with it. *A rule that validates the SHAPE of a fact reads as though it
+> validates the FACT.*
+> **`D_SCH1_007`** (error) enforces IRS Topic 452 arm 1 — not deductible for an
+> instrument "executed after 2018" (TCJA §11051 repealed IRC §215). Boundaries
+> pinned: 12/31/2018 fine, 01/01/2019 not. A blank/unparseable 19c stays with
+> `D_SCH1_003` — reading it as pre-2019 would turn a data-entry problem into a
+> silent tax answer.
+> **`D_SCH1_008`** (info) for arm 2, which the app CANNOT decide: ⚠ **a
+> post-2018 modification alone does not end the deduction** — only one that
+> *expressly states* the repeal applies — and neither the date nor the election
+> is stored, so guessing would DENY a deduction (opposite sign). DEFERRAL_AUDIT.
+> ⚠ **Severity PROVED, not asserted**: a two-way compute pins AGI down by
+> exactly $8,400 ($98,978 → $90,578, the packet's own figures).
 
 > **2026-08-10 session 241i — ✅✅ FORM 8862 IS COMPLETE (all legs).** Section A
 > shipped with its PRINT and its TRANSMISSION in one unit, deliberately: line 6
