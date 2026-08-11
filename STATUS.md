@@ -1,19 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s241x). **THE BATCH-005 TRIAGE IS DONE — 10/10
-verified against the code, annex appended to the batch file.** Headlines:
-#10 (Schedule 1-A vehicle-loan interest) is **substantially already built**
-(CarLoanVehicle since mig 0045, cap+phaseout+lane+render+MeF all live — the
-item's central claim is false); #4 (Form 8839) is the **draft-trap's FOURTH
-occurrence** (6 calculated lines, unnamed rules); #8 (Form 6781) has **NO RS
-spec** (4 aliases 404 — the s241p gate call belongs to the build session);
-#7 must convert line 1h to a **composed registry** (it has an unconditional
-minister-excess writer today — s230); #6's compute exists, its blocker is the
-named **IRS4797** e-file gap; #1/#5/#9 are one source-row pattern (the lines
-are all seeded and enterable flattened). No code changed.*
+*Last updated: 2026-08-11 (s241y). **✅ BATCH-005 #10 CLOSED (verified already
+built — CarLoanVehicle since mig 0045; TS-C13 pins the packet's $6,485) and
+✅ #2 COMPLETE** (`a17ae5c`, no migration): everything but the LANE existed
+since Ken's 2026-07-03 ruling; the one change is `eic_opt_out` +
+`actc_opt_out` joining `TAXPAYER_FIELDS` — the s237 off-switch rule; an
+imported opted-out return was silently re-claiming the credit it declined.
+**BATCH-005 is 2 of 10 closed.***
 
-*Previous (s241w): ✅✅ BATCH-004 #5 (Schedule H) COMPLETE — all six legs in
-one session (migs 0287+0288; design record
+*Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
+is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
+needs the line-1h registry conversion (s230); #6 = rental facts + ⛔ IRS4797.
+(s241w): ✅✅ BATCH-004 #5 Schedule H COMPLETE, all six legs (migs 0287+0288;
 `server/specs/_schedule_h_source_brief.md`). BATCH-004 is 9 of 10.*
 
 *Previous (s241v): ✅ #2 GA QEE credit COMPLETE (design record:
@@ -48,18 +46,20 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-005 #10 (verify-and-close) then #2 (EIC opt-out)**,
-per the triage annex's suggested order (smallest first, shared patterns
-together): #10 → #2 → the #1/#5/#9 source-row family (ONE pattern, three
-feeds) → #7 (the 1h registry conversion) → #3 (the ForeignAddress builder —
-build it ONCE; 1310/4547 refuse foreign addresses today for want of it) →
-#6 (rental link + the ⛔ IRS4797 builder) → #4 (8839 — draft-trap 4th, build
-from the 2025 face/instructions/XSD, verify the OBBBA dollar figures live) →
-#8 (6781 — NO RS spec, run the s241p 404-STOP three-part test and write the
-brief). Then **BATCH-004 #1 (1040-X, large)** — ⚠ must honour `IND-476` and
-the Schedule H business-rule seams on any re-transmission.
-⚠ The full triage is the annex in `CC_CODE_CHANGES_1040_BATCH-005.md` — read
-it before building any item; do not re-derive.
+### ⭐ NEXT UNIT — **the BATCH-005 #1/#5/#9 source-row family** (ONE pattern,
+three feeds: 8v digital-asset ordinary income, 8z generic described income,
+8h jury duty — all three lines seeded and enterable flattened today; the
+build is the owner-attributed source rows + the composed derives). ⚠ 8z is
+already COMPOSED from three feeds (state-refund worksheet + 1099-MISC +
+1099-PATR) — extend the composition, never add a second writer, and re-check
+every emptiness-testing rule (the s241o class). ⚠ Deriving 8v/8h makes each
+a single-writer line — s230 registry doctrine. Then #7 (the 1h registry
+conversion FIRST, then the disability feed) → #3 (the ForeignAddress builder,
+built ONCE) → #6 (rental facts + ⛔ IRS4797) → #4 (8839 — draft-trap 4th;
+verify the OBBBA dollar figures live) → #8 (6781 — NO spec; s241p gate call +
+brief). Then **BATCH-004 #1 (1040-X, large)** — IND-476 + the Schedule H
+seams. ⚠ The triage annex in `CC_CODE_CHANGES_1040_BATCH-005.md` is the
+design record — read it, do not re-derive.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
