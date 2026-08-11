@@ -1,6 +1,30 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242j — FORM 1040-X: THE IMPORT-LANE AMENDMENT
+> LIFECYCLE SHIPPED (BATCH-004 #1 LEG 1; `5f455c5`; no migration).** The
+> 2026-06-25 unit built the core (spec/model/compute/render/diagnostics —
+> see that entry); the lane could not START an amendment until now.
+>
+> *The lifecycle:* the `amendment` payload block (Part II explanation
+> REQUIRED); the resolver INVERTS for it — the target must be a FILED
+> return with its as-filed baseline intact, both refusals with remedies;
+> the commit writes `Form1040X` + `is_amended_return` BEFORE compute (one
+> pass fills Columns A/B/C); the frozen baseline pinned BYTE-IDENTICAL
+> across the commit; the mark-filed sweep skips an amended return BY NAME.
+>
+> *⚠⚠ THE MeF FINDING (a live defect closed): `extract_return` had no
+> return-level amended gate* — an amended return composed as a SECOND
+> ORIGINAL transmission (silent double-filing; the s152 "paper-only"
+> screen note was never enforced in code). Now refused by name; the 4547
+> IND-476 per-form seam pins both layers.
+>
+> *Legs remaining (item open):* ❌ **GA amended** (Form 500 amended
+> checkbox — 500X is retired; verify the 2025 DOR face live first) · ❌
+> **amended MeF** (`AmendedReturnInd` + `IRS1040X` document — the s152
+> LEG 3 item, now enforced by the extract refusal). 12 tests
+> (`test_1040x_amendment_lane_s242j.py`).
+
 > **2026-08-11 session 241w — ✅✅ SCHEDULE H (HOUSEHOLD EMPLOYMENT TAXES) IS
 > COMPLETE, ALL SIX LEGS IN ONE SESSION. BATCH-004 #5; migrations 0287+0288;
 > BATCH-004 is 9 of 10.**
