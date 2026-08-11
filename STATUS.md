@@ -1,14 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242g). **✅ BATCH-005 #4 (Form 8839) COMPLETE —
-all legs** (`c8ce2d2`; legs 1-2 `c87298d`/`1f9a387`, migs 0295+0296): the
-2025 face transcribed (draft-trap 4th), the refundable-off-the-top compute,
-pools by source year, the CLW from the return's own lines, five reconciling
-diagnostics, lane, render (⌈children/3⌉ copies, singles once; ⚠ the line-3/8
-checkbox pairs put No FIRST; Part III prints blank — named defer) and the
-IRS8839 MeF doc (AdoptedChild ×12 vs the face's 3 — one document; recorded
-benefits REFUSE by name). **BATCH-005 is 9 of 10 — only #8 (6781)
-remains.***
+*Last updated: 2026-08-11 (s242h). **Form 6781 LEG 1 is in** (`7403cb1`,
+migs 0297+0298 — BATCH-005 #8): NO RS spec (the 404-STOP call recorded in
+`server/specs/_6781_source_brief.md`); `Section1256Contract` rows + five
+Taxpayer facts; the statutory 40/60 split feeds Schedule D's composed
+netting at BOTH consumer sites (9 = 7 − 8 so the split reconstructs);
+⚠ an election box (A-D) SILENCES the compute — D_6781_ELECT is the only
+voice; D_6781_DUP catches the flattened direct entry. The packet ties end
+to end (−84,380 → −33,752/−50,628). **LEG 2 open: render + IRS6781 MeF.***
+
+*Previous (s242g): ✅ #4 (Form 8839) COMPLETE all legs. **BATCH-005 is 9 of
+10 + #8 half done; BATCH-004 is 9 of 10 (#1 1040-X remains).***
 
 *Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
 closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
@@ -52,15 +54,15 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-005 #8 (Form 6781, §1256 contracts)** — the
-batch's LAST item. ⚠ **NO RS spec** (`6781`, `FORM_6781`, `SEC_1256`,
-`1256` all 404, nothing cached): run the s241p 404-STOP three-part test
-FIRST and write the source brief either way. The 40/60 split is the face's
-own arithmetic (line 8 × 40% ST / 60% LT → Schedule D lines 4/11); check
-`IRS6781.xsd` + the business rules; the elections (mixed straddle,
-§1256(c) three-year carryback) are RED-defer candidates. The packet:
-$84,380 loss → $33,752 ST / $50,628 LT. Then **BATCH-004 #1 (1040-X,
-large)** — IND-476 + the Schedule H seams — the queue's last open build.
+### ⭐ NEXT UNIT — **Form 6781 LEG 2 (BATCH-005 #8, final)**: the render
+field map (`f6781.pdf` fetched to the scratchpad, 4 pages — dump the
+AcroForm, verify the line-1 rows and Part I singles positionally; Parts
+II/III map-but-blank, the 8839 pattern) and the `IRS6781` MeF document
+(`IRS6781.xsd` on disk at the corporate-common path; find its
+ReturnData1040 position; read `compute_6781_result` — the feeds' own
+single source; refuse when an election box silences the compute). The
+brief is the design record. Then **BATCH-004 #1 (1040-X, large)** —
+IND-476 + the Schedule H seams — the queue's last open build.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
