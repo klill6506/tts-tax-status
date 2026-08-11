@@ -1,19 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242p). **BATCH-003 #10 BUILT** (`4280b18`,
-migs 0303+0304): linked UPE rows — `K1UnreimbursedExpense` FKs the 1065
-K-1 (one row per source document holds; gross never netted). The i1040se
-separate-"UPE"-row convention end to end: face row in col (i), totals
-deduct once (154,879+16−4,364 = 150,531 reproduces), SE subtracts linked
-UPE from RAW box 14A (D_K1_UPE_SE info; no-UPE rows keep the old
-preparer-adjusts convention), QBI reduced per i8995 (verified live) only
-when the row reports a 199A figure. Passive UPE: staging refuses,
-D_K1_UPE_PASSIVE REDs (v1 boundary). Add+remove+recompute pinned.
-9 tests; 622 flow/staging + 162 K-1 neighbors green.*
+*Last updated: 2026-08-11 (s242q). **BATCH-003 #6 LEG 1 SHIPPED**
+(`d2d40fa`, migs 0305+0306): Form 8814 model + compute + ALL FOUR FEEDS +
+lane. The RS export = draft-trap 5th (rules real, ZERO form_lines; built
+from the 2025 face + i8814 fetched live — $2,700/$1,350/$135/$13,500
+printed on the face, raising on an unverified year). Feeds through each
+line's single source: L9 → 3a AND 3b; L10 → the shared 2a source; L12 →
+the composed 8z (fifth contributor, "Form 8814" literal); L15 → line 16
+every route. Unmatched child REFUSES the commit; ≥$13,500 + 2b>2a refuse
+at staging + compute (both ends). **Pre-existing defect fixed: Schedule
+D's disengage left its own 1040 line-7 write stale, BLOCKING line 16 on
+any return whose last capital item is removed.** 10 tests; 711 green.*
 
-*Previous (s242o): #1 div aggregate fallbacks. (s242n): #9 7203 generic
-charitable. (s242m): re-triage + #8 clergy lane. (s242l): ✅✅ BATCH-004
-closed 10/10. (s242i): ✅✅ BATCH-005 closed 10/10.*
+*Previous (s242p): #10 UPE rows. (s242o): #1 div aggregates. (s242n): #9
+7203 generic charitable. (s242m): re-triage + #8 clergy. (s242l/i): ✅✅
+BATCH-004 + BATCH-005 closed 10/10 each.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -47,23 +48,24 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #6: the Form 8814 parent election (LARGE)**
-The s242m re-triage annex is the design record. Nothing exists but two
-stray Taxpayer facts (`tax_8814_amount` input; a 3a note). Build:
-repeatable Form 8814 rows KEYED TO A DEPENDENT (reject unmatched — the
-education_students dependent_key precedent), child-level interest /
-tax-exempt interest / ordinary + qualified dividends / cap-gain
-distributions / nominee adjustments + the Part II base/tax; compute the
-elected amounts onto the parent's 1040/Schedule B/D lines per the 2025
-Form 8814 + its instructions (fetch the face + verify the $1,350/$2,700
-child thresholds LIVE — never recall); each form's Part II tax joins
-1040 line 16 (grep who owns the line-16 write — the s230 rule); the
-line-16 "Form(s) 8814" checkbox + amount; multiple children independent;
-render (f8814 AcroForm?) + MeF (IRS8814 exists in the schema set —
-check) + lane + diagnostics. ⚠ `has_8814_inclusion` in compute_intdiv
-already gates the QDCGT route on 8814 flags — read what it expects.
-Then #3 (mixed passive/nonpassive K-1 — ⚠ shares the s239 GA RIE seam).
-After the batch: Form 8853 A/B+C, IRS1116, amended MeF.
+### ⭐ NEXT UNIT — **BATCH-003 #6 LEG 2: the Form 8814 render + MeF + diagnostics**
+Leg 1 (s242q) shipped model/compute/feeds/lane — the annex in the batch
+file is the design record. Leg 2:
+- **Render**: the 2025 f8814 face is AcroForm (26 widgets) — manifest
+  entry + `scripts/dump_acroform_fields.py` + a field map in
+  `field_maps/f8814_2025.py` + `render_8814` (one page per child) wired
+  into render_complete; ⚠ the line-16 "box 1" checkbox on the 1040 face
+  prints when any 8814 rows exist (find the 1040 field map's checkbox);
+  ⚠ verify checkbox orientation positionally (s241w).
+- **MeF**: `IRS8814` exists in 2025v5.3 — extract (one source per child,
+  refusing a child without name+SSN) + builder + slot position from the
+  1040 xsd; grep the business-rules CSV for 8814 seams FIRST (s224).
+- **Diagnostics**: the RS export's 7 (cached at
+  `server/specs/8814_rs_export_draft_s242q.json`) — the eligibility set
+  as preparer-facing warnings; the $13,500 error is already staged+
+  computed, make it a D rule for browser-created rows (both-ends).
+Then #3 (mixed passive/nonpassive K-1, the batch's last — ⚠ shares the
+s239 GA RIE seam). After: Form 8853 A/B+C, IRS1116, amended MeF.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -113,6 +115,11 @@ After the batch: Form 8853 A/B+C, IRS1116, amended MeF.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s242q MOVES one narrow class**: a return whose Schedule D
+  previously DISENGAGED (last capital item removed) had a stale 1040
+  line 7 that BLOCKED line 16 — the disengage now clears the stale 7 and
+  the tax computes. Every such return was WRONG before (blank tax);
+  the change is a correction. 8814 feeds are new-row reach only.
 - **s242p: NONE beyond new-row reach.** UPE engages only when
   K1UnreimbursedExpense rows exist (none do); every seam (Sch E totals,
   face rows, SE, QBI) returns the pre-existing figure at zero UPE.
