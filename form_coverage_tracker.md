@@ -25,9 +25,17 @@
 > · ✅ lane (`ga_*` amendment facts; no-GA-500 refuses by name; GA-500 on
 > an amended return ALWAYS gets its 500X; explanation falls back to
 > federal Part II; state baseline at mark-filed) · ✅ diagnostics (4
-> D_500X; GA-only amendments legitimate) · ❌ **render (leg 2b — the 5
-> flat pages, fga500 pattern)** · — MeF: GA has no MeF lane in the app.
-> 14 tests.
+> D_500X; GA-only amendments legitimate) · ✅ **render (s242l `9752378`
+> — all 5 pages: combs derived from the template's own dividers and
+> CALIBRATED against the 500's known-good table; the 27→28 mirror shift
+> pinned by a bleed test; audit checkbox both ways; explanation overflow
+> → Statement page re-wrapped at the statement's column width; value rows
+> visually verified via the fitz→PNG loop and positionally pinned against
+> the template's own labels; wired into render_complete's state package)**
+> · — MeF: GA has no MeF lane in the app. 20 tests.
+> **BATCH-004 CLOSED 10/10 at s242l; the file moved to Done. Amended
+> FEDERAL MeF (IRS1040X + AmendedReturnInd) is a standing e-file gap —
+> the extract refusal holds the line.**
 
 > **2026-08-11 session 242j — FORM 1040-X: THE IMPORT-LANE AMENDMENT
 > LIFECYCLE SHIPPED (BATCH-004 #1 LEG 1; `5f455c5`; no migration).** The
