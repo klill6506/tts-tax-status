@@ -1,29 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241v). **✅✅ BATCH-004 #2 (Georgia QEE credit +
-IT-QEE-TP2) IS COMPLETE — all six legs** (`41a097b`, no migration): the
-IT-QEE-TP2 render landed, and **the GA Schedule 2 grid turned out to be an
-e-file construct** (the GA-500's own line-21 caption: "must be filed
-electronically" — pinned by a test). Twenty units today; **BATCH-004 is 8 of
-10** — #1 (1040-X, large) and #5 (Schedule H) remain.*
+*Last updated: 2026-08-11 (s241w). **✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE —
+all six legs in ONE session** (three commits: brief+model+compute,
+lane+diagnostics, render+MeF; migrations 0287+0288). **BATCH-004 is 9 of 10** —
+only #1 (1040-X, large) remains.*
 
-*Previous (s241u): the lane + eight reconciling diagnostics (`51dbadf`);
-(s241t) the model + statute (`ce8fd6b`, migs 0285 + 0286); (s241s) the brief
-(`52c08ec`).*
-
-*Previous (s241r): ✅✅ #10 (Form 4547) COMPLETE, all six legs (`e2dce0e`);
-(s241q) its lane + eight diagnostics (`1158887`); (s241p) brief + models
-(`c113bd3`, migs 0283 + 0284).*
-
-*Previous (s241o): ✅ BATCH-004 #9 (Form 1099-PATR) COMPLETE — the Georgia RIE
-feed and the browser CRUD surface, and the unit found a defect in its OWN
-previous session's diagnostic (`19d9579`).*
-
-*Previous (s241n): the PATR lane + five diagnostics (`a841368`); (s241m) the
-model + 8z composition (`b4c949e`, migs 0281+0282) — ⚠ 8z's SINGLE writer
-returned early without a 1099-MISC, so a PATR-only return would have silently
-dropped its income; (s241j) the alimony TCJA repeal gate; (s241i) ✅ Form 8862
-COMPLETE; (s241g) the `inspect.getsource` false-red class RETIRED.*
+*Previous (s241v): ✅ #2 GA QEE credit COMPLETE (design record:
+`server/specs/_ga_qee_credit_source_brief.md`); (s241r): ✅ #10 Form 4547
+COMPLETE (`server/specs/_4547_source_brief.md`); (s241o): ✅ #9 Form 1099-PATR
+COMPLETE. Full per-leg writeups: STATUS_ARCHIVE + the briefs + the batch
+annexes — do not re-triage any of them.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -51,561 +37,188 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐⭐ NEW AND UNTRIAGED: **1040 BATCH-005 was posted 2026-08-10 12:43**
-`1040\CC Changes\CC_CODE_CHANGES_1040_BATCH-005.md`, **10 items, no triage
-annex yet.** It did not exist at the previous boot. Headlines, by rough size:
-ordinary digital-asset income on S1 line 8v (#1) · the line-27c EIC opt-out
-election (#2) · a **foreign taxpayer mailing address** (#3) · Form 8839 adoption
-credit + carryforward (#4) · **generic described 8z other income with no
-document** (#5) · a **direct rental sale on Form 4797** (#6) · 1099-R disability
-pension → 1040 line 1h (#7) · **Form 6781 §1256 and the 40/60 split** (#8) ·
-jury-duty pay on 8h (#9) · **qualified passenger-vehicle loan interest on
-Schedule 1-A** (#10).
-⚠ Two of these touch work already in hand: **#5 is the third contributor
-problem on 8z again** (state refund + 1099-MISC + 1099-PATR — read
-`compute_1099misc.py`'s composition before designing a fourth), and **#6 needs
-the `IRS4797` e-file gap**, which is already a named blocker below. **Triage
-verify-first before building any of it.**
+### ⭐ NEXT UNIT — **the BATCH-005 verify-first triage** (10 items, posted
+2026-08-10, NO annex yet), then **BATCH-004 #1 (1040-X, large)**.
+BATCH-005 headlines: S1 8v digital-asset income (#1) · line-27c EIC opt-out
+(#2) · foreign mailing address (#3) · Form 8839 (#4) · generic 8z described
+income (#5 — **the FOURTH contributor to composed 8z**; read
+`compute_1099misc.py`'s composition before designing) · direct rental sale on
+4797 (#6 — **needs the named `IRS4797` e-file gap**) · 1099-R disability →
+line 1h (#7) · Form 6781 §1256 (#8) · jury duty 8h (#9) · Schedule 1-A vehicle
+loan interest (#10). Fifteen of the last eighteen items were narrower than
+reported — triage before building. ⚠ **#1 (1040-X) must honour `IND-476`**
+(a Form 4547 is barred from a post-original return; s241r's refusal enforces
+it) — and now also the Schedule H business-rule seams if an amended return
+re-transmits one.
 
-### ✅✅ BATCH-004 #9 (Form 1099-PATR) IS COMPLETE — s241l → s241o, four units
-Source brief (verbatim, **Rev. April 2025**) · model + migs 0281/0282 ·
-`compute_1099patr` + the 8z composition + box 4 → 1040 line 25b · the **Georgia
-RIE L10 feed** · the `patr_1099s` lane section · five `D_1099PATR_*` +
-`D_GA500_019` · `patr-1099s` CRUD + `SlateForm1099PATRScreen` + a nav tab.
-⛔ **NO render leg and NO e-file leg, and that is a FINDING** (the s222
-1099-MISC position): no 1099 has a field map or a manifest entry, and
-`IRS1099R` is the only 1099 element in the 1040 MeF schema set. An information
-return received by the taxpayer is an INPUT document — the 1040 neither prints
-nor transmits it. The item's "render and transmit the source form" is N/A.
+### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
+⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
+not re-triage. What future work must know:
+- **The RS `SCHEDULE_H` spec is a DRAFT covering 7 of ~27 lines** — the
+  third draft-trap occurrence (8379 s238, 8862 s241c). Built from the 2025
+  face + 2025 Instructions (thresholds fetched live) + `IRS1040ScheduleH.xsd`.
+  **No gate checks a spec export's `status` — check it by hand every time.**
+- **Schedule 2 line 9 is RECONCILED, never written** (`D_SH_S2L9`, `!=` ± $1 —
+  a DEDICATED line is wrong in both directions, unlike s241u's shared-line
+  `<`). The line was already keyed/seeded and rides `SCH2_L21_ADDENDS` →
+  1040 line 23; two feeds would be the s234 defect.
+- **⚠⚠ Lines C and 9 put their "No" checkbox FIRST on the 2025 face** while
+  A/B/10-12/27 put "Yes" first — verified positionally, pinned by a test
+  that re-derives both orientations from the PDF's captions. And C/9 are ONE
+  stored fact (`futa_quarterly_wages_over_limit`) printed in two places, at
+  most one of which a filed form marks (the skip cascade).
+- **⚠⚠ The MeF business rules RESHAPED the extract**: `SH-F1040-005` (exactly
+  one Yes among A/B/C → the cascade governs emission; skipped = ABSENT);
+  `SH-F1040-016-01` + `S2-F1040-146-02` (a line-9-No form OMITS lines 25/26 —
+  Schedule 2 sums its line 8 instead); 008/009 ($2,800 threshold), 006
+  (line 7 non-zero), 022 (SSN required) — each refused by name at extract.
+- Year-keyed constants **RAISE on an unverified year**; the credit-reduction
+  states are an ANNUAL LIST (2025: CA 0.012, VI 0.045).
+- **Named RED defers (DEFERRAL_AUDIT)**: Worksheet 1 (late contributions —
+  credit OVERSTATED without it) and Worksheet 2 (credit-reduction states —
+  tax UNDERSTATED without it) — opposite signs; the state-disability group;
+  the browser-lane entry screen (import lane only today).
+- Section B: two printed rows, overflow → Statement page, line 18 totals
+  cover EVERY row; the XML takes all rows in ONE group. One schedule per
+  spouse (`maxOccurs="2"`, DB constraint + staging duplicate check).
 
-**The Georgia answer, since the item asserted it without qualification.**
-Ga. Comp. R. & Regs. r. 560-7-4-.02 was fetched verbatim FIRST (the in-app
-browser; s233/s236/s239 each found this feed wrong a different way). The claim
-is CONFIRMED, with two qualifications the item does not state:
-- **(4)(b)1**'s unearned list closes with *"and other similar income"* → the
-  patronage is UNEARNED, on worksheet **L10 "Other income (losses)"**, which
-  mirrors the federal line the income sits on. Never L7 — the 1099-DIV pull
-  owns that and would clobber it.
-- **(4)(b)1**'s earned list opens with *"the net business income earned by an
-  individual from any trade or business carried on by such individual"* → a row
-  routed to a Schedule C or F is **EARNED**, and is ALREADY in the base through
-  that schedule's own net profit. **Only the 8z route contributes**; feeding the
-  others would double count AND move them to the wrong (capped) portion.
-- **(3)**: *"Only retirement income that is **included in Georgia taxable
-  income**"* → the box-1 nontaxable carve-out must not reach Georgia, or the
-  same dollars are subtracted twice.
-- **(2)**: per owner — and a 1099-PATR is issued to ONE recipient TIN.
-
-### ⭐ NEXT UNIT — **BATCH-004 #5, Schedule H (household-employment taxes).**
-⚠ Run the **404-STOP gate** on `SCHEDULE_H` / `H` first — and check the
-export's `status` (a `"draft"` has waved the gate through twice). ⚠ Verify
-first: `IRS1040ScheduleH` exists in the MeF sequence (`maxOccurs="2"` — one
-per spouse), so check what already ships before designing. The item's packet
-shape is in the batch file. Then #1 (1040-X, large — ⚠ must honour `IND-476`),
-then BATCH-003's six, then the BATCH-005 triage.
-
-### ✅✅ BATCH-004 #2 (GA QEE credit + IT-QEE-TP2) IS COMPLETE — s241s → s241v
-⛔ **The design record is `server/specs/_ga_qee_credit_source_brief.md`** — do
-not re-triage. Highlights for future GA work:
-- **The GA Schedule 2 credit GRID is an E-FILE CONSTRUCT** — the GA-500's own
-  line-21 caption reads *"must be filed electronically"*, no paper template
-  ships in the DOR booklet, and a test pins the caption so a future revision
-  forces a re-look. The IT-QEE-TP2 is the paper artifact, and it renders.
-- **The 2024 IT-QEE-TP2 IS the current form for TY2025** — its face covers
-  "taxable years beginning on or after January 1, 2024" and DOR posts no 2025
-  revision. The manifest note carries the per-season re-check.
-- **The render prints the FACE's arithmetic, never the statute's** — Section A
-  line 3 is "the lesser of line 1 or 2" by its own caption, so the statutory
-  cap never appears there (it lives in `D_GAQEE_CAP`). Section B lines 3-6
-  stay blank in v1 (no model home for GA income / the rate), stated not
-  silent.
-- The face **has an MFS checkbox** though §(b) names no MFS cap — the form
-  contemplates the filer the statute does not, corroborating `D_GAQEE_MFS`.
-
-✅ **LEG 1 DONE (s241s, `52c08ec`):** the source brief, carrying O.C.G.A.
-§48-7-29.16 verbatim. The **404-STOP call is made and recorded** — every alias
-(`IT_QEE_TP2`, `IT-QEE-TP2`, `ITQEETP2`, `500_SCH2`, `GA_QEE`, `QEE`) 404s, but
-the statute states every limit, the liability cap, **both** carryforward regimes
-and the no-double-benefit rule, so there is nothing to improvise (the s241p
-three-part test; `lookup/1310/` and `lookup/4547/` are the precedents).
-
-**⚠⚠ THE FINDING THAT DECIDES THE MODEL: TY2025 RUNS TWO CARRYFORWARD REGIMES
-SIDE BY SIDE.** Current text = *"succeeding **three** years"*; pre-amendment
-text = *"the succeeding **five** years"*; and **2024 Ga. Laws 598 §1-7, eff.
-1/1/2025, applies "only to unused tax credits generated during taxable years
-beginning on or after 1/1/2025."** So a TY2025-generated credit carries 3 years
-and an older one carries 5, **both live in the same return**. ⚠ A single
-`CARRYFORWARD_YEARS` constant is right for one population and wrong for the
-other, and the error surfaces YEARS later when a pool expires early or late —
-**the carryover pool must key its GENERATION YEAR**, not a remaining-years
-counter. Both regimes were read from primary text (2024 code + 2022 code).
-
-✅ **LEGS 2-3 DONE (s241t, `ce8fd6b`, migrations 0285 + 0286 RLS):**
-`GeorgiaCredit` (one row per **CERTIFICATE**, with `source_year` as the
-carryforward discriminator and a conditional unique constraint on the
-certificate number) + `GeorgiaQEEDetail` (the IT-QEE-TP2 facts) +
-`compute_ga_qee.py` (**writes nothing** — the statute expressed once, for the
-diagnostics/render/reconciliation to share).
-⚠ **MFS is NOT NAMED by §(b) and is REFUSED** — `cap_for` returns None, so the
-caller refuses rather than guessing half-of-MFJ. ⚠ Only code 125 computes;
-every other series-100 code is **reported by name**. ⚠ An unknown
-`source_year` returns **None, not a default** — the sign cuts both ways.
-
-✅ **LEGS 4 + 6 DONE (s241u, no migration):** the `georgia_credits` lane
-section (one record per certificate; `qee_detail` nested, REFUSED on any code
-but 125; **the generator emits it in the same change** — it drifted twice
-before, s227/s241q, and a test reads the generator's own `defs`) and **eight
-diagnostics**, every one a RECONCILIATION (line 21 and S1-5 stay
-preparer-keyed):
-- `D_GAQEE_CODE` w · `_EXPIRED` e (the message **names which regime** it
-  applied; silent on an unknown generation year) · `_CAP` e (the $25,000
-  pass-through arm as the OVERRIDE it is) · `_MFS` w (**no cap asserted** for a
-  status the statute does not name — "deliberately not guessed") · `_L21` w
-  (fires only when BOTH sides are non-zero) · `_ADDBACK` e (⚠⚠ **`<`, not
-  `!=`** — S1-5 is shared, so carrying MORE is normal; sign: UNDERSTATES
-  Georgia income) · `_60DAY` w (prompts, never rules — the statute's
-  consequence is administrative) · `_CERT` info.
-- Staging: credit code required; **`source_year` required whenever there is
-  credit to carry** (asked, never defaulted — either default is wrong for one
-  population); used ≤ generated + carried-in; a transfer on 125 refused but
-  ALLOWED on other codes; tentatively-allowed ≤ preapproved; a contribution
-  cannot PREDATE its approval (a LATE one stages — the 60-day window belongs
-  to the diagnostic); face/derived lines refused BY NAME.
-- Teeth proven by injection (s232): `<`-vs-`!=`, the both-sides-nonzero guard,
-  the generation-year branch (a flat 3 would expire a LIVE 2020 pool), the
-  60/61 boundary, the pass-through override.
-
-✅ **LEG 5 DONE (s241v, `41a097b`, no migration) — #2 IS COMPLETE.**
-`it_qee_tp2.pdf` (2024, Last Rev. 05/29/24) in the manifest with its SHA256;
-`fitqeetp2_2024.py` (the DOR's plain-English widget names; the filing-status
-checkboxes identified by their PRINTED y-rows and pinned from the PDF);
-`render_it_qee_tp2` (one form per certificate; Section A vs B routed on the
-pass-through assertion; the attestations print only when supported —
-"unanswered is not Yes"). Section C (entities) deliberately unmapped.
-
-**⚠ VERIFY-FIRST CORRECTED THE ITEM — carry this forward.** GA-500 **line 21**
-and Schedule 1 **line S1-5** are BOTH already seeded as preparer inputs, so the
-packet's $5,000 is **enterable today** in flattened form and the return is not
-wrong. The gap is the DOCUMENT DETAIL (code, certificate, generated-vs-used,
-carryover, the credit↔addback link), which is what the item's own second
-paragraph says. *A build that "fixes" a correct return is measuring the wrong
-thing.*
-
-**⚠⚠ `S1-5` IS RECONCILED, NEVER WRITTEN.** §48-7-29.16(h)(1) makes the addback
-a CONDITION ON THE CREDIT, and `S1-5` is *"Add: **other** additions"* — a shared
-preparer line. Writing into it is the s230 shared-line defect (a DISAPPEARED
-number). Compare, as `D_5329_006` and `D_1099PATR_199A` do.
-
-**⚠ THE PACKET CANNOT TEST THE CAP.** MFJ with $5,000 expended is *exactly* the
-(b)(2) limit, so it cannot tell capped from uncapped — and all five of its
-figures being equal is a coincidence, not a rule (s219). **Use a capped case
-too.** ⚠ (b)(3) is an OVERRIDE, not a fourth status: an LLC member / S-corp
-shareholder / partner gets **$25,000** even when MFJ, and its "portion of income
-on which such tax was actually paid" proviso needs a KEYED assertion.
-**⚠ The pre-approved amount is NOT computable** — a statewide first-come queue
-against a $120m cap that may be PRORATED. Transcribe it.
-
-⚠ Then #5 Schedule H << #1 1040-X (large). ⚠ **#1 must honour `IND-476`** — a
-Form 4547 on an amended return is a hard MeF reject and s241r's refusal enforces
-it. ⚠ Read the s233/s236/s239/s241o Georgia history before any other GA work:
-that feed has been wrong four separate ways and the `500` spec still has NO rule
-for what feeds the RIE lines.
-
-### ✅✅ BATCH-004 #10 (Form 4547 + 8879-TA) IS COMPLETE — s241p → s241r
-⛔ **The design record is `server/specs/_4547_source_brief.md`** — do not
-re-triage and do not re-fetch the IRS artifacts.
-
-✅ **LEGS 1-2 DONE (s241p, `c113bd3`, migrations 0283 + 0284 RLS):** the source
-brief, `Form4547` / `Form4547Child` / `Form8879TA`, and `compute_4547.py` (pure
-predicates; **the form has NO compute leg** — nothing on it reaches the 1040,
-Schedule 1, AGI or tax).
-
-**⚠⚠ THE 404-STOP CALL, so nobody re-opens it.** `lookup/4547/`, `F4547`,
-`FORM_4547`, `8879_TA` and `8879TA` **all 404**, and nothing is cached. Built
-anyway, deliberately: the gate's own words are *"do NOT improvise the
-implementation"*, and there is nothing here to improvise — `IRS4547.xsd` puts a
-`<LineNumber>` on every element and carries **no amount** but
-`PriorYearAGIAmt` (a signature-authentication input), and every eligibility test
-is printed verbatim by the IRS. **The precedent is exact: `lookup/1310/` ALSO
-404s and s223 built Form 1310 end to end** from the IRS form + XSD + business
-rules, with a source brief — and 1310 is a *filed* form, so this is not the s222
-information-return carve-out being stretched. Both forms are on the RS agenda.
-
-✅ **LEGS 3 + 6 DONE (s241q, `1158887`, no migration):** the `form_4547s` lane
-section (parent + nested `children` + a nested `form_8879ta`, ordered after
-`dependents`; staging refuses only the UNTRANSMITTABLE — line 5's `xsd:choice`
-violated, a US address with no county, no children, an unnamed responsible
-party, >100 children; and **Form 8879-TA's Part I refused BY NAME**) and
-**eight diagnostics** (`D_4547_AGE`, `_PILOT`, `_CITIZEN`, `_LINK`, `_UNKNOWN`,
-`_AUTH`, `_AMENDED`, `_8879TA`).
-⚠⚠ **The generator had ALREADY drifted and `children` is REQUIRED** — staging
-validated both nested families but the published schema emitted neither, so an
-author could not have discovered a field the server insists on (the s227 class,
-same as `schedule_fs.other_expenses`). Fixed and pinned by a test reading the
-generator's own `defs`, not the written `.json`.
-
-✅ **LEGS 4 + 5 DONE (s241r, `e2dce0e`, no migration) — #10 IS COMPLETE.**
-`f4547.pdf` registered in the manifest with its SHA256; `f4547_2025.py`;
-`render_4547`; `build_irs4547` + `Form4547Source` / `Form4547ChildSource` +
-`_extract_f4547s`, wired at the XSD position between `IRS4255` and `IRS4562`.
-
-⚠⚠ **PRINT AND TRANSMIT HAVE DIFFERENT SHAPES, and that is the unit's whole
-risk.** Two child columns on paper vs `maxOccurs="100"` in one document, so
-`render_4547` emits **⌈children/2⌉ pages** while the builder emits **ONE
-document with every child**. Both directions are pinned facing each other: a
-test asserts child 3 lands in **column 1 of page 2** (not merely "present") and
-that page 2 does not repeat child 1; another asserts the extract yields ONE
-source with three children.
-⚠ The column assignment was **verified positionally** on all 18 rows — child 1
-in the x 260-417 band, child 2 in 419-576, sharing a y (s236/s241h).
-⚠ **The Sign-Here and Paid-Preparer blocks are deliberately UNMAPPED**, and
-that is a finding: the taxpayer signature row has **no widgets at all** (it is
-hand-signed), and the seven preparer widgets were identified from their own
-printed labels as firm facts this form does not hold. Mapping by inference
-would assert a wrong field on a signed consent.
-⚠ **The `IND-476` refusal is BUILT** and its message carries the remedy — the
-Instructions say the form *"can be filed at any time"*, so it says file it
-separately rather than abandon the election.
-
-⚠ **ONE ITEM ASK REMAINS OPEN, named rather than hidden**: *duplicate child
-elections* are covered **within one election** by the DB constraint
-(`uniq_form4547_child_per_dependent`), but a return carrying TWO elections that
-both name the same dependent is not caught. A cheap follow-up; logged in
-DEFERRAL_AUDIT rather than left unstated.
-
-**⚠⚠ Form 8879-TA DOES NOT TRANSMIT and the batch item says it does.** Its
-printed header: *"ERO must obtain and retain completed Form 8879-TA."* There is
-**no `IRS8879TA` element anywhere in the MeF schema set** (all three versions
-searched; a test pins the absence and a teeth-check proved the search reads real
-files). The IRS's own *About* page reads as though it transmits — the face and
-the schema win. Its Part I is a **COPY**: all six lines name their own source,
-so they DERIVE and are never keyed (a test asserts the model exposes no field to
-key one into).
-
-Then, by size: #2 GA education credit + IT-QEE-TP2 ≈ #5 Schedule H << #1 1040-X
-(large). ⚠ **#1 must honour `IND-476`.** Then BATCH-003's six remaining items
-(⚠ build #3, mixed passive/nonpassive on one K-1, TOGETHER with the s239
-Georgia work), then the BATCH-005 triage above.
-
-### ⭐ STILL UNBLOCKED, still passed over — now TEN sessions
-- **Form 8853 Sections A/B + Section C.** Spec cached at
-  `server/specs/8853_sec_c_spec.json`; `lookup/8853_SEC_C/export/` returns 200;
-  all four legs pending. Read the s232 write-up in `STATUS_ARCHIVE.md` first —
-  Schedule 1 line 8e is COMPOSED not owned, and line 25 FLOORS AT ZERO though
-  the printed face does not say so.
-  ⚠ **s241 gave this a second reason**: Form 5329 line 36 takes its value "from
-  Form 8853, line 8" and **no `Form8853` model exists at all**, so the Archer
-  arm of the 5329 excess chain cannot be reconciled the way the HSA arm now is
-  (`D_5329_006`). Sections A/B and Section C are near neighbours — one pass.
+### ⭐ STILL UNBLOCKED, still passed over — now ELEVEN sessions
+- **Form 8853 Sections A/B + Section C.** Spec cached; all four legs pending.
+  Read the s232 write-up in STATUS_ARCHIVE first — Schedule 1 line 8e is
+  COMPOSED not owned, line 25 FLOORS AT ZERO. ⚠ s241 gave it a second reason:
+  Form 5329 line 36 takes "Form 8853 line 8" and no `Form8853` model exists.
 
 ### ⛔⛔ THE E-FILE GAP LIST — still TWO named documents, unchanged
-- **`IRS4797` (s240)** — no 1040-side Form 4797 document builder; MeF rejects
-  the return without it (`S1-F1040-118-01`, Reject, Active). s240 added a
-  refusal so it fails loudly at composition. **The higher-volume of the two** —
-  every disposition, installment sale, like-kind exchange AND K-1 §1231 return.
-  ⚠ **BATCH-005 #6 now needs it too.** The 1120-S `IRS4797` builder is the
-  worked example.
-- **`IRS1116`** — the oldest live e-file gap. A full-path Form 1116 return is
-  paper-only in code. s238's `IRS8379` build is a worked example end to end.
+- **`IRS4797` (s240)** — no 1040-side builder; `S1-F1040-118-01` rejects
+  without it; refusal fails loudly at composition. **BATCH-005 #6 needs it.**
+  The 1120-S builder is the worked example.
+- **`IRS1116`** — the oldest live e-file gap. s238's `IRS8379` is the worked
+  example end to end.
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
-  **BATCH-002 — items 9 and 10 open as to their COMPUTE half only** (both
-  RS-blocked on the missing NOL spec); **BATCH-003 — 6 open** (1, 3, 6, 8, 9,
-  10); **BATCH-004 — 7 open, all triaged**; **BATCH-005 — 10 open, UNTRIAGED**.
-  Every worked file carries a result annex naming what is done and what is
-  blocked; read it before starting. ⚠ None has moved to Done, deliberately.
+  **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
+  **BATCH-003 — 6 open** (1, 3, 6, 8, 9, 10 — ⚠ build #3 together with the
+  s239 Georgia work); **BATCH-004 — ONE open (#1)**; **BATCH-005 — 10 open,
+  UNTRIAGED**. Every worked file carries a result annex; read it first.
+  ⚠ None has moved to Done, deliberately.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
 
 ---
 
-## ⚠⚠ THE FINDING WORTH CARRYING FROM s241o — a `getattr` default turns a WRONG ATTRIBUTE NAME into a plausible answer
-`D_1099PATR_199A`, shipped hours earlier in s241n, read
-`getattr(ctx.taxpayer, "qbi_is_patron", False)`. **`qbi_is_patron` is a
-PER-ACTIVITY field** — it lives on `ScheduleC` and `ScheduleF`, never on
-`Taxpayer`. So the expression answered *"not a patron"* on every return in
-existence, and the warning fired **unconditionally and un-clearably**: ticking
-the patron box, which is exactly what the message asks for, changed nothing.
-That is the s192 shape (an unclearable diagnostic) arriving through a different
-door.
-*Two things generalise.* **(1)** A `getattr(obj, "name", default)` on a model
-field is a silent typo-swallower — a plain attribute access would have raised on
-the first run. **(2) The test had no teeth and looked like it did**: it asserted
-the rule FIRES, which passed either way. Only the QUIET case proves a comparison
-is real. Both cases are pinned now, plus a third for per-activity routing.
-⚠ And the thing that caught it was the **client typecheck**, which knows the row
-shapes — a server-side rule was corrected by a TypeScript error.
-
-## ⚠⚠ THE SECOND ONE — adding a PARTIAL derive can open a silent gap where a full one would not
-`D_GA500_017` asked *"is worksheet line 10 blank?"*. That was a correct test
-while nothing fed L10. The 1099-PATR derive is **partial by nature** — it knows
-one component of "other income" and cannot know the rest — so a return with a
-1099-PATR *and* other 8-line income would have had a NON-blank L10 and been
-reported complete while its base was still short. **The rule would have gone
-quiet on exactly the returns it exists for.** New trigger: *is L10 still only
-what the software itself derived, while the federal other-income total is
-larger?* — which reduces to the old test on every return with no 1099-PATR.
-⚠ Deliberately NOT a strict `keyed < federal` comparison: r. 560-7-4-.02(4)(b)2
-excludes lottery and gambling from retirement income altogether, so a gambling
-return's L10 is *supposed* to be smaller and would false-alarm forever.
-*The general shape: when a new feeder covers PART of a line, every rule that
-tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
-"adding support makes an existing, correct rule wrong" (s225, s233, s238, s240,
-s241e, s241o ×2).
-
 ## ⚠ Classes that MOVE existing returns or output on next recompute
-- **s241v: NONE.** A render function reached only when the return carries a
-  code-125 `GeorgiaCredit` row, and none exists until a preparer or payload
-  makes one. No compute changed; the manifest gains one template entry.
-- **s241u: NONE.** A lane section and eight diagnostics that all no-op unless
-  the return carries a `GeorgiaCredit` row, and none exists until a preparer or
-  payload makes one. ⚠ The published import schema gains `georgia_credits`
-  (with `qee_detail`) — additive.
-- **s241t: NONE.** Two new tables and a pure-function module nothing calls yet.
-  No compute changed; `GeorgiaCredit` rows only exist where a preparer or
-  payload makes one. Migrations are additive (CreateModel + RLS ALTER), so the
-  s190 `db_default` trap does not apply.
-- **s241s: NONE.** A source brief and its tests. No production code changed.
-- **s241r: NONE.** A new render function and a new MeF document, both reached
-  only when the return carries a `Form4547` row — and none exists until a
-  preparer or payload makes one. ⚠ **The one behaviour change that CAN bite:**
-  an amended return carrying a Form 4547 now **refuses at composition**
-  (`IND-476`) where it previously composed and would have been rejected by the
-  IRS days later. That reaches only returns that were already un-transmittable.
-- **s241q: NONE.** Eight new diagnostics that all no-op unless the return
-  carries a `Form4547` row, and no such row exists until a preparer or payload
-  makes one. No compute changed. ⚠ The published import schema DID change
-  (`form_4547s` gains `children` + `form_8879ta`) — additive, so no existing
-  payload becomes invalid.
-- **s241p: NONE.** Three new tables and a pure-predicate module that nothing
-  calls yet. No compute changed, no existing row touched; `Form4547` rows only
-  exist where a preparer or payload makes one. The migrations are additive
-  (CreateModel + RLS ALTER), so the s190 `db_default` trap does not apply.
-- **⚠ s241o MOVES GEORGIA RETURNS — but only ones carrying a 1099-PATR.** A GA
-  return with an 8z-routed 1099-PATR now gets that taxable amount on RIE
-  worksheet L10, enlarging the exclusion and **reducing Georgia tax**. No
-  1099-PATR row exists until a preparer or payload makes one, so no return
-  changes on its own. ⚠ L10 also became a DERIVED line: it is now written
-  unconditionally including back to blank, so a value keyed there WITHOUT
-  `is_overridden` would be cleared on the next refresh. Every browser write path
-  (`PATCH /fields`) sets `is_overridden`, and the lane writes GA fields with it
-  too, so this reaches nothing in practice — pinned both ways by tests.
-- **⚠ s241o MOVES DIAGNOSTICS, in the quiet direction.** `D_1099PATR_199A`
-  stops firing on returns whose business or farm IS marked as a patron (it was
-  firing on all of them). `D_GA500_017`'s line-10 arm changes trigger.
-- **s241n: NONE.** The five `D_1099PATR_*` rules fire only on returns carrying a
-  1099-PATR row.
-- **s241m: NONE.** `Form1099PATR` rows only exist where a preparer creates one,
-  and the 8z composition is unchanged on every return without one.
-- **⚠ s241j MOVES DIAGNOSTICS, and one class of return should CHANGE.** Any
-  return deducting alimony under a line-19c instrument dated 2019 or later now
-  fires `D_SCH1_007` (**error**) where it was silent — and that deduction is
-  genuinely not allowed, so those returns are wrong today and the AGI must come
-  back up when the amount is removed. Every pre-2019 alimony return gains
-  `D_SCH1_008` (info). No computed value changes on its own.
-- **⚠ s241h/s241e MOVE PRINTED OUTPUT** on a rendered Form 8862 (Parts III/IV
-  grids; Part II lines 3/4 and Section B). Same values already transmitted — the
-  paper stops lagging the XML. No dollar figure changes.
-- **⚠ s241d/s241c MOVE E-FILE OUTPUT** on any return transmitting a Form 8862:
-  a childless 8862 now emits Section B or REFUSES; ODC persons move out of
-  `CTCACTCChildInformationGrp`; an unanswered line 3 refuses instead of
-  transmitting a fabricated "No"; lines 17 and 19a now derive. ⚠ Sign: every one
-  is a correction toward the truthful, narrower claim.
-- Carried from s240: a passive or PTP K-1 carrying a net §1231 LOSS now fires
-  `D_8582_MULTIFORM` (RED) or `D_K1_PTP_LOSS` (warning); any 1040 with a
-  non-zero Schedule 1 line 4 now refuses at MeF composition.
-- Carried from s239: Roth 1099-Rs (codes J/T/Q) move from 5a/5b to 4a/4b; any
-  Georgia return with a partnership K-1 moves income between RIE L2 and L13;
-  an engaged Form 8606 changes RIE L11; a code-U 1099-R un-blanks the whole
-  pension taxable column (the largest mover).
-- Carried from s236: a Georgia return with a passive K-1 whose loss was partly
-  or wholly suspended gets a different RIE line 13.
-- Carried from s235: Georgia dependent exemptions on an untouched 7a.
+- **s241w: NONE.** Two new tables (additive CreateModel + RLS ALTER — the
+  s190 `db_default` trap does not apply; the one boolean with a default has
+  `db_default`), a pure compute module, a lane section, eight diagnostics, a
+  render function and a MeF document — ALL reached only when the return
+  carries a `ScheduleH` row, and none exists until a preparer or payload
+  makes one. The published import schema gains `schedule_hs` (additive).
+  `render_complete` gains a Schedule H appendix on returns that carry one.
+- **⚠ s241o MOVES GEORGIA RETURNS carrying a 1099-PATR** (RIE L10 feed;
+  L10 became a derived line — browser writes set `is_overridden`).
+- **⚠ s241j MOVES DIAGNOSTICS**: post-2018 alimony instruments fire
+  `D_SCH1_007` (error) — those returns are genuinely wrong today.
+- **⚠ s241d/s241c MOVE E-FILE OUTPUT** on any return transmitting Form 8862 —
+  every change a correction toward the truthful, narrower claim.
+- Carried from s240: passive/PTP K-1 §1231 losses fire RED; a non-zero
+  Schedule 1 line 4 refuses at MeF composition.
+- Carried from s239: Roth 1099-Rs move 5a/5b → 4a/4b; GA partnership K-1s move
+  RIE L2↔L13; code-U un-blanks the pension taxable column (largest mover).
+- Carried from s236/s235: GA RIE line 13 on suspended passive K-1 losses;
+  GA dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted
-- ✅ **RETIRED IN s241g — the `inspect.getsource(seed_builtin_rules)` class is
-  GONE.** 24 assertions across 24 files, all replaced by
-  `tests/registry_asserts.assert_registry_wired()`. The `-k "diagnostic"` sweep
-  went from **22 failed / 878 passed → 900 passed, 0 failed**. ⚠ **The cheap
-  repair was deliberately rejected**: repointing the sniff at
-  `all_registered_rules` would have gone green instantly and still proved
-  nothing — the teeth test injected `RULES_8889 = []`, which CONTAINS the
-  literal, so a repointed sniff would have passed while the family reached
-  neither the seeder nor the DB.
-- **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py` (3,
-  s225 — a `D_PREPARER_001` duplicate-key on rule seeding; fails alone too) and
-  `test_mappings.py::TestApplyMappingAmbiguousFederalReturn` (3, s239).
-- **`test_topic7_input_leg.py::TestEICFacts::test_non_engaged_return_leaves_27a_quiet`**
-  — pre-existing, verified at pristine `6e819b5` in a worktree (s235). Not diagnosed.
-- **`test_1040.py` — 6 pipeline tests**, `MultipleObjectsReturned`. Their `_fv`
-  helper does an **unscoped** `FormFieldValue.objects.get()`. Pre-existing (s234).
+- **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py`
+  (3, s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn`
+  (3, s239).
+- `test_topic7_input_leg.py::TestEICFacts::test_non_engaged_return_leaves_27a_quiet`
+  — pre-existing (s235), not diagnosed.
+- **`test_1040.py` — 6 pipeline tests**, unscoped `_fv` `.get()` (s234).
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
-  `ValidationError`. Pre-existing (s219). Not diagnosed.
-- `test_4868.py` — 4 tests on the Schedule 3 line-10 feeder (s217). ⛔ KEN.
-- `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
-  batch-005 #9 PTET-gate class, red since s212.
-- **⚠ NEWLY OBSERVED (s241o), PRE-EXISTING, and it looks like a real 1120-S
-  defect rather than a rotted test.**
-  `test_line_key_registry_sweep.py::test_formula_targets_resolve` fails:
-  `FORMULA_REGISTRY["1120-S"]` targets **`M2_DIST_EXCESS`** and
-  **`L24_BOOK_BRIDGE`**, and `seed_1120s.py` creates neither FormLine — so the
-  formula pass computes both and **silently never persists them**, which is
-  exactly what that guard exists to catch. Both keys date from the s205 /
-  batch-008 M-2 + Schedule L era. Untouched by this session (nothing in the diff
-  goes near 1120-S), not diagnosed, and **1120-S only — no 1040 impact**.
-  Deserves its own unit.
-- **Client typecheck**: **55 error lines standalone — unchanged by s241o**,
-  which was measured before and after (it briefly went to 56 and the extra one
-  was a real defect, not noise; see the finding above). `npx vitest run` is
-  **1,680 passed / 140 files**.
+  (s219). `test_4868.py` (4) — ⛔ KEN (s217).
+  `test_supporting_forms_spec.py::TestGA600SSingleState::test_s1_taxable` —
+  PTET-gate class (s212).
+- **⚠ PRE-EXISTING 1120-S defect (s241o)**:
+  `test_line_key_registry_sweep.py::test_formula_targets_resolve` —
+  `FORMULA_REGISTRY["1120-S"]` targets `M2_DIST_EXCESS` / `L24_BOOK_BRIDGE`,
+  neither seeded, so the formula pass computes both and silently never
+  persists them. 1120-S only. Deserves its own unit.
+- **Client typecheck**: 55 error lines standalone (unchanged); vitest
+  1,680 passed / 140 files.
 
 ### ⚠ Test-run hazards (standing)
-- **Never run two `pytest` invocations concurrently** — one shared test DB;
-  the hazard is CROSS-REPO (both repos name it `test_postgres`). ⚠ **s241o hit
-  this**: a background `-k` sweep stalled at 13% for half an hour because
-  foreground runs were started beside it. Kill and re-run alone; do not
-  interpret a stalled sweep as a hang.
-- **A broad `-k` sweep is SLOW and blows the 600s Bash timeout** — s236's
-  ~1,100-test sweep took **21½ minutes**. Run it with `run_in_background: true`.
-  ⚠ Keep the `-k` terms tight: `k1` matches hundreds of node ids, `rie` matches
-  "ret**rie**ve".
-- ⚠ `--create-db` does NOT reliably drop an existing test DB here. To prove a
-  red is pre-existing, use a `git worktree` at a pristine SHA with the MAIN
-  venv's interpreter, and copy `server/.env` in (s235).
-- A long `pytest ... | Select-Object -Last N` that hits the 120s timeout
-  loses ALL output — redirect to a file and tail it.
-- ⚠ A `poetry run python script > file` redirect BUFFERS. Use `-u`.
-- ⚠ A stdout **redirect goes through cp1252** on this box and dies on ligatures
-  and the U+2212 minus. Write UTF-8 from inside Python.
-- ⚠ `manage.py shell -c "..."` prints nothing; a multi-line `python -c` through
-  the Bash tool also silently produces no output. **A script file under the
-  scratchpad also fails — `config` is not importable from there.** Copy the
-  script INTO `server\`, run it, delete it (s239). **Simplest reliable probe: a
-  throwaway `tests/test_zz_*.py` with `-s` print statements, deleted after.**
-- ⚠ **`poetry run` must be invoked from `D:\dev\delvio-tax\server`** — from the
-  repo root it fails with "could not find a pyproject.toml".
-- ⚠ **Windows `python` cannot read the Bash tool's `/tmp`** — different
-  filesystems. Write shared files to the scratchpad path (s240).
-- ⚠ Prefer PowerShell for `poetry run` on this box (s241).
-- ⚠ A Cloudflare-protected law site (justia) 403s both WebFetch and curl, and
-  **`rules.sos.ga.gov` returns only chrome to WebFetch**. The in-app browser
-  (`preview_start` + `get_page_text`) got the full verbatim Georgia reg where
-  both failed — s239, and again in s241o.
-- ⚠ Lane/API shapes that cost time (s241): **staging answers 201 even for an
-  invalid payload** — the verdict is `row["status"]`, not the HTTP code; return
-  CRUD routes are `/api/v1/tax-returns/…` (not `/returns/`) and the detail route
-  **needs its trailing slash** or you get a 301; `filing_status` is `"mfj"`, not
-  `"married_joint"` (varchar(10)).
-- ⚠ A diagnostic `_finding(...)`'s extra kwargs land under `["details"]`, not at
-  the top level of the finding dict (s241o).
-- ⚠ `ScheduleF` has **no `business_name`** — the header field is
-  `principal_activity` (s241o).
+- **Never run two `pytest` invocations concurrently** — one shared test DB,
+  cross-repo (`test_postgres`). A stalled background sweep beside foreground
+  runs is contention, not a hang (s241o).
+- A broad `-k` sweep blows the 600s timeout — background it; keep `-k` tight.
+- `--create-db` does not reliably drop here; prove a pre-existing red via
+  `git worktree` at a pristine SHA with the main venv + copied `server/.env`.
+- A timed-out `pytest | Select-Object` loses ALL output — redirect to a file.
+- `poetry run python > file` BUFFERS (use `-u`); stdout redirects go through
+  cp1252 (write UTF-8 from inside Python); **never rewrite a UTF-8 file via
+  `Set-Content`** — use the Write/Edit tools.
+- **`poetry run` only works from `server\`**; Windows `python` cannot read the
+  Bash tool's `/tmp` — use the scratchpad; DB probes: a throwaway
+  `tests/test_zz_*.py` with `-s`, deleted after.
+- Cloudflare-403 law sites and `rules.sos.ga.gov`: the in-app browser gets the
+  text where WebFetch and curl fail (s239/s241o).
+- Staging answers **201 even for an invalid payload** — the verdict is
+  `row["status"]`; return CRUD routes are `/api/v1/tax-returns/…` with the
+  trailing slash; `filing_status` is `"mfj"`.
+- `_finding(...)` kwargs land under `["details"]`; `ScheduleF` has no
+  `business_name` (use `principal_activity`); `order_by("owner")` puts
+  "spouse" before "taxpayer" (s241w).
 
 ### 🔎 Carried for triage — NOT claims
-- **From s241o**: nothing in the app derives RIE **L8 alimony**, and after this
-  unit L10 is only partly derived. The app DOES know the whole of federal
-  Schedule 1 line 8 — every 8a-8z line is a FormFieldValue — so a fuller L10
-  derive is possible in principle, but the components are return-level with no
-  owner, and (4)(b)2 puts gambling (line 8b) **outside retirement income
-  entirely**. Worth a design pass; not attempted here.
-- **From s241**: `Form8606` and `HSAAccount` both allow duplicate owners and
-  their compute ITERATES, so a duplicate DOUBLE-COUNTS rather than vanishing.
-  `views.py:623` (the 8606 proforma roll) guards with `.exists()`, but the
-  browser POST does not. Not measured; not a claim.
-- **From s234, potentially large and still unchased**: a materially-participating
-  1120-S K-1 carrying **$250,000 of nonpassive ordinary business income never
-  reached Schedule 1 line 5 or 1040 AGI** — line 9 was identical with the K-1 at
-  $0 and at $250,000 — with `SCHEDULE_E` AND `FORM_8582` both seeded, while
-  `schedule_e_non_1411_income` *did* see the same row. Repro:
-  `server/tests/test_8960_line4b_clamp.py`, `_build(k1_ordinary="250000")`.
-- Carried (s229): a filed, exact-tie 1040 shows worksheet drift on a bare
-  recompute (`1040_SCHD_WS` clc_1/clc_3, −5,491 each), face still an exact TIE.
+- **From s241o**: RIE L8 alimony underived; a fuller L10 derive possible in
+  principle (all 8a-8z are FormFieldValues) but per-owner attribution and the
+  (4)(b)2 gambling carve-out make it a design pass.
+- **From s241**: `Form8606`/`HSAAccount` allow duplicate owners and their
+  computes ITERATE (double-count, not vanish); browser POST unguarded.
+- **From s234, potentially large**: a materially-participating 1120-S K-1's
+  $250k nonpassive ordinary income never reached Schedule 1 line 5 / AGI.
+  Repro: `server/tests/test_8960_line4b_clamp.py`, `_build(k1_ordinary="250000")`.
+- Carried (s229): exact-tie 1040 shows `1040_SCHD_WS` clc_1/clc_3 drift on a
+  bare recompute (−5,491 each), face still a tie.
 
 ### ✅ KEN DECISIONS OUTSTANDING
-- **⛔ KEN (s231, carried): §38(c)(6)(A), the MFS threshold.**
-  `compute_3800.SEC38C1_THRESHOLD` is a flat $25,000; the statute makes it
-  **$12,500** for an MFS taxpayer whose spouse has any business credit.
-  **⚠ The sign: this OVER-allows.** Requires nothing from Ken to BUILD.
+- **⛔ KEN (s231)**: §38(c)(6)(A) MFS threshold — flat $25,000 vs statutory
+  $12,500; OVER-allows. Buildable without Ken; the ruling is the gate.
 - **⛔ KEN (s227)**: the out-of-scope-state packet-disposition marker.
-- **⛔ KEN (s230)**: Form 6765 Section G becomes REQUIRED for tax years
-  beginning after 2025; the RS spec must be re-authored before a TY2026 season.
-- The one live external item: **1040 v5.4 business rules still not in hand,
-  active 2026-08-10** (v5.4 schemas ARE on disk; 1041 v5.5 closed). ⚠ s240 read
-  the **v5.3** rules for `S1-F1040-118-01`; re-check it against v5.4 on arrival.
+- **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
+  before a TY2026 season.
+- **1040 v5.4 business rules still not in hand** (v5.4 schemas ARE on disk).
+  ⚠ s240/s241w read the **v5.3** rules — re-check `S1-F1040-118-01` and the
+  `SH-F1040-*` family against v5.4 on arrival.
 
 ### RS AGENDA
-- **⛔ BLOCKING two batch items: THERE IS NO NOL SPEC.** `lookup/172/`,
-  `lookup/NOL/`, `lookup/FORM_172/` and `lookup/1045/` all return 404.
-  BATCH-001 #4 and BATCH-002 #10 both ask for Form 172, the post-2017
-  limitation and the utilization ordering. **The preservation half is built and
-  the pools are safe — only the computation waits.** Still the single
-  highest-value RS authoring order on this list.
-- **NEW (s241s): the GA QEE credit has NO SPEC — `IT_QEE_TP2`, `IT-QEE-TP2`,
-  `ITQEETP2`, `500_SCH2`, `GA_QEE` and `QEE` all 404**, while the `500` spec
-  models only the destination (line 21, typed `input`). s241s built the brief
-  from O.C.G.A. §48-7-29.16 on the s223/s241p precedent. **Author both** — a
-  Schedule 2 credit-detail spec and `IT_QEE_TP2` — with the brief as input.
-  ⚠ Whatever is authored MUST carry the **two carryforward regimes** (3 years
-  for credits generated in TY2025+, 5 for older ones, per 2024 Ga. Laws 598
-  §1-7) and must record that **line 21 is `input` today**, so a build that
-  derives it re-authors the spec rather than diverging (the s142 rule).
-- **NEW (s241p): `4547` and `8879_TA` have NO SPEC AT ALL.** `lookup/4547/`,
-  `F4547`, `FORM_4547`, `8879_TA` and `8879TA` all 404. s241p built the form
-  from the IRS artifacts on the s223 Form-1310 precedent (which also 404s) and
-  recorded the reading in `server/specs/_4547_source_brief.md` — the build is
-  transcription, not improvisation, because the form **computes nothing** and
-  every eligibility test is printed verbatim. **Author both specs** so the gap
-  is closed rather than merely justified; the brief is the input. ⚠ Whatever is
-  authored must keep line 6 and line 7 as SEPARATE tests (the account test is
-  wider than the pilot test) and must record `IND-476`.
-- **NEW (s241o): the `500` spec still has NO rule for what feeds RIE lines
-  1/2/6-13, and that silence has now produced FIVE defects.** This unit adds the
-  fifth. Author it properly and record, at minimum: the earned/unearned split
-  **by entity type** (r. 560-7-4-.02(4)(b)1 uses SE-subjection for partnerships
-  and material participation for S-corps, in one sentence); that the $5,000
-  earned cap is statutory; that **lottery/gambling income is NOT retirement
-  income at all** under (4)(b)2 (nothing in the app encodes this, and RIE L10's
-  new trigger depends on it); and that **only income included in Georgia taxable
-  income** enters the base. `D_GA500_017`'s spec condition also still lists L13
-  and L10 among the un-pulled lines — both are now (partly) pulled.
-- **NEW (s241b/triage): the `8862` spec is a DRAFT that collapses each PART into
-  one boolean.** `lookup/8862/export/` answers **200** — so the 404-STOP gate
-  waves it through — and the export is `"status": "draft"`, version 1, with 6
-  facts, ONE rule, 6 `line_map` entries (four of them pseudo-lines), 1
-  diagnostic and 2 tests, against a printed face of ~40 numbered lines. **Second
-  time a draft spec has looked like permission** (s238's `8379` was first, and
-  its `status` field is STILL not checked anywhere). Re-author per-line.
-- **Carried (s241): the `5329` spec** says nothing about the roll-forward, about
-  Part VIII (ABLE has line 50 and no prior-year line — a §529A question the FORM
-  does not answer, deliberately not guessed), or about where lines 36 and 44
-  come from, though both name a source on the printed face.
-- Carried (s240): `R-8582-MULTIFORM`'s no-silent-gap clause is now FALSE as
-  written (it cites `D_K1_SEC1231`, retired 2026-06-30); `R-8582-WS-NET` says
-  nothing about which OTHER forms an activity's losses can land on; the `4797`
-  spec has no rule for the K-1 §1231 feed.
-- Carried (s239): `R-RET-CODE` has been outrun three times (codes 6, W, U) —
-  re-author from the current i1099-R Table 1 in one pass.
-- Carried (s238): the `8379` spec is a DRAFT whose `line_map` covers 4 of ~20
-  lines and returns 200. **The export's `status` field is still not checked
-  anywhere.**
-- Carried (s236): `R-SCHA-CHARITABLE` models only three buckets while the K-1
-  states **seven** — 1120-S box 12 codes A–G — so **B, D, F and G have no home
-  and are REFUSED at both write paths**. ⚠ Sign: a refused code is not deducted
-  AT ALL — it overstates tax. Also: the `500` spec's RIE line_map has no
-  **RIE-13**.
-- Carried (s235): the `SCHEDULE_A` charitable carryover modelled as ONE
-  aggregate (BATCH-002 #9 needs pools by source year AND limitation class); the
-  `500` spec typing line 7a as `input` when the app now DERIVES it.
-- Carried (s234): R-STD-04 silent on the dependent worksheet's line 1; the
-  FORM_8960 `R-8960-INCOME` rule silent on line 4b being bounded by line 4a.
-- Carried (s232): the `[WO-SOURCETYPE-RECON]` additions; the export serializer
-  omitting `requires_human_review`.
-- Carried: the s231 Form 3800 five spec defects; the s230 Form 6765 items
-  (a)-(e); the **1065 Schedule K-1 box-15 letters** for §41 and §45R (still
-  URGENT — `D_3800_008` excludes those credits until both are verified);
-  s228 `D_K1B_FULLY_ALLOWED`; s226/s227/s224/s223 unchanged.
+- **⛔ BLOCKING two batch items: NO NOL SPEC** (`172`/`NOL`/`FORM_172`/`1045`
+  all 404). BATCH-001 #4 + BATCH-002 #10 wait. Preservation is built; only
+  the computation waits. Highest-value authoring order on this list.
+- **NEW (s241w): `SCHEDULE_H` is a DRAFT covering 7 of ~27 lines** — the
+  computed skeleton only (no inputs, no A/B/C router, no Section B table).
+  Third draft-trap occurrence; **the export's `status` field is STILL not
+  checked by any gate.** Re-author per-line from the brief; record the two
+  worksheets (late-contribution 90%, credit-reduction) and the annual
+  constants (wage thresholds, the credit-reduction state list).
+- (s241s): the GA QEE credit has NO SPEC (all aliases 404; `500` types line
+  21 `input`). Author the Schedule 2 credit-detail + `IT_QEE_TP2` specs from
+  the brief — MUST carry the two carryforward regimes.
+- (s241p): `4547` and `8879_TA` have NO SPEC. Author from the brief; keep
+  lines 6/7 as separate tests; record `IND-476`.
+- (s241o): the `500` spec still has NO rule for what feeds RIE lines 1/2/6-13
+  — five defects and counting. Author with the earned/unearned split by
+  entity type, the $5,000 cap, the gambling carve-out, GA-taxable-only.
+- (s241b): the `8862` spec is a draft collapsing each PART to one boolean —
+  re-author per-line.
+- Carried: `5329` roll-forward/Part VIII silence (s241); `R-8582-MULTIFORM`'s
+  stale no-silent-gap cite + `4797` K-1 §1231 silence (s240); `R-RET-CODE`
+  outrun three times (s239); `8379` draft (s238); `R-SCHA-CHARITABLE` three
+  buckets vs seven K-1 codes + RIE-13 missing (s236); SCHEDULE_A carryover
+  aggregation + `500` line 7a typed `input` (s235); R-STD-04 + `R-8960-INCOME`
+  (s234); s232/s231/s230 items; the 1065 K-1 box-15 letters (still URGENT).
 
 ## ⚠ Open items for Ken — carried unchanged (see STATUS_ARCHIVE).
 ## The three K-1 → individual gaps (parked) — one NAMED in s221: the received
