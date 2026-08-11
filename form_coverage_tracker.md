@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242m — CLERGY SCHEDULE SE (the MINISTER worksheet):
+> the IMPORT LANE now carries it (BATCH-003 #8; `222bd37`; no migration).**
+> The engine/render/MeF were complete since Unit 4 — the gap was six W-2
+> fields + `clergy_4361_exempt` absent from the lane allowlists (the
+> off-switch class, 7th). ⚠ Standing conservative behavior: a packet with
+> an allowance but no amount-used/FRV computes a $0 exclusion and
+> D_MIN_HOUSING_INC names the gap. The published import schema
+> regenerated with the seven fields.
+
 > **2026-08-11 session 242k — GEORGIA FORM 500X (AMENDED RETURN): MODEL +
 > COMPUTE + LANE + DIAGNOSTICS SHIPPED (BATCH-004 #1 LEG 2; `31eef58`;
 > migs 0299+0300).**

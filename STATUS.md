@@ -1,20 +1,24 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242l). **✅✅ BATCH-004 CLOSES 10 OF 10 — the
-file moved to Done.** #1 (the 1040-X lifecycle) completed across three
-legs in one day: s242j (`5f455c5`) the lane amendment lifecycle + the
-closed double-filing hazard (extract_return had no amended gate — an
-amended return composed as a SECOND ORIGINAL; now refused by name);
-s242k (`31eef58`) the Georgia Form 500X core (verify-first killed the
-"500X retired" premise — the 2025 Form 500X is CURRENT; model migs
-0299+0300, single-source compute, ga_* lane facts, state baselines, four
-D_500X rules); s242l (`9752378`) the full 5-page 500X render (calibrated
-combs, the 27→28 mirror-shift bleed test, audit checkbox, explanation
-overflow → Statement page, wired into render_complete). E-filing was
-never in the item's ask — amended MeF joins the e-file gap list.*
+*Last updated: 2026-08-11 (s242m). **BATCH-003 RE-TRIAGED (six items) +
+#8 BUILT** (`222bd37`): the clergy/parsonage item was the s237
+off-switch-allowlist class, SEVENTH occurrence — the MINISTER engine has
+been complete since Unit 4 (§107 least-of-three, §1402(a)(8) SE base,
+4361 off-switch, line 1h, worksheet render, MeF) but not one clergy field
+rode `W2_FIELDS`, and `clergy_4361_exempt` was missing from
+`TAXPAYER_FIELDS` — an exempt minister's packet would have CHARGED SE tax
+the filed return did not. Six W-2 fields + the flag added; schema
+regenerated; the item's exact arithmetic reproduces through the lane
+($5,644 SE tax / $2,822 half / $34,000 excluded from AGI). The other five
+re-triaged as REAL builds, none narrowed: #9 (7203 generic charitable,
+moderate) → #1 (aggregate 1099-DIV fallbacks, moderate) → #10 (UPE rows,
+moderate-large) → #6 (Form 8814, large) → #3 (mixed passive/nonpassive
+K-1, large). 5 tests; 707-test gate green.*
 
-*Batch summary: ten items, s240 → s242l — nanny tax, GA QEE, alimony,
-#4's pair, 8863, 5329, 8862, 1099-PATR, 4547/8879-TA, and 1040-X.*
+*Previous (s242l): ✅✅ BATCH-004 closed 10/10, moved to Done (the 1040-X
+lifecycle finished: lane + GA Form 500X end to end incl. the 5-page
+render; amended MeF → the e-file gap list). (s242i): ✅✅ BATCH-005 closed
+10/10.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -48,13 +52,19 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003's six remaining items (1, 3, 6, 8, 9, 10)**
-Open `CC_CODE_CHANGES_1040_BATCH-003.md` and RE-TRIAGE the six before
-building anything (the file carries earlier annexes — #2/#4/#5/#7 are
-done; read them first). ⚠ Build #3 TOGETHER with the s239 Georgia work
-(they share the RIE seam). ⚠ Verify-first: 16 of 19 recent items were
-narrower than reported. Then Form 8853 A/B+C (twelve sessions passed
-over), the IRS1116 e-file gap, and the amended-MeF gap (below).
+### ⭐ NEXT UNIT — **BATCH-003 #9: the generic Form 7203 charitable deduction**
+The s242m re-triage annex (in the batch file) is the design record for
+all five remaining items. #9: add a source-preserving generic
+current-year charitable-deduction field to `IndividualForm7203` +
+`F7203_FIELDS` (migration: one nullable/default field — prod-safe
+AddField needs `db_default`, s190); it must reduce stock basis exactly
+once in the 7203 arithmetic (Part III line 42 territory), stay
+NON-FEEDING for Schedule A, and diagnose an inconsistent generic amount
+when detailed K-1 charitable subtypes are also present (detail wins).
+Then #1 (aggregate 1099-DIV subtype fallbacks — mirror the
+aggregate-Medicare valve design) → #10 (linked UPE rows) → #6 (Form 8814)
+→ #3 (mixed passive/nonpassive K-1 — ⚠ shares the s239 GA RIE seam).
+After the batch: Form 8853 A/B+C, IRS1116, amended MeF.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -93,10 +103,10 @@ over), the IRS1116 e-file gap, and the amended-MeF gap (below).
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003 — 6 open** (1, 3, 6, 8, 9, 10 — ⚠ build #3 together with the
-  s239 Georgia work); **BATCH-004 — ✅ DONE 10/10, moved (s242l)**;
-  **BATCH-005 — ✅ DONE, moved (s242i).** Every worked file carries a
-  result annex; read it first.
+  **BATCH-003 — 5 open** (9, 1, 10, 6, 3 in build order; #8 ✅ s242m; the
+  re-triage annex is the design record); **BATCH-004 — ✅ DONE 10/10,
+  moved (s242l)**; **BATCH-005 — ✅ DONE, moved (s242i).** Every worked
+  file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -104,6 +114,9 @@ over), the IRS1116 e-file gap, and the amended-MeF gap (below).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242m: NONE.** Allowlist-only (staging accepts six W-2 clergy fields +
+  one Taxpayer flag); the engine those fields feed is unchanged and
+  engages only on `is_minister` rows.
 - **s242k/l: NONE beyond new-row reach.** `Form500X` engages only when a
   row exists (none do until a payload/API creates one); the state-baseline
   capture at mark-filed is additive; the D_500X rules and the 500X render
