@@ -1,21 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242r). **BATCH-003 #6 LEG 2 SHIPPED**
-(`f94bd41`): the Form 8814 render (one AcroForm page per child; the
-line-C box on exactly one form when several — F8814-001/-002 mirrored;
-the decimal split cells; No-first line-15 pair verified from the face;
-the 1040's line-16 "box 1" checks positionally-verified c2_9; PNG-loop
-verified) + four D_8814 diagnostics + **the MeF holding refusal**: the
-CSV carries 17 8814 rules (F8814-003-08 NARROWER than the face — income
-must be >$1,350 AND <$13,500 to e-file; IND-234's "FORM 8814"
-OtherIncomeTypeStatement dependency; F1040-476/477/482 1040-side pairs;
-IRS8814 per child max 10, slotted IRS8801→IRS8815) — until the IRS8814
-leg ships, `extract_return` refuses an 8814 return BY NAME (the s240
-reject class). 5 tests; 580 green.*
+*Last updated: 2026-08-11 (s242s). **✅ BATCH-003 #6 (Form 8814) CLOSES —
+the IRS8814 composition shipped** (`4d2199d`): per-child documents (max
+10, IRS8801→IRS8815 slot; MultipleForm8814Ind on exactly one); the
+1040-side pairs at their exact XSD positions via pre-hooks (QualifiedF8814Amt
+BEFORE 3a, OrdinaryF8814Amt BEFORE 3b, the Inds pre-4a, the line-7 pair
+pre-8, Form8814Ind after TaxAmt with ΣL15 + doc ids as ATTRIBUTES —
+IND-129/127); the NEW "FORM 8814" OtherIncomeTypeStatement + the Sch 1
+8z referenceDocumentId (IND-234/S1-F1040-130). Refusals by name:
+F8814-004 (child SSN) + F8814-003-08 (income outside >$1,350/<$13,500 —
+narrower than the face LOW too). The s242r holding refusal removed, its
+test pins the inverse. Item #6 took s242q/r/s. **ONE ITEM LEFT in
+BATCH-003: #3.** 11 tests; 590 green.*
 
-*Previous (s242q): #6 leg 1 (model/compute/feeds/lane + the Schedule D
-stale-7 fix). (s242p): #10 UPE. (s242o): #1 div aggregates. (s242n): #9.
-(s242m): re-triage + #8. (s242l/i): BATCH-004 + BATCH-005 ✅✅ 10/10.*
+*Previous (s242r): #6 render+diagnostics. (s242q): #6 leg 1 + the
+Schedule D stale-7 fix. (s242p/o/n/m): #10/#1/#9/#8. (s242l/i):
+BATCH-004 + BATCH-005 ✅✅ 10/10.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -49,23 +49,22 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #6 LEG 3: the IRS8814 e-file composition**
-The s242r annex records the design: IRS8814 documents per child (max 10,
-slotted between IRS8801 and IRS8815 in ReturnData1040 line 1665);
-elements ChildNm/ChildNameControlTxt/ChildSSN/MultipleForm8814Ind + the
-line amounts (ChildTaxableInterestAmt … ChildInterestAndDividendTaxAmt —
-read the XSD member list); the 1040-side seams: `Form8814Ind` +
-`childInterestAndDividendTaxAmt` (= ΣL15, IND-129) on IRS1040,
-F1040-476/477 indicator+amount pairs (ChildDivIncldQualifiedDivInd /
-QualifiedF8814Amt etc.), F1040-482 (cap-gain pair), and IND-234's
-"FORM 8814" literal in an **OtherIncomeTypeStatement** (a dependent
-document that does not exist yet — check how the 8z statement composes
-today). ⚠ F8814-003-08: the extract must refuse a form with L4 ≤ $1,350
-or ≥ $13,500 BY NAME (narrower than the face). ⚠ Refuse a child without
-name+SSN (F8814-004). Remove the s242r holding refusal in the same pass
-and pin both layers (the s225/s242j pattern). Then #3 (mixed
-passive/nonpassive K-1, the batch's last — ⚠ shares the s239 GA RIE
-seam). After: Form 8853 A/B+C, IRS1116, amended MeF.
+### ⭐ NEXT UNIT — **BATCH-003 #3: mixed passive/nonpassive components on one K-1 (LARGE — the batch's last item)**
+The batch item (b159): ONE partnership K-1 whose Schedule E line 28
+shows $14,047 passive income in col (h) AND $33,002 nonpassive loss in
+col (i) for the SAME entity — the single `material_participation`
+boolean cannot represent it, and two rows would violate
+one-row-per-source. Design questions to resolve verify-first: (a) a
+component-level split (per-box passive/nonpassive classification) vs an
+explicit filed Schedule E split (two column amounts on one row); (b)
+Form 8582 runs on the PASSIVE component only; (c) QBI from the proper
+components; (d) the combined K-1 net preserved; (e) diagnose
+inconsistent splits. ⚠ Read `k1_sche_net` / `schedule_e_p2_totals_from_rows`
+/ `_gather_passive_activities` (the 8582 bucket condition) FIRST — the
+material boolean partitions income exactly once between MAGI buckets
+(s242p's UPE gate rides it too). ⚠ Shares the s239 GA RIE seam (the K-1
+owner routing). After the batch: Form 8853 A/B+C (thirteen sessions),
+IRS1116, amended MeF, the two batches' NOL-blocked computes.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -104,7 +103,7 @@ seam). After: Form 8853 A/B+C, IRS1116, amended MeF.
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003 — 2 open** (6, 3 in build order; #1 ✅ s242o, #8 ✅ s242m,
+  **BATCH-003 — 1 open** (#3 only; #6 ✅ s242q-s, #1 ✅ s242o, #8 ✅ s242m,
   #9 ✅ s242n, #10 ✅ s242p; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
   10/10, moved (s242l)**; **BATCH-005 — ✅ DONE, moved (s242i).** Every
   worked file carries a result annex; read it first.
