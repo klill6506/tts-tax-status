@@ -1,23 +1,26 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242t). **✅✅ BATCH-003 CLOSES 10 OF 10 — the
-file moved to Done.** #3 (`823f60a`, mig 0307): the FILED Schedule E
-split — two nullable K-1 fields (both-or-neither) that supersede the
-material_participation single-bucket routing and drive BOTH columns on
-ONE row (the b159 −18,955 reproduces: 14,047 col (h) + 33,002 col (i)).
-The split must sum to the boxes-1+2+3 net (staging refuses;
-D_K1_SPLIT_ARITH REDs the back door); the MAGI partition holds by
-construction (passive comp → passive_k1_income, nonpassive →
-magi_nonpassive, no 8582 activity); v1 boundaries both-ends guarded
-(negative passive comp, UPE+split, D_K1_SPLIT_8582 coexistence warning);
-split rows bypass basis caps (the split IS the assertion). ⚠ Fixed in
-the pass: a serializer edit anchored on a line existing in TWO
-serializers put K-1 fields on RentalPropertySerializer (13 tests) —
-single-anchor edits only. 11 tests; 837 green across two gates.*
+*Last updated: 2026-08-11 (s242u). **✅ FORM 8853 SECTION C LEG 1 SHIPS
+(`ab5ed8e`, migs 0308/0309)** — the thirteen-session standing unit
+opens. `Form8853LTC` (one row per insured × LTC period, RLS
+default-deny), `compute_8853` per the Gate-1 spec (line 25 floored per
+§7702B(d)(2); the pre-Aug-1996 unmodified-contract zeroing of line 24;
+the ADB-only-because-terminal skip per §101(g)(1); $420/day raising on
+an unverified year), and **Schedule 1 line 8e is now COMPOSED per the
+DECISIONS s232 entry**: Section C component + preparer-keyed A/B
+residual, a delta-adjustment with the FORM_8853 worksheet's
+`sch1_8e_component` row as engagement memory — zero-movement pinned
+(spec T13), add+remove backs out, an overridden 8e wins. Refusals
+contribute NOTHING (multipayee / line-15 unanswered / multi-period /
+days out of 1-365). Lane `form_8853_ltcs` + "8e" joined
+SCH1_DIRECT_LINES as the residual's carrier; schema regenerated;
+FORM_8853 seeded on the shared DB. 24 tests transcribing the spec's
+T1-T14 (incl. the three IRS worked examples); 526 flow assertions +
+202 neighbors green; manage.py check clean.*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
-computes), Form 8853, IRS1116, amended MeF.*
+computes), Form 8853 legs 2-4, IRS1116, amended MeF.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -51,20 +54,26 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8853 Sections A/B + Section C (the thirteen-session standing unit)**
-The spec is CACHED (`server/specs/` — check its status + line coverage
-under the draft-trap gate before trusting it). ⚠ READ FIRST: the s232
-write-up in STATUS_ARCHIVE — the two standing findings: **Schedule 1
-line 8e is COMPOSED, not owned** (an 8853 feed joins a composition —
-grep `_set_field_value` on 8e and apply the s230/s241z registry rules),
-and **line 25 FLOORS AT ZERO** (the s232 paraphrase-vs-statute finding).
-⚠ s241's second reason: Form 5329 line 36 takes "Form 8853 line 8" and
-no `Form8853` model exists — that cross-check unlocks when this builds.
-Legs: model (Archer MSA A/B + LTC Section C) → compute → lane → 
-diagnostics → render → MeF (IRS8853 — grep the business-rules CSV
-FIRST). Expect MULTIPLE sessions; leg 1 = spec re-check + model +
-compute + the 8e composition join. After: IRS1116, amended MeF,
-BATCH-001's six, the NOL-blocked computes (parked).
+### ⭐ NEXT UNIT — **Form 8853 Section C leg 2: DIAGNOSTICS (the spec's 12)**
+Leg 1 ✅ (s242u, `ab5ed8e`): model + compute + lane + the composed 8e.
+Leg 2 = `rules_8853.py` transcribing the spec's 12 diagnostics (DICT
+registry entries — the s242n RULES_500X crash class; `manage.py check`
+is in the gate). The refusal reason codes are exported constants
+(`REFUSED_*` in `compute_8853.py`) — the error-severity diagnostics
+surface exactly the conditions compute refuses on (multipayee,
+unanswered line 15, multi-period, days range) plus: line19>0 with
+line16 yes and not ADB-only; line17>line18 (non-qualified per-diem
+unrouted); pre-Aug-1996 modified unanswered; the 1099-LTC cross-checks
+(⚠ several reference "a 1099-LTC row for this insured" — NO 1099-LTC
+document model exists; either build the small doc model in this leg or
+scope those rules to fire only when one exists — decide against the
+spec text, flag to RS agenda if ambiguous). Then leg 3 render (f8853
+NOT in the manifest — SHA 5582f813… recorded in the s232 write-up;
+delete test_form_manifest.py's "Form 8853 — never generated" pin),
+leg 4 MeF (grep the business-rules CSV for `F8853-*` FIRST; the 8e MeF
+element is `TotArcherMSAMedcrLTCAmt`). Sections A/B stay preparer-keyed
+(Ken's s224 scope ruling — the keyed 8e residual is their carrier).
+After: IRS1116, amended MeF, BATCH-001's six, NOL-blocked (parked).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -86,11 +95,11 @@ BATCH-001's six, the NOL-blocked computes (parked).
 - Tests: `test_1040x_amendment_lane_s242j.py` (12),
   `test_ga500x_amendment_s242k.py` (14), `test_ga500x_render_s242l.py` (6).
 
-### ⭐ STILL UNBLOCKED, still passed over — now TWELVE sessions
-- **Form 8853 Sections A/B + Section C.** Spec cached; all four legs pending.
-  Read the s232 write-up in STATUS_ARCHIVE first — Schedule 1 line 8e is
-  COMPOSED not owned, line 25 FLOORS AT ZERO. ⚠ s241 gave it a second reason:
-  Form 5329 line 36 takes "Form 8853 line 8" and no `Form8853` model exists.
+### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
+Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA distributions —
+Section A/B territory). The s242u model is Section C only; the
+line-36 cross-check stays unbuilt until an A/B carrier exists (parked
+with Ken's s224 keyed-only ruling; revisit only on his direction).
 
 ### ⛔⛔ THE E-FILE GAP LIST
 - **`IRS1116`** — the oldest live e-file gap. s238's `IRS8379` is the worked
@@ -114,6 +123,10 @@ BATCH-001's six, the NOL-blocked computes (parked).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242u: NONE beyond new-row reach.** `compute_8853_db` touches 8e only
+  when a `Form8853LTC` row exists (none do) or the FORM_8853 memory row
+  holds a value (it can't yet) — the zero-movement guarantee is pinned by
+  a test. Migrations 0308/0309 are additive CreateModel + RLS.
 - **⚠ s242q MOVES one narrow class**: a return whose Schedule D
   previously DISENGAGED (last capital item removed) had a stale 1040
   line 7 that BLOCKED line 16 — the disengage now clears the stale 7 and
