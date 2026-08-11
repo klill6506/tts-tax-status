@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242o — 1099-DIV AGGREGATE FALLBACKS (BATCH-003 #1;
+> `452e0f5`; mig 0302).** `div_qualified_agg` + `div_capgain_dist_agg` on
+> Taxpayer, the b009 valve semantics (aggregate only when no payer row
+> carries the subtype; detail wins; staging warns). ⚠ Box 2a now has ONE
+> source (`capgain_distributions_total`) across the Exception-1 path /
+> Schedule D 13 / engagement / SDTW. ⚠ Boxes 2b/2c/2d remain
+> per-payer-only (named residual). The FA-1040-INTDIV-03 sniff pins the
+> new call site + helper body.
+
 > **2026-08-11 session 242n — FORM 7203: the generic current-year
 > charitable deduction (BATCH-003 #9; `57c1886`; mig 0301).** A
 > source-preserving line-42 input for packets without K-1 subtype detail:

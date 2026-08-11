@@ -1,20 +1,19 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242n). **BATCH-003 #9 BUILT** (`57c1886`, mig
-0301): `charitable_current_year_generic` on IndividualForm7203 — the
-source-preserving line-42 input for packets without K-1 subtype detail.
-Exactly-once basis reduction (the packet's 17,520 ending basis
-reproduces; the pre-fix 25,416 overstatement pinned); DETAIL WINS with
-any K-1 subtype present (D_K1_7203_GENCHAR on a mismatch, quiet cases
-pinned); never feeds Schedule A. Lane + serializer + schema carry it.
-**A s242k landmine defused**: RULES_500X was a plain function list and
-the diagnostics SYSTEM CHECK requires dict entries — every `manage.py`
-command crashed at the check stage for three deploys (prod unaffected:
-gunicorn skips checks, the shared-DB migrate runs from dev). Dict-style
-now; `manage.py check` clean. 5 tests + 704 neighbors green.*
+*Last updated: 2026-08-11 (s242o). **BATCH-003 #1 BUILT** (`452e0f5`, mig
+0302): the 1099-DIV subtype aggregate fallbacks — `div_qualified_agg` +
+`div_capgain_dist_agg` on Taxpayer, the b009 valve pattern (aggregate
+used ONLY when no payer row carries the subtype; detail wins; staging
+warns on mismatch + on 3a>3b). Box 2a now has ONE shared source
+(`capgain_distributions_total`) read by the Exception-1 path, Schedule D
+13, engagement, and the SDTW — the aggregate can never feed twice. The
+FA-1040-INTDIV-03 sniff MOVED WITH the 3a write (pins call site +
+helper body). Both batch shapes reproduce (b153: 3a 476/3b 1,114; b197:
+Sch D 13 = 6,235 once into line 7). 8 tests; 526 flow + 145 neighbors.*
 
-*Previous (s242m): BATCH-003 re-triaged + #8 clergy lane built. (s242l):
-✅✅ BATCH-004 closed 10/10. (s242i): ✅✅ BATCH-005 closed 10/10.*
+*Previous (s242n): #9 7203 generic charitable + the rules-registry
+landmine. (s242m): re-triage + #8 clergy lane. (s242l): ✅✅ BATCH-004
+closed 10/10. (s242i): ✅✅ BATCH-005 closed 10/10.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -48,19 +47,19 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #1: aggregate 1099-DIV subtype fallbacks**
-The s242m re-triage annex is the design record. Return-level aggregate
-inputs for qualified dividends AND capital-gain distributions, used ONLY
-when no `div_1099s` payer row supplies the subtype (the
-aggregate-Medicare-valve design — find that precedent's implementation
-first and mirror it): reconciled against ordinary dividends and the
-preferential-rate worksheet; payer detail wins; an inconsistent aggregate
-warns; the aggregate 2a flows ONCE to Schedule D line 13 (never
-duplicating payer-level values); source fact survives commit/reload.
-Likely Taxpayer-level fields + compute_dividends seam + diagnostics +
-lane. Then #10 (linked UPE rows) → #6 (Form 8814) → #3 (mixed
-passive/nonpassive K-1 — ⚠ shares the s239 GA RIE seam). After the
-batch: Form 8853 A/B+C, IRS1116, amended MeF.
+### ⭐ NEXT UNIT — **BATCH-003 #10: linked unreimbursed partnership expenses**
+The s242m re-triage annex is the design record. Nested UPE rows on a
+1065 `schedule_k1s` source (description, amount, the filed
+passive/nonpassive + SE/QBI treatment): preserve gross K-1 income
+separately, deduct UPE exactly once through Schedule E (the filed
+"UPE" line convention), route through Schedule SE + self-employed
+adjustments + QBI, diagnose duplicate/unlinked representations; the
+one-row-per-source-document rule holds (no second fabricated K-1).
+⚠ Check how Schedule E page 2 prints K-1 rows today (a UPE line is a
+SEPARATE nonpassive row naming "UPE" on the same entity). Then #6
+(Form 8814, large) → #3 (mixed passive/nonpassive K-1, large — ⚠ shares
+the s239 GA RIE seam). After the batch: Form 8853 A/B+C, IRS1116,
+amended MeF.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -99,8 +98,8 @@ batch: Form 8853 A/B+C, IRS1116, amended MeF.
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003 — 4 open** (1, 10, 6, 3 in build order; #8 ✅ s242m, #9 ✅
-  s242n; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
+  **BATCH-003 — 3 open** (10, 6, 3 in build order; #1 ✅ s242o, #8 ✅
+  s242m, #9 ✅ s242n; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
   10/10, moved (s242l)**; **BATCH-005 — ✅ DONE, moved (s242i).** Every
   worked file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
@@ -110,6 +109,9 @@ batch: Form 8853 A/B+C, IRS1116, amended MeF.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242o: NONE beyond new-fact reach.** The aggregates are None on every
+  existing Taxpayer; the shared 2a source returns the identical per-row
+  sum when no aggregate exists.
 - **s242n: MOVES Form 7203 ending basis** on any return whose worksheet
   row carries the new generic charitable amount (none exist until keyed —
   new-row reach only). The 500X-rules registry conversion changes no
