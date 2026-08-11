@@ -1,16 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242j). **BATCH-004 #1 (the 1040-X lifecycle) —
-LEG 1 SHIPPED** (`5f455c5`): the back-entry amendment lifecycle. The lane
-grows an `amendment` block; the resolver INVERTS target rules for it (must
-be a FILED return with its as-filed baseline intact — both refusals carry
-remedies); the commit writes the Form1040X singleton + `is_amended_return`
-BEFORE compute so one pass fills Columns A/B/C; the frozen baseline is
-pinned byte-identical across the commit; the mark-filed sweep skips an
-amended return BY NAME. **Verify-first found a live defect:**
-`extract_return` had no return-level amended gate — an amended return would
-have composed as a SECOND ORIGINAL transmission (silent double-filing).
-Refused by name; the 4547 IND-476 seam now pins both layers (s225 pass).*
+*Last updated: 2026-08-11 (s242k). **BATCH-004 #1 — LEG 2 SHIPPED**
+(`31eef58`): the Georgia Form 500X amendment. **Verify-first corrected
+leg 1's premise: GA did NOT retire the 500X** — the 2025 Form 500X
+(Rev. 07/21/25) is current per the live DOR check, and the 2025 Form 500
+face carries no amended checkbox. The 500X is a SINGLE-COLUMN re-statement
+of Form 500 (lines 8-26 mirror the corrected 500; Sch 2B refundable shifts
+27→28) + the reconciliation lines (27 paid-with-original, 30 previous
+refunds — ASKED facts, no per-line Column A exists). Built: SHA-pinned
+face, `Form500X` model (migs 0299+0300), `compute_ga500x`
+(single-source result), the `ga_*` amendment facts (no-GA-500 refuses by
+name; a GA-500 on an amended return ALWAYS gets its 500X; explanation
+falls back to federal Part II), state-baseline capture at mark-filed, four
+D_500X rules. 14 tests + 620 neighbors green.*
+
+*Previous (s242j): LEG 1 (`5f455c5`) — the lane amendment lifecycle +
+the closed double-filing hazard (`extract_return` had no amended gate; an
+amended return composed as a SECOND ORIGINAL — now refused by name).*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -44,20 +50,34 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-004 #1 LEG 2: the amended GEORGIA return**
-The item stays OPEN (annex in `CC_CODE_CHANGES_1040_BATCH-004.md` records
-legs). GA retired Form 500X — a GA amended return files on **Form 500 with
-the amended checkbox(es)** in the header, which our GA-500 coordinate map
-does not carry. **Authoritative-source rule: verify the 2025 GA DOR Form
-500 face LIVE before mapping** (the amended box + the amended-due-to-IRS-
-audit box, if both exist on the 2025 face). Then: set from
-`is_amended_return` at render; decide whether GA needs its own
-explanation/reconciliation surface or the checkbox alone (check the GA
-IT-511 instructions). Leg 3 after: amended MeF composition
-(AmendedReturnInd + IRS1040X document) — currently REFUSED BY NAME at
-extract (correct until built). Then BATCH-003's six remaining items
-(⚠ build #3 with the s239 Georgia work), Form 8853 A/B+C, the IRS1116
-e-file gap.
+### ⭐ NEXT UNIT — **BATCH-004 #1 LEG 2b: the Form 500X render**
+The item stays OPEN (annexes in `CC_CODE_CHANGES_1040_BATCH-004.md`).
+Render the 5-page 2025 Form 500X (flat, coordinate-overlay — the `fga500`
+pattern is the worked example, same page geometry family): pages 1
+(identity + residency + the "Amended due to IRS Audit" checkbox +
+dependents), 2-4 (lines 8-26 FROM THE CORRECTED GA-500 FACE + the
+reconciliation lines from `compute_500x_result` — one source, never
+re-derive), 5 (EXPLANATION OF CHANGES + signature block; explanation text
+wraps). Wire into `render_complete` when the GA-500 carries a `Form500X`.
+⚠ Verify value-box positions via the fitz→PNG visual loop like fga500;
+⚠ check every checkbox pair positionally (s241w). Leg 3 after: amended
+federal MeF (AmendedReturnInd + IRS1040X) — the extract refusal holds the
+line. Then BATCH-003's six remaining items (⚠ build #3 with the s239
+Georgia work), Form 8853 A/B+C, the IRS1116 e-file gap.
+
+### What leg 2 established (s242k — do not re-derive)
+- **Form 500X is CURRENT** (2025 Rev. 07/21/25; leg 1's "retired" claim
+  was wrong and is corrected everywhere). SINGLE-COLUMN re-statement; the
+  one mirror shift is Sch 2B refundable: 500 line 27 → 500X line 28
+  (`GA500_SOURCE_LINES` pins it).
+- `Form500X` hangs on the GA-500 STATE return (not the federal). Lines
+  35-37 (UET/late-penalty/interest) are preparer-supplied model fields
+  with NO lane carrier yet. A GA-ONLY amendment is legitimate — nothing
+  demands the federal be amended.
+- `compute_500x_result(ga500)` is the single source (lines/form/sources);
+  line 39 floors at 0; D_500X_002 surfaces an over-election.
+- State returns now get an as-filed baseline at mark-filed (both the
+  sweep's `_mark_return_filed` and the direct-capture path in tests).
 
 ### What leg 1 established (s242j — do not re-derive)
 - The 1040-X CORE PREDATES the item: `Form1040X` (amend-in-place OneToOne),
@@ -100,6 +120,10 @@ e-file gap.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242k: NONE beyond new-row reach.** `Form500X` engages only when a row
+  exists (none do until a payload/API creates one); the state-baseline
+  capture at mark-filed is additive; the D_500X rules no-op without the
+  row. Migrations 0299/0300 are additive CreateModel + RLS.
 - **s242j: e-file output only** — any return with `is_amended_return=True`
   now REFUSES at composition (previously would have transmitted as an
   original — every such transmission was a double-filing hazard; the

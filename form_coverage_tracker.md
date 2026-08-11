@@ -1,6 +1,34 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242k — GEORGIA FORM 500X (AMENDED RETURN): MODEL +
+> COMPUTE + LANE + DIAGNOSTICS SHIPPED (BATCH-004 #1 LEG 2; `31eef58`;
+> migs 0299+0300).**
+>
+> *⚠⚠ THE VERIFY-FIRST FINDING: leg 1's premise was WRONG.* The s242j annex
+> claimed GA retired Form 500X for a Form 500 amended checkbox — recall,
+> uncorroborated. The live DOR check: **the 2025 Form 500X (Rev. 07/21/25)
+> is posted and current, and the 2025 Form 500 face carries NO amended
+> checkbox.** The wrong claim never reached code; corrected in every file
+> that carried it.
+>
+> *The face:* a SINGLE-COLUMN re-statement of Form 500 — lines 8-26 print
+> the corrected GA-500's own values (one shift: Sch 2B refundable, 500
+> line 27 → 500X line 28) + reconciliation lines 27 (paid with original),
+> 30 (previous refunds), 29/31/32/33/38/39 (line 39 floors at 0), the
+> page-1 IRS-audit checkbox, the page-5 explanation. NO per-line Column A
+> — the original-return facts are ASKED. Lines 35-37 (UET/late-penalty/
+> interest) are preparer-supplied (payment-date dependent, not computed).
+>
+> *Legs.* ✅ face (SHA-pinned `fga500x`) · ✅ model (`Form500X` on the
+> GA-500 STATE return) · ✅ compute (`compute_500x_result`, single source)
+> · ✅ lane (`ga_*` amendment facts; no-GA-500 refuses by name; GA-500 on
+> an amended return ALWAYS gets its 500X; explanation falls back to
+> federal Part II; state baseline at mark-filed) · ✅ diagnostics (4
+> D_500X; GA-only amendments legitimate) · ❌ **render (leg 2b — the 5
+> flat pages, fga500 pattern)** · — MeF: GA has no MeF lane in the app.
+> 14 tests.
+
 > **2026-08-11 session 242j — FORM 1040-X: THE IMPORT-LANE AMENDMENT
 > LIFECYCLE SHIPPED (BATCH-004 #1 LEG 1; `5f455c5`; no migration).** The
 > 2026-06-25 unit built the core (spec/model/compute/render/diagnostics —
