@@ -1,22 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242u). **✅ FORM 8853 SECTION C LEG 1 SHIPS
-(`ab5ed8e`, migs 0308/0309)** — the thirteen-session standing unit
-opens. `Form8853LTC` (one row per insured × LTC period, RLS
-default-deny), `compute_8853` per the Gate-1 spec (line 25 floored per
-§7702B(d)(2); the pre-Aug-1996 unmodified-contract zeroing of line 24;
-the ADB-only-because-terminal skip per §101(g)(1); $420/day raising on
-an unverified year), and **Schedule 1 line 8e is now COMPOSED per the
-DECISIONS s232 entry**: Section C component + preparer-keyed A/B
-residual, a delta-adjustment with the FORM_8853 worksheet's
-`sch1_8e_component` row as engagement memory — zero-movement pinned
-(spec T13), add+remove backs out, an overridden 8e wins. Refusals
-contribute NOTHING (multipayee / line-15 unanswered / multi-period /
-days out of 1-365). Lane `form_8853_ltcs` + "8e" joined
-SCH1_DIRECT_LINES as the residual's carrier; schema regenerated;
-FORM_8853 seeded on the shared DB. 24 tests transcribing the spec's
-T1-T14 (incl. the three IRS worked examples); 526 flow assertions +
-202 neighbors green; manage.py check clean.*
+*Last updated: 2026-08-11 (s242v). **✅ FORM 8853 SECTION C LEG 2 SHIPS
+(`3b33982`, migs 0310/0311)** — the 1099-LTC document + all 12 spec
+diagnostics. `Form1099LTC` (one row per received doc; box3_basis with
+an explicit "unchecked"; boxes 4/5 NULLABLE — absence is never an
+answer on optional boxes, the brief's central trap); `rules_8853.py`
+dict-registry (5 errors = the compute refusals gone loud + 7 warnings
+incl. four 1099-LTC cross-checks matched by insured TIN/name); lane
+`ltc_1099s`. **Two leg-1 gaps found and closed**: (1) two Section C
+rows for ONE insured (both index 1) computed and BOTH contributed —
+now all rows of a duplicated insured refuse (multi-period, the spec's
+second arm); (2) `form_8853_ltcs` never joined SECTION_RELATED — fresh
+imports worked, any RE-import would KeyError; fixed + a structural
+test now pins every LIST_SECTIONS member to a SECTION_RELATED entry.
+19 new tests (fire AND quiet per diagnostic); leg-1 24 + 526 flow +
+160 lane neighbors green; manage.py check clean. Leg 1 was s242u
+(`ab5ed8e`, migs 0308/0309): model + compute + the composed-8e
+delta-adjustment with engagement memory, zero-movement pinned.*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -54,25 +54,23 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8853 Section C leg 2: DIAGNOSTICS (the spec's 12)**
-Leg 1 ✅ (s242u, `ab5ed8e`): model + compute + lane + the composed 8e.
-Leg 2 = `rules_8853.py` transcribing the spec's 12 diagnostics (DICT
-registry entries — the s242n RULES_500X crash class; `manage.py check`
-is in the gate). The refusal reason codes are exported constants
-(`REFUSED_*` in `compute_8853.py`) — the error-severity diagnostics
-surface exactly the conditions compute refuses on (multipayee,
-unanswered line 15, multi-period, days range) plus: line19>0 with
-line16 yes and not ADB-only; line17>line18 (non-qualified per-diem
-unrouted); pre-Aug-1996 modified unanswered; the 1099-LTC cross-checks
-(⚠ several reference "a 1099-LTC row for this insured" — NO 1099-LTC
-document model exists; either build the small doc model in this leg or
-scope those rules to fire only when one exists — decide against the
-spec text, flag to RS agenda if ambiguous). Then leg 3 render (f8853
-NOT in the manifest — SHA 5582f813… recorded in the s232 write-up;
-delete test_form_manifest.py's "Form 8853 — never generated" pin),
-leg 4 MeF (grep the business-rules CSV for `F8853-*` FIRST; the 8e MeF
-element is `TotArcherMSAMedcrLTCAmt`). Sections A/B stay preparer-keyed
-(Ken's s224 scope ruling — the keyed 8e residual is their carrier).
+### ⭐ NEXT UNIT — **Form 8853 Section C leg 3: RENDER**
+Legs 1-2 ✅ (s242u `ab5ed8e`, s242v `3b33982`). Leg 3 = the printed
+face: **f8853 is NOT in `forms_manifest.json`** — register the 2025
+face with its SHA256 (`5582f813…`, recorded in the s232 STATUS_ARCHIVE
+write-up), dump the AcroForm fields, build the Section C field map
+(lines 14a-26), wire `render_8853` into render_complete. ⚠ THE PARTIAL
+POPULATIONS ARE THE TRAP (s232): three of four filing populations
+complete Section C only PARTIALLY — out-of-set lines render BLANK, not
+zero (the ADB-only path skips 17-25 entirely; a refused row renders
+its inputs but no computed lines). ⚠ One page per insured (the 8814
+per-child precedent); the "more than one Section C" checkbox derives
+from the row count. ⚠ Delete `test_form_manifest.py`'s pinned comment
+*"Form 8853 — never generated"* — that pin is the build's acceptance
+criterion. ⚠ The AcroForm filler STRIPS widgets — checkbox tests
+assert drawn "X" glyphs positionally (the s242r lesson). Then leg 4
+MeF (grep the business-rules CSV for `F8853-*` FIRST; the 8e element
+is `TotArcherMSAMedcrLTCAmt`; R-8853C-ATTACH wants render + MeF).
 After: IRS1116, amended MeF, BATCH-001's six, NOL-blocked (parked).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
@@ -123,6 +121,10 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242v: NONE beyond new-row reach.** `Form1099LTC` feeds no compute
+  (diagnostics only); the duplicate-insured refusal narrows a class that
+  has no rows yet; the SECTION_RELATED fix changes re-import behavior
+  from a crash to the correct 409. Migrations 0310/0311 additive.
 - **s242u: NONE beyond new-row reach.** `compute_8853_db` touches 8e only
   when a `Form8853LTC` row exists (none do) or the FORM_8853 memory row
   holds a value (it can't yet) — the zero-movement guarantee is pinned by
