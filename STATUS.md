@@ -1,17 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242b). **✅ BATCH-005 #3 COMPLETE** (`fd1b83e`,
-migs 0292+0293): the taxpayer foreign mailing address, and the mapper's
-first **`_foreign_address` builder** (the face wants the country NAME, MeF
-wants the CODE — both stored; "MX" pinned against the schema's own enum; the
-Filer xsd:choice dispatches on type; the 1040 face's foreign row f1_25/26/27
-mapped position-verified). ⚠ Named defers: foreign filer WITH W-2s refuses
-(`OtherForeignAddressType` unbuilt); 1310/4547 refusals stay; GA-500 face
-unexamined. **BATCH-005 is 7 of 10.***
+*Last updated: 2026-08-11 (s242c). **⛔→✅ THE IRS4797 E-FILE GAP IS CLOSED**
+(`5179de3`, no migration — BATCH-005 #6 LEG 1): `build_irs4797_1040` reads
+`compute_4797_face(row_cap=None)` — the render's own single source,
+UNCAPPED (paper 4 rows/part, XML unbounded in ONE doc). The s240 refusal is
+retired; three NAMED v1 refusals remain in `_extract_f4797` (4684
+interplay; **Part IV recapture** — the 118-01 equality vs the app's
+line-4 routing; §1252/54/55 columns). ⚠ **#6 LEG 2 OPEN**: rental-linked
+disposition facts + passive/QBI/state effects. **BATCH-005: 7 complete of
+10 + #6 half done.***
 
-*Previous (s242): ✅ #7 (disability → 1h; 1h now a composed single-writer
-line, mig 0291). (s241z): ✅ #1/#5/#9 one unit (migs 0289+0290). (s241y): ✅
-#10 already-built + #2 (the s237 off-switch rule).*
+*Previous (s242b): ✅ #3 foreign address (migs 0292+0293; ForeignAddressType
+builder). (s242): ✅ #7 disability → 1h (mig 0291; 1h composed
+single-writer). (s241z): ✅ #1/#5/#9 (migs 0289+0290).*
 
 *Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
 is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
@@ -51,18 +52,18 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-005 #6 (direct rental sale on Form 4797)**. The
-compute EXISTS in full (`compute_4797.py`: Parts I/III, §1245/§1250
-recapture, the unrecaptured-§1250 export, 6252/8824 feeds); the real gaps
-are (a) rental-LINKED disposition facts (source link + passive/QBI/state
-effects) and (b) ⛔ **the `IRS4797` MeF builder — the named e-file gap**
-(`S1-F1040-118-01` rejects without it; composition refuses by name today;
-the 1120-S `IRS4797` builder is the worked example; BATCH-005 #6 and every
-disposition return need it). Then #4 (8839 — draft-trap 4th; verify the
-OBBBA dollar figures live) → #8 (6781 — NO spec; s241p gate call + brief).
-Then **BATCH-004 #1 (1040-X, large)** — IND-476 + the Schedule H seams.
-⚠ The triage annex in `CC_CODE_CHANGES_1040_BATCH-005.md` is the design
-record.
+### ⭐ NEXT UNIT — **BATCH-005 #6 LEG 2: the rental-linked disposition
+facts.** The IRS4797 document is DONE (leg 1, s242c). Remaining: a source
+link from `Disposition` to the `RentalProperty` it disposes (the item's
+"source-linked rental disposition fields"), the passive-loss release on a
+full disposition (§469(g) — verify against i8582 before building; freed
+suspended losses), QBI and GA effects of a rental sale, and duplicate-
+disposition diagnostics. ⚠ Verify-first: check what `Disposition` already
+carries (property_type etc.) and what D_8582/GA rules already see. Then #4
+(8839 — draft-trap 4th; verify the OBBBA dollar figures live) → #8 (6781 —
+NO spec; s241p gate call + brief). Then **BATCH-004 #1 (1040-X, large)** —
+IND-476 + the Schedule H seams. ⚠ The triage + leg-1 annexes in
+`CC_CODE_CHANGES_1040_BATCH-005.md` are the design record.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
