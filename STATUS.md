@@ -1,31 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242i). **✅✅ BATCH-005 IS COMPLETE — 10 OF 10,
-the file moved to Done.** #8's final leg landed (`193acfd`): the 2025 face
-mapped (Part I only — Parts II/III deliberately unmapped, named defers),
-render with the election-silence behavior and Statement overflow, and the
-`IRS6781` document (every row in one doc; a ticked election refuses by
-name). Ten items → eight builds + two verify-and-closes, across ten
-deploys and migrations 0289-0298.*
+*Last updated: 2026-08-11 (s242j). **BATCH-004 #1 (the 1040-X lifecycle) —
+LEG 1 SHIPPED** (`5f455c5`): the back-entry amendment lifecycle. The lane
+grows an `amendment` block; the resolver INVERTS target rules for it (must
+be a FILED return with its as-filed baseline intact — both refusals carry
+remedies); the commit writes the Form1040X singleton + `is_amended_return`
+BEFORE compute so one pass fills Columns A/B/C; the frozen baseline is
+pinned byte-identical across the commit; the mark-filed sweep skips an
+amended return BY NAME. **Verify-first found a live defect:**
+`extract_return` had no return-level amended gate — an amended return would
+have composed as a SECOND ORIGINAL transmission (silent double-filing).
+Refused by name; the 4547 IND-476 seam now pins both layers (s225 pass).*
 
-*The lane's remaining queue: **BATCH-004 #1 (the 1040-X lifecycle)** — the
-last open build — then BATCH-003's six and BATCH-001/002's remainders.*
-
-*Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
-closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
-✅ #1/#5/#9 (migs 0289+0290). **BATCH-005 is 8 of 10 + #4 half done.***
-
-*Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
-is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
-needs the line-1h registry conversion (s230); #6 = rental facts + ⛔ IRS4797.
-(s241w): ✅✅ BATCH-004 #5 Schedule H COMPLETE, all six legs (migs 0287+0288;
-`server/specs/_schedule_h_source_brief.md`). BATCH-004 is 9 of 10.*
-
-*Previous (s241v): ✅ #2 GA QEE credit COMPLETE (design record:
-`server/specs/_ga_qee_credit_source_brief.md`); (s241r): ✅ #10 Form 4547
-COMPLETE (`server/specs/_4547_source_brief.md`); (s241o): ✅ #9 Form 1099-PATR
-COMPLETE. Full per-leg writeups: STATUS_ARCHIVE + the briefs + the batch
-annexes — do not re-triage any of them.*
+*Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
+items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
+(s241w): ✅✅ BATCH-004 #5 Schedule H complete, all six legs. Design records:
+the `server/specs/_*_source_brief.md` files + the batch annexes — do not
+re-triage closed items.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -53,69 +44,55 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-004 #1: the 1040-X amended-return lifecycle**
-(LARGE — expect multiple iterations; read the batch item + its triage
-annex in `CC_CODE_CHANGES_1040_BATCH-004.md` first). ⚠ Standing
-constraints recorded across sessions: **`IND-476`** (a Form 4547 must not
-ride a post-original return — s241r's refusal enforces it; the amended
-flow must not resurrect it) and **the Schedule H business-rule seams** on
-any re-transmission. ⚠ A `Form1040X` model exists (a `1040-X` form code
-appears in rules_1040x.py) — VERIFY-FIRST what already ships before
-designing. Then BATCH-003's six remaining items (⚠ build #3 together with
-the s239 Georgia work), Form 8853 A/B+C (the twelve-session standing
-unit), and the IRS1116 e-file gap.
+### ⭐ NEXT UNIT — **BATCH-004 #1 LEG 2: the amended GEORGIA return**
+The item stays OPEN (annex in `CC_CODE_CHANGES_1040_BATCH-004.md` records
+legs). GA retired Form 500X — a GA amended return files on **Form 500 with
+the amended checkbox(es)** in the header, which our GA-500 coordinate map
+does not carry. **Authoritative-source rule: verify the 2025 GA DOR Form
+500 face LIVE before mapping** (the amended box + the amended-due-to-IRS-
+audit box, if both exist on the 2025 face). Then: set from
+`is_amended_return` at render; decide whether GA needs its own
+explanation/reconciliation surface or the checkbox alone (check the GA
+IT-511 instructions). Leg 3 after: amended MeF composition
+(AmendedReturnInd + IRS1040X document) — currently REFUSED BY NAME at
+extract (correct until built). Then BATCH-003's six remaining items
+(⚠ build #3 with the s239 Georgia work), Form 8853 A/B+C, the IRS1116
+e-file gap.
 
-### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
-⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
-not re-triage. What future work must know:
-- **The RS `SCHEDULE_H` spec is a DRAFT covering 7 of ~27 lines** — the
-  third draft-trap occurrence (8379 s238, 8862 s241c). Built from the 2025
-  face + 2025 Instructions (thresholds fetched live) + `IRS1040ScheduleH.xsd`.
-  **No gate checks a spec export's `status` — check it by hand every time.**
-- **Schedule 2 line 9 is RECONCILED, never written** (`D_SH_S2L9`, `!=` ± $1 —
-  a DEDICATED line is wrong in both directions, unlike s241u's shared-line
-  `<`). The line was already keyed/seeded and rides `SCH2_L21_ADDENDS` →
-  1040 line 23; two feeds would be the s234 defect.
-- **⚠⚠ Lines C and 9 put their "No" checkbox FIRST on the 2025 face** while
-  A/B/10-12/27 put "Yes" first — verified positionally, pinned by a test
-  that re-derives both orientations from the PDF's captions. And C/9 are ONE
-  stored fact (`futa_quarterly_wages_over_limit`) printed in two places, at
-  most one of which a filed form marks (the skip cascade).
-- **⚠⚠ The MeF business rules RESHAPED the extract**: `SH-F1040-005` (exactly
-  one Yes among A/B/C → the cascade governs emission; skipped = ABSENT);
-  `SH-F1040-016-01` + `S2-F1040-146-02` (a line-9-No form OMITS lines 25/26 —
-  Schedule 2 sums its line 8 instead); 008/009 ($2,800 threshold), 006
-  (line 7 non-zero), 022 (SSN required) — each refused by name at extract.
-- Year-keyed constants **RAISE on an unverified year**; the credit-reduction
-  states are an ANNUAL LIST (2025: CA 0.012, VI 0.045).
-- **Named RED defers (DEFERRAL_AUDIT)**: Worksheet 1 (late contributions —
-  credit OVERSTATED without it) and Worksheet 2 (credit-reduction states —
-  tax UNDERSTATED without it) — opposite signs; the state-disability group;
-  the browser-lane entry screen (import lane only today).
-- Section B: two printed rows, overflow → Statement page, line 18 totals
-  cover EVERY row; the XML takes all rows in ONE group. One schedule per
-  spouse (`maxOccurs="2"`, DB constraint + staging duplicate check).
+### What leg 1 established (s242j — do not re-derive)
+- The 1040-X CORE PREDATES the item: `Form1040X` (amend-in-place OneToOne),
+  `AsFiledBaseline` (frozen Column A; capture is idempotent-safe — a
+  re-capture without `force` returns the existing snapshot unchanged),
+  `compute_1040x` (A ← baseline, C ← live return, B = C − A; RED-defers by
+  name: carrybacks, superseding, cascades, missing baseline), `rules_1040x`,
+  the render map, the UI `form-1040x` endpoint. The 1040-X face code is
+  **`1040-X`** (not FORM_1040X); seed command `seed_1040x`.
+- The lane lifecycle: `amendment` block (Part II explanation REQUIRED),
+  resolver inversion (filed + baseline, refusals with remedies), commit
+  order (Form1040X + flag BEFORE `compute_return`), the sweep's named skip.
+- `extract_return` refuses EVERY amended return at the top; per-form seams
+  (4547 IND-476, 8888) sit behind it. Tests:
+  `test_1040x_amendment_lane_s242j.py` (12).
 
-### ⭐ STILL UNBLOCKED, still passed over — now ELEVEN sessions
+### ⭐ STILL UNBLOCKED, still passed over — now TWELVE sessions
 - **Form 8853 Sections A/B + Section C.** Spec cached; all four legs pending.
   Read the s232 write-up in STATUS_ARCHIVE first — Schedule 1 line 8e is
   COMPOSED not owned, line 25 FLOORS AT ZERO. ⚠ s241 gave it a second reason:
   Form 5329 line 36 takes "Form 8853 line 8" and no `Form8853` model exists.
 
-### ⛔⛔ THE E-FILE GAP LIST — still TWO named documents, unchanged
-- **`IRS4797` (s240)** — no 1040-side builder; `S1-F1040-118-01` rejects
-  without it; refusal fails loudly at composition. **BATCH-005 #6 needs it.**
-  The 1120-S builder is the worked example.
+### ⛔⛔ THE E-FILE GAP LIST
 - **`IRS1116`** — the oldest live e-file gap. s238's `IRS8379` is the worked
-  example end to end.
+  example end to end. (`IRS4797` CLOSED s242c.)
+- **Amended MeF (IRS1040X + AmendedReturnInd)** — new, named at s242j;
+  refused by name at extract until built (leg 3 of BATCH-004 #1).
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
   **BATCH-003 — 6 open** (1, 3, 6, 8, 9, 10 — ⚠ build #3 together with the
-  s239 Georgia work); **BATCH-004 — ONE open (#1)**; **BATCH-005 — 10 open,
-  UNTRIAGED**. Every worked file carries a result annex; read it first.
-  ⚠ None has moved to Done, deliberately.
+  s239 Georgia work); **BATCH-004 — ONE open (#1, leg 1 of 3 done)**;
+  **BATCH-005 — ✅ DONE, moved.** Every worked file carries a result annex;
+  read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of 10;
   #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -123,13 +100,11 @@ not re-triage. What future work must know:
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
-- **s241w: NONE.** Two new tables (additive CreateModel + RLS ALTER — the
-  s190 `db_default` trap does not apply; the one boolean with a default has
-  `db_default`), a pure compute module, a lane section, eight diagnostics, a
-  render function and a MeF document — ALL reached only when the return
-  carries a `ScheduleH` row, and none exists until a preparer or payload
-  makes one. The published import schema gains `schedule_hs` (additive).
-  `render_complete` gains a Schedule H appendix on returns that carry one.
+- **s242j: e-file output only** — any return with `is_amended_return=True`
+  now REFUSES at composition (previously would have transmitted as an
+  original — every such transmission was a double-filing hazard; the
+  refusal is a correction). No compute/render movement: the amendment lane
+  only writes when a payload carries the new `amendment` block.
 - **⚠ s241o MOVES GEORGIA RETURNS carrying a 1099-PATR** (RIE L10 feed;
   L10 became a derived line — browser writes set `is_overridden`).
 - **⚠ s241j MOVES DIAGNOSTICS**: post-2018 alimony instruments fire
@@ -211,20 +186,17 @@ not re-triage. What future work must know:
 - **⛔ BLOCKING two batch items: NO NOL SPEC** (`172`/`NOL`/`FORM_172`/`1045`
   all 404). BATCH-001 #4 + BATCH-002 #10 wait. Preservation is built; only
   the computation waits. Highest-value authoring order on this list.
-- **NEW (s241w): `SCHEDULE_H` is a DRAFT covering 7 of ~27 lines** — the
-  computed skeleton only (no inputs, no A/B/C router, no Section B table).
-  Third draft-trap occurrence; **the export's `status` field is STILL not
-  checked by any gate.** Re-author per-line from the brief; record the two
-  worksheets (late-contribution 90%, credit-reduction) and the annual
-  constants (wage thresholds, the credit-reduction state list).
-- (s241s): the GA QEE credit has NO SPEC (all aliases 404; `500` types line
-  21 `input`). Author the Schedule 2 credit-detail + `IT_QEE_TP2` specs from
-  the brief — MUST carry the two carryforward regimes.
-- (s241p): `4547` and `8879_TA` have NO SPEC. Author from the brief; keep
-  lines 6/7 as separate tests; record `IND-476`.
+- (s242j, note): the `1040-X` RS spec was FULLY seeded at its unit
+  (`load_1040_form_1040x.py`, integrity gate ALL PASS 2026-06-25) — NOT a
+  draft-trap case; no re-authoring needed.
+- (s241w): `SCHEDULE_H` is a DRAFT covering 7 of ~27 lines — re-author
+  per-line from the brief; record the two worksheets and annual constants.
+- (s241s): the GA QEE credit has NO SPEC. Author from the brief; MUST carry
+  the two carryforward regimes.
+- (s241p): `4547` and `8879_TA` have NO SPEC. Author from the brief; record
+  `IND-476`.
 - (s241o): the `500` spec still has NO rule for what feeds RIE lines 1/2/6-13
-  — five defects and counting. Author with the earned/unearned split by
-  entity type, the $5,000 cap, the gambling carve-out, GA-taxable-only.
+  — five defects and counting.
 - (s241b): the `8862` spec is a draft collapsing each PART to one boolean —
   re-author per-line.
 - Carried: `5329` roll-forward/Part VIII silence (s241); `R-8582-MULTIFORM`'s
