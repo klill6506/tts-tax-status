@@ -1,9 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s241w). **✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE —
-all six legs in ONE session** (three commits: brief+model+compute,
-lane+diagnostics, render+MeF; migrations 0287+0288). **BATCH-004 is 9 of 10** —
-only #1 (1040-X, large) remains.*
+*Last updated: 2026-08-11 (s241x). **THE BATCH-005 TRIAGE IS DONE — 10/10
+verified against the code, annex appended to the batch file.** Headlines:
+#10 (Schedule 1-A vehicle-loan interest) is **substantially already built**
+(CarLoanVehicle since mig 0045, cap+phaseout+lane+render+MeF all live — the
+item's central claim is false); #4 (Form 8839) is the **draft-trap's FOURTH
+occurrence** (6 calculated lines, unnamed rules); #8 (Form 6781) has **NO RS
+spec** (4 aliases 404 — the s241p gate call belongs to the build session);
+#7 must convert line 1h to a **composed registry** (it has an unconditional
+minister-excess writer today — s230); #6's compute exists, its blocker is the
+named **IRS4797** e-file gap; #1/#5/#9 are one source-row pattern (the lines
+are all seeded and enterable flattened). No code changed.*
+
+*Previous (s241w): ✅✅ BATCH-004 #5 (Schedule H) COMPLETE — all six legs in
+one session (migs 0287+0288; design record
+`server/specs/_schedule_h_source_brief.md`). BATCH-004 is 9 of 10.*
 
 *Previous (s241v): ✅ #2 GA QEE credit COMPLETE (design record:
 `server/specs/_ga_qee_credit_source_brief.md`); (s241r): ✅ #10 Form 4547
@@ -37,19 +48,18 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **the BATCH-005 verify-first triage** (10 items, posted
-2026-08-10, NO annex yet), then **BATCH-004 #1 (1040-X, large)**.
-BATCH-005 headlines: S1 8v digital-asset income (#1) · line-27c EIC opt-out
-(#2) · foreign mailing address (#3) · Form 8839 (#4) · generic 8z described
-income (#5 — **the FOURTH contributor to composed 8z**; read
-`compute_1099misc.py`'s composition before designing) · direct rental sale on
-4797 (#6 — **needs the named `IRS4797` e-file gap**) · 1099-R disability →
-line 1h (#7) · Form 6781 §1256 (#8) · jury duty 8h (#9) · Schedule 1-A vehicle
-loan interest (#10). Fifteen of the last eighteen items were narrower than
-reported — triage before building. ⚠ **#1 (1040-X) must honour `IND-476`**
-(a Form 4547 is barred from a post-original return; s241r's refusal enforces
-it) — and now also the Schedule H business-rule seams if an amended return
-re-transmits one.
+### ⭐ NEXT UNIT — **BATCH-005 #10 (verify-and-close) then #2 (EIC opt-out)**,
+per the triage annex's suggested order (smallest first, shared patterns
+together): #10 → #2 → the #1/#5/#9 source-row family (ONE pattern, three
+feeds) → #7 (the 1h registry conversion) → #3 (the ForeignAddress builder —
+build it ONCE; 1310/4547 refuse foreign addresses today for want of it) →
+#6 (rental link + the ⛔ IRS4797 builder) → #4 (8839 — draft-trap 4th, build
+from the 2025 face/instructions/XSD, verify the OBBBA dollar figures live) →
+#8 (6781 — NO RS spec, run the s241p 404-STOP three-part test and write the
+brief). Then **BATCH-004 #1 (1040-X, large)** — ⚠ must honour `IND-476` and
+the Schedule H business-rule seams on any re-transmission.
+⚠ The full triage is the annex in `CC_CODE_CHANGES_1040_BATCH-005.md` — read
+it before building any item; do not re-derive.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
