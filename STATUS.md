@@ -1,12 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s241y). **✅ BATCH-005 #10 CLOSED (verified already
-built — CarLoanVehicle since mig 0045; TS-C13 pins the packet's $6,485) and
-✅ #2 COMPLETE** (`a17ae5c`, no migration): everything but the LANE existed
-since Ken's 2026-07-03 ruling; the one change is `eic_opt_out` +
-`actc_opt_out` joining `TAXPAYER_FIELDS` — the s237 off-switch rule; an
-imported opted-out return was silently re-claiming the credit it declined.
-**BATCH-005 is 2 of 10 closed.***
+*Last updated: 2026-08-11 (s241z). **✅ BATCH-005 #1/#5/#9 COMPLETE AS ONE
+UNIT** (`20f6892`, migs 0289+0290): `OtherIncomeItem` (closed route enum
+8v/8h/8z + the FILED description) — 8v/8h gain their first deriving writers;
+the 8z share joins the composition as its FOURTH feed on both paths. **Two
+defects fixed IN the existing composition**: the `> 0` write guard (a
+net-negative 8z silently blanked) and the missing engagement memory
+(deleting the last patronage/item source left the composed figure stale —
+predated this unit). **BATCH-005 is 5 of 10.***
+
+*Previous (s241y): ✅ #10 closed (already built; TS-C13 pins $6,485) + ✅ #2
+(the one gap was `eic_opt_out`/`actc_opt_out` joining TAXPAYER_FIELDS — the
+s237 off-switch rule; an imported opted-out return silently re-claimed its
+credit).*
 
 *Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
 is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
@@ -46,20 +52,19 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **the BATCH-005 #1/#5/#9 source-row family** (ONE pattern,
-three feeds: 8v digital-asset ordinary income, 8z generic described income,
-8h jury duty — all three lines seeded and enterable flattened today; the
-build is the owner-attributed source rows + the composed derives). ⚠ 8z is
-already COMPOSED from three feeds (state-refund worksheet + 1099-MISC +
-1099-PATR) — extend the composition, never add a second writer, and re-check
-every emptiness-testing rule (the s241o class). ⚠ Deriving 8v/8h makes each
-a single-writer line — s230 registry doctrine. Then #7 (the 1h registry
-conversion FIRST, then the disability feed) → #3 (the ForeignAddress builder,
-built ONCE) → #6 (rental facts + ⛔ IRS4797) → #4 (8839 — draft-trap 4th;
-verify the OBBBA dollar figures live) → #8 (6781 — NO spec; s241p gate call +
-brief). Then **BATCH-004 #1 (1040-X, large)** — IND-476 + the Schedule H
-seams. ⚠ The triage annex in `CC_CODE_CHANGES_1040_BATCH-005.md` is the
-design record — read it, do not re-derive.
+### ⭐ NEXT UNIT — **BATCH-005 #7 (1099-R disability → line 1h)**. ⚠⚠ Convert
+line 1h to a COMPOSED REGISTRY FIRST — it has an unconditional writer today
+(the minister §107 excess in `compute.py`, 0-when-absent) and a second feed
+would erase it (s230). Then the RetirementDistribution disability/
+minimum-retirement-age fields, the 1h route (gross/tax/withholding preserved
+once, NOT doubled on 4b/5b), and verify the EIC earned-income effect against
+Pub 596 (disability pension before minimum retirement age is EARNED income)
+— authoritative source, never recall. Then #3 (the ForeignAddress builder,
+built ONCE — 1310/4547 refuse foreign addresses for want of it) → #6 (rental
+facts + ⛔ IRS4797) → #4 (8839 — draft-trap 4th; verify the OBBBA figures
+live) → #8 (6781 — NO spec; s241p gate call + brief). Then **BATCH-004 #1
+(1040-X, large)** — IND-476 + the Schedule H seams. ⚠ The triage annex in
+`CC_CODE_CHANGES_1040_BATCH-005.md` is the design record.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
