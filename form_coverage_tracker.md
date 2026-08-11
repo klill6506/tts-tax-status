@@ -1,6 +1,54 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241v — ✅✅ THE GEORGIA QEE CREDIT + IT-QEE-TP2 IS
+> COMPLETE, ALL SIX LEGS (s241s → s241v). BATCH-004 #2. The render leg landed;
+> no migration; one deploy.**
+>
+> *⚠⚠ THE SCOPE FINDING: THE GA SCHEDULE 2 CREDIT GRID IS AN E-FILE
+> CONSTRUCT.* The item asks to "render the supporting schedules", plural — but
+> the GA-500's own line-21 caption reads *"Total Credits Used from Schedule 2
+> Georgia Tax Credits **(must be filed electronically)**"*, no paper grid
+> ships in the DOR booklet, and drawing one from scratch is what the
+> IRS_FORM_RENDERING rule forbids. **A test pins the caption**, so a future
+> GA-500 revision that drops it forces the decision to be re-examined. The
+> IT-QEE-TP2 is the paper artifact, and it renders.
+>
+> *⚠ THE 2024 REVISION IS THE CURRENT FORM FOR TY2025* — its face says *"to be
+> used for taxable years beginning on or after January 1, 2024"* and DOR posts
+> no 2025 revision as of 2026-08-10. Pinned from the face's own words; the
+> manifest note carries the per-season re-check.
+>
+> *⚠⚠ THE RENDER PRINTS THE FACE'S ARITHMETIC, NEVER THE STATUTE'S.* Section A
+> line 3 is, by its own caption, *"The lesser of line 1 or 2"* — THIS form's
+> two lines. With expended 9,000 / preapproved 3,000 the face's answer is
+> 3,000, and the statutory MFJ cap (5,000) must NOT appear — a printed figure
+> the face's own caption cannot produce makes the paper contradict itself. The
+> cap lives in `D_GAQEE_CAP`. A test prints exactly that shape and reads the
+> line-3 rect.
+>
+> *⚠ THE FACE CORROBORATES TWO EARLIER CALLS.* It **has an MFS checkbox**
+> though §48-7-29.16(b) names no MFS cap — the form contemplates the filer the
+> statute does not, which is the exact shape `D_GAQEE_MFS` reports. And its
+> two attestations each **bar the credit when false**, so a tick is an
+> assertion: the addback attestation prints only when a federally-deducted
+> amount is recorded, the SSO1 answer only when an SSO is named (the s241e
+> unanswered-is-not-an-answer rule, pinned by reading the empty rect).
+>
+> *Details.* One form per certificate (two certificates → 4 pages of the
+> 2-page DOR PDF, pinned); Section A vs B routed on the pass-through
+> assertion, with a test reading BOTH rects; Section B lines 3-6 blank in v1
+> (no model home for GA income / the applicable rate — stated, not silent);
+> Section C (entities) deliberately unmapped; the positional-sibling
+> checkboxes (`Check Box1.0`…) identified by their PRINTED y-rows and pinned
+> from the PDF (s236/s241h); an unmodelled code renders nothing.
+>
+> *Legs, all six.* ✅ brief · ✅ model (migs 0285/0286) · ✅ compute · ✅ lane ·
+> ✅ **render** · ✅ diagnostics (8). **No federal effect; no MeF leg** — the
+> credit reaches Georgia through the e-filed GA return, not the 1040 MeF
+> stream. 11 render tests; an 834-test regression across the QEE suites,
+> tts_forms, the acroform filler and flow assertions.
+
 > **2026-08-10 session 241u — GEORGIA QEE CREDIT: the LANE and the DIAGNOSTICS
 > (legs 4 + 6 of 6). BATCH-004 #2. No migration; one deploy.**
 >

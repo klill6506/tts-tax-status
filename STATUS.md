@@ -1,14 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241u). **BATCH-004 #2 (Georgia QEE credit) — legs
-4 + 6 built** (no migration): the `georgia_credits` lane section (with the
-nested `qee_detail`, and the generator emitting it IN THE SAME CHANGE) and
-eight `D_GAQEE_*` diagnostics, every one a reconciliation. ⛔ #2 NOT finished —
-**the render leg remains**. Nineteen units today; **BATCH-004 is 7 of 10 with
-#2 five legs of six done.***
+*Last updated: 2026-08-10 (s241v). **✅✅ BATCH-004 #2 (Georgia QEE credit +
+IT-QEE-TP2) IS COMPLETE — all six legs** (`41a097b`, no migration): the
+IT-QEE-TP2 render landed, and **the GA Schedule 2 grid turned out to be an
+e-file construct** (the GA-500's own line-21 caption: "must be filed
+electronically" — pinned by a test). Twenty units today; **BATCH-004 is 8 of
+10** — #1 (1040-X, large) and #5 (Schedule H) remain.*
 
-*Previous (s241t): the model + statute (`ce8fd6b`, migs 0285 + 0286); (s241s)
-the source brief (`52c08ec`).*
+*Previous (s241u): the lane + eight reconciling diagnostics (`51dbadf`);
+(s241t) the model + statute (`ce8fd6b`, migs 0285 + 0286); (s241s) the brief
+(`52c08ec`).*
 
 *Previous (s241r): ✅✅ #10 (Form 4547) COMPLETE, all six legs (`e2dce0e`);
 (s241q) its lane + eight diagnostics (`1158887`); (s241p) brief + models
@@ -95,9 +96,31 @@ is CONFIRMED, with two qualifications the item does not state:
   same dollars are subtracted twice.
 - **(2)**: per owner — and a 1099-PATR is issued to ONE recipient TIN.
 
-### ⭐ NEXT UNIT — **BATCH-004 #2, the Georgia QEE credit — legs 2-6.**
-### ⛔ **THE DESIGN IS SETTLED: read `server/specs/_ga_qee_credit_source_brief.md`
-### and BUILD. Do not re-triage, do not re-fetch the statute.**
+### ⭐ NEXT UNIT — **BATCH-004 #5, Schedule H (household-employment taxes).**
+⚠ Run the **404-STOP gate** on `SCHEDULE_H` / `H` first — and check the
+export's `status` (a `"draft"` has waved the gate through twice). ⚠ Verify
+first: `IRS1040ScheduleH` exists in the MeF sequence (`maxOccurs="2"` — one
+per spouse), so check what already ships before designing. The item's packet
+shape is in the batch file. Then #1 (1040-X, large — ⚠ must honour `IND-476`),
+then BATCH-003's six, then the BATCH-005 triage.
+
+### ✅✅ BATCH-004 #2 (GA QEE credit + IT-QEE-TP2) IS COMPLETE — s241s → s241v
+⛔ **The design record is `server/specs/_ga_qee_credit_source_brief.md`** — do
+not re-triage. Highlights for future GA work:
+- **The GA Schedule 2 credit GRID is an E-FILE CONSTRUCT** — the GA-500's own
+  line-21 caption reads *"must be filed electronically"*, no paper template
+  ships in the DOR booklet, and a test pins the caption so a future revision
+  forces a re-look. The IT-QEE-TP2 is the paper artifact, and it renders.
+- **The 2024 IT-QEE-TP2 IS the current form for TY2025** — its face covers
+  "taxable years beginning on or after January 1, 2024" and DOR posts no 2025
+  revision. The manifest note carries the per-season re-check.
+- **The render prints the FACE's arithmetic, never the statute's** — Section A
+  line 3 is "the lesser of line 1 or 2" by its own caption, so the statutory
+  cap never appears there (it lives in `D_GAQEE_CAP`). Section B lines 3-6
+  stay blank in v1 (no model home for GA income / the rate), stated not
+  silent.
+- The face **has an MFS checkbox** though §(b) names no MFS cap — the form
+  contemplates the filer the statute does not, corroborating `D_GAQEE_MFS`.
 
 ✅ **LEG 1 DONE (s241s, `52c08ec`):** the source brief, carrying O.C.G.A.
 §48-7-29.16 verbatim. The **404-STOP call is made and recorded** — every alias
@@ -152,11 +175,13 @@ preparer-keyed):
   the generation-year branch (a flat 3 would expire a LIVE 2020 pool), the
   60/61 boundary, the pass-through override.
 
-**⛔ Remaining leg — do NOT record #2 as finished until it lands:**
-1. **Render** — the Georgia Schedule 2 grid + IT-QEE-TP2. ⚠ Neither is in
-   `forms_manifest.json` yet; both are Georgia DOR PDFs, so check whether the
-   faces have AcroForm widgets before choosing the backend (GA-500 itself is
-   coordinate-mapped).
+✅ **LEG 5 DONE (s241v, `41a097b`, no migration) — #2 IS COMPLETE.**
+`it_qee_tp2.pdf` (2024, Last Rev. 05/29/24) in the manifest with its SHA256;
+`fitqeetp2_2024.py` (the DOR's plain-English widget names; the filing-status
+checkboxes identified by their PRINTED y-rows and pinned from the PDF);
+`render_it_qee_tp2` (one form per certificate; Section A vs B routed on the
+pass-through assertion; the attestations print only when supported —
+"unanswered is not Yes"). Section C (entities) deliberately unmapped.
 
 **⚠ VERIFY-FIRST CORRECTED THE ITEM — carry this forward.** GA-500 **line 21**
 and Schedule 1 **line S1-5** are BOTH already seeded as preparer inputs, so the
@@ -331,6 +356,9 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241v: NONE.** A render function reached only when the return carries a
+  code-125 `GeorgiaCredit` row, and none exists until a preparer or payload
+  makes one. No compute changed; the manifest gains one template entry.
 - **s241u: NONE.** A lane section and eight diagnostics that all no-op unless
   the return carries a `GeorgiaCredit` row, and none exists until a preparer or
   payload makes one. ⚠ The published import schema gains `georgia_credits`
