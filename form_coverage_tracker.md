@@ -11,10 +11,15 @@
 > stale (blocked line 16 after removing the last capital item).
 > *Legs.* ✅ compute · ✅ model · ✅ lane · ✅ render (s242r `f94bd41` — one
 > page per child, F8814-001/-002 mirrored, decimal split cells, the 1040
-> line-16 box 1, PNG-verified) · ✅ diagnostics (4 D_8814) · ❌ **MeF
-> (leg 3)** — 17 CSV rules recorded; F8814-003-08 NARROWER than the face
-> (>$1,350 and <$13,500); IND-234's OtherIncomeTypeStatement dependency;
-> the extract REFUSES an 8814 return by name until built.
+> line-16 box 1, PNG-verified) · ✅ diagnostics (4 D_8814) · ✅ **MeF
+> (s242s `4d2199d`)** — per-child IRS8814 docs (max 10); the 1040-side
+> pairs at exact XSD positions (pre-hooks); Form8814Ind attrs = ΣL15 +
+> doc ids (IND-129/127); the NEW "FORM 8814" OtherIncomeTypeStatement +
+> the Sch 1 8z link (IND-234); refusals by name F8814-004 + F8814-003-08
+> (NARROWER than the face: >$1,350 AND <$13,500). ⚠ Residual: the
+> statement carries only the required FORM 8814 row — the other 8z
+> components transmit inside the total without statement rows.
+> **FORM 8814 IS COMPLETE (s242q/r/s).**
 
 > **2026-08-11 session 242p — K-1 UNREIMBURSED PARTNERSHIP EXPENSES
 > (BATCH-003 #10; `4280b18`; migs 0303+0304).** Linked UPE detail rows on
