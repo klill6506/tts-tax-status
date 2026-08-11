@@ -1,16 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242h). **Form 6781 LEG 1 is in** (`7403cb1`,
-migs 0297+0298 — BATCH-005 #8): NO RS spec (the 404-STOP call recorded in
-`server/specs/_6781_source_brief.md`); `Section1256Contract` rows + five
-Taxpayer facts; the statutory 40/60 split feeds Schedule D's composed
-netting at BOTH consumer sites (9 = 7 − 8 so the split reconstructs);
-⚠ an election box (A-D) SILENCES the compute — D_6781_ELECT is the only
-voice; D_6781_DUP catches the flattened direct entry. The packet ties end
-to end (−84,380 → −33,752/−50,628). **LEG 2 open: render + IRS6781 MeF.***
+*Last updated: 2026-08-11 (s242i). **✅✅ BATCH-005 IS COMPLETE — 10 OF 10,
+the file moved to Done.** #8's final leg landed (`193acfd`): the 2025 face
+mapped (Part I only — Parts II/III deliberately unmapped, named defers),
+render with the election-silence behavior and Statement overflow, and the
+`IRS6781` document (every row in one doc; a ticked election refuses by
+name). Ten items → eight builds + two verify-and-closes, across ten
+deploys and migrations 0289-0298.*
 
-*Previous (s242g): ✅ #4 (Form 8839) COMPLETE all legs. **BATCH-005 is 9 of
-10 + #8 half done; BATCH-004 is 9 of 10 (#1 1040-X remains).***
+*The lane's remaining queue: **BATCH-004 #1 (the 1040-X lifecycle)** — the
+last open build — then BATCH-003's six and BATCH-001/002's remainders.*
 
 *Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
 closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
@@ -54,15 +53,17 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 6781 LEG 2 (BATCH-005 #8, final)**: the render
-field map (`f6781.pdf` fetched to the scratchpad, 4 pages — dump the
-AcroForm, verify the line-1 rows and Part I singles positionally; Parts
-II/III map-but-blank, the 8839 pattern) and the `IRS6781` MeF document
-(`IRS6781.xsd` on disk at the corporate-common path; find its
-ReturnData1040 position; read `compute_6781_result` — the feeds' own
-single source; refuse when an election box silences the compute). The
-brief is the design record. Then **BATCH-004 #1 (1040-X, large)** —
-IND-476 + the Schedule H seams — the queue's last open build.
+### ⭐ NEXT UNIT — **BATCH-004 #1: the 1040-X amended-return lifecycle**
+(LARGE — expect multiple iterations; read the batch item + its triage
+annex in `CC_CODE_CHANGES_1040_BATCH-004.md` first). ⚠ Standing
+constraints recorded across sessions: **`IND-476`** (a Form 4547 must not
+ride a post-original return — s241r's refusal enforces it; the amended
+flow must not resurrect it) and **the Schedule H business-rule seams** on
+any re-transmission. ⚠ A `Form1040X` model exists (a `1040-X` form code
+appears in rules_1040x.py) — VERIFY-FIRST what already ships before
+designing. Then BATCH-003's six remaining items (⚠ build #3 together with
+the s239 Georgia work), Form 8853 A/B+C (the twelve-session standing
+unit), and the IRS1116 e-file gap.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
