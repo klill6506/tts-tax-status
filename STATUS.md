@@ -1,18 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242d). **✅ BATCH-005 #6 COMPLETE** (`19f5234`,
-mig 0294; leg 1 `5179de3`): the **§469(g) entire-interest release** (i8582
-quoted — overall LOSS excludes the activity from the 8582 and frees every
-loss; overall GAIN stays on it with the disposition gain absorbing), the
-`Disposition.rental_property` link, three preparer-asserted release facts,
-and the released loss reaching line 22 past a $200k MAGI. Named residuals in
-DEFERRAL_AUDIT: the lane's `rental_link_key`, the corroboration/duplicate
-diagnostics, QBI/GA sale effects. **BATCH-005 is 8 of 10** — #4 (8839) and
-#8 (6781) remain.*
+*Last updated: 2026-08-11 (s242e). **Form 8839 LEG 1 is in** (`c87298d`,
+migs 0295+0296 — BATCH-005 #4): brief (the 2025 face transcribed; the RS
+spec is the draft-trap's 4th occurrence), `Form8839Child` +
+`AdoptionCreditCarryforward` (pools BY SOURCE YEAR, 5-year life), the full
+Part II compute (⚠⚠ **the refundable comes off the top BEFORE the tax
+limit; the carryforward joins only the nonrefundable side** — a pool can
+never become refundable), two lane sections. The packet ties exactly
+(24,376 / 21,839 → out 2,537). Writes nothing yet — 6c/30/1f stay keyed.*
 
-*Previous (s242c): ⛔→✅ the IRS4797 e-file gap closed (leg 1). (s242b): ✅ #3
-foreign address (migs 0292+0293). (s242): ✅ #7 disability → 1h (mig 0291).
-(s241z): ✅ #1/#5/#9 (migs 0289+0290).*
+*Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
+closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
+✅ #1/#5/#9 (migs 0289+0290). **BATCH-005 is 8 of 10 + #4 half done.***
 
 *Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
 is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
@@ -52,19 +51,18 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-005 #4 (Form 8839 adoption credit)** — the
-draft-trap's FOURTH occurrence (`lookup/8839/` answers 200, `"status":
-"draft"`, SIX calculated-only lines, unnamed rules). Build from the 2025
-Form 8839 face + Instructions + `IRS8839.xsd` (the s238/s241w path); the
-draft's shape is corroboration only. ⚠ **Verify the TY2025 dollar figures
-LIVE** ($17,280 max and the $5,000-refundable arm are OBBBA-era — the 2025
-instructions decide, never training data). ⚠ Carryforward pools key their
-SOURCE YEAR (the s241s generation-year rule; 5-year life). Full form unit
-(model, compute with the MAGI phaseout, Schedule 3 line 6c + 1040 line 1f
-routing, lane, render, MeF, diagnostics). Then #8 (6781 — NO spec; s241p
-gate call + brief), then **BATCH-004 #1 (1040-X, large)** — IND-476 + the
-Schedule H seams. ⚠ The triage annex in the batch file is the design
-record.
+### ⭐ NEXT UNIT — **Form 8839 LEG 2 (BATCH-005 #4)**: the reconciling
+diagnostics against the keyed 6c/30/1f lines — the credit-limit worksheet
+reads the return's OWN tax lines (1040 line 18 less the credits that come
+before the adoption credit; find the CLW's exact credit list in i8839
+before coding) — plus the render field map (`f8839.pdf` is already in the
+scratchpad; add to the manifest), the `IRS8839` MeF document (check the
+XSD's child-group maxOccurs vs the face's 3 rows — the s241r split), and
+the Part III decision (line 1f is in the composed 1a-1h wage family; its
+writer must follow the s230/s242 single-writer rules or stay reconciled).
+The brief `server/specs/_8839_source_brief.md` is the design record. Then
+#8 (6781 — NO spec; s241p gate call + brief), then **BATCH-004 #1 (1040-X,
+large)** — IND-476 + the Schedule H seams.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
