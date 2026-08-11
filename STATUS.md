@@ -1,18 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242o). **BATCH-003 #1 BUILT** (`452e0f5`, mig
-0302): the 1099-DIV subtype aggregate fallbacks — `div_qualified_agg` +
-`div_capgain_dist_agg` on Taxpayer, the b009 valve pattern (aggregate
-used ONLY when no payer row carries the subtype; detail wins; staging
-warns on mismatch + on 3a>3b). Box 2a now has ONE shared source
-(`capgain_distributions_total`) read by the Exception-1 path, Schedule D
-13, engagement, and the SDTW — the aggregate can never feed twice. The
-FA-1040-INTDIV-03 sniff MOVED WITH the 3a write (pins call site +
-helper body). Both batch shapes reproduce (b153: 3a 476/3b 1,114; b197:
-Sch D 13 = 6,235 once into line 7). 8 tests; 526 flow + 145 neighbors.*
+*Last updated: 2026-08-11 (s242p). **BATCH-003 #10 BUILT** (`4280b18`,
+migs 0303+0304): linked UPE rows — `K1UnreimbursedExpense` FKs the 1065
+K-1 (one row per source document holds; gross never netted). The i1040se
+separate-"UPE"-row convention end to end: face row in col (i), totals
+deduct once (154,879+16−4,364 = 150,531 reproduces), SE subtracts linked
+UPE from RAW box 14A (D_K1_UPE_SE info; no-UPE rows keep the old
+preparer-adjusts convention), QBI reduced per i8995 (verified live) only
+when the row reports a 199A figure. Passive UPE: staging refuses,
+D_K1_UPE_PASSIVE REDs (v1 boundary). Add+remove+recompute pinned.
+9 tests; 622 flow/staging + 162 K-1 neighbors green.*
 
-*Previous (s242n): #9 7203 generic charitable + the rules-registry
-landmine. (s242m): re-triage + #8 clergy lane. (s242l): ✅✅ BATCH-004
+*Previous (s242o): #1 div aggregate fallbacks. (s242n): #9 7203 generic
+charitable. (s242m): re-triage + #8 clergy lane. (s242l): ✅✅ BATCH-004
 closed 10/10. (s242i): ✅✅ BATCH-005 closed 10/10.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
@@ -47,19 +47,23 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #10: linked unreimbursed partnership expenses**
-The s242m re-triage annex is the design record. Nested UPE rows on a
-1065 `schedule_k1s` source (description, amount, the filed
-passive/nonpassive + SE/QBI treatment): preserve gross K-1 income
-separately, deduct UPE exactly once through Schedule E (the filed
-"UPE" line convention), route through Schedule SE + self-employed
-adjustments + QBI, diagnose duplicate/unlinked representations; the
-one-row-per-source-document rule holds (no second fabricated K-1).
-⚠ Check how Schedule E page 2 prints K-1 rows today (a UPE line is a
-SEPARATE nonpassive row naming "UPE" on the same entity). Then #6
-(Form 8814, large) → #3 (mixed passive/nonpassive K-1, large — ⚠ shares
-the s239 GA RIE seam). After the batch: Form 8853 A/B+C, IRS1116,
-amended MeF.
+### ⭐ NEXT UNIT — **BATCH-003 #6: the Form 8814 parent election (LARGE)**
+The s242m re-triage annex is the design record. Nothing exists but two
+stray Taxpayer facts (`tax_8814_amount` input; a 3a note). Build:
+repeatable Form 8814 rows KEYED TO A DEPENDENT (reject unmatched — the
+education_students dependent_key precedent), child-level interest /
+tax-exempt interest / ordinary + qualified dividends / cap-gain
+distributions / nominee adjustments + the Part II base/tax; compute the
+elected amounts onto the parent's 1040/Schedule B/D lines per the 2025
+Form 8814 + its instructions (fetch the face + verify the $1,350/$2,700
+child thresholds LIVE — never recall); each form's Part II tax joins
+1040 line 16 (grep who owns the line-16 write — the s230 rule); the
+line-16 "Form(s) 8814" checkbox + amount; multiple children independent;
+render (f8814 AcroForm?) + MeF (IRS8814 exists in the schema set —
+check) + lane + diagnostics. ⚠ `has_8814_inclusion` in compute_intdiv
+already gates the QDCGT route on 8814 flags — read what it expects.
+Then #3 (mixed passive/nonpassive K-1 — ⚠ shares the s239 GA RIE seam).
+After the batch: Form 8853 A/B+C, IRS1116, amended MeF.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -98,8 +102,8 @@ amended MeF.
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003 — 3 open** (10, 6, 3 in build order; #1 ✅ s242o, #8 ✅
-  s242m, #9 ✅ s242n; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
+  **BATCH-003 — 2 open** (6, 3 in build order; #1 ✅ s242o, #8 ✅ s242m,
+  #9 ✅ s242n, #10 ✅ s242p; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
   10/10, moved (s242l)**; **BATCH-005 — ✅ DONE, moved (s242i).** Every
   worked file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
@@ -109,6 +113,9 @@ amended MeF.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242p: NONE beyond new-row reach.** UPE engages only when
+  K1UnreimbursedExpense rows exist (none do); every seam (Sch E totals,
+  face rows, SE, QBI) returns the pre-existing figure at zero UPE.
 - **s242o: NONE beyond new-fact reach.** The aggregates are None on every
   existing Taxpayer; the shared 2a source returns the identical per-row
   sum when no aggregate exists.

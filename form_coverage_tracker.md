@@ -1,6 +1,14 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242p — K-1 UNREIMBURSED PARTNERSHIP EXPENSES
+> (BATCH-003 #10; `4280b18`; migs 0303+0304).** Linked UPE detail rows on
+> the 1065 K-1: the i1040se separate-"UPE"-row on Schedule E col (i),
+> exactly-once deduction, SE reduction from RAW box 14A (i1040sse), QBI
+> reduction per i8995 (verified live). ⚠ v1 boundary: passive UPE refuses
+> at staging AND REDs via D_K1_UPE_PASSIVE (Form 8582 routing unbuilt).
+> ⚠ Rows WITHOUT UPE keep the preparer-adjusts-box-14A convention.
+
 > **2026-08-11 session 242o — 1099-DIV AGGREGATE FALLBACKS (BATCH-003 #1;
 > `452e0f5`; mig 0302).** `div_qualified_agg` + `div_capgain_dist_agg` on
 > Taxpayer, the b009 valve semantics (aggregate only when no payer row
