@@ -1,11 +1,14 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-10 (s241t). **BATCH-004 #2 (Georgia QEE credit) — legs
-2-3 built** (`ce8fd6b`, migrations 0285 + 0286 RLS): `GeorgiaCredit` /
-`GeorgiaQEEDetail` and `compute_ga_qee.py` carrying the statute, **both
-carryforward regimes included**. ⛔ #2 NOT finished — lane, render and
-diagnostics remain. Eighteen units today; **BATCH-004 is 7 of 10 with #2 three
-legs of six done.***
+*Last updated: 2026-08-10 (s241u). **BATCH-004 #2 (Georgia QEE credit) — legs
+4 + 6 built** (no migration): the `georgia_credits` lane section (with the
+nested `qee_detail`, and the generator emitting it IN THE SAME CHANGE) and
+eight `D_GAQEE_*` diagnostics, every one a reconciliation. ⛔ #2 NOT finished —
+**the render leg remains**. Nineteen units today; **BATCH-004 is 7 of 10 with
+#2 five legs of six done.***
+
+*Previous (s241t): the model + statute (`ce8fd6b`, migs 0285 + 0286); (s241s)
+the source brief (`52c08ec`).*
 
 *Previous (s241r): ✅✅ #10 (Form 4547) COMPLETE, all six legs (`e2dce0e`);
 (s241q) its lane + eight diagnostics (`1158887`); (s241p) brief + models
@@ -125,16 +128,35 @@ caller refuses rather than guessing half-of-MFJ. ⚠ Only code 125 computes;
 every other series-100 code is **reported by name**. ⚠ An unknown
 `source_year` returns **None, not a default** — the sign cuts both ways.
 
-**⛔ Remaining legs — do NOT record #2 as finished until these land:**
-1. **Lane** — a `georgia_credits` section with a nested `qee_detail` dict (the
-   `form_4547s` parent+child shape). ⚠ Register it in the **generator** too —
-   that drifted twice (s227, s241q).
-2. **Render** — the Georgia Schedule 2 grid + IT-QEE-TP2. ⚠ Neither is in
-   `forms_manifest.json` yet.
-3. **Diagnostics** — the item's list: reconciliation against GA-500 line 21,
-   the **S1-5 addback reconciliation** (⚠ compare, never write), an unmodelled
-   credit code, an expired carryforward pool, a missing certificate, and
-   `sold_transferred` non-zero on code 125 (§48-7-29.16 permits no transfer).
+✅ **LEGS 4 + 6 DONE (s241u, no migration):** the `georgia_credits` lane
+section (one record per certificate; `qee_detail` nested, REFUSED on any code
+but 125; **the generator emits it in the same change** — it drifted twice
+before, s227/s241q, and a test reads the generator's own `defs`) and **eight
+diagnostics**, every one a RECONCILIATION (line 21 and S1-5 stay
+preparer-keyed):
+- `D_GAQEE_CODE` w · `_EXPIRED` e (the message **names which regime** it
+  applied; silent on an unknown generation year) · `_CAP` e (the $25,000
+  pass-through arm as the OVERRIDE it is) · `_MFS` w (**no cap asserted** for a
+  status the statute does not name — "deliberately not guessed") · `_L21` w
+  (fires only when BOTH sides are non-zero) · `_ADDBACK` e (⚠⚠ **`<`, not
+  `!=`** — S1-5 is shared, so carrying MORE is normal; sign: UNDERSTATES
+  Georgia income) · `_60DAY` w (prompts, never rules — the statute's
+  consequence is administrative) · `_CERT` info.
+- Staging: credit code required; **`source_year` required whenever there is
+  credit to carry** (asked, never defaulted — either default is wrong for one
+  population); used ≤ generated + carried-in; a transfer on 125 refused but
+  ALLOWED on other codes; tentatively-allowed ≤ preapproved; a contribution
+  cannot PREDATE its approval (a LATE one stages — the 60-day window belongs
+  to the diagnostic); face/derived lines refused BY NAME.
+- Teeth proven by injection (s232): `<`-vs-`!=`, the both-sides-nonzero guard,
+  the generation-year branch (a flat 3 would expire a LIVE 2020 pool), the
+  60/61 boundary, the pass-through override.
+
+**⛔ Remaining leg — do NOT record #2 as finished until it lands:**
+1. **Render** — the Georgia Schedule 2 grid + IT-QEE-TP2. ⚠ Neither is in
+   `forms_manifest.json` yet; both are Georgia DOR PDFs, so check whether the
+   faces have AcroForm widgets before choosing the backend (GA-500 itself is
+   coordinate-mapped).
 
 **⚠ VERIFY-FIRST CORRECTED THE ITEM — carry this forward.** GA-500 **line 21**
 and Schedule 1 **line S1-5** are BOTH already seeded as preparer inputs, so the
@@ -309,6 +331,10 @@ tested that line for EMPTINESS now tests the wrong thing.* Seventh occurrence of
 s241e, s241o ×2).
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s241u: NONE.** A lane section and eight diagnostics that all no-op unless
+  the return carries a `GeorgiaCredit` row, and none exists until a preparer or
+  payload makes one. ⚠ The published import schema gains `georgia_credits`
+  (with `qee_detail`) — additive.
 - **s241t: NONE.** Two new tables and a pure-function module nothing calls yet.
   No compute changed; `GeorgiaCredit` rows only exist where a preparer or
   payload makes one. Migrations are additive (CreateModel + RLS ALTER), so the
