@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242q — FORM 8814 (PARENTS' ELECTION) LEG 1: model +
+> compute + all four feeds + lane (BATCH-003 #6; `d2d40fa`; migs
+> 0305+0306).** RS export = draft-trap 5th (real rules, ZERO form_lines);
+> built from the 2025 face + i8814 live. Feeds via each line's single
+> source: L9→3a+3b, L10→the shared 2a source, L12→the composed 8z (5th
+> contributor), L15→line 16. Unmatched child REFUSES; ≥$13,500 both-ends
+> guarded. ⚠ Found+fixed: Schedule D disengage left its own line-7 write
+> stale (blocked line 16 after removing the last capital item).
+> *Legs.* ✅ compute · ✅ model · ✅ lane · ❌ render (AcroForm, 26 widgets)
+> · ❌ MeF (IRS8814 in 2025v5.3) · ❌ diagnostics (RS's 7, cached).
+
 > **2026-08-11 session 242p — K-1 UNREIMBURSED PARTNERSHIP EXPENSES
 > (BATCH-003 #10; `4280b18`; migs 0303+0304).** Linked UPE detail rows on
 > the 1065 K-1: the i1040se separate-"UPE"-row on Schedule E col (i),
