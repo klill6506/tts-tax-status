@@ -1,20 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242q). **BATCH-003 #6 LEG 1 SHIPPED**
-(`d2d40fa`, migs 0305+0306): Form 8814 model + compute + ALL FOUR FEEDS +
-lane. The RS export = draft-trap 5th (rules real, ZERO form_lines; built
-from the 2025 face + i8814 fetched live — $2,700/$1,350/$135/$13,500
-printed on the face, raising on an unverified year). Feeds through each
-line's single source: L9 → 3a AND 3b; L10 → the shared 2a source; L12 →
-the composed 8z (fifth contributor, "Form 8814" literal); L15 → line 16
-every route. Unmatched child REFUSES the commit; ≥$13,500 + 2b>2a refuse
-at staging + compute (both ends). **Pre-existing defect fixed: Schedule
-D's disengage left its own 1040 line-7 write stale, BLOCKING line 16 on
-any return whose last capital item is removed.** 10 tests; 711 green.*
+*Last updated: 2026-08-11 (s242r). **BATCH-003 #6 LEG 2 SHIPPED**
+(`f94bd41`): the Form 8814 render (one AcroForm page per child; the
+line-C box on exactly one form when several — F8814-001/-002 mirrored;
+the decimal split cells; No-first line-15 pair verified from the face;
+the 1040's line-16 "box 1" checks positionally-verified c2_9; PNG-loop
+verified) + four D_8814 diagnostics + **the MeF holding refusal**: the
+CSV carries 17 8814 rules (F8814-003-08 NARROWER than the face — income
+must be >$1,350 AND <$13,500 to e-file; IND-234's "FORM 8814"
+OtherIncomeTypeStatement dependency; F1040-476/477/482 1040-side pairs;
+IRS8814 per child max 10, slotted IRS8801→IRS8815) — until the IRS8814
+leg ships, `extract_return` refuses an 8814 return BY NAME (the s240
+reject class). 5 tests; 580 green.*
 
-*Previous (s242p): #10 UPE rows. (s242o): #1 div aggregates. (s242n): #9
-7203 generic charitable. (s242m): re-triage + #8 clergy. (s242l/i): ✅✅
-BATCH-004 + BATCH-005 closed 10/10 each.*
+*Previous (s242q): #6 leg 1 (model/compute/feeds/lane + the Schedule D
+stale-7 fix). (s242p): #10 UPE. (s242o): #1 div aggregates. (s242n): #9.
+(s242m): re-triage + #8. (s242l/i): BATCH-004 + BATCH-005 ✅✅ 10/10.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -48,24 +49,23 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #6 LEG 2: the Form 8814 render + MeF + diagnostics**
-Leg 1 (s242q) shipped model/compute/feeds/lane — the annex in the batch
-file is the design record. Leg 2:
-- **Render**: the 2025 f8814 face is AcroForm (26 widgets) — manifest
-  entry + `scripts/dump_acroform_fields.py` + a field map in
-  `field_maps/f8814_2025.py` + `render_8814` (one page per child) wired
-  into render_complete; ⚠ the line-16 "box 1" checkbox on the 1040 face
-  prints when any 8814 rows exist (find the 1040 field map's checkbox);
-  ⚠ verify checkbox orientation positionally (s241w).
-- **MeF**: `IRS8814` exists in 2025v5.3 — extract (one source per child,
-  refusing a child without name+SSN) + builder + slot position from the
-  1040 xsd; grep the business-rules CSV for 8814 seams FIRST (s224).
-- **Diagnostics**: the RS export's 7 (cached at
-  `server/specs/8814_rs_export_draft_s242q.json`) — the eligibility set
-  as preparer-facing warnings; the $13,500 error is already staged+
-  computed, make it a D rule for browser-created rows (both-ends).
-Then #3 (mixed passive/nonpassive K-1, the batch's last — ⚠ shares the
-s239 GA RIE seam). After: Form 8853 A/B+C, IRS1116, amended MeF.
+### ⭐ NEXT UNIT — **BATCH-003 #6 LEG 3: the IRS8814 e-file composition**
+The s242r annex records the design: IRS8814 documents per child (max 10,
+slotted between IRS8801 and IRS8815 in ReturnData1040 line 1665);
+elements ChildNm/ChildNameControlTxt/ChildSSN/MultipleForm8814Ind + the
+line amounts (ChildTaxableInterestAmt … ChildInterestAndDividendTaxAmt —
+read the XSD member list); the 1040-side seams: `Form8814Ind` +
+`childInterestAndDividendTaxAmt` (= ΣL15, IND-129) on IRS1040,
+F1040-476/477 indicator+amount pairs (ChildDivIncldQualifiedDivInd /
+QualifiedF8814Amt etc.), F1040-482 (cap-gain pair), and IND-234's
+"FORM 8814" literal in an **OtherIncomeTypeStatement** (a dependent
+document that does not exist yet — check how the 8z statement composes
+today). ⚠ F8814-003-08: the extract must refuse a form with L4 ≤ $1,350
+or ≥ $13,500 BY NAME (narrower than the face). ⚠ Refuse a child without
+name+SSN (F8814-004). Remove the s242r holding refusal in the same pass
+and pin both layers (the s225/s242j pattern). Then #3 (mixed
+passive/nonpassive K-1, the batch's last — ⚠ shares the s239 GA RIE
+seam). After: Form 8853 A/B+C, IRS1116, amended MeF.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
