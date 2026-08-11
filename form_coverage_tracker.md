@@ -1,6 +1,59 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-10 session 241u — GEORGIA QEE CREDIT: the LANE and the DIAGNOSTICS
+> (legs 4 + 6 of 6). BATCH-004 #2. No migration; one deploy.**
+>
+> *Lane.* `georgia_credits`, one record per **CERTIFICATE**, with the
+> IT-QEE-TP2 facts as a nested `qee_detail` dict (the `form_7203` OneToOne
+> shape) — **REFUSED on any credit code but 125**, because every other
+> series-100 credit has its own supporting form. ⚠ **The generator emits the
+> nested detail IN THE SAME CHANGE** — it drifted twice before
+> (`schedule_fs.other_expenses` s227, `form_4547s.children` s241q), each time
+> leaving an author's own validator rejecting payloads the server accepted; a
+> test reads the generator's own `defs` to hold the pin.
+>
+> *Staging refuses:* a blank credit code; **a missing `source_year` whenever
+> there is credit to carry** (⚠⚠ asked for, never defaulted — two carryforward
+> regimes run at once, so either default is wrong for one population and the
+> error surfaces YEARS later); used > generated + carried-in; a transfer on
+> code 125 (§48-7-29.16 permits none — but ALLOWED on other codes, which are
+> transferable); tentatively-allowed > preapproved (the commissioner may
+> PRORATE, and the approval is the ceiling); a contribution PREDATING its
+> approval (⚠ a LATE one stages — the 60-day window belongs to the diagnostic,
+> not staging); and every face/derived line BY NAME (line 21, S1-5, allowable,
+> carryover-out, the statutory limit — each message says where the value
+> belongs).
+>
+> *Eight diagnostics — **every rule RECONCILES, none WRITES** (line 21 and
+> S1-5 are `input` in the `500` spec; S1-5 is "Add: OTHER additions", SHARED —
+> s230):* `D_GAQEE_CODE` (warning — an unmodelled code NAMED; the amount still
+> reduces GA tax as filed) · `_EXPIRED` (error — **the message names WHICH
+> regime it applied**, three years or five; silent on an unknown generation
+> year, because a confident "expired" throws away a live credit) · `_CAP`
+> (error — the $25,000 pass-through arm read as the OVERRIDE it is) · `_MFS`
+> (warning — **no cap asserted** for a status the statute does not name;
+> "deliberately not guessed") · `_L21` (warning — fires only when BOTH sides
+> are non-zero; "detail not entered yet" is not a contradiction) · `_ADDBACK`
+> (error — ⚠⚠ compared with **`<`, not `!=`**: S1-5 legitimately carries MORE
+> whenever any other GA addition exists, and a `!=` test would fire on every
+> such return until people learned to ignore it; sign: UNDERSTATES Georgia
+> income — the same dollars taking both a federal deduction and a Georgia
+> credit) · `_60DAY` (warning — prompts, never rules; the statute's
+> consequence is administrative and unobservable) · `_CERT` (info).
+>
+> *Teeth proven by injection before being trusted (s232):* the `<`-vs-`!=`
+> addback comparison, the both-sides-nonzero line-21 guard, the
+> generation-year branch (**a flat three-year constant would expire a LIVE
+> 2020 pool**), the 60/61-day boundary, and the pass-through override against
+> the joint cap. Every rule also tested QUIET (s241o).
+>
+> *Legs.* ✅ brief · ✅ model · ✅ compute · ✅ **lane** · ❌ render (the GA
+> Schedule 2 grid + IT-QEE-TP2 — neither in `forms_manifest.json`; check for
+> AcroForm widgets before choosing the backend, GA-500 itself is
+> coordinate-mapped) · ✅ **diagnostics**. **No federal effect at all.**
+> 45 lane/diagnostic tests + 34 model/compute + 17 brief.
+
 > **2026-08-10 session 241t — GEORGIA QEE CREDIT: the MODEL and the STATUTE
 > (legs 2-3 of 6). BATCH-004 #2. Migrations 0285 (two tables) + 0286 (RLS
 > default-deny on both). One deploy.**
