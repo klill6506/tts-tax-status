@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242n — FORM 7203: the generic current-year
+> charitable deduction (BATCH-003 #9; `57c1886`; mig 0301).** A
+> source-preserving line-42 input for packets without K-1 subtype detail:
+> exactly-once basis reduction, DETAIL WINS (D_K1_7203_GENCHAR on a
+> mismatch), never Schedule A. ⚠ Registry lesson: a diagnostics rules
+> module MUST use the dict entry shape — a plain function list crashes
+> every `manage.py` command at the system-check stage (the s242k 500X
+> rules did, three deploys' worth; prod unaffected, now converted).
+
 > **2026-08-11 session 242m — CLERGY SCHEDULE SE (the MINISTER worksheet):
 > the IMPORT LANE now carries it (BATCH-003 #8; `222bd37`; no migration).**
 > The engine/render/MeF were complete since Unit 4 — the gap was six W-2
