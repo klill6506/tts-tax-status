@@ -1,13 +1,14 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242f). **Form 8839 LEGS 1+2 are in** (`1f9a387`;
-leg 1 `c87298d`, migs 0295+0296): the 2025 face transcribed (draft-trap 4th),
-models + compute (⚠⚠ the refundable pays BEFORE the tax limit; a pool can
-never become refundable), lane, **the Credit Limit Worksheet from the
-return's own lines** (1040 L18 − L19 − i8839's Sch 3 roster), and five
-reconciling diagnostics (6c/30 dedicated-line `!=`; expired pools NAMED;
-D_8839_1F = the Part III defer). The packet ties end to end from real rows.
-**LEG 3 open: render field map + IRS8839 MeF.***
+*Last updated: 2026-08-11 (s242g). **✅ BATCH-005 #4 (Form 8839) COMPLETE —
+all legs** (`c8ce2d2`; legs 1-2 `c87298d`/`1f9a387`, migs 0295+0296): the
+2025 face transcribed (draft-trap 4th), the refundable-off-the-top compute,
+pools by source year, the CLW from the return's own lines, five reconciling
+diagnostics, lane, render (⌈children/3⌉ copies, singles once; ⚠ the line-3/8
+checkbox pairs put No FIRST; Part III prints blank — named defer) and the
+IRS8839 MeF doc (AdoptedChild ×12 vs the face's 3 — one document; recorded
+benefits REFUSE by name). **BATCH-005 is 9 of 10 — only #8 (6781)
+remains.***
 
 *Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
 closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
@@ -51,17 +52,15 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8839 LEG 3 (BATCH-005 #4, final)**: the render
-field map (`f8839.pdf` fetched to the scratchpad; manifest entry + AcroForm
-dump + positional verification of the three per-child column sets on page
-1 and the Part III columns on page 2) and the `IRS8839` MeF document,
-wired at its ReturnData1040 position, reading `compute_8839_result` — the
-same single source the diagnostics read. ⚠ Check the XSD child-group
-maxOccurs vs the face's 3 rows (the s241r print/transmit split), and
-whether an `AdoptionCrCarryforwardStatement` or similar is required for
-line 15. The brief is the design record. Then #8 (6781 — NO spec; s241p
-gate call + brief), then **BATCH-004 #1 (1040-X, large)** — IND-476 + the
-Schedule H seams.
+### ⭐ NEXT UNIT — **BATCH-005 #8 (Form 6781, §1256 contracts)** — the
+batch's LAST item. ⚠ **NO RS spec** (`6781`, `FORM_6781`, `SEC_1256`,
+`1256` all 404, nothing cached): run the s241p 404-STOP three-part test
+FIRST and write the source brief either way. The 40/60 split is the face's
+own arithmetic (line 8 × 40% ST / 60% LT → Schedule D lines 4/11); check
+`IRS6781.xsd` + the business rules; the elections (mixed straddle,
+§1256(c) three-year carryback) are RED-defer candidates. The packet:
+$84,380 loss → $33,752 ST / $50,628 LT. Then **BATCH-004 #1 (1040-X,
+large)** — IND-476 + the Schedule H seams — the queue's last open build.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
