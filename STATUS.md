@@ -1,13 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242e). **Form 8839 LEG 1 is in** (`c87298d`,
-migs 0295+0296 — BATCH-005 #4): brief (the 2025 face transcribed; the RS
-spec is the draft-trap's 4th occurrence), `Form8839Child` +
-`AdoptionCreditCarryforward` (pools BY SOURCE YEAR, 5-year life), the full
-Part II compute (⚠⚠ **the refundable comes off the top BEFORE the tax
-limit; the carryforward joins only the nonrefundable side** — a pool can
-never become refundable), two lane sections. The packet ties exactly
-(24,376 / 21,839 → out 2,537). Writes nothing yet — 6c/30/1f stay keyed.*
+*Last updated: 2026-08-11 (s242f). **Form 8839 LEGS 1+2 are in** (`1f9a387`;
+leg 1 `c87298d`, migs 0295+0296): the 2025 face transcribed (draft-trap 4th),
+models + compute (⚠⚠ the refundable pays BEFORE the tax limit; a pool can
+never become refundable), lane, **the Credit Limit Worksheet from the
+return's own lines** (1040 L18 − L19 − i8839's Sch 3 roster), and five
+reconciling diagnostics (6c/30 dedicated-line `!=`; expired pools NAMED;
+D_8839_1F = the Part III defer). The packet ties end to end from real rows.
+**LEG 3 open: render field map + IRS8839 MeF.***
 
 *Previous (s242d): ✅ #6 complete (§469(g), mig 0294). (s242c): ⛔→✅ IRS4797
 closed. (s242b): ✅ #3 (migs 0292+0293). (s242): ✅ #7 (mig 0291). (s241z):
@@ -51,18 +51,17 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8839 LEG 2 (BATCH-005 #4)**: the reconciling
-diagnostics against the keyed 6c/30/1f lines — the credit-limit worksheet
-reads the return's OWN tax lines (1040 line 18 less the credits that come
-before the adoption credit; find the CLW's exact credit list in i8839
-before coding) — plus the render field map (`f8839.pdf` is already in the
-scratchpad; add to the manifest), the `IRS8839` MeF document (check the
-XSD's child-group maxOccurs vs the face's 3 rows — the s241r split), and
-the Part III decision (line 1f is in the composed 1a-1h wage family; its
-writer must follow the s230/s242 single-writer rules or stay reconciled).
-The brief `server/specs/_8839_source_brief.md` is the design record. Then
-#8 (6781 — NO spec; s241p gate call + brief), then **BATCH-004 #1 (1040-X,
-large)** — IND-476 + the Schedule H seams.
+### ⭐ NEXT UNIT — **Form 8839 LEG 3 (BATCH-005 #4, final)**: the render
+field map (`f8839.pdf` fetched to the scratchpad; manifest entry + AcroForm
+dump + positional verification of the three per-child column sets on page
+1 and the Part III columns on page 2) and the `IRS8839` MeF document,
+wired at its ReturnData1040 position, reading `compute_8839_result` — the
+same single source the diagnostics read. ⚠ Check the XSD child-group
+maxOccurs vs the face's 3 rows (the s241r print/transmit split), and
+whether an `AdoptionCrCarryforwardStatement` or similar is required for
+line 15. The brief is the design record. Then #8 (6781 — NO spec; s241p
+gate call + brief), then **BATCH-004 #1 (1040-X, large)** — IND-476 + the
+Schedule H seams.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
