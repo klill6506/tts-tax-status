@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-11 session 242t — THE FILED K-1 SPLIT (BATCH-003 #3;
+> `823f60a`; mig 0307) — ✅✅ BATCH-003 CLOSES 10/10.** Two nullable
+> ScheduleK1 fields (both-or-neither) supersede the single
+> material_participation bucket and print BOTH Schedule E columns on one
+> row; sum must equal boxes 1+2+3 (both-ends guarded); the MAGI
+> partition holds by construction; split rows bypass basis caps and stay
+> off the 8582 engine (D_K1_SPLIT_8582 warns on coexisting passive
+> losses). ⚠ v1 boundary: a passive-LOSS component refuses (per-component
+> 8582 allocation unbuilt). The 1040 lane has now closed batches 003,
+> 004 and 005 — thirty items — in three days.
+
 > **2026-08-11 session 242q — FORM 8814 (PARENTS' ELECTION) LEG 1: model +
 > compute + all four feeds + lane (BATCH-003 #6; `d2d40fa`; migs
 > 0305+0306).** RS export = draft-trap 5th (real rules, ZERO form_lines);

@@ -1,21 +1,23 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242s). **✅ BATCH-003 #6 (Form 8814) CLOSES —
-the IRS8814 composition shipped** (`4d2199d`): per-child documents (max
-10, IRS8801→IRS8815 slot; MultipleForm8814Ind on exactly one); the
-1040-side pairs at their exact XSD positions via pre-hooks (QualifiedF8814Amt
-BEFORE 3a, OrdinaryF8814Amt BEFORE 3b, the Inds pre-4a, the line-7 pair
-pre-8, Form8814Ind after TaxAmt with ΣL15 + doc ids as ATTRIBUTES —
-IND-129/127); the NEW "FORM 8814" OtherIncomeTypeStatement + the Sch 1
-8z referenceDocumentId (IND-234/S1-F1040-130). Refusals by name:
-F8814-004 (child SSN) + F8814-003-08 (income outside >$1,350/<$13,500 —
-narrower than the face LOW too). The s242r holding refusal removed, its
-test pins the inverse. Item #6 took s242q/r/s. **ONE ITEM LEFT in
-BATCH-003: #3.** 11 tests; 590 green.*
+*Last updated: 2026-08-11 (s242t). **✅✅ BATCH-003 CLOSES 10 OF 10 — the
+file moved to Done.** #3 (`823f60a`, mig 0307): the FILED Schedule E
+split — two nullable K-1 fields (both-or-neither) that supersede the
+material_participation single-bucket routing and drive BOTH columns on
+ONE row (the b159 −18,955 reproduces: 14,047 col (h) + 33,002 col (i)).
+The split must sum to the boxes-1+2+3 net (staging refuses;
+D_K1_SPLIT_ARITH REDs the back door); the MAGI partition holds by
+construction (passive comp → passive_k1_income, nonpassive →
+magi_nonpassive, no 8582 activity); v1 boundaries both-ends guarded
+(negative passive comp, UPE+split, D_K1_SPLIT_8582 coexistence warning);
+split rows bypass basis caps (the split IS the assertion). ⚠ Fixed in
+the pass: a serializer edit anchored on a line existing in TWO
+serializers put K-1 fields on RentalPropertySerializer (13 tests) —
+single-anchor edits only. 11 tests; 837 green across two gates.*
 
-*Previous (s242r): #6 render+diagnostics. (s242q): #6 leg 1 + the
-Schedule D stale-7 fix. (s242p/o/n/m): #10/#1/#9/#8. (s242l/i):
-BATCH-004 + BATCH-005 ✅✅ 10/10.*
+*The 1040 lane closed THREE full batches in three days (005 s242i, 004
+s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
+computes), Form 8853, IRS1116, amended MeF.*
 
 *Previous (s242i): ✅✅ BATCH-005 COMPLETE — 10 of 10, moved to Done. Ten
 items → eight builds + two verify-and-closes, ten deploys, migs 0289-0298.
@@ -49,22 +51,20 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-003 #3: mixed passive/nonpassive components on one K-1 (LARGE — the batch's last item)**
-The batch item (b159): ONE partnership K-1 whose Schedule E line 28
-shows $14,047 passive income in col (h) AND $33,002 nonpassive loss in
-col (i) for the SAME entity — the single `material_participation`
-boolean cannot represent it, and two rows would violate
-one-row-per-source. Design questions to resolve verify-first: (a) a
-component-level split (per-box passive/nonpassive classification) vs an
-explicit filed Schedule E split (two column amounts on one row); (b)
-Form 8582 runs on the PASSIVE component only; (c) QBI from the proper
-components; (d) the combined K-1 net preserved; (e) diagnose
-inconsistent splits. ⚠ Read `k1_sche_net` / `schedule_e_p2_totals_from_rows`
-/ `_gather_passive_activities` (the 8582 bucket condition) FIRST — the
-material boolean partitions income exactly once between MAGI buckets
-(s242p's UPE gate rides it too). ⚠ Shares the s239 GA RIE seam (the K-1
-owner routing). After the batch: Form 8853 A/B+C (thirteen sessions),
-IRS1116, amended MeF, the two batches' NOL-blocked computes.
+### ⭐ NEXT UNIT — **Form 8853 Sections A/B + Section C (the thirteen-session standing unit)**
+The spec is CACHED (`server/specs/` — check its status + line coverage
+under the draft-trap gate before trusting it). ⚠ READ FIRST: the s232
+write-up in STATUS_ARCHIVE — the two standing findings: **Schedule 1
+line 8e is COMPOSED, not owned** (an 8853 feed joins a composition —
+grep `_set_field_value` on 8e and apply the s230/s241z registry rules),
+and **line 25 FLOORS AT ZERO** (the s232 paraphrase-vs-statute finding).
+⚠ s241's second reason: Form 5329 line 36 takes "Form 8853 line 8" and
+no `Form8853` model exists — that cross-check unlocks when this builds.
+Legs: model (Archer MSA A/B + LTC Section C) → compute → lane → 
+diagnostics → render → MeF (IRS8853 — grep the business-rules CSV
+FIRST). Expect MULTIPLE sessions; leg 1 = spec re-check + model +
+compute + the 8e composition join. After: IRS1116, amended MeF,
+BATCH-001's six, the NOL-blocked computes (parked).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -103,7 +103,7 @@ IRS1116, amended MeF, the two batches' NOL-blocked computes.
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
   **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003 — 1 open** (#3 only; #6 ✅ s242q-s, #1 ✅ s242o, #8 ✅ s242m,
+  **BATCH-003 — ✅ DONE 10/10, moved (s242t)** (#3 ✅ s242t, #6 ✅ s242q-s, #1 ✅ s242o, #8 ✅ s242m,
   #9 ✅ s242n, #10 ✅ s242p; the re-triage annex is the design record); **BATCH-004 — ✅ DONE
   10/10, moved (s242l)**; **BATCH-005 — ✅ DONE, moved (s242i).** Every
   worked file carries a result annex; read it first.
