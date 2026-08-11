@@ -1,22 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242v). **✅ FORM 8853 SECTION C LEG 2 SHIPS
-(`3b33982`, migs 0310/0311)** — the 1099-LTC document + all 12 spec
-diagnostics. `Form1099LTC` (one row per received doc; box3_basis with
-an explicit "unchecked"; boxes 4/5 NULLABLE — absence is never an
-answer on optional boxes, the brief's central trap); `rules_8853.py`
-dict-registry (5 errors = the compute refusals gone loud + 7 warnings
-incl. four 1099-LTC cross-checks matched by insured TIN/name); lane
-`ltc_1099s`. **Two leg-1 gaps found and closed**: (1) two Section C
-rows for ONE insured (both index 1) computed and BOTH contributed —
-now all rows of a duplicated insured refuse (multi-period, the spec's
-second arm); (2) `form_8853_ltcs` never joined SECTION_RELATED — fresh
-imports worked, any RE-import would KeyError; fixed + a structural
-test now pins every LIST_SECTIONS member to a SECTION_RELATED entry.
-19 new tests (fire AND quiet per diagnostic); leg-1 24 + 526 flow +
-160 lane neighbors green; manage.py check clean. Leg 1 was s242u
-(`ab5ed8e`, migs 0308/0309): model + compute + the composed-8e
-delta-adjustment with engagement memory, zero-movement pinned.*
+*Last updated: 2026-08-11 (s242w). **✅ FORM 8853 SECTION C LEG 3 SHIPS
+(`6952243`, no migration)** — the render. f8853 registered in the
+manifest (fetched, byte-identical to the s232 SHA pin); all 19 page-2
+widgets caption-verified (BOTH Yes/No pairs YES-first — the 8814 face
+is the No-first counterexample); `render_8853` emits PAGE 2 only, one
+copy per insured, governed by the R-8853C-FILING partial populations
+((b) renders ONLY 14a/14b/17; (c) ADB-only → 14/15/16/26 with "-0-";
+(d) NO page; refused rows print keyed inputs with computed lines
+BLANK). Line 24 prints the pre-Aug-1996-EFFECTIVE figure; explicit
+zeros print the face's own "-0-" literal (format_currency suppresses
+numeric zeros and the MAP's format wins over the value tuple's type —
+a new formatting fact). "Form 8853" joined GENERATED_FORM_RENDERERS;
+the 8e AttachmentRequirement is now SATISFIABLE by a Section C page
+while a rows-less keyed 8e (the A/B residual) still warns; the
+"never generated" manifest pin replaced by both-sides scenarios.
+8 render tests + 580 gate + 167 neighbors green. Legs 1-2 were s242u
+(`ab5ed8e`) / s242v (`3b33982`).*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -54,24 +54,25 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8853 Section C leg 3: RENDER**
-Legs 1-2 ✅ (s242u `ab5ed8e`, s242v `3b33982`). Leg 3 = the printed
-face: **f8853 is NOT in `forms_manifest.json`** — register the 2025
-face with its SHA256 (`5582f813…`, recorded in the s232 STATUS_ARCHIVE
-write-up), dump the AcroForm fields, build the Section C field map
-(lines 14a-26), wire `render_8853` into render_complete. ⚠ THE PARTIAL
-POPULATIONS ARE THE TRAP (s232): three of four filing populations
-complete Section C only PARTIALLY — out-of-set lines render BLANK, not
-zero (the ADB-only path skips 17-25 entirely; a refused row renders
-its inputs but no computed lines). ⚠ One page per insured (the 8814
-per-child precedent); the "more than one Section C" checkbox derives
-from the row count. ⚠ Delete `test_form_manifest.py`'s pinned comment
-*"Form 8853 — never generated"* — that pin is the build's acceptance
-criterion. ⚠ The AcroForm filler STRIPS widgets — checkbox tests
-assert drawn "X" glyphs positionally (the s242r lesson). Then leg 4
-MeF (grep the business-rules CSV for `F8853-*` FIRST; the 8e element
-is `TotArcherMSAMedcrLTCAmt`; R-8853C-ATTACH wants render + MeF).
-After: IRS1116, amended MeF, BATCH-001's six, NOL-blocked (parked).
+### ⭐ NEXT UNIT — **Form 8853 Section C leg 4: MeF (the unit's LAST leg)**
+Legs 1-3 ✅ (s242u `ab5ed8e`, s242v `3b33982`, s242w `6952243`).
+Leg 4 = the IRS8853 e-file document. ⚠ ORDER OF WORK: (1) **grep the
+business-rules CSV** (`docs\mef\schemas\2025v5.3\1040_Business_Rules_
+2025v5.3.csv`) for `F8853-*` — the rules can be NARROWER than the face
+and ARE the spec for the seam (s225); also re-check `S1-F1040-117`-
+style demands on 8e. (2) Find `IRS8853.xsd` in the schema set — the 8e
+MeF element on Schedule 1 is **`TotArcherMSAMedcrLTCAmt`** (Archer +
+MA-MSA + LTC in ONE amount: the composed line transmits the TOTAL; the
+document carries Section C detail). (3) The XSD may hold Sections A/B
+members we DON'T populate — emit Section C members only; check
+minOccurs. (4) Per-insured repeating group vs per-document — read the
+XSD's shape before designing (the 8814 per-child precedent). (5) A
+multipayee/refused row: refuse composition BY NAME (the s237 rule) —
+match the render's refusal semantics. (6) Wire into read_model
+(extract) + builder + assembly slot (numeric form order) + the
+IND-style attachment link if the CSV demands one. The s242s IRS8814
+unit is the worked example end to end. After: IRS1116, amended MeF,
+BATCH-001's six, NOL-blocked (parked).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -121,6 +122,9 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s242w: NONE beyond new-row reach, plus one WARNING-class change:**
+  a return with a keyed 8e and NO Form8853LTC rows keeps its D_SCH1_004
+  warning (unchanged); the requirement is merely satisfiable now.
 - **s242v: NONE beyond new-row reach.** `Form1099LTC` feeds no compute
   (diagnostics only); the duplicate-insured refusal narrows a class that
   has no rows yet; the SECTION_RELATED fix changes re-import behavior
