@@ -1,18 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s241z). **✅ BATCH-005 #1/#5/#9 COMPLETE AS ONE
-UNIT** (`20f6892`, migs 0289+0290): `OtherIncomeItem` (closed route enum
-8v/8h/8z + the FILED description) — 8v/8h gain their first deriving writers;
-the 8z share joins the composition as its FOURTH feed on both paths. **Two
-defects fixed IN the existing composition**: the `> 0` write guard (a
-net-negative 8z silently blanked) and the missing engagement memory
-(deleting the last patronage/item source left the composed figure stale —
-predated this unit). **BATCH-005 is 5 of 10.***
+*Last updated: 2026-08-11 (s242). **✅ BATCH-005 #7 COMPLETE** (`b40fada`,
+mig 0291): disability pensions before minimum retirement age route to line
+1h (Pub 575, quoted) and enter EIC earned income via 1z (Pub 596). **Line 1h
+became a COMPOSED single-writer line** — the minister §107 excess write
+MOVED from the W-2 block into `compute_retirement_aggregation`, which now
+sums both shares (s230); the flow assertion moved with it and asserts the
+old site stays writer-free. D_RET_012/013 prompt; MRA is plan-specific and
+asked, never derived. **BATCH-005 is 6 of 10.***
 
-*Previous (s241y): ✅ #10 closed (already built; TS-C13 pins $6,485) + ✅ #2
-(the one gap was `eic_opt_out`/`actc_opt_out` joining TAXPAYER_FIELDS — the
-s237 off-switch rule; an imported opted-out return silently re-claimed its
-credit).*
+*Previous (s241z): ✅ #1/#5/#9 one unit (`OtherIncomeItem`, migs 0289+0290 —
+two latent composition defects fixed). (s241y): ✅ #10 closed already-built +
+✅ #2 (two allowlist entries — the s237 off-switch rule).*
 
 *Previous (s241x): the BATCH-005 triage, 10/10 — the annex in the batch file
 is the design record. Key: #4 8839 = draft-trap 4th; #8 6781 = NO spec; #7
@@ -52,19 +51,19 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-005 #7 (1099-R disability → line 1h)**. ⚠⚠ Convert
-line 1h to a COMPOSED REGISTRY FIRST — it has an unconditional writer today
-(the minister §107 excess in `compute.py`, 0-when-absent) and a second feed
-would erase it (s230). Then the RetirementDistribution disability/
-minimum-retirement-age fields, the 1h route (gross/tax/withholding preserved
-once, NOT doubled on 4b/5b), and verify the EIC earned-income effect against
-Pub 596 (disability pension before minimum retirement age is EARNED income)
-— authoritative source, never recall. Then #3 (the ForeignAddress builder,
-built ONCE — 1310/4547 refuse foreign addresses for want of it) → #6 (rental
-facts + ⛔ IRS4797) → #4 (8839 — draft-trap 4th; verify the OBBBA figures
-live) → #8 (6781 — NO spec; s241p gate call + brief). Then **BATCH-004 #1
-(1040-X, large)** — IND-476 + the Schedule H seams. ⚠ The triage annex in
-`CC_CODE_CHANGES_1040_BATCH-005.md` is the design record.
+### ⭐ NEXT UNIT — **BATCH-005 #3 (taxpayer foreign mailing address)**. Build
+the mapper's missing `ForeignAddressType` builder ONCE (1310 and 4547 both
+refuse foreign addresses by name for want of it — revisit those refusals as
+a separate call afterwards). Taxpayer model gains the foreign-address
+fields; the 1040 header face has country/province/postal boxes (verify the
+widgets positionally); MeF ReturnHeader takes `ForeignAddress`; check the
+GA-500 face for its own foreign-address handling. Then #6 (rental facts +
+⛔ the IRS4797 builder — the 1120-S builder is the worked example) → #4
+(8839 — draft-trap 4th; verify the OBBBA dollar figures live from the 2025
+instructions) → #8 (6781 — NO spec; run the s241p gate call, write the
+brief). Then **BATCH-004 #1 (1040-X, large)** — IND-476 + the Schedule H
+seams. ⚠ The triage annex in `CC_CODE_CHANGES_1040_BATCH-005.md` is the
+design record.
 
 ### ✅✅ BATCH-004 #5 (Schedule H) IS COMPLETE — s241w, one session
 ⛔ **The design record is `server/specs/_schedule_h_source_brief.md`** — do
