@@ -1,27 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242x). **✅✅ FORM 8853 SECTION C IS
-COMPLETE — the thirteen-session standing unit CLOSES across
-s242u/v/w/x** (`989c7f7` + `bb4c4d8`, no migration this leg). Leg 4 =
-the IRS8853 e-file composition. **The XSD holds ONE Section C per
-return** (IRS8853 max 1, one group inside) while the paper face holds
-many — v1 transmits one insured, a second refuses by name. **A live
-latent reject closed**: a keyed 8e has ALWAYS transmitted via
-`TotArcherMSAMedcrLTCAmt` with NO document behind it (S1-F1040-022
-rejects exactly that) — now a nonzero 8e without Section C rows, or
-with a nonzero A/B residual beside the component, refuses by name
-(the residual's Archer sections are unmodeled per Ken's s224 ruling;
-paper-file remedy). Unanswered lines 15/16 refuse for e-file (REQUIRED
-BooleanType members — narrower than the paper population sets).
-Emitted amounts mirror the render's populations exactly. 10 MeF tests;
-594 gate + 128 e-file core green; a full-suite sweep (9,012 passed)
-matched the known-red inventory exactly. **FA wiring**: the export
-fetch surfaced the five FA-1040-8853C assertions as EMPTY-definition
-shells (titles authored s232, definitions never written in RS) — all
-five + five stragglers (4562 trio, 2210 pair) STAGED in
-`flow_assertions_1040_pending.json` (never silently dropped); the
-T-values they encode are already pinned by test_form_8853c_s242u.py;
-authoring the RS definitions is on the RS agenda.*
+*Last updated: 2026-08-11 (s242y). **✅ IRS1116 — THE OLDEST E-FILE GAP
+CLOSES (`cc5eae3`, no migration).** The s237 holding refusal replaced
+by `_extract_f1116` + `build_irs1116` (the both-layers flip: the old
+blanket test now pins the inverse). `compute_1116_result` stays the
+shared single source. The §904(j) election paths stay DOCUMENTLESS by
+law; red-defer composes nothing. `primary_country` resolves through
+the XSD's own CountryType table (FIPS-style — s242b); "RIC" rides the
+header code; missing/unresolvable refuses with the remedy. Named
+refusals from the rules: F1116-012 (nonzero line 2 demands an itemized
+statement the app cannot compose) and F1116-013 (line 3b). "1099 TAX"
+replaces the per-country date when the whole tax is the 1099
+aggregate; F1116-006-01 holds arithmetically (pinned). 9 MeF tests +
+flipped pins; 653 e-file/flow gate + 30 extract neighbors green.
+**Standing e-file gaps remaining: amended MeF (IRS1040X) only.**
+Previous (s242u-x): ✅✅ the Form 8853 Section C unit — all four legs
+in one day; ten empty-definition FA shells staged (RS agenda).*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -59,21 +53,20 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **IRS1116: the oldest live e-file gap**
-The Form 8853 unit is CLOSED. Next per the standing queue: the
-**IRS1116** e-file document (Form 1116 foreign tax credit — the
-holding refusal `_refuse_unattachable_form_1116` has held the line
-since s237). ⚠ ORDER OF WORK (the 8853/8379 pattern): (1) grep the
-business-rules CSV for `F1116-*` + the Schedule 3 line-1 rules; (2)
-read `IRS1116.xsd` (shape + maxOccurs — per-category copies likely);
-(3) the compute's single source is `compute_1116_result`; the §904(j)
-de-minimis election path files NO 1116 (the form_manifest exception —
-e-file must match); (4) replace the holding refusal WITH the leg and
-flip its test to pin the inverse (the s242s both-layers pattern);
-(5) the s238 IRS8379 unit is the worked singleton example, s242s
-IRS8814 the repeating example. After: amended MeF (IRS1040X +
-AmendedReturnInd), BATCH-001's six (2/4/5/6/8/10), the NOL-blocked
-computes (parked on the spec).
+### ⭐ NEXT UNIT — **Amended MeF: IRS1040X + AmendedReturnInd (the LAST e-file gap)**
+IRS1116 CLOSED (s242y). Next: amended e-filing — the s242j root
+refusal in `extract_return` (an amended return refuses composition by
+name) is the line to replace WITH the leg. ⚠ ORDER OF WORK: (1) grep
+the CSV for `F1040X-*` / `IND-476` / AmendedReturnInd rules; (2) read
+`IRS1040X.xsd` + how AmendedReturnInd rides the 1040/ReturnHeader;
+(3) the compute single source is the 1040-X three-column result
+(`compute_return` fills A/B/C; the baseline is byte-pinned); (4) the
+IND-476 interaction: a Form 4547 must NOT appear on an amended return
+(pinned s241p — the seam must enforce it); (5) flip the s242j root-
+refusal test to pin the inverse per the both-layers pattern; (6) the
+GA 500X has NO e-file lane (GA e-filing isn't built at all) — federal
+only. After: BATCH-001's six (2/4/5/6/8/10), the NOL-blocked computes
+(parked on the spec).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -102,12 +95,10 @@ line-36 cross-check stays unbuilt until an A/B carrier exists (parked
 with Ken's s224 keyed-only ruling; revisit only on his direction).
 
 ### ⛔⛔ THE E-FILE GAP LIST
-- **`IRS1116`** — the oldest live e-file gap. s238's `IRS8379` is the worked
-  example end to end. (`IRS4797` CLOSED s242c; `IRS8853` CLOSED s242x.)
-- **Amended MeF (IRS1040X + AmendedReturnInd)** — named at s242j; refused
-  by name at extract until built (BATCH-004 #1 closed WITHOUT it — e-file
-  was not in the item's ask; this is now a standing e-file gap like
-  IRS1116, with the refusal holding the line against double-filing).
+- **Amended MeF (IRS1040X + AmendedReturnInd)** — the LAST standing gap;
+  refused by name at extract until built (the refusal holds the line
+  against double-filing). (`IRS4797` CLOSED s242c; `IRS8853` CLOSED
+  s242x; `IRS1116` CLOSED s242y.)
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
@@ -123,6 +114,10 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s242y MOVES E-FILE OUTPUT on the full-1116 class:** a full-path
+  FTC return with a resolvable country now composes IRS1116 (previously
+  refused outright); without a country it still refuses, now naming the
+  remedy. No compute/render movement.
 - **⚠ s242x MOVES E-FILE OUTPUT on one narrow class:** a return with a
   nonzero keyed 8e now REFUSES composition by name (it previously
   transmitted with no Form 8853 behind it — an S1-F1040-022 reject

@@ -1060,6 +1060,22 @@
 > 64 new tests (the MeF document validates against the real XSD, which caught
 > a hyphenated SSN in the fixture). Regression 230 / 726 / 481 green.
 
+> **2026-08-11 session 242y — ✅ IRS1116: THE OLDEST E-FILE GAP CLOSES.
+> No migration, one deploy (`cc5eae3`).** The s237 holding refusal below is
+> REPLACED by `_extract_f1116` + `build_irs1116` — a full-path Form 1116
+> with a resolvable country now transmits (single country in column A,
+> the render's exact line set; `compute_1116_result` the shared single
+> source, so print and transmit cannot disagree). The §904(j) election
+> paths stay DOCUMENTLESS by law. The refusal's doctrine survives as
+> NAMED refusals: no/unresolvable country (the CountryType FIPS enum,
+> resolved through the XSD's own table; "RIC" rides the header code),
+> and the F1116-012/-013 statement demands (a nonzero line 2 or 3b needs
+> an itemized statement the app cannot compose from one total).
+> F1116-006-01 (line 33 == line 24 with one form) holds arithmetically —
+> pinned; "1099 TAX" replaces the per-country date when the whole tax is
+> the 1099 aggregate. 9 MeF tests + the flipped both-ways backentry pins.
+> Remaining e-file gap: amended MeF only.
+
 > **2026-08-08 session 237 — 1040 BATCH-002 #4 (the individual foreign tax
 > credit). No migration, one deploy.** No form gains a compute or render leg;
 > one form becomes IMPORTABLE and one e-file seam becomes HONEST.
