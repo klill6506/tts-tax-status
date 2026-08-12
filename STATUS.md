@@ -122,16 +122,26 @@ compute/diagnostics; the bypass = the §469(g)-release mechanics; the
 REP loss is a MAGI ADD-BACK (R-8582-MAGI — pinned); §469(f)
 former-passive rows STAY passive (D_8582_FPA error).
 
-### ⭐ NEXT UNIT — **BATCH-006 triage (posted 2026-08-12 18:32, 10 items)**
-Lead with the suspected already-fixed trio: items 6/7/8 describe the
-EXACT s243b defects (Patel SS drift / Tucker 2441 cap / Parsons GA
-disability route) and their cited dry-runs likely predate the 13:27
-deploy — REPLAY each against current HEAD, close with evidence or find
-the residue. Then the genuine builds: #9 (1099-C → 8c), #1 (alimony
-received — the s241j mirror), #10 (8959 multi-W-2 aggregate), and the
-Slate UI lifecycle family #2/#3/#4/#5 (likely ONE root cause in the
-Slate save lane — production-only failures the client suite doesn't
-reach; the repro path is the finding). BUILD_ORDER carries the detail.
+### ✅ s247 — BATCH-006 triage: the trio closed at HEAD (#6/#7/#8)
+- **#6 REFUTED, inference corrected**: 6b = 5,602 (cap) stable ×2
+  passes, D_RET_012 quiet, AGI = the dry-run's own 142,229 WITH 6b
+  correct — the $2,229 is the adjudicated source-side Schedule D
+  non-foot (rows sum 71,954; the filed face carried 74,183 per the
+  payload's own `f4952_net_capital_gain`). Regression:
+  `test_batch006_item6_ss_stability.py`. Codex should expect 142,229
+  from this payload until the missing source item is found.
+- **#7/#8 FIXED by s243b** (deployed before the batch published);
+  evidence re-run green; residues named in the annex (line-22 SE-DCB
+  zero; GA MeF refuted — no GA e-file; no GA line rolls forward by
+  design).
+
+### ⭐ NEXT UNIT — **BATCH-006 #9: Form 1099-C → Schedule 1 line 8c**
+The s222 information-return road (f1099c + Pub 4681 → source brief).
+⚠ 8c needs a deriving OWNER (it is deliberately not direct-entry); ⚠ the
+§108 exclusions (bankruptcy/insolvency/QPRI) must REFUSE loudly when
+asserted — never compute taxable COD the packet excluded. Then #1
+(alimony received), #10 (8959 multi-W-2 aggregate), then the Slate
+save-lifecycle family #2-#5 together. BUILD_ORDER carries the detail.
 
 ### 📗 Codex's evening production run (tmp/BATCH001_UNBLOCKED…md)
 Two more returns tied/Filed/moved to Done on the s243b build; one held
