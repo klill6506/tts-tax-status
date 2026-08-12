@@ -673,6 +673,31 @@
 > ⚠ **Severity PROVED, not asserted**: a two-way compute pins AGI down by
 > exactly $8,400 ($98,978 → $90,578, the packet's own figures).
 
+> **2026-08-12 session 245b — ✅✅ FORM 1099-Q BUILT, ALL LEGS (BATCH-001 #10;
+> migs 0313 + RLS 0314, one deploy).** An information return: no RS spec (s222);
+> the governing record is `server/specs/_1099q_source_brief.md` — Pub 970
+> (2025) ch. 6 (Coverdell) / ch. 7 (QTP), whose WORKED EXAMPLES are the test
+> answer key ($18 QTP / $735 credit-coordination / $25 Coverdell-FMV-derivation,
+> each pinned with the Pub's own whole-dollar step rounding). ⚠ ONE CLASSIFIER
+> (`compute_1099q.classify_row`) drives compute, diagnostics AND the worksheet:
+> skip (trustee-to-trustee / full rollover — "Don't report tax-free
+> distributions"), **covered (AQEE ≥ gross — tax-free WITHOUT needing earnings;
+> the reported packet's $2,625/$2,625 shape, which must SURVIVE the face tie)**,
+> computed, refuse_partial (partial rollover / returned excess — unmodeled
+> ordering), refuse_underivable (box 2 blank + no FMV inputs while a taxable
+> figure exists). Σ taxable rides the COMPOSED Schedule 1 line 8z as the SIXTH
+> contributor ("QTP"/"Coverdell ESA" face literals; add + remove pinned). ⚠ The
+> 10% additional tax stays Form 5329 Part II with its preparer-KEYED line 5
+> (`Form5329.edu_able_dist` — Ken 2026-06-25); D_1099Q_003 RECONCILES, never
+> feeds — and its quiet-case test caught the rule reading a compute-INPUT key
+> (`f5329_line5_*`) off the MODEL (AttributeError only when rows exist).
+> D_1099Q_004 is the item's double-benefit ask (8863 engaged + an exclusion
+> with no credit-used reduction). Render = a statement-page worksheet (no IRS
+> 1040-attachment face exists); refusals print as refusals. Lane `q_1099s`
+> (all six registries; the generator emits 21 fields) + full browser CRUD.
+> 24 regressions + 621 neighbors green. **With #10, every buildable BATCH-001
+> item is closed** (#4 NOL-parked, #5 ⛔ KEN).
+
 > **2026-08-12 session 244 — ✅✅ FORM 8862 GOES MULTI-CATEGORY (BATCH-001 #6;
 > migration 0312, one deploy `4dd5c40`).** The s241i "complete" verdict held
 > for the FORM's legs but every GATE was EIC-only and category-blind: the
