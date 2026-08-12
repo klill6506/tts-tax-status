@@ -122,14 +122,22 @@ compute/diagnostics; the bypass = the §469(g)-release mechanics; the
 REP loss is a MAGI ADD-BACK (R-8582-MAGI — pinned); §469(f)
 former-passive rows STAY passive (D_8582_FPA error).
 
-### ⭐ NEXT UNIT — the next posted batch; else quiet holds
-The queue is fully drained: **BATCH-001 closed except #4** (parked on
-the NOL walk — the brief's four questions await Ken, who said he'll
-answer later); BATCH-002's residue is the same NOL computes. Next:
-(a) a newly posted CC Changes batch, (b) Ken's NOL answers → the RS
-authoring session (delvio-rule-studio; read its session_log.md first;
-nothing seeds without the walk), or (c) further RS-agenda prep briefs.
-Quiet holds are acceptable — do not manufacture work.
+### ⭐ NEXT UNIT — **BATCH-006 triage (posted 2026-08-12 18:32, 10 items)**
+Lead with the suspected already-fixed trio: items 6/7/8 describe the
+EXACT s243b defects (Patel SS drift / Tucker 2441 cap / Parsons GA
+disability route) and their cited dry-runs likely predate the 13:27
+deploy — REPLAY each against current HEAD, close with evidence or find
+the residue. Then the genuine builds: #9 (1099-C → 8c), #1 (alimony
+received — the s241j mirror), #10 (8959 multi-W-2 aggregate), and the
+Slate UI lifecycle family #2/#3/#4/#5 (likely ONE root cause in the
+Slate save lane — production-only failures the client suite doesn't
+reach; the repro path is the finding). BUILD_ORDER carries the detail.
+
+### 📗 Codex's evening production run (tmp/BATCH001_UNBLOCKED…md)
+Two more returns tied/Filed/moved to Done on the s243b build; one held
+on BATCH-006 #9 (the 1099-C gap); the NOL / #5-routing / AMT-pool parks
+acknowledged on their side. (Their "#5 preparer decision outstanding"
+note predates Ken's evening go — s246b built it.)
 
 ### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
 Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
