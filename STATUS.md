@@ -1,21 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242y). **✅ IRS1116 — THE OLDEST E-FILE GAP
-CLOSES (`cc5eae3`, no migration).** The s237 holding refusal replaced
-by `_extract_f1116` + `build_irs1116` (the both-layers flip: the old
-blanket test now pins the inverse). `compute_1116_result` stays the
-shared single source. The §904(j) election paths stay DOCUMENTLESS by
-law; red-defer composes nothing. `primary_country` resolves through
-the XSD's own CountryType table (FIPS-style — s242b); "RIC" rides the
-header code; missing/unresolvable refuses with the remedy. Named
-refusals from the rules: F1116-012 (nonzero line 2 demands an itemized
-statement the app cannot compose) and F1116-013 (line 3b). "1099 TAX"
-replaces the per-country date when the whole tax is the 1099
-aggregate; F1116-006-01 holds arithmetically (pinned). 9 MeF tests +
-flipped pins; 653 e-file/flow gate + 30 extract neighbors green.
-**Standing e-file gaps remaining: amended MeF (IRS1040X) only.**
-Previous (s242u-x): ✅✅ the Form 8853 Section C unit — all four legs
-in one day; ten empty-definition FA shells staged (RS agenda).*
+*Last updated: 2026-08-11 (s242z). **✅✅ AMENDED MeF SHIPS (`922e784`,
+no migration) — THE E-FILE GAP LIST IS EMPTY** (IRS4797 s242c, IRS8853
+s242x, IRS1116 s242y, amended MeF s242z). An amended transmission =
+the FULL corrected 1040 + `AmendedReturnInd` (first header member) +
+the three-column IRS1040X document (slot 997). The F1040X tie rules
+compare Column C against "the amended return" IN THE SAME SUBMISSION —
+one shared extract guarantees them by sourcing; columns come from
+`compute_1040x` on the byte-pinned baseline (the paper 1040-X's own
+single source). The s242j root refusal's doctrine survives as named
+refusals: no amendment record, red-defer (baseline/carrybacks/
+superseding/cascade), empty Part II explanation, IND-476 (no Form 4547
+on an amendment), and the F1040X-011-01 excess-SS line-12 tie (refuse
+when Sch 3 line 11 ≠ 0). Dependent counts (24-29) deliberately not
+emitted — the baseline records no original counts (named residual).
+9 new MeF tests + the flipped s242j suite (21); 674 gate green; check
+clean. Earlier today: IRS1116 (s242y), the whole 8853 unit (s242u-x).*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -53,20 +53,16 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Amended MeF: IRS1040X + AmendedReturnInd (the LAST e-file gap)**
-IRS1116 CLOSED (s242y). Next: amended e-filing — the s242j root
-refusal in `extract_return` (an amended return refuses composition by
-name) is the line to replace WITH the leg. ⚠ ORDER OF WORK: (1) grep
-the CSV for `F1040X-*` / `IND-476` / AmendedReturnInd rules; (2) read
-`IRS1040X.xsd` + how AmendedReturnInd rides the 1040/ReturnHeader;
-(3) the compute single source is the 1040-X three-column result
-(`compute_return` fills A/B/C; the baseline is byte-pinned); (4) the
-IND-476 interaction: a Form 4547 must NOT appear on an amended return
-(pinned s241p — the seam must enforce it); (5) flip the s242j root-
-refusal test to pin the inverse per the both-layers pattern; (6) the
-GA 500X has NO e-file lane (GA e-filing isn't built at all) — federal
-only. After: BATCH-001's six (2/4/5/6/8/10), the NOL-blocked computes
-(parked on the spec).
+### ⭐ NEXT UNIT — **BATCH-001's six open items (2, 4, 5, 6, 8, 10)**
+The e-file gap list is EMPTY. Next per the standing queue: re-triage
+`CC_CODE_CHANGES_1040_BATCH-001.md`'s six open items (verify-first —
+twelve of the last fifteen items were narrower than written; the file
+already carries a partial annex from s227's 10-for-10 triage; ⚠ item 4
+is NOL-SPEC-BLOCKED (the 404-STOP gate — park it; only the computation
+waits, preservation is built)). One deploy per batch-file work; append
+the result annex; the file moves to Done ONLY when all ten close.
+After: BATCH-002's NOL-blocked computes (parked on the spec), the
+legacy NZ file's #10 (multi-state, parked), the RS agenda.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -94,11 +90,10 @@ Section A/B territory). The s242u model is Section C only; the
 line-36 cross-check stays unbuilt until an A/B carrier exists (parked
 with Ken's s224 keyed-only ruling; revisit only on his direction).
 
-### ⛔⛔ THE E-FILE GAP LIST
-- **Amended MeF (IRS1040X + AmendedReturnInd)** — the LAST standing gap;
-  refused by name at extract until built (the refusal holds the line
-  against double-filing). (`IRS4797` CLOSED s242c; `IRS8853` CLOSED
-  s242x; `IRS1116` CLOSED s242y.)
+### ✅ THE E-FILE GAP LIST IS EMPTY (as of s242z)
+`IRS4797` (s242c) · `IRS8853` (s242x) · `IRS1116` (s242y) · amended MeF
+(s242z). What remains refused at composition is NAMED per-case (see
+each extract's refusal set), never a missing builder.
 
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-001 — 6 open** (2, 4, 5, 6, 8, 10);
@@ -114,6 +109,10 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s242z MOVES E-FILE OUTPUT on the amended class:** a valid amended
+  return (record + baseline + explanation) now composes as a 1040-X
+  submission instead of refusing; the invalid shapes still refuse, now
+  each by name. No compute/render movement.
 - **⚠ s242y MOVES E-FILE OUTPUT on the full-1116 class:** a full-path
   FTC return with a resolvable country now composes IRS1116 (previously
   refused outright); without a country it still refuses, now naming the
