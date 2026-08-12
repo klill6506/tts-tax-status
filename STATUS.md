@@ -1,21 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242z). **✅✅ AMENDED MeF SHIPS (`922e784`,
-no migration) — THE E-FILE GAP LIST IS EMPTY** (IRS4797 s242c, IRS8853
-s242x, IRS1116 s242y, amended MeF s242z). An amended transmission =
-the FULL corrected 1040 + `AmendedReturnInd` (first header member) +
-the three-column IRS1040X document (slot 997). The F1040X tie rules
-compare Column C against "the amended return" IN THE SAME SUBMISSION —
-one shared extract guarantees them by sourcing; columns come from
-`compute_1040x` on the byte-pinned baseline (the paper 1040-X's own
-single source). The s242j root refusal's doctrine survives as named
-refusals: no amendment record, red-defer (baseline/carrybacks/
-superseding/cascade), empty Part II explanation, IND-476 (no Form 4547
-on an amendment), and the F1040X-011-01 excess-SS line-12 tie (refuse
-when Sch 3 line 11 ≠ 0). Dependent counts (24-29) deliberately not
-emitted — the baseline records no original counts (named residual).
-9 new MeF tests + the flipped s242j suite (21); 674 gate green; check
-clean. Earlier today: IRS1116 (s242y), the whole 8853 unit (s242u-x).*
+*Last updated: 2026-08-12 (s243). **✅ BATCH-001 #8 BUILT (`b62cc09`, no
+migration)** — IND-CR 202 now derives from the federal Form 2441
+credit. Verify-first: the COMPUTATION existed all along (CC-3 = 50% ×
+CC-FED → line 20, line-22 cap); the missing piece was the FEED —
+`_populate_ga500_from_federal` now pulls CC-FED from the federal
+Schedule 3 line 2, form-scoped, override-safe on the auto path, and
+CLEARING on a blank federal value (add+remove). ⚠ The 50% rate was
+re-verified against the OPERATIVE source: the 2025 IT-511
+(Rev. 07/09/25) pp. 9/57 confirms 50% while the 2024 code snapshot of
+§48-7-29.10 still prints 30% — the citation now sits at the compute
+site. Item-6 re-triage: the s241c 8862 build is EIC-scoped; the
+multi-category expansion (CTC/AOTC/HOH, Parts III-V) is the remaining
+ask. BATCH-001 now: #1/#3/#7/#8/#9 built, #4 NOL-parked, #10
+basis-only, **#2/#5/#6 open**. 6 tests + 595 flow/GA + 44 RIE green.
+Yesterday: the e-file gap list EMPTIED (s242u-z: the whole 8853 unit +
+IRS1116 + amended MeF in one day).*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -53,16 +53,23 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **BATCH-001's six open items (2, 4, 5, 6, 8, 10)**
-The e-file gap list is EMPTY. Next per the standing queue: re-triage
-`CC_CODE_CHANGES_1040_BATCH-001.md`'s six open items (verify-first —
-twelve of the last fifteen items were narrower than written; the file
-already carries a partial annex from s227's 10-for-10 triage; ⚠ item 4
-is NOL-SPEC-BLOCKED (the 404-STOP gate — park it; only the computation
-waits, preservation is built)). One deploy per batch-file work; append
-the result annex; the file moves to Done ONLY when all ten close.
-After: BATCH-002's NOL-blocked computes (parked on the spec), the
-legacy NZ file's #10 (multi-state, parked), the RS agenda.
+### ⭐ NEXT UNIT — **BATCH-001 #6: the Form 8862 multi-category expansion**
+#8 shipped s243. Next in the open set (#2/#5/#6): #6 is the
+best-scoped — the s241c build covers EIC only (Part II:
+`tax_year_disallowed`, `eic_income_report_only`, days-in-US); the
+item's remaining ask is CTC/ACTC/ODC (Part III), AOTC (Part IV), HOH
+(Part V), qualifying-person details, and diagnostics gating a
+previously disallowed credit per category. ⚠ The RS `8862` spec is a
+draft collapsing each part to one boolean (s241b — RS agenda); build
+from the 2025 face + i8862 per the information-return discipline.
+⚠ Check `build_irs8862` + the IRS8862.xsd for the category members
+(the MeF leg must grow with the model — the s227 generator rule).
+Then #2 (AMT passive carryovers: per-activity input + AMT Carryover
+Detail render + roll-forward + the 6251 feed — pools exist since
+s235), then #5 (nonpassive rental routing — ⚠ FIRST re-read Ken's
+2026-07-06 "diagnostic-only" REP ruling's exact scope; if the ruling
+covers routing, it's ⛔ KEN). #4 NOL-parked; #10 the 1099-Q form unit.
+After: BATCH-002's NOL-blocked computes, the RS agenda.
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -109,6 +116,12 @@ each extract's refusal set), never a missing builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s243 MOVES GEORGIA RETURNS carrying a federal 2441 credit:** the
+  GA-500 sync now fills CC-FED from Schedule 3 line 2, so line 20 gains
+  the IND-CR 202 credit (a correction — those returns overstated GA tax
+  by 50% of the federal credit). A keyed CC-FED is overwritten on the
+  next MANUAL refresh unless overridden (the documented pull semantics);
+  the auto path respects overrides.
 - **⚠ s242z MOVES E-FILE OUTPUT on the amended class:** a valid amended
   return (record + baseline + explanation) now composes as a 1040-X
   submission instead of refusing; the invalid shapes still refuse, now
