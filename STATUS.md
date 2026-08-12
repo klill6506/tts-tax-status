@@ -1,21 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s243). **✅ BATCH-001 #8 BUILT (`b62cc09`, no
-migration)** — IND-CR 202 now derives from the federal Form 2441
-credit. Verify-first: the COMPUTATION existed all along (CC-3 = 50% ×
-CC-FED → line 20, line-22 cap); the missing piece was the FEED —
-`_populate_ga500_from_federal` now pulls CC-FED from the federal
-Schedule 3 line 2, form-scoped, override-safe on the auto path, and
-CLEARING on a blank federal value (add+remove). ⚠ The 50% rate was
-re-verified against the OPERATIVE source: the 2025 IT-511
-(Rev. 07/09/25) pp. 9/57 confirms 50% while the 2024 code snapshot of
-§48-7-29.10 still prints 30% — the citation now sits at the compute
-site. Item-6 re-triage: the s241c 8862 build is EIC-scoped; the
-multi-category expansion (CTC/AOTC/HOH, Parts III-V) is the remaining
-ask. BATCH-001 now: #1/#3/#7/#8/#9 built, #4 NOL-parked, #10
-basis-only, **#2/#5/#6 open**. 6 tests + 595 flow/GA + 44 RIE green.
-Yesterday: the e-file gap list EMPTIED (s242u-z: the whole 8853 unit +
-IRS1116 + amended MeF in one day).*
+*Last updated: 2026-08-12 (s243b). **✅ KEN'S FOUR-RETURN UNBLOCK BUILT
+AND DEPLOYED (one deploy, no migrations)** — PENDING items 6/7/8 +
+Walton GA RIE. Walton/Tucker/Parsons now tie their frozen payloads;
+Patel is REFUTED as an app defect (the filed Schedule D face itself
+doesn't foot by exactly $2,229 — source-side gap, reported to Ken).
+Root causes: a BASIS-ONLY Form 8606 superseding an owner's whole IRA
+taxable to 0 (→ `owner_supersedes_4b` gate, per-owner, in compute_8606
++ the RIE L11 pull); the 2441 Part III exclusion ignoring qualified
+expenses (→ `part3_dcb` line-17 limit + `compute_2441_dcb_early` so 1e
+reaches AGI/the SS worksheet in one pass); GA under-62 disability RIE
+lacking date/type/7c-routing (→ 4 seeded GA lines, render routing,
+3 diagnostics). Plus D_8606_BASIS_ONLY (warning) and D_RET_012 (error,
+fault=engine — the SS-worksheet invariant). 13 new regressions +
+106 neighbors + 612 GA/flow/SS + 217 RIE/commit/efile + check green;
+`seed_ga500`/`seed_form_2441` re-run against the shared DB. Earlier
+today s243 shipped BATCH-001 #8 (IND-CR 202 feed, `b62cc09`).*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -52,6 +52,31 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 ---
 
 ## ▶ RESUME HERE
+
+### ✅ s243b COMPLETE — Ken's four-return unblock (superseded the queue)
+`D:\tax-test-data\1040\tmp\PENDING_CC_CHANGES.md` items 6/7/8 + the GA
+RIE case, built and deployed in ONE commit. **Codex can rerun the four
+production dry-runs.** Per-return verdicts (frozen payloads replayed
+through the real API):
+- **Return P (item 6) — NO TIE EXPECTED; refuted as an app defect.**
+  6b computes 5,602 correctly and stably. The AGI shortfall is Schedule
+  D: the FILED face itself doesn't foot — its printed components sum
+  2,229 short of its printed line 15 (TaxWise carried +2,229 appearing
+  on NO printed line, nowhere in the packet). Source-side data gap;
+  waiting on Ken/Codex to locate the missing item. The app must not
+  manufacture the tie. The new D_RET_012 invariant covers the original
+  "6b drifts" suspicion (it never reproduced — 4 ORM shapes + the exact
+  payload all stable).
+- **Return W — TIES** (4b, 6b, AGI, RIE-TP-11/17, GA S1-7 all verified).
+- **Return T (item 7) — TIES** (1e = 34, AGI 13,567).
+- **Return G (item 8) — TIES numerically** (S1 line 7c routing + amount);
+  the frozen payload predates the new DIS-DATE/TYPE fields, so
+  D_GA500_7C_DETAILS (error) correctly demands them — Codex supplies
+  them via `ga500_fields` on rerun.
+- Post-deploy commands ALREADY RUN against the shared DB:
+  `seed_ga500 --year 2025` (157 lines) + `seed_form_2441 --year 2025`.
+- Regression home: `server/tests/test_four_return_unblock_s243b.py`
+  (13, synthetic identities). Items 1–5 of the PENDING file untouched.
 
 ### ⭐ NEXT UNIT — **BATCH-001 #6: the Form 8862 multi-category expansion**
 #8 shipped s243. Next in the open set (#2/#5/#6): #6 is the
@@ -116,6 +141,16 @@ each extract's refusal set), never a missing builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s243b MOVES THREE CLASSES (each a correction):** (1) any return
+  where a BASIS-ONLY Form 8606 (no distributions/conversions/Roth
+  distributions) coexists with IRA-path 1099-Rs — 4b regains the box-2a
+  taxable it was wrongly zeroing, moving AGI, the SS worksheet, and GA
+  RIE L11; (2) any return with employer DCB whose qualified expenses are
+  BELOW the plan cap — the 2441 Part III exclusion now stops at line 16
+  expenses, so 1e/1z/AGI rise (zero expenses → all benefits taxable);
+  (3) GA render: an under-62 disability RIE now prints on Schedule 1
+  line 7c/7f (was 7a/7d) with date/type, and returns lacking date/type
+  fire the new D_GA500_7C_DETAILS error.
 - **⚠ s243 MOVES GEORGIA RETURNS carrying a federal 2441 credit:** the
   GA-500 sync now fills CC-FED from Schedule 3 line 2, so line 20 gains
   the IND-CR 202 credit (a correction — those returns overstated GA tax
