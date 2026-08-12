@@ -249,6 +249,13 @@ missing builder.
 - **⛔ BLOCKING two batch items: NO NOL SPEC** (`172`/`NOL`/`FORM_172`/`1045`
   all 404). BATCH-001 #4 + BATCH-002 #10 wait. Preservation is built; only
   the computation waits. Highest-value authoring order on this list.
+  **✅ s246: the AUTHORING BRIEF is drafted** —
+  `server/specs/_nol_authoring_brief.md` (Form 172 Rev. 12-2024 + i172
+  fetched; ⚠ Pub 536 is RETIRED, its rules live in i172 now; the 80%-cap
+  base stated verbatim; four one-decision questions for Ken's walk with
+  recommendations — v1 = deduction-side only, farming carryback refuses,
+  AMT NOL stays preserve-only). The authoring session in
+  delvio-rule-studio starts from the brief; NOTHING seeds without the walk.
 - (s241b, reaffirmed s244): the `8862` spec is a draft collapsing each PART
   to one boolean — re-author per-line from the Rev. 12-2025 face. ⚠ The
   seeded app face still carries a `part_v` pseudo-line from that draft; the
