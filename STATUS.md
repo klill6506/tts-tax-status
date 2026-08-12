@@ -1,27 +1,26 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s244). **✅ BATCH-001 #6 BUILT AND DEPLOYED
-(`4dd5c40`, one deploy)** — Form 8862 goes multi-category. Verify-first
-found the form fully built (model/lane/render/MeF, all Parts); the real
-defect class was EIC-ONLY, CATEGORY-BLIND GATING: the only stored
-disallowance fact was `eic_disallowed_prior_year`, so a CTC-only prior
-disallowance (the item's exact packet) fired no rule, rendered no 8862,
-and could transmit without the recertification. Two new tri-state
-Taxpayer facts (`ctc/aotc_disallowed_prior_year`, migration 0312) and
-ONE predicate everywhere (i8862 Rev. 12-2025 line 2): **a category
-engages iff claimed now AND previously disallowed** — MeF builder
-(`_f8862_engagement` + attach gate + named refusal), render (per-Part
-drawing), diagnostics (D_8862_003 re-based; NEW D_8862_004/005/006),
-compute_eic backfill (reaches non-EIC returns; 8867 7a sees all three
-flags), and every import surface (serializer + back-entry `taxpayer`
-lane + both client screens). **HOH IS REFUTED as an 8862 category**
-(the item asked for "HOH Part V"): the Rev. 12-2025 face has no Part V
-and no HOH; IRS8862.xsd has no HOH member; i8862 names exactly three
-categories — HOH recert belongs to Form 8867 due diligence. Post-deploy
-commands ALREADY RUN against the shared DB: `migrate` (0312, nullable
-adds) + `seed_rules`. Earlier today: s243b (Ken's four-return unblock,
-`bb282b0`, deploy confirmed LIVE on Render 17:27Z — Codex can rerun the
-four production dry-runs) and s243 (BATCH-001 #8, `b62cc09`).*
+*Last updated: 2026-08-12 (s245). **✅ BATCH-001 #2 CLOSED — verified
+already built (s235), pinned in the reported shape; ⛔ #5 PARKED on Ken's
+own 8582 scope ruling.** #2's asks all resolve to the s235 preservation
+layer (per-activity `passive_amt` pools with the activity in the unique
+key; lane + CRUD API; the Carryforward Attribute Worksheet; the
+per-vintage proforma roll independent of the engine's computed regular
+aggregate). New `test_8582_amt_carryover.py` (6) pins the packet's shape:
+regular computes 21,790+6,170=27,960 per activity while the AMT pool
+holds 19,490 — different facts, both roll. The "computed next-year AMT"
+ask is REFUSED loudly by design: the AMT-8582 refigure needs per-activity
+AMT facts the schema cannot carry and the FORM_8582 spec has ZERO AMT
+content → RS agenda; D_CFWD_001 (error) already demands hand
+verification. #5 (nonpassive rental routing) asks to build exactly what
+Ken's 2026-06-13 kickoff scope decision RED-deferred (`D_8582_RE_PRO`) —
+⛔ KEN, question batched in REVIEW_QUEUE with a build recommendation.
+No code changed; tests + record only. Earlier today: s244 (#6 8862
+multi-category, `4dd5c40`, deploy LIVE), s243b (Ken's four-return
+unblock, LIVE — Codex can rerun the four production dry-runs), s243 (#8).
+s244's post-deploy commands (migrate 0312 + seed_rules) ALREADY RUN
+against the shared DB; the s244 design record is the batch annex + the
+RESUME block below.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -85,16 +84,33 @@ doesn't foot by exactly $2,229; source-side gap, waiting on Ken/Codex).
 `seed_ga500` (157 lines) + `seed_form_2441` (23 lines) already run.
 Regression home: `server/tests/test_four_return_unblock_s243b.py`.
 
-### ⭐ NEXT UNIT — **BATCH-001 #2: AMT passive carryovers per activity**
-The pools exist since s235 (`passive_amt`, rolled independently); the
-remaining ask is the per-activity INPUT surface, the AMT Carryover
-Detail worksheet render, and the Form 6251 feed. ⚠ Read the s235
-annex + `DEFERRAL_AUDIT` rows first. Then **#5 (nonpassive rental
-routing) — ⚠ FIRST re-read Ken's 2026-07-06 "diagnostic-only" REP
-ruling's exact scope; if the ruling covers routing, #5 is ⛔ KEN.**
-#4 stays NOL-parked (no RS spec — the standing 404-STOP); #10 is the
-1099-Q form unit. After BATCH-001: BATCH-002's NOL-blocked computes,
-the RS agenda.
+### ✅ s245 — BATCH-001 #2 closed (verified built), #5 ⛔ KEN (parked)
+- **#2**: every ask resolves to the s235 layer; the reported shape is now
+  pinned (`test_8582_amt_carryover.py`, 6 — regular computes 27,960 per
+  activity while the AMT pool holds 19,490; both roll independently; the
+  worksheet prints; D_CFWD_001 errors). The "computed next-year AMT"
+  refigure needs FORM_8582 AMT rules that DO NOT EXIST (zero AMT content
+  in the export) → RS agenda. Design record: the s245 batch annex.
+- **#5**: asks to build the nonpassive-rental routing Ken's 2026-06-13
+  8582 kickoff scope decision RED-deferred (`D_8582_RE_PRO`). ⛔ KEN —
+  batched in REVIEW_QUEUE with a build recommendation. (The BUILD_ORDER
+  note's "2026-07-06" date was loose; the ruling on record is the
+  kickoff's scope decision 3, STATUS_ARCHIVE.)
+
+### ⭐ NEXT UNIT — **BATCH-001 #10: the Form 1099-Q form unit**
+Coverdell/QTP education distributions: source rows + the
+taxable-earnings computation (basis recovery under §529(c)(3)/§530(d))
++ the double-benefit diagnostic vs the education credits. The BASIS
+preservation exists (s235 `education_basis` pools). ⚠ An information
+return — **NO RS spec exists for any information return (s222); do NOT
+run the 404-STOP gate as if one should** — build from the IRS form
+(f1099q + i1099q + Pub 970 ch. 6-7) with a `_1099q_source_brief.md`
+(the s222/s223 shape). ⚠ The ROUTING is the tax question: the taxable
+earnings land on Schedule 1 line 8z (plus the possible 10% additional
+tax on Schedule 2 via Form 5329 Part II), and Pub 970's
+adjusted-qualified-expenses ordering against the AOTC/LLC is where the
+double-benefit diagnostic lives. After BATCH-001: BATCH-002's
+NOL-blocked computes, the RS agenda, or the next posted batch.
 
 ### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
 Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
@@ -108,12 +124,13 @@ keyed-only ruling; revisit only on his direction).
 missing builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **BATCH-001 — 4 open** (#2, #5, #4
-  NOL-parked, #10); **#6 ✅ s244, #8 ✅ s243** — the batch file stays in
-  the queue with its annexes until all items close. **BATCH-002 — 9/10
-  open as to COMPUTE only** (NOL-spec-blocked); **BATCH-003/004/005 —
-  ✅ DONE, moved.** Every worked file carries a result annex; read it
-  first.
+- **1040** (`1040\CC Changes\`): **BATCH-001 — ONE buildable item left
+  (#10, the 1099-Q form unit)**; #4 NOL-parked (RS), #5 ⛔ KEN (parked);
+  #1/#2/#3/#6/#7/#8/#9 closed (#2 ✅ s245, #6 ✅ s244, #8 ✅ s243) — the
+  batch file stays in the queue with its annexes until all items close.
+  **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
+  **BATCH-003/004/005 — ✅ DONE, moved.** Every worked file carries a
+  result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
