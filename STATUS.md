@@ -1,22 +1,27 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-11 (s242w). **✅ FORM 8853 SECTION C LEG 3 SHIPS
-(`6952243`, no migration)** — the render. f8853 registered in the
-manifest (fetched, byte-identical to the s232 SHA pin); all 19 page-2
-widgets caption-verified (BOTH Yes/No pairs YES-first — the 8814 face
-is the No-first counterexample); `render_8853` emits PAGE 2 only, one
-copy per insured, governed by the R-8853C-FILING partial populations
-((b) renders ONLY 14a/14b/17; (c) ADB-only → 14/15/16/26 with "-0-";
-(d) NO page; refused rows print keyed inputs with computed lines
-BLANK). Line 24 prints the pre-Aug-1996-EFFECTIVE figure; explicit
-zeros print the face's own "-0-" literal (format_currency suppresses
-numeric zeros and the MAP's format wins over the value tuple's type —
-a new formatting fact). "Form 8853" joined GENERATED_FORM_RENDERERS;
-the 8e AttachmentRequirement is now SATISFIABLE by a Section C page
-while a rows-less keyed 8e (the A/B residual) still warns; the
-"never generated" manifest pin replaced by both-sides scenarios.
-8 render tests + 580 gate + 167 neighbors green. Legs 1-2 were s242u
-(`ab5ed8e`) / s242v (`3b33982`).*
+*Last updated: 2026-08-11 (s242x). **✅✅ FORM 8853 SECTION C IS
+COMPLETE — the thirteen-session standing unit CLOSES across
+s242u/v/w/x** (`989c7f7` + `bb4c4d8`, no migration this leg). Leg 4 =
+the IRS8853 e-file composition. **The XSD holds ONE Section C per
+return** (IRS8853 max 1, one group inside) while the paper face holds
+many — v1 transmits one insured, a second refuses by name. **A live
+latent reject closed**: a keyed 8e has ALWAYS transmitted via
+`TotArcherMSAMedcrLTCAmt` with NO document behind it (S1-F1040-022
+rejects exactly that) — now a nonzero 8e without Section C rows, or
+with a nonzero A/B residual beside the component, refuses by name
+(the residual's Archer sections are unmodeled per Ken's s224 ruling;
+paper-file remedy). Unanswered lines 15/16 refuse for e-file (REQUIRED
+BooleanType members — narrower than the paper population sets).
+Emitted amounts mirror the render's populations exactly. 10 MeF tests;
+594 gate + 128 e-file core green; a full-suite sweep (9,012 passed)
+matched the known-red inventory exactly. **FA wiring**: the export
+fetch surfaced the five FA-1040-8853C assertions as EMPTY-definition
+shells (titles authored s232, definitions never written in RS) — all
+five + five stragglers (4562 trio, 2210 pair) STAGED in
+`flow_assertions_1040_pending.json` (never silently dropped); the
+T-values they encode are already pinned by test_form_8853c_s242u.py;
+authoring the RS definitions is on the RS agenda.*
 
 *The 1040 lane closed THREE full batches in three days (005 s242i, 004
 s242l, 003 s242t). Open queues: BATCH-001 (6), BATCH-002 (NOL-blocked
@@ -54,25 +59,21 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⭐ NEXT UNIT — **Form 8853 Section C leg 4: MeF (the unit's LAST leg)**
-Legs 1-3 ✅ (s242u `ab5ed8e`, s242v `3b33982`, s242w `6952243`).
-Leg 4 = the IRS8853 e-file document. ⚠ ORDER OF WORK: (1) **grep the
-business-rules CSV** (`docs\mef\schemas\2025v5.3\1040_Business_Rules_
-2025v5.3.csv`) for `F8853-*` — the rules can be NARROWER than the face
-and ARE the spec for the seam (s225); also re-check `S1-F1040-117`-
-style demands on 8e. (2) Find `IRS8853.xsd` in the schema set — the 8e
-MeF element on Schedule 1 is **`TotArcherMSAMedcrLTCAmt`** (Archer +
-MA-MSA + LTC in ONE amount: the composed line transmits the TOTAL; the
-document carries Section C detail). (3) The XSD may hold Sections A/B
-members we DON'T populate — emit Section C members only; check
-minOccurs. (4) Per-insured repeating group vs per-document — read the
-XSD's shape before designing (the 8814 per-child precedent). (5) A
-multipayee/refused row: refuse composition BY NAME (the s237 rule) —
-match the render's refusal semantics. (6) Wire into read_model
-(extract) + builder + assembly slot (numeric form order) + the
-IND-style attachment link if the CSV demands one. The s242s IRS8814
-unit is the worked example end to end. After: IRS1116, amended MeF,
-BATCH-001's six, NOL-blocked (parked).
+### ⭐ NEXT UNIT — **IRS1116: the oldest live e-file gap**
+The Form 8853 unit is CLOSED. Next per the standing queue: the
+**IRS1116** e-file document (Form 1116 foreign tax credit — the
+holding refusal `_refuse_unattachable_form_1116` has held the line
+since s237). ⚠ ORDER OF WORK (the 8853/8379 pattern): (1) grep the
+business-rules CSV for `F1116-*` + the Schedule 3 line-1 rules; (2)
+read `IRS1116.xsd` (shape + maxOccurs — per-category copies likely);
+(3) the compute's single source is `compute_1116_result`; the §904(j)
+de-minimis election path files NO 1116 (the form_manifest exception —
+e-file must match); (4) replace the holding refusal WITH the leg and
+flip its test to pin the inverse (the s242s both-layers pattern);
+(5) the s238 IRS8379 unit is the worked singleton example, s242s
+IRS8814 the repeating example. After: amended MeF (IRS1040X +
+AmendedReturnInd), BATCH-001's six (2/4/5/6/8/10), the NOL-blocked
+computes (parked on the spec).
 
 ### What the 1040-X unit established (s242j-l — do not re-derive)
 - The amendment lifecycle: `amendment` payload block (Part II explanation
@@ -102,7 +103,7 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 
 ### ⛔⛔ THE E-FILE GAP LIST
 - **`IRS1116`** — the oldest live e-file gap. s238's `IRS8379` is the worked
-  example end to end. (`IRS4797` CLOSED s242c.)
+  example end to end. (`IRS4797` CLOSED s242c; `IRS8853` CLOSED s242x.)
 - **Amended MeF (IRS1040X + AmendedReturnInd)** — named at s242j; refused
   by name at extract until built (BATCH-004 #1 closed WITHOUT it — e-file
   was not in the item's ask; this is now a standing e-file gap like
@@ -122,6 +123,12 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s242x MOVES E-FILE OUTPUT on one narrow class:** a return with a
+  nonzero keyed 8e now REFUSES composition by name (it previously
+  transmitted with no Form 8853 behind it — an S1-F1040-022 reject
+  waiting to happen; the refusal is a correction). Returns with a
+  single computing Section C insured now transmit the IRS8853 document.
+  No compute/render movement.
 - **s242w: NONE beyond new-row reach, plus one WARNING-class change:**
   a return with a keyed 8e and NO Form8853LTC rows keeps its D_SCH1_004
   warning (unchanged); the requirement is merely satisfiable now.
@@ -239,6 +246,11 @@ with Ken's s224 keyed-only ruling; revisit only on his direction).
   `SH-F1040-*` family against v5.4 on arrival.
 
 ### RS AGENDA
+- **(s242x) The TEN staged FA definitions**: FA-1040-8853C-01..05 (titles
+  authored s232, runnable definitions never written) + FA-4562-DEST-01 /
+  FA-4562-ROUND-01 / FA-4562-280F-01 / FA-1040-2210-08 / FA-1040-2210-09
+  (same state, older units). Author each definition in RS, re-export,
+  move from `flow_assertions_1040_pending.json` to the gate mirror.
 - **⛔ BLOCKING two batch items: NO NOL SPEC** (`172`/`NOL`/`FORM_172`/`1045`
   all 404). BATCH-001 #4 + BATCH-002 #10 wait. Preservation is built; only
   the computation waits. Highest-value authoring order on this list.
