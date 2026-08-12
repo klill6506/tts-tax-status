@@ -1,26 +1,26 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s245). **✅ BATCH-001 #2 CLOSED — verified
-already built (s235), pinned in the reported shape; ⛔ #5 PARKED on Ken's
-own 8582 scope ruling.** #2's asks all resolve to the s235 preservation
-layer (per-activity `passive_amt` pools with the activity in the unique
-key; lane + CRUD API; the Carryforward Attribute Worksheet; the
-per-vintage proforma roll independent of the engine's computed regular
-aggregate). New `test_8582_amt_carryover.py` (6) pins the packet's shape:
-regular computes 21,790+6,170=27,960 per activity while the AMT pool
-holds 19,490 — different facts, both roll. The "computed next-year AMT"
-ask is REFUSED loudly by design: the AMT-8582 refigure needs per-activity
-AMT facts the schema cannot carry and the FORM_8582 spec has ZERO AMT
-content → RS agenda; D_CFWD_001 (error) already demands hand
-verification. #5 (nonpassive rental routing) asks to build exactly what
-Ken's 2026-06-13 kickoff scope decision RED-deferred (`D_8582_RE_PRO`) —
-⛔ KEN, question batched in REVIEW_QUEUE with a build recommendation.
-No code changed; tests + record only. Earlier today: s244 (#6 8862
-multi-category, `4dd5c40`, deploy LIVE), s243b (Ken's four-return
-unblock, LIVE — Codex can rerun the four production dry-runs), s243 (#8).
-s244's post-deploy commands (migrate 0312 + seed_rules) ALREADY RUN
-against the shared DB; the s244 design record is the batch annex + the
-RESUME block below.*
+*Last updated: 2026-08-12 (s245b). **✅ BATCH-001 #10 BUILT — the Form
+1099-Q unit (Coverdell ESA / QTP), end to end; EVERY BUILDABLE BATCH-001
+ITEM IS NOW CLOSED** (#5 ⛔ KEN-parked, #4 NOL-parked on the RS agenda —
+the batch file stays in the queue carrying both). The unit: `Form1099Q`
+model (migs 0313 + RLS 0314), `compute_1099q` (one classifier shared by
+compute/diagnostics/render; the Pub 970 (2025) worked examples are the
+pinned answer key — $18 / $735 / $25 incl. the Coverdell FMV derivation
+with the Pub's whole-dollar step rounding), Σ taxable riding the COMPOSED
+Schedule 1 line 8z as the sixth contributor ("QTP"/"Coverdell ESA"
+literals; removal reflows), six D_1099Q_* rules (the 5329 Part II
+reconciliation respects Ken's keyed-leaves ruling — never feeds), a
+distribution-worksheet statement page, the `q_1099s` lane (all six
+registries + generator) and full browser CRUD. Source of authority:
+`server/specs/_1099q_source_brief.md` (no RS spec exists for any
+information return — s222). The reported packet's $2,625/$2,625
+fully-covered shape computes ZERO tax without needing earnings, survives
+the face tie, and prints its facts. Post-deploy commands ALREADY RUN
+against the shared DB: `migrate` (0313/0314, additive) + `seed_rules`.
+Earlier today: s245 (#2 verified-built, #5 ⛔), s244 (#6 8862
+multi-category, LIVE), s243b (Ken's four-return unblock, LIVE — Codex
+can rerun the four production dry-runs), s243 (#8).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -97,20 +97,26 @@ Regression home: `server/tests/test_four_return_unblock_s243b.py`.
   note's "2026-07-06" date was loose; the ruling on record is the
   kickoff's scope decision 3, STATUS_ARCHIVE.)
 
-### ⭐ NEXT UNIT — **BATCH-001 #10: the Form 1099-Q form unit**
-Coverdell/QTP education distributions: source rows + the
-taxable-earnings computation (basis recovery under §529(c)(3)/§530(d))
-+ the double-benefit diagnostic vs the education credits. The BASIS
-preservation exists (s235 `education_basis` pools). ⚠ An information
-return — **NO RS spec exists for any information return (s222); do NOT
-run the 404-STOP gate as if one should** — build from the IRS form
-(f1099q + i1099q + Pub 970 ch. 6-7) with a `_1099q_source_brief.md`
-(the s222/s223 shape). ⚠ The ROUTING is the tax question: the taxable
-earnings land on Schedule 1 line 8z (plus the possible 10% additional
-tax on Schedule 2 via Form 5329 Part II), and Pub 970's
-adjusted-qualified-expenses ordering against the AOTC/LLC is where the
-double-benefit diagnostic lives. After BATCH-001: BATCH-002's
-NOL-blocked computes, the RS agenda, or the next posted batch.
+### ✅ s245b — BATCH-001 #10 built (the 1099-Q unit). Design record:
+the s245b batch annex + `server/specs/_1099q_source_brief.md` +
+`server/tests/test_1099q_unit.py` (24). Load-bearing facts:
+- ONE classifier (`compute_1099q.classify_row`) drives compute,
+  diagnostics and the worksheet: skip / covered / computed /
+  refuse_partial / refuse_underivable. A COVERED row (AQEE ≥ gross) is
+  tax-free WITHOUT earnings — box 2 blank must not refuse there.
+- The 8z share rides `compute_1099misc_db` (sixth contributor, the 8814
+  block pattern); `form_1099q_8z_share` also persists each row's
+  `computed_taxable_earnings` (never importable).
+- 5329 Part II line 5 = `Form5329.edu_able_dist` (the MODEL field; the
+  `f5329_line5_*` names are compute-INPUT keys — a rule reading those
+  off the model AttributeErrors, caught by the quiet-case test).
+- The Pub rounds EVERY derivation step to whole dollars.
+
+### ⭐ NEXT UNIT — the queue's next posted batch, or (if none) the
+highest-value RS-agenda authoring (the NOL spec blocks BATCH-001 #4 +
+BATCH-002's computes — but RS authoring is Rule Studio work, check
+whether the loop's charter covers it before starting). BATCH-002's
+non-NOL residue is closed; the 1120-S and legacy queues are unchanged.
 
 ### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
 Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
@@ -124,13 +130,12 @@ keyed-only ruling; revisit only on his direction).
 missing builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **BATCH-001 — ONE buildable item left
-  (#10, the 1099-Q form unit)**; #4 NOL-parked (RS), #5 ⛔ KEN (parked);
-  #1/#2/#3/#6/#7/#8/#9 closed (#2 ✅ s245, #6 ✅ s244, #8 ✅ s243) — the
-  batch file stays in the queue with its annexes until all items close.
-  **BATCH-002 — 9/10 open as to COMPUTE only** (NOL-spec-blocked);
-  **BATCH-003/004/005 — ✅ DONE, moved.** Every worked file carries a
-  result annex; read it first.
+- **1040** (`1040\CC Changes\`): **BATCH-001 — every buildable item
+  CLOSED** (#10 ✅ s245b, #2 ✅ s245, #6 ✅ s244, #8 ✅ s243,
+  #1/#3/#7/#9 earlier); #4 NOL-parked (RS agenda), #5 ⛔ KEN — the batch
+  file stays in the queue carrying those two. **BATCH-002 — open as to
+  the NOL-blocked COMPUTES only**; **BATCH-003/004/005 — ✅ DONE,
+  moved.** Every worked file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -138,6 +143,10 @@ missing builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s245b: NONE beyond new-row reach.** The 8z composition gains its
+  sixth share only when a `Form1099Q` row exists (none do); the share is
+  0 on every existing return by construction, and the worksheet renders
+  only when rows exist. Migrations 0313/0314 additive.
 - **⚠ s244 MOVES E-FILE OUTPUT + PRINT on the 8862 class (all
   corrections toward i8862):** (1) a return transmitting an 8862 whose
   CTC/AOTC boxes rode claims alone now transmits them ONLY when the
