@@ -673,6 +673,20 @@
 > ⚠ **Severity PROVED, not asserted**: a two-way compute pins AGI down by
 > exactly $8,400 ($98,978 → $90,578, the packet's own figures).
 
+> **2026-08-12 session 246b — ✅ FORM 8582 GAINS THE REP NONPASSIVE ROUTING
+> (BATCH-001 #5; mig 0315, one deploy).** Ken un-parked it LIVE, superseding
+> both prior scope rulings; spec R-8582-RE-PRO already stated the routing.
+> `RentalProperty.material_participation` (tri-state) + ONE predicate
+> (`rental_rep_nonpassive`) shared by compute/diagnostics; the bypass mirrors
+> the §469(g)-release mechanics and hands the GA RIE per-owner feeder the full
+> net through the persisted columns. ⚠ THE R-8582-MAGI TRAP: the REP rental
+> loss is a modified-AGI ADD-BACK — pinned (−60,000 REP loss beside a passive
+> rental at 149,000 wages: the passive allowance stays $500). ⚠ §469(f)
+> former-passive rows REFUSE the routing (D_8582_FPA error); matpart-without-
+> REP routes nothing (§469(c)(2), D_8582_MATPART_NO_REP); unanswered-under-REP
+> warns. The reported b100 shape reproduces to the dollar (−8,536 fully
+> deducted, BLANK 8582 face, RIE owner shares intact, the SS-taxability drop).
+
 > **2026-08-12 session 245b — ✅✅ FORM 1099-Q BUILT, ALL LEGS (BATCH-001 #10;
 > migs 0313 + RLS 0314, one deploy).** An information return: no RS spec (s222);
 > the governing record is `server/specs/_1099q_source_brief.md` — Pub 970

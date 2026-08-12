@@ -1,26 +1,28 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s245b). **✅ BATCH-001 #10 BUILT — the Form
-1099-Q unit (Coverdell ESA / QTP), end to end; EVERY BUILDABLE BATCH-001
-ITEM IS NOW CLOSED** (#5 ⛔ KEN-parked, #4 NOL-parked on the RS agenda —
-the batch file stays in the queue carrying both). The unit: `Form1099Q`
-model (migs 0313 + RLS 0314), `compute_1099q` (one classifier shared by
-compute/diagnostics/render; the Pub 970 (2025) worked examples are the
-pinned answer key — $18 / $735 / $25 incl. the Coverdell FMV derivation
-with the Pub's whole-dollar step rounding), Σ taxable riding the COMPOSED
-Schedule 1 line 8z as the sixth contributor ("QTP"/"Coverdell ESA"
-literals; removal reflows), six D_1099Q_* rules (the 5329 Part II
-reconciliation respects Ken's keyed-leaves ruling — never feeds), a
-distribution-worksheet statement page, the `q_1099s` lane (all six
-registries + generator) and full browser CRUD. Source of authority:
-`server/specs/_1099q_source_brief.md` (no RS spec exists for any
-information return — s222). The reported packet's $2,625/$2,625
-fully-covered shape computes ZERO tax without needing earnings, survives
-the face tie, and prints its facts. Post-deploy commands ALREADY RUN
-against the shared DB: `migrate` (0313/0314, additive) + `seed_rules`.
-Earlier today: s245 (#2 verified-built, #5 ⛔), s244 (#6 8862
-multi-category, LIVE), s243b (Ken's four-return unblock, LIVE — Codex
-can rerun the four production dry-runs), s243 (#8).*
+*Last updated: 2026-08-12 (s246b). **✅ BATCH-001 #5 BUILT — Ken
+un-parked it live** ("go ahead and schedule the real estate professional
+work"; DECISIONS.md records the supersession of both prior scope
+rulings). REP nonpassive rental routing: `RentalProperty.
+material_participation` (mig 0315) + the shared `rental_rep_nonpassive`
+predicate; the bypass mirrors the §469(g)-release mechanics (loss joins
+rental_allowed; persisted allowed=loss/suspended=0 — which hands the GA
+RIE per-owner feeder the full net for free). The R-8582-MAGI trap is
+pinned (the REP loss is a MAGI ADD-BACK — it must not enlarge another
+activity's allowance). Boundaries: §469(f) former-passive rows STAY
+passive + D_8582_FPA (error); matpart-without-REP routes nothing
+(D_8582_MATPART_NO_REP); unanswered-under-REP warns (D_8582_RE_PRO
+rebuilt). The four return-level REP facts join the back-entry taxpayer
+lane (were browser-only — the s244 class). 12 regressions
+(`test_8582_rep_nonpassive.py`, the b100 shape to the dollar) + 586 +
+181 neighbors + client tsc/1680 green; mig 0315 + seed_rules applied.
+**BATCH-001: only #4 remains, parked on the NOL walk.** Ken has the NOL
+brief questions pending ("I'll answer the NOL questions later").
+Earlier today: s246 (the NOL brief), s245b (#10 the 1099-Q unit), s245
+(#2 verified-built), s244 (#6 8862 multi-category), s243b (Ken's
+four-return unblock — Codex can rerun the four production dry-runs),
+s243 (#8) — all LIVE; design records in the batch annexes; previous
+STATUS revisions in git.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -112,11 +114,22 @@ the s245b batch annex + `server/specs/_1099q_source_brief.md` +
   off the model AttributeErrors, caught by the quiet-case test).
 - The Pub rounds EVERY derivation step to whole dollars.
 
-### ⭐ NEXT UNIT — the queue's next posted batch, or (if none) the
-highest-value RS-agenda authoring (the NOL spec blocks BATCH-001 #4 +
-BATCH-002's computes — but RS authoring is Rule Studio work, check
-whether the loop's charter covers it before starting). BATCH-002's
-non-NOL residue is closed; the 1120-S and legacy queues are unchanged.
+### ✅ s246b — BATCH-001 #5 built (REP nonpassive routing; Ken's live go)
+Design record: the s246b batch annex + `test_8582_rep_nonpassive.py`.
+Load-bearing: ONE predicate (`rental_rep_nonpassive` — REP assertion +
+per-row material_participation True + NO prior carryover) shared by
+compute/diagnostics; the bypass = the §469(g)-release mechanics; the
+REP loss is a MAGI ADD-BACK (R-8582-MAGI — pinned); §469(f)
+former-passive rows STAY passive (D_8582_FPA error).
+
+### ⭐ NEXT UNIT — the next posted batch; else quiet holds
+The queue is fully drained: **BATCH-001 closed except #4** (parked on
+the NOL walk — the brief's four questions await Ken, who said he'll
+answer later); BATCH-002's residue is the same NOL computes. Next:
+(a) a newly posted CC Changes batch, (b) Ken's NOL answers → the RS
+authoring session (delvio-rule-studio; read its session_log.md first;
+nothing seeds without the walk), or (c) further RS-agenda prep briefs.
+Quiet holds are acceptable — do not manufacture work.
 
 ### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
 Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
@@ -143,6 +156,11 @@ missing builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s246b: NONE beyond new-fact reach.** The REP routing engages only
+  when a rental's `material_participation` is True (NULL on every
+  existing row) — no existing return moves until the fact is keyed. The
+  three new/rebuilt diagnostics fire only under the REP assertion or the
+  new flag. Migration 0315 nullable-additive.
 - **s245b: NONE beyond new-row reach.** The 8z composition gains its
   sixth share only when a `Form1099Q` row exists (none do); the share is
   0 on every existing return by construction, and the worksheet renders
