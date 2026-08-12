@@ -673,6 +673,29 @@
 > ⚠ **Severity PROVED, not asserted**: a two-way compute pins AGI down by
 > exactly $8,400 ($98,978 → $90,578, the packet's own figures).
 
+> **2026-08-12 session 244 — ✅✅ FORM 8862 GOES MULTI-CATEGORY (BATCH-001 #6;
+> migration 0312, one deploy `4dd5c40`).** The s241i "complete" verdict held
+> for the FORM's legs but every GATE was EIC-only and category-blind: the
+> only stored disallowance fact was `eic_disallowed_prior_year`, so a
+> CTC-only or AOTC-only prior disallowance rendered NO 8862, fired NO rule,
+> and (with no keyed line-1 year) transmitted NO recertification. Two new
+> tri-state Taxpayer facts (`ctc/aotc_disallowed_prior_year`) + ONE
+> predicate everywhere — **a category engages iff claimed now AND
+> previously disallowed** (i8862 Rev. 12-2025 line 2) — at the MeF builder
+> (`_f8862_engagement`; named refusal when nothing resolves; attach gate
+> rides engagement), the render (per-Part drawing — a CTC-only recert must
+> not print sworn EIC answers the XML omits), the diagnostics (D_8862_003
+> re-based per category; NEW D_8862_004/005 requirement warnings + NEW
+> D_8862_006 unanswered-category), compute_eic's 8867/8862 backfill
+> (reaches non-EIC returns, opt-out included; 8867 7a sees all flags) and
+> every import surface (+ the lane finally accepts the Part II line 4/11
+> derive sources its own refusal message pointed at). ⚠ "CTC claimed"
+> includes Schedule 8812 line 12 — ATS Scenario 5 (line 19 zeroed by the
+> tax limit, ACTC elected out, box still ticked) pins it. **⚠ HOH REFUTED
+> as an 8862 category** (face + XSD + i8862 all three-category; HOH recert
+> is Form 8867 due-diligence territory). 24 new regressions + the CTC-only
+> print test; scenario5 facts state all three disallowances.
+
 > **2026-08-10 session 241i — ✅✅ FORM 8862 IS COMPLETE (all legs).** Section A
 > shipped with its PRINT and its TRANSMISSION in one unit, deliberately: line 6
 > and line 8 were in the XSD and unemitted while also unprinted, and splitting
