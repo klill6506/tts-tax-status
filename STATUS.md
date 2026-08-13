@@ -1,24 +1,21 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s252). **✅ THE GUARDED-MUTATION BUILD LEG 1
-IS LIVE (`ac04c1b`, no migration)** — the s251 investigation's fix,
-first slice: NEW `lib/recordSaves.ts` (the W-2 archetype's contract as
-ONE shared hook — lane + idempotency key per intent + pending +
-lane-DERIVED addError + add-doubles-as-retry replaying the SAME
-key/body). Migrated: the dependents type-to-add (#2), both rental adds
-(#4; the endpoint also joins server-side @idempotent_create), and
-Start Return on both pages (90s bound for the measured 10-45s create;
-409 HEALS by opening the return the earlier attempt made; inline
-errors replace the suppressed native alert()). api.ts now puts the
-friendly timeout text in data.error (the raw DOMException leaked).
-**Verified live in a browser**: typed EDWARD → "Adding…" → the 30s
-abort surfaced a visible alert with the name kept → the aborted
-request completed server-side → EXACTLY ONE row. Gates: 1,687 client
-tests + tsc clean, 10/10 autosave-stabilization (new rental
-idempotency pin), 526 flow assertions. **NEXT: leg 2 — per-field
-saving/saved/failed on the W-2/1099-R worksheets (#3) + the taxpayer
-header (#5), then the ~95-site sweep** (see ⭐). Earlier: s250 #10 8959,
-s249 #1, s248 #9, s247 trio, s246b REP, s243b — all LIVE.*
+*Last updated: 2026-08-12 (s253). **✅✅ BATCH-006 IS COMPLETE — ALL TEN
+ITEMS; the file moved to Done.** Leg 2 shipped (`77d7950`, no
+migration): **per-field saving/saved/failed states** — FieldStateInput
+renders `is-saving` (dashed) while the LATEST commit is in flight and
+`is-savefailed` (red ring + reason in the title, value KEPT) on
+failure; a new edit supersedes the verdict. `useTaxpayerFacts.commit`
+resolves with the committing FIELD's verdict (partial-credit honored)
+— occupation/address (#5) ride it; the W-2 boxes + nested rows return
+their lane verdicts (#3); the 1099-R per-field PATCH (was: NO ok
+check) joins a per-row lane. Verified live: commit → is-saving → the
+local 30s abort → is-savefailed with the reason, value on screen.
+Gates: 1,696 client + tsc. Leg 1 (s252 `ac04c1b`): the guarded-create
+hook + dependents/rentals/Start-Return migrations + 409-heals +
+server rental idempotency. **NEXT: the ~95-site raw-mutation sweep**
+(see ⭐). Earlier today: s250 #10 8959, s249 #1, s248 #9, s247 trio,
+s246b REP, s243b — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -64,24 +61,26 @@ Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
 - Codex re-stages the two-W-2 production batch adding
   `"amt_8959_filed": true` (annex guidance).
 
-### ⭐ NEXT UNIT — **the guarded-mutation build, leg 2 (BATCH-006 #3/#5)**
-Leg 1 (creates) shipped in s252. Leg 2 = the FIELD-EDIT lifecycle:
-- **#3**: the W-2/1099-R worksheets' PATCH lanes exist (queueW2Patch /
-  the 1099-R draft flow) but a failure surfaces only in the header
-  pill + an 8s toast while FieldStateInput reverts the cell — add a
-  per-field saving/saved/failed affordance (the items ask for it
-  explicitly). Read `FieldStateInput.tsx`'s revert contract first
-  (s199/046 #8 history in its header) — the failure REVERT is
-  deliberate; the missing piece is the visible per-cell state.
-- **#5**: the taxpayer-header PATCHes (FormEditor lines ~2982/3566/
-  12983/24436 + `useTaxpayerFacts`) — establish which lane each rides,
-  add pending/failed surfacing, and consider whether they should ride
-  `useRecordSaves.upd`-style lanes per field family.
-- Then the ~95-site sweep until dry (multi-tick; the Schedule C add,
-  W-2/1099-R creates already ride the machinery; the 1099-R "+ Add"
-  client-draft flow's card IS its pending state — don't break it).
-⚠ Client-only; vitest + `tsc --noEmit` + targeted screen tests are the
-gates. The s251/s252 annexes in BATCH-006 are the design record.
+### ⭐ NEXT UNIT — **the raw-mutation sweep, leg 1 (self-directed hardening)**
+BATCH-006's named screens are done; ~95 raw `await post/patch` call
+sites remain outside the guarded machinery. Sweep by traffic, highest
+first, converting each to `useRecordSaves`/lane + verdict-returning
+commits (per-cell states come free via FieldStateInput now):
+- The capital-transactions `patchRow` (FormEditor ~17985 — the same
+  naked shape the 1099-R one had) + its `createDraft`.
+- The PayerTable-family screens' `onUpdate` chains (interest,
+  dividends, 1099-G/MISC/PATR…) — many ride `useNestedRowSaves.upd`
+  already (verdicts free); convert the ones that don't.
+- The singleton-PATCH sections (form-1116 `update`, schedule-j,
+  8615-style) — `const res = await patch(...); onRefresh(freshOf(res))`
+  with no ok check.
+Grep the remaining sites: `grep -rn "await post(\|await patch(" pages/
+slate/ components/ | grep -v saveScope|recordSaves|test`. Convert in
+slices; each tick's slice ships with tests. ⚠ Don't break the 1099-R/
+Schedule-D client-draft flows (their card IS the pending state).
+⚠ Client-only; vitest + `tsc --noEmit` gates. After the sweep: the NOL
+computes stay parked on Ken's brief answers; the RS agenda carries the
+rest; Codex may post a new batch any boot.
 
 ### ✅ s249 — BATCH-006 #1 built (alimony received, the s241j twin)
 Two lines, not a document family: `sch1_fields["2a"]/["2b"]` import;
@@ -126,12 +125,12 @@ What remains refused at composition is NAMED per-case, never a missing
 builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **BATCH-006 — #1/#6/#7/#8/#9/#10 ✅
-  closed; #2-#5 open (the Slate family, next)**. **BATCH-001 — every
-  buildable item CLOSED**; #4 NOL-parked (RS agenda; Ken answers the
-  brief's four questions later). **BATCH-002 — open as to the
-  NOL-blocked COMPUTES only**; **BATCH-003/004/005 — ✅ DONE, moved.**
-  Every worked file carries a result annex; read it first.
+- **1040** (`1040\CC Changes\`): **BATCH-006 — ✅✅ COMPLETE (all ten),
+  moved to Done (s253)**. **BATCH-001 — every buildable item CLOSED**;
+  #4 NOL-parked (RS agenda; Ken answers the brief's four questions
+  later). **BATCH-002 — open as to the NOL-blocked COMPUTES only**;
+  **BATCH-003/004/005 — ✅ DONE, moved.** Every worked file carries a
+  result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
