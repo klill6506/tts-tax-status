@@ -1,20 +1,19 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s260). **✅ SWEEP LEG 2 LIVE (`e1d7da8`) —
-five income screens guarded, and the SERVER half of the contract the
-client was missing**: INT/DIV/1099-G/MISC/PATR field PATCHes ride
-per-row verdict-returning lanes (the s259 threading lights the cell
-overlays), every create guarded via useRecordSaves with
-addPending/addError threaded. **Found LIVE: the six income-document
-create endpoints IGNORED X-Idempotency-Key** — the guarded add's retry
-after the (reproduced) 30s timeout DUPLICATED the row (two rows, one
-intent, Django 201-after-timeout). `@idempotent_create` added to all
-six (including capital-transactions — s259's own latent gap); a
-parametrized test pins each. 8 screen tests + 6 idempotency pins;
-1706 client + 526 FAs + autosave-stabilization green; no migration.
-Earlier today: s259 (sweep leg 1 + the PayerTable find), s258 (OOS
-hold), s257 (MFS threshold), s256 (the NOL unit + hotfix),
-s255/s254/s253b (the NOL build day) — all LIVE.*
+*Last updated: 2026-08-13 (s261). **✅ SWEEP LEG 3 LIVE (`a9e9ada`) —
+the singleton sections + W-2G.** Form 1116 (both its lanes — the row
+PATCH and the de-minimis Taxpayer election share ONE per-screen lane,
+keeping the screen's writes ordered), Schedule J, and Form 8615 ride
+verdict-returning saveScope lanes; their Slate InputRow cells light
+the per-cell overlays. W-2G: guarded create + enlaned PATCH, and per
+the s260 lesson `form-w2gs` gains `@idempotent_create` (the
+parametrized pin now covers 7 endpoints). 1706 client + 7 pins + 526
+FAs green; no migration. The sweep's remaining tail: assorted `void
+update...` boundaries (depreciation, rentals, K-1, dispositions —
+lower-traffic; grep `onUpdate={` for the `void` sites). Earlier today:
+s260 (five income screens + the idempotency contract), s259 (sweep
+leg 1 + the PayerTable find), s258/s257 (Ken's rulings), s256-s253b
+(the NOL day) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -42,6 +41,23 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s261 — sweep leg 3: the singletons + W-2G
+Design record: the s261 commit. Load-bearing:
+- **One lane per SINGLETON SCREEN, not per endpoint** — Form 1116's row
+  PATCH and its Taxpayer-election PATCH share `f1116:{id}` so the
+  screen's writes stay strictly ordered (two lanes could interleave a
+  row write with the election that changes its meaning).
+- The s260 create-guard checklist applied: W-2G's endpoint got
+  `@idempotent_create` IN THE SAME SLICE as its client guard.
+- Mechanical replication of the s259/s260-proven shape — no separate
+  live pass needed; the screens' unit suites exercise the wiring.
+
+### ⭐ NEXT UNIT — the sweep's tail, then idle for Codex
+The remaining `void update...` boundaries (depreciation, rentals, K-1,
+dispositions — grep `onUpdate={` in FormEditor for `void` sites; each
+converts exactly like s259-s261). After the tail: the queue is Codex's
+— no standing units remain except the pre-season debounce shelf item.
+
 ### ✅ s260 — sweep leg 2: five income screens + the server idempotency gap
 Design record: the s260 commit + `test_sweep_idempotent_creates_s260.py`.
 Load-bearing:
@@ -56,13 +72,6 @@ Load-bearing:
   real; grep the component before inserting.
 - ⚠ tsc --noEmit MISSED the duplicate-const (esbuild/vitest caught it) —
   run vitest collection as the syntax gate, never tsc alone.
-
-### ⭐ NEXT UNIT — sweep leg 3: the singleton-PATCH sections
-form-1116 `update`, schedule-j, 8615-style — `await patch(...)` with no
-ok check; enlane + verdict. Then the remaining `void update...`
-boundaries (W-2G, depreciation, rentals — grep `onUpdate={` in
-FormEditor). Client-mostly; check each endpoint's @idempotent_create
-when guarding creates.
 
 ### ✅ s259 — the raw-mutation sweep, leg 1 (Schedule D + PayerTable)
 Design record: the s259 commit message + the 2 new
