@@ -1,6 +1,22 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-12 session 250 — FORM 8959 MULTI-W-2 AGGREGATE ENGAGEMENT
+> (BATCH-006 #10; `addc5d7`; mig 0318 additive).** `Taxpayer.
+> amt_8959_filed` TRANSCRIBES the packet's filed Form 8959 and engages
+> the form when no Who-Must-File arm is evaluable from aggregate-only
+> multi-W-2 data (the s227 identity-valve representation class;
+> substance-gated on line 4 or 19 nonzero; never a per-employer
+> allocation). Bridge-gate repair: 8959 sourcing + engagement now live
+> in shared helpers (`resolve_8959_medicare_wages` /
+> `resolve_8959_max_single_w2` / `form_8959_engagement`) used by compute
+> AND the D_8959_* rules — the rules had been blind to BOTH valves on
+> aggregate-sourced returns; D_8959_001 gained a tax-actually-due gate.
+> Staging warning points at the remedy; batch-import schema regenerated.
+> 11 regressions (`test_batch006_item10_8959_agg.py`). Form 8959 legs
+> unchanged (all green since the Topic-8 build) — this is an engagement
+> refinement, not a new leg.
+
 > **2026-08-11 session 242t — THE FILED K-1 SPLIT (BATCH-003 #3;
 > `823f60a`; mig 0307) — ✅✅ BATCH-003 CLOSES 10/10.** Two nullable
 > ScheduleK1 fields (both-or-neither) supersede the single
