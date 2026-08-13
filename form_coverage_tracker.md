@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 262b — STATE-REGISTRY REFACTOR LEG 1 ✅
+> (`76d9d6b`).** Ken ruled "registry first" on the BATCH-007 gate. One
+> table keyed by (state_code, entity_kind) replaces views.py's four
+> per-entity-kind dicts; adding a state is a row, a new entity kind no
+> longer needs a fifth map. A dead corporate fallback that could have
+> attached a corporate state return to a 1040 is retired. ⚠ Verify-first:
+> compute already dispatches all four state individual forms and the
+> render package already has a generic fallback — **backentry is the one
+> real gap** (leg 2 = BATCH-007's AL/NC/SC lane). FL/TN absent by design.
+> 14 pins + 750 green.
+
 > **2026-08-13 session 262 — ✅✅ THE RAW-MUTATION SWEEP COMPLETES
 > (`a72b920`).** The tail's nine sections enlaned; every 1040-editor
 > save path now reports its outcome or is a deliberate draft-flow
