@@ -1,23 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s256). **✅ FORM 172 LEG 3 LIVE (`43768c7`,
-no migration) — THE NOL UNIT IS COMPLETE, and it ships a HOTFIX: s255's
-lane missed SINGLETON_SECTIONS, so EVERY backentry commit 500'd from
-`ca6202c` until this deploy** (the OneToOne reverse accessor raises on
-absence; a structural invariant test now guards every future singleton).
-The seams: ONE data source (`form_172_statement_data`, persisted
-worksheet rows + vintages) feeds BOTH the printed 1040's "Statement for
-Schedule 1, Line 8a" page (i172's attach duty) and MeF's
-NOLCarryforwardDedStatement (IND-368/369 true by construction; 8a
-transmits its POSITIVE magnitude — the XSD is non-negative and the
-line-9 math subtracts — while the face keeps the negative). Named
-refusals: keyed 8a with no computation behind it; >1000-char vintage
-lists (paper-file). D_172_80PCT_STATEMENT → info ("attaches
-automatically"). BATCH-002 item 10 CLOSED (annex; the file stays for
-item 9's RS-gated charitable compute only); BATCH-001 #4 final annex.
-D_172_MARITAL_SPLIT decided DEFER + the Form 172 FACE render recorded
-(DEFERRAL_AUDIT). Earlier today: s255 (Part I generation), s254
-(deduction engine), s253b (spec + Ken's rulings) — all LIVE.*
+*Last updated: 2026-08-13 (s257). **✅ THE §38(c)(6)(A) MFS $12,500
+THRESHOLD LIVE (`cb86103`, mig 0321 additive) — Ken's 00:45 ruling #1
+built, statute verified live INCLUDING the exception the request never
+mentioned**: the halving "shall not apply" when the spouse has no
+business credit — a fact about the SPOUSE'S return, so it is
+preparer-asserted (`f3800_mfs_spouse_has_credit`, nullable; the
+esb-gross-receipts pattern). Unanswered on MFS uses $12,500 (allows
+LESS credit — never a silent over-allowance) + D_3800_010 (fires only
+when line 12 > $12,500, where the answer can matter). ONE reader
+(`form_3800_mfs_threshold`) feeds compute + diagnostic. **The RS spec
+was amended in the same pass** (R-3800-MFS-THRESHOLD, statute verbatim
++ the IRC_38 key excerpt; rule-studio `ee4dece`; cache re-exported and
+content-verified). 13 new tests + 568 neighbors green. Earlier today:
+s256 (the NOL unit completes + the singleton hotfix), s255/s254/s253b
+(the NOL build day) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -45,6 +42,27 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s257 — the §38(c)(6)(A) MFS $12,500 threshold (Ken ruling #1)
+Design record: `server/tests/test_form3800_mfs_threshold_s257.py` (13) +
+the RS amendment (rule-studio `ee4dece`). Load-bearing:
+- **The statute's second sentence is the build's substance**: MFS +
+  spouse-has-NO-credit keeps $25,000. The request said "halve it";
+  the verbatim text said "unless". Verify-first caught the difference.
+- **The spouse fact is preparer-asserted, nullable** — never derivable
+  from this return. Unanswered → $12,500 (conservative) + D_3800_010.
+- **One reader** (`form_3800_mfs_threshold`) feeds compute AND the
+  diagnostic — they cannot diverge.
+- The spec amendment rode the same session (never let app and spec
+  drift): R-3800-MFS-THRESHOLD + the key excerpt + D_3800_010 in the
+  spec's diagnostics; cache refreshed + content-verified.
+
+### ⭐ NEXT UNIT — the out-of-scope-state named hold (Ken ruling #2)
+`out_of_scope_states` marker on StagedReturn + cleanup-gate surfacing —
+an out-of-state return in a batch packet gets an honest "goes to the
+paper preparer" disposition instead of limbo. Unblocks the parked
+BATCH-001 #9-shape packets and the NZ legacy file's #10. Then: the
+raw-mutation sweep leg 1 (details below).
+
 ### ✅ s256 — Form 172 leg 3: the NOL unit COMPLETE (+ the commit hotfix)
 Design record: the s256 annexes in BATCH-001/BATCH-002 +
 `server/tests/test_form_172_statement.py` (11). Load-bearing:
@@ -63,12 +81,6 @@ Design record: the s256 annexes in BATCH-001/BATCH-002 +
 - **Keyed 8a with no Form 172 detail = named e-file refusal** (the app
   holds only a total; it will not improvise the computation statement).
   Print attaches nothing in that shape.
-
-### ⭐ NEXT UNIT — the §38(c)(6)(A) MFS $12,500 halving (Ken's ruling)
-Verify §38(c)(6)(A) live (LII) + the i3800 worksheet before touching
-compute; the GBC limitation's $25,000 halves for MFS. Small unit +
-tests. Then: the out-of-scope-state named hold; then the raw-mutation
-sweep leg 1 (details below).
 
 ### ✅ s250 — BATCH-006 #10 built (the 8959 multi-W-2 aggregate)
 Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
@@ -179,6 +191,11 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s257 MOVES MFS RETURNS with a GBC and line 12 > $12,500** (a
+  correction): line 13 rises to the §38(c)(6)(A) threshold → less
+  credit allowed unless the preparer answers spouse-has-no-credit
+  (which restores $25,000). D_3800_010 (error) fires on the unanswered
+  shape. No existing MFS-with-GBC returns are known in the test data.
 - **⚠ s256 MOVES PRINT + E-FILE OUTPUT on NOL returns (corrections)**:
   the 1040 PDF gains the line-8a statement page; MeF flips 8a to its
   positive magnitude + emits the statement document; a keyed-8a-no-
