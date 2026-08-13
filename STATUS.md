@@ -1,19 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s261). **✅ SWEEP LEG 3 LIVE (`a9e9ada`) —
-the singleton sections + W-2G.** Form 1116 (both its lanes — the row
-PATCH and the de-minimis Taxpayer election share ONE per-screen lane,
-keeping the screen's writes ordered), Schedule J, and Form 8615 ride
-verdict-returning saveScope lanes; their Slate InputRow cells light
-the per-cell overlays. W-2G: guarded create + enlaned PATCH, and per
-the s260 lesson `form-w2gs` gains `@idempotent_create` (the
-parametrized pin now covers 7 endpoints). 1706 client + 7 pins + 526
-FAs green; no migration. The sweep's remaining tail: assorted `void
-update...` boundaries (depreciation, rentals, K-1, dispositions —
-lower-traffic; grep `onUpdate={` for the `void` sites). Earlier today:
-s260 (five income screens + the idempotency contract), s259 (sweep
-leg 1 + the PayerTable find), s258/s257 (Ken's rulings), s256-s253b
-(the NOL day) — all LIVE.*
+*Last updated: 2026-08-13 (s262). **✅✅ THE RAW-MUTATION SWEEP IS
+COMPLETE (`a72b920`)** — the tail's nine sections enlaned (1310, 8606,
+Roth tracker, 1040-X, installment sales, like-kind, noncash
+contributions, partnership distributions incl. the nested property
+rows on the PARENT's lane, state tax payments). Every save path in the
+1040 editor now reports its outcome or is a deliberate draft-flow
+exception. **FOUND: `tsc --noEmit -p .` was a NO-OP the whole time**
+(the root tsconfig is references-only) — the real gate is
+`-p tsconfig.renderer.json`, which surfaced real errors in this
+sweep's own widenings (fixed; sweep files now typecheck CLEAN) and 57
+PRE-EXISTING errors in old code (spun off as its own task chip).
+vitest (1706) green throughout. **The standing queue is now EMPTY** —
+the loop idles for Codex batches; the pre-season debounce stays
+shelved for Ken's timing. Earlier today: s261-s259 (the sweep),
+s258/s257 (Ken's rulings), s256-s253b (the NOL day) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -41,6 +42,24 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s262 — the sweep's tail: COMPLETE (+ the vacuous-typecheck find)
+Design record: the s262 commit. Load-bearing:
+- **⚠⚠ `tsc --noEmit -p .` CHECKS NOTHING** — the root tsconfig is
+  references-only (no files); every "tsc clean" since the gate was
+  adopted was vacuous. The real command:
+  `npx tsc --noEmit -p tsconfig.renderer.json`. The sweep's files are
+  clean under it; the 57 pre-existing errors are a spawned task chip.
+- The nested partnership-distribution property rows ride the PARENT
+  distribution's lane (one consistency unit — the s261 rule).
+- The onUpdate widening literal that satisfies FieldStateInput:
+  `void | Promise<{ ok: boolean; message?: string } | undefined>`
+  (undefined ⊆ void inside CommitOutcome's promise).
+
+### ⭐ NEXT — the queue is EMPTY: idle for Codex
+No standing units remain. Each tick: boot + sweep the three CC Changes
+folders; a posted batch is the next unit. Shelved for Ken: the
+pre-season recompute debounce; the 57-error typecheck-debt chip.
+
 ### ✅ s261 — sweep leg 3: the singletons + W-2G
 Design record: the s261 commit. Load-bearing:
 - **One lane per SINGLETON SCREEN, not per endpoint** — Form 1116's row
@@ -51,12 +70,6 @@ Design record: the s261 commit. Load-bearing:
   `@idempotent_create` IN THE SAME SLICE as its client guard.
 - Mechanical replication of the s259/s260-proven shape — no separate
   live pass needed; the screens' unit suites exercise the wiring.
-
-### ⭐ NEXT UNIT — the sweep's tail, then idle for Codex
-The remaining `void update...` boundaries (depreciation, rentals, K-1,
-dispositions — grep `onUpdate={` in FormEditor for `void` sites; each
-converts exactly like s259-s261). After the tail: the queue is Codex's
-— no standing units remain except the pre-season debounce shelf item.
 
 ### ✅ s260 — sweep leg 2: five income screens + the server idempotency gap
 Design record: the s260 commit + `test_sweep_idempotent_creates_s260.py`.
