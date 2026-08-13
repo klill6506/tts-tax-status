@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-12 session 253 — GUARDED-MUTATION LEG 2: PER-FIELD SAVE
+> STATES (BATCH-006 #3/#5 → ✅✅ THE BATCH COMPLETES, all ten, moved to
+> Done; `77d7950`, no migration).** Not a form unit: FieldStateInput
+> renders is-saving/is-savefailed from its commit's returned verdict
+> (latest-commit-wins; new edit supersedes; value kept on failure);
+> useTaxpayerFacts.commit resolves per-field verdicts (partial-credit
+> honored); W-2 boxes + nested rows return lane verdicts; the 1099-R
+> per-field PATCH joins a per-row lane (was: no ok check). Verified
+> live through the local 30s abort. Next: the ~95-site raw-mutation
+> sweep. No form legs affected.
+
 > **2026-08-12 session 252 — THE GUARDED-MUTATION BUILD LEG 1
 > (BATCH-006 #2/#4; `ac04c1b`; client + one view decorator, no
 > migration).** Not a form unit: `lib/recordSaves.ts` promotes the W-2
