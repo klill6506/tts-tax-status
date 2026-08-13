@@ -42,7 +42,39 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ⛔ BATCH-007 IS PARKED AT A KEN GATE — the only thing in the queue
+### ✅ s262b — the state-registry refactor, LEG 1 (`76d9d6b`)
+Ken ruled **"registry first"** on the gate below (DECISIONS.md). Leg 1 is
+the foundation BATCH-007's lane lands on:
+- **NEW `apps/returns/state_registry.py`** — one table keyed by
+  (state_code, entity_kind), 7 rows (GA's four forms + SC/AL/NC
+  individual). views.py's **four** parallel per-entity-kind dicts are
+  RETIRED and their resolver is one call. Adding a state = a row; a new
+  entity kind no longer needs a fifth map.
+- **A latent trap retired**: the old resolver fell back to the CORPORATE
+  form when a 1040/1065 state had no individual/partnership form —
+  provably dead, and it would have attached a corporate state return to
+  a 1040. Now resolves to None and 400s by name.
+- ⚠ **Verify-first corrections to the gate's framing** (in the module
+  docstring so nobody re-derives them): of the 26 `"GA-500"` literals,
+  only those in GENERIC machinery are refactor business — a Georgia
+  diagnostic naming GA-500 is CORRECT. Compute already dispatches all
+  four state individual forms; the render package already ends in a
+  generic fallback (checked, not assumed). **The real remaining gap is
+  backentry** = BATCH-007's leg 2.
+- FL/TN absent by design (no individual income tax) — pinned as the
+  batch's negative control. 14 pins + 750 green; no migration.
+
+### ▶ NEXT — leg 2: the AL/NC/SC import lane (BATCH-007's actual ask)
+`backentry.py` is the last GA-only seam (`_ensure_ga500`, `ga500_fields`,
+4 literals). Generalize onto the registry: a `state_returns`-shaped
+payload path, staging refusal of unsupported/uninstalled states
+(`supported_state_codes` is the allowlist), per-face reconciliation so
+one tied face can't mask an untied one, and cleanup/Filed gating on
+every included return. Then BATCH-007 gets its build annex and moves to
+Done. ⚠ Its acceptance packets carry REAL CLIENT NAMES — state + item
+only, never into a commit/STATUS/mirror.
+
+### ⛔ (RESOLVED) BATCH-007's gate — kept for the reasoning
 Codex posted a **one-item** 1040 batch (2026-08-13, late s262): extend
 `backentry.v1` to the installed AL / NC / SC individual modules. It is
 **parked, not worked**, with a full verify-first annex in the file.
