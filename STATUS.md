@@ -1,22 +1,23 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s255). **✅ FORM 172 LEG 2 LIVE (`ca6202c`,
-migs 0319/0320) — PART I GENERATION COMPUTES; THE NOL LIFECYCLE IS
-CLOSED.** The Form172 singleton (OneToOne + RLS) carries the Part I
-classification inputs; compute_172_part_i transcribes lines 1-24 off the
-face (T1-T4/T11 pinned pure + a REAL 50,000 Schedule C loss year lands
-line 24 = −50,000); the generation pass runs at the END of the 1040
-block, opens an ENGINE-MANAGED loss-year vintage (remaining = |l24| +
-the §461(l) EBL), clears it when the loss disappears, and REFUSES to
-open it on a claimed farming carryback (Ken ruling #2 — 1045/1040-X +
-the waiver named). D_CFWD_003 gained the generated-vintage carve-out;
-`form_172s` lane + validator + /form-172/ singleton endpoint + schema
-regen; 4 new diagnostics. `test_rows_feed_no_tax_line` NARROWED to the
-engineless kinds (its own tripwire fired as designed). 13 new tests +
-677 gates green. With s254: generate → deduct (80%-capped) → roll →
-expire, all live. Remaining legs: the 80%-statement page, MeF seam,
-BATCH-002 re-triage. Earlier today: s254 (deduction engine), s253b (the
-spec + Ken's seven rulings), s253-s251 (BATCH-006 all ten) — all LIVE.*
+*Last updated: 2026-08-13 (s256). **✅ FORM 172 LEG 3 LIVE (`43768c7`,
+no migration) — THE NOL UNIT IS COMPLETE, and it ships a HOTFIX: s255's
+lane missed SINGLETON_SECTIONS, so EVERY backentry commit 500'd from
+`ca6202c` until this deploy** (the OneToOne reverse accessor raises on
+absence; a structural invariant test now guards every future singleton).
+The seams: ONE data source (`form_172_statement_data`, persisted
+worksheet rows + vintages) feeds BOTH the printed 1040's "Statement for
+Schedule 1, Line 8a" page (i172's attach duty) and MeF's
+NOLCarryforwardDedStatement (IND-368/369 true by construction; 8a
+transmits its POSITIVE magnitude — the XSD is non-negative and the
+line-9 math subtracts — while the face keeps the negative). Named
+refusals: keyed 8a with no computation behind it; >1000-char vintage
+lists (paper-file). D_172_80PCT_STATEMENT → info ("attaches
+automatically"). BATCH-002 item 10 CLOSED (annex; the file stays for
+item 9's RS-gated charitable compute only); BATCH-001 #4 final annex.
+D_172_MARITAL_SPLIT decided DEFER + the Form 172 FACE render recorded
+(DEFERRAL_AUDIT). Earlier today: s255 (Part I generation), s254
+(deduction engine), s253b (spec + Ken's rulings) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -44,6 +45,31 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s256 — Form 172 leg 3: the NOL unit COMPLETE (+ the commit hotfix)
+Design record: the s256 annexes in BATCH-001/BATCH-002 +
+`server/tests/test_form_172_statement.py` (11). Load-bearing:
+- **⚠⚠ THE HOTFIX**: a OneToOne backentry section needs ALL THREE
+  registries — SECTION_RELATED + LIST_SECTIONS + **SINGLETON_SECTIONS**.
+  Missing the third made `_section_qs` hit the raising reverse accessor
+  on EVERY commit (s255→s256 window). The invariant test in
+  `test_form_172_generation.py` now derives the requirement from the
+  descriptor type — the next singleton lane can't repeat this.
+- **One data source for the attach duty**: `form_172_statement_data`
+  reads persisted rows only; print page + MeF text both consume it.
+- **MeF sign flip**: Schedule 1 8a transmits POSITIVE
+  (USAmountNNType; S1-F1040-080 subtracts) with referenceDocumentId →
+  NOLCarryforwardDedStatement (slot 2406). Emitted iff 8a > 0 — both
+  IND rules hold by construction.
+- **Keyed 8a with no Form 172 detail = named e-file refusal** (the app
+  holds only a total; it will not improvise the computation statement).
+  Print attaches nothing in that shape.
+
+### ⭐ NEXT UNIT — the §38(c)(6)(A) MFS $12,500 halving (Ken's ruling)
+Verify §38(c)(6)(A) live (LII) + the i3800 worksheet before touching
+compute; the GBC limitation's $25,000 halves for MFS. Small unit +
+tests. Then: the out-of-scope-state named hold; then the raw-mutation
+sweep leg 1 (details below).
+
 ### ✅ s250 — BATCH-006 #10 built (the 8959 multi-W-2 aggregate)
 Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
 + `server/tests/test_batch006_item10_8959_agg.py` (11). Load-bearing:
@@ -70,12 +96,12 @@ DECISIONS.md: BOTH SIDES v1; farming carryback refuses by name; ATNOLD
 preserve-only; the 80% base verbatim — ⚠⚠ including the clause the brief's
 short form dropped: the cap is 80% of (TI-without-NOL/QBI/§250 MINUS
 pre-2018 NOLs); spec scenario T7 pins 16,000-not-40,000. The absorption
-synthesis is requires_human_review, Ken-approved. **THE 404-STOP IS
-LIFTED FOR NOLs — the app build is now the NEXT unit (BUILD_ORDER has
-the leg plan). It unblocks BATCH-001 #4 + BATCH-002's NOL computes and
-retires D_CFWD_001 for `nol_regular`.**
+synthesis is requires_human_review, Ken-approved. **The 404-STOP lifted
+and the full app build shipped the same day (s254/s255/s256):
+BATCH-001 #4 + BATCH-002 #10 closed; D_CFWD_001 retired for
+`nol_regular`.**
 
-### ⭐ NEXT UNIT — deferred behind the NOL app build: **the raw-mutation sweep, leg 1**
+### ⭐ LATER UNIT — behind the two small ruled units: **the raw-mutation sweep, leg 1**
 BATCH-006's named screens are done; ~95 raw `await post/patch` call
 sites remain outside the guarded machinery. Sweep by traffic, highest
 first, converting each to `useRecordSaves`/lane + verdict-returning
@@ -141,8 +167,9 @@ builder.
 ### The rest of the queue
 - **1040** (`1040\CC Changes\`): **BATCH-006 — ✅✅ COMPLETE (all ten),
   moved to Done (s253)**. **BATCH-001 — every buildable item CLOSED**;
-  #4 NOL-parked (RS agenda; Ken answers the brief's four questions
-  later). **BATCH-002 — open as to the NOL-blocked COMPUTES only**;
+  #4 ✅ CLOSED (the NOL unit shipped s253b→s256; final annex posted).
+  **BATCH-002 — open as to item 9's RS-gated charitable compute ONLY
+  (item 10 closed s256)**;
   **BATCH-003/004/005 — ✅ DONE, moved.** Every worked file carries a
   result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
@@ -152,6 +179,14 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠ s256 MOVES PRINT + E-FILE OUTPUT on NOL returns (corrections)**:
+  the 1040 PDF gains the line-8a statement page; MeF flips 8a to its
+  positive magnitude + emits the statement document; a keyed-8a-no-
+  detail return now REFUSES e-file by name (it previously composed an
+  invalid negative with a missing document — an IRS reject either way).
+  D_172_80PCT_STATEMENT downgrades warning→info. **The HOTFIX restores
+  backentry commits** (500 since `ca6202c`).
+- **s255: NONE beyond new-fact reach** (generation needs a Form172 row).
 - **s250: NONE beyond new-fact reach on ENGAGEMENT** (`amt_8959_filed`
   is False everywhere until keyed). **⚠ but the DIAGNOSTICS bridge-gate
   repair moves rule output on already-engaged aggregate returns**: an

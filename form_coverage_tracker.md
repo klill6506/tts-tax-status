@@ -1,6 +1,20 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 256 — FORM 172 LEG 3 ✅: THE NOL UNIT IS
+> COMPLETE (`43768c7`, no migration).** ONE data source
+> (`form_172_statement_data`, persisted rows) feeds the printed 1040's
+> line-8a computation statement page AND MeF's
+> NOLCarryforwardDedStatement (IND-368/369 by construction; 8a
+> transmits POSITIVE — the XSD is non-negative, the line-9 math
+> subtracts; the face keeps the negative). Keyed-8a-no-detail refuses
+> e-file by name. ⚠⚠ **HOTFIX in the same deploy: s255's lane missed
+> SINGLETON_SECTIONS — every backentry commit 500'd `ca6202c`→now;**
+> invariant test added. D_172_80PCT_STATEMENT → info. *Legs:* ✅
+> deduction · ✅ generation · ✅ pools lane · ✅ worksheet · ✅ statement
+> page · ✅ MeF seam. *Deferred (recorded):* the official Form 172 FACE
+> PDF render; D_172_MARITAL_SPLIT (no loss-year filing-status fact).
+>
 > **2026-08-13 session 255 — FORM 172 LEG 2 ✅: PART I GENERATION
 > (`ca6202c`; migs 0319/0320 — Form172 OneToOne + RLS).** Lines 1-24
 > off the face (spec T1-T4/T11 pinned; a real 50,000 Sch C loss year →
