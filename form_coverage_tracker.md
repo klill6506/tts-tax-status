@@ -1,6 +1,19 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 262c — ✅✅ THE AL/NC/SC IMPORT LANE (BATCH-007
+> BUILT → Done, `3149676`).** `state_returns` rows on backentry.v1,
+> landed ON the registry: staging refuses before any write (FL/TN
+> negative control; unsupported → the out_of_scope_states closeout;
+> GA → ga500_fields), per-state ensure/apply/compute, per-face
+> reconciliation over the union (a tied federal can't mask an untied
+> state; ghost expectations fail against zeros), the state_persistence
+> cleanup gate, schema + examples regenerated. ⚠⚠ Control lines come
+> from the SEEDERS, not the computes' key lists (SC withholding = face
+> "16", not key "22"). Withholding routing safe by construction. The
+> named packets' re-pass = post-deploy acceptance (Codex/preparer).
+> 14 lane tests + 748 neighbors green.
+>
 > **2026-08-13 session 262b — STATE-REGISTRY REFACTOR LEG 1 ✅
 > (`76d9d6b`).** Ken ruled "registry first" on the BATCH-007 gate. One
 > table keyed by (state_code, entity_kind) replaces views.py's four
