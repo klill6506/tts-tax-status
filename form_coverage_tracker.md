@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-12 session 251 — BATCH-006 #2-#5 INVESTIGATION (no code
+> change by design; the annex is the spec).** Not a form unit: the four
+> UI save-reliability reports reduce to ~103 raw mutation call sites vs
+> the s119 saveScope lifecycle only the W-2 archetype rides. Verified
+> live: 30s client aborts complete server-side (delayed-duplicate
+> window), naked creates fail silently (`DependentsSection.handleAdd`),
+> native alert() error surfaces are invisible to automation. The
+> guarded-mutation build is next (client-only; no form legs affected).
+
 > **2026-08-12 session 250 — FORM 8959 MULTI-W-2 AGGREGATE ENGAGEMENT
 > (BATCH-006 #10; `addc5d7`; mig 0318 additive).** `Taxpayer.
 > amt_8959_filed` TRANSCRIBES the packet's filed Form 8959 and engages
