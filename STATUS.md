@@ -1,6 +1,6 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s253). **✅✅ BATCH-006 IS COMPLETE — ALL TEN
+*Last updated: 2026-08-13 (s253b — the NOL spec round-trip; see ✅ s253b below; NEXT = the Form 172 app build). Earlier s253: **✅✅ BATCH-006 IS COMPLETE — ALL TEN
 ITEMS; the file moved to Done.** Leg 2 shipped (`77d7950`, no
 migration): **per-field saving/saved/failed states** — FieldStateInput
 renders `is-saving` (dashed) while the LATEST commit is in flight and
@@ -61,7 +61,20 @@ Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
 - Codex re-stages the two-W-2 production batch adding
   `"amt_8959_filed": true` (annex guidance).
 
-### ⭐ NEXT UNIT — **the raw-mutation sweep, leg 1 (self-directed hardening)**
+### ✅ s253b — THE NOL SPEC ROUND-TRIP (Ken live: rulings + Gate 1 approved)
+Ken answered the s246 brief's four questions (~23:15) and approved Gate 1
+in-session. FORM_172 authored / seeded / exported / **cached to
+`server/specs/form_172_spec.json` (contents verified)**. Rulings in
+DECISIONS.md: BOTH SIDES v1; farming carryback refuses by name; ATNOLD
+preserve-only; the 80% base verbatim — ⚠⚠ including the clause the brief's
+short form dropped: the cap is 80% of (TI-without-NOL/QBI/§250 MINUS
+pre-2018 NOLs); spec scenario T7 pins 16,000-not-40,000. The absorption
+synthesis is requires_human_review, Ken-approved. **THE 404-STOP IS
+LIFTED FOR NOLs — the app build is now the NEXT unit (BUILD_ORDER has
+the leg plan). It unblocks BATCH-001 #4 + BATCH-002's NOL computes and
+retires D_CFWD_001 for `nol_regular`.**
+
+### ⭐ NEXT UNIT — deferred behind the NOL app build: **the raw-mutation sweep, leg 1**
 BATCH-006's named screens are done; ~95 raw `await post/patch` call
 sites remain outside the guarded machinery. Sweep by traffic, highest
 first, converting each to `useRecordSaves`/lane + verdict-returning
@@ -237,16 +250,13 @@ builder.
 - **(s242x) The TEN staged FA definitions**: FA-1040-8853C-01..05 + FA-4562-
   DEST/ROUND/280F + FA-1040-2210-08/09 — author in RS, re-export, move from
   `flow_assertions_1040_pending.json` to the gate mirror.
-- **⛔ BLOCKING two batch items: NO NOL SPEC** (`172`/`NOL`/`FORM_172`/`1045`
-  all 404). BATCH-001 #4 + BATCH-002 #10 wait. Preservation is built; only
-  the computation waits. Highest-value authoring order on this list.
-  **✅ s246: the AUTHORING BRIEF is drafted** —
-  `server/specs/_nol_authoring_brief.md` (Form 172 Rev. 12-2024 + i172
-  fetched; ⚠ Pub 536 is RETIRED, its rules live in i172 now; the 80%-cap
-  base stated verbatim; four one-decision questions for Ken's walk with
-  recommendations — v1 = deduction-side only, farming carryback refuses,
-  AMT NOL stays preserve-only). The authoring session in
-  delvio-rule-studio starts from the brief; NOTHING seeds without the walk.
+- **✅ RESOLVED s253b: THE NOL SPEC EXISTS** — FORM_172 authored, Gate-1
+  approved by Ken in-session, seeded (RS DB 136 forms), exported (200),
+  cached (`server/specs/form_172_spec.json`, verified). Ken's four rulings
+  in DECISIONS.md (BOTH SIDES; farming-carryback refusal; ATNOLD
+  preserve-only; the 80% base verbatim incl. the pre-2018 subtraction).
+  The APP BUILD is the next unit; the five FA-1040-NOL definitions are
+  authored in RS and export with the flow-assertion feed.
 - (s241b, reaffirmed s244): the `8862` spec is a draft collapsing each PART
   to one boolean — re-author per-line from the Rev. 12-2025 face. ⚠ The
   seeded app face still carries a `part_v` pseudo-line from that draft; the
