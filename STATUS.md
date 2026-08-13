@@ -1,28 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s246b). **✅ BATCH-001 #5 BUILT — Ken
-un-parked it live** ("go ahead and schedule the real estate professional
-work"; DECISIONS.md records the supersession of both prior scope
-rulings). REP nonpassive rental routing: `RentalProperty.
-material_participation` (mig 0315) + the shared `rental_rep_nonpassive`
-predicate; the bypass mirrors the §469(g)-release mechanics (loss joins
-rental_allowed; persisted allowed=loss/suspended=0 — which hands the GA
-RIE per-owner feeder the full net for free). The R-8582-MAGI trap is
-pinned (the REP loss is a MAGI ADD-BACK — it must not enlarge another
-activity's allowance). Boundaries: §469(f) former-passive rows STAY
-passive + D_8582_FPA (error); matpart-without-REP routes nothing
-(D_8582_MATPART_NO_REP); unanswered-under-REP warns (D_8582_RE_PRO
-rebuilt). The four return-level REP facts join the back-entry taxpayer
-lane (were browser-only — the s244 class). 12 regressions
-(`test_8582_rep_nonpassive.py`, the b100 shape to the dollar) + 586 +
-181 neighbors + client tsc/1680 green; mig 0315 + seed_rules applied.
-**BATCH-001: only #4 remains, parked on the NOL walk.** Ken has the NOL
-brief questions pending ("I'll answer the NOL questions later").
-Earlier today: s246 (the NOL brief), s245b (#10 the 1099-Q unit), s245
-(#2 verified-built), s244 (#6 8862 multi-category), s243b (Ken's
-four-return unblock — Codex can rerun the four production dry-runs),
-s243 (#8) — all LIVE; design records in the batch annexes; previous
-STATUS revisions in git.*
+*Last updated: 2026-08-12 (s248). **✅ BATCH-006 #9 BUILT — Form 1099-C
+→ Schedule 1 line 8c** (migs 0316/0317; the line's first deriving
+writer; Pub 4681 routing + §108 transcription + the 982 warning; the
+reported $877 pinned end to end). Earlier tonight: s247 (the BATCH-006
+trio adjudicated — #6 refuted with the corrected inference, #7/#8 fixed
+by s243b), s246b (#5 REP routing on Ken's live go), s246 (the NOL
+brief), s245b (#10 1099-Q), s245 (#2), s244 (#6 8862), s243b (Ken's
+four-return unblock), s243 (#8) — all LIVE. BATCH-006 remainder: #1
+(alimony received — NEXT), #10 (8959 aggregate), #2-#5 (the Slate
+save-lifecycle family). BATCH-001 closed except #4 (the NOL walk —
+Ken answers later).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -135,13 +123,29 @@ former-passive rows STAY passive (D_8582_FPA error).
   zero; GA MeF refuted — no GA e-file; no GA line rolls forward by
   design).
 
-### ⭐ NEXT UNIT — **BATCH-006 #9: Form 1099-C → Schedule 1 line 8c**
-The s222 information-return road (f1099c + Pub 4681 → source brief).
-⚠ 8c needs a deriving OWNER (it is deliberately not direct-entry); ⚠ the
-§108 exclusions (bankruptcy/insolvency/QPRI) must REFUSE loudly when
-asserted — never compute taxable COD the packet excluded. Then #1
-(alimony received), #10 (8959 multi-W-2 aggregate), then the Slate
-save-lifecycle family #2-#5 together. BUILD_ORDER carries the detail.
+### ✅ s248 — BATCH-006 #9 built (the Form 1099-C unit)
+Design record: the s248 batch annex + `_1099c_source_brief.md` +
+`test_1099c_unit.py` (15). Load-bearing: Schedule 1 line 8c now
+DERIVES (`compute_1099c_db`, the 8v/8h shape — blank-on-removal,
+override-safe; `sch1_fields["8c"]` stays un-importable); business
+routes are traceability-only and feed nothing (Pub 4681, the PATR
+doctrine);
+§108 exclusions transcribe the filed 982 figure and D_1099C_001
+demands the manual 982; box-3 interest carves only on the asserted
+deductibility; the MeF seam needed nothing (DebtCancellationAmt is a
+plain S1-F1040-080-03 member). Migs 0316/0317 + seed_rules applied.
+Codex re-stages the held return with a `c_1099s` row (annex guidance).
+
+### ⭐ NEXT UNIT — **BATCH-006 #1: alimony received (pre-2019)**
+The s241j alimony-PAID mirror: owner-attributed amount + original
+instrument date + modification/opt-in + the TCJA §11051 transition
+(pre-2019 taxable on Schedule 1 2a/2b; post-2018 nontaxable) → 1040
+line 8, SS taxation, Schedule 1-A, GA. ⚠ Read the s241j design first
+(the instrument-date facts and the "modification must expressly state"
+rule are the same law); ⚠ line 2b (the date) is a TEXT face line —
+check who owns 2a/2b today (seeded direct-entry). Then #10 (8959
+multi-W-2 aggregate), then the Slate family #2-#5. BUILD_ORDER
+carries the detail.
 
 ### 📗 Codex's evening production run (tmp/BATCH001_UNBLOCKED…md)
 Two more returns tied/Filed/moved to Done on the s243b build; one held
