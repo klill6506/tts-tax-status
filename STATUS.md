@@ -1,19 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s258). **✅ THE OUT-OF-SCOPE-STATE NAMED
-HOLD LIVE (`0efc148`, NO migration) — Ken's 00:45 ruling #2 built; his
-whole ruled backlog is now shipped.** A packet declares
-`out_of_scope_states` (e.g. ["CA"]) on the return payload — a new
-backentry.v1 key (validated: US/DC codes; GA refuses — in scope; empty
-list refuses). No model change: the payload lives on StagedReturn
-already. Surfaced without re-opening the PII payload: the staged
-summary echoes the codes; the cleanup closeout records "federal
-complete; CA → the paper preparer" on ELIGIBLE packets — NEVER a hold
-(supersedes the s227 un-filed limbo). Schema regenerated; the NZ
-legacy file's #10 annexed with its new staging path. 8 tests + 623
-neighbors green. Earlier today: s257 (MFS threshold + RS amendment),
-s256 (the NOL unit completes + the singleton hotfix), s255/s254/s253b
-(the NOL build day) — all LIVE.*
+*Last updated: 2026-08-13 (s259). **✅ RAW-MUTATION SWEEP LEG 1 LIVE
+(`a8dcaaf`, client-only) — the Schedule D slice + a find that widens
+the win**: the capital-transactions PATCH now rides a per-row
+saveScope lane returning its verdict, and the Slate type-to-add is
+guarded via useRecordSaves (a failed add used to silently vanish the
+typed description). **Found while verifying live: PayerTable itself
+DROPPED every verdict** — commitSlim never returned onUpdate's result,
+so the s253 per-cell overlays could not light on ANY PayerTable screen;
+now threaded (fire-and-forget callers unchanged). Verified LIVE on a
+synthetic return: a response-less commit failed with the friendly 30s
+message, blocked its lane, queued the next edit (value kept), showed
+is-saving on the cell, and retries replayed idempotently (Django 200
+×3, row count stayed 1). 2 new tests + 1698 client green + tsc clean.
+Earlier today: s258 (OOS-state hold), s257 (MFS threshold), s256 (the
+NOL unit + hotfix), s255/s254/s253b (the NOL build day) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -41,6 +42,32 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s259 — the raw-mutation sweep, leg 1 (Schedule D + PayerTable)
+Design record: the s259 commit message + the 2 new
+slateScheduleDScreen tests. Load-bearing:
+- **⚠⚠ PayerTable's commitSlim DROPPED every verdict** — the s253
+  per-cell overlays were unreachable on EVERY PayerTable screen no
+  matter how the caller was wired. Now returns onUpdate's result; a
+  verdict-returning handler lights the cell, a void caller changes
+  nothing. Future sweep slices get the cell overlays FREE by just
+  dropping the `void` at their FormEditor boundary.
+- The SchD draft flow untouched (its card IS the pending state).
+- Live verification reproduced the s251 class faithfully: a ~30s local
+  PATCH (pooler amplification) times out client-side EXACTLY as Django
+  completes — "may not have reached the server" is the honest message;
+  the idempotent retry replayed without duplicating (row count 1).
+- The synthetic verification fixture: client #99259 on dev's demo
+  firm (a synthetic identity) — reusable for future sweep-slice
+  live checks.
+
+### ⭐ NEXT UNIT — sweep leg 2: the PayerTable-family `onUpdate` chains
+Drop the `void` at each screen's FormEditor boundary (interest,
+dividends, 1099-G/MISC/PATR — the cell overlays now light when the
+verdict flows) + enlane the handlers still doing naked
+`await patch(...); onRefresh(...)`. Then the singleton-PATCH sections
+(form-1116 `update`, schedule-j, 8615-style). Client-only; vitest +
+tsc gates.
+
 ### ✅ s258 — the out-of-scope-state named hold (Ken ruling #2)
 Design record: `server/tests/test_backentry_oos_states_s258.py` (8) +
 the NZ-file annex. Load-bearing:
@@ -53,11 +80,6 @@ the NZ-file annex. Load-bearing:
   `state_disposition: "federal complete; CA → the paper preparer"`.
 - GA refuses inside the marker (it is IN scope); unknown codes refuse
   (typo fence); the published batch-import.schema.json documents it.
-
-### ⭐ NEXT UNIT — the raw-mutation sweep, leg 1 (client-only)
-The ~95 unguarded save/create call sites (see the LATER UNIT block
-below for the slice order — capital-transactions patchRow first).
-vitest + `tsc --noEmit` gates; no server deploy expected.
 
 ### ✅ s257 — the §38(c)(6)(A) MFS $12,500 threshold (Ken ruling #1)
 Design record: `server/tests/test_form3800_mfs_threshold_s257.py` (13) +

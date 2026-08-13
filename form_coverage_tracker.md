@@ -1,6 +1,14 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 259 — RAW-MUTATION SWEEP LEG 1 ✅ (`a8dcaaf`,
+> client-only).** Schedule D's row PATCH enlaned + verdict-returning;
+> the Slate add guarded (a failed add used to vanish the typed row).
+> ⚠⚠ PayerTable's commitSlim DROPPED every verdict — s253's per-cell
+> overlays were unreachable on ALL PayerTable screens; now threaded.
+> Verified live: lane blocks on failure, edits queue value-kept,
+> idempotent retry (no duplicates). 2 tests + 1698 client green.
+>
 > **2026-08-13 session 258 — THE OUT-OF-SCOPE-STATE NAMED HOLD ✅
 > (`0efc148`, no migration).** Backentry gains the `out_of_scope_states`
 > payload key (validated; GA refuses — in scope): the staged summary
