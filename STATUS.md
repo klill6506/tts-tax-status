@@ -1,20 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s262). **✅✅ THE RAW-MUTATION SWEEP IS
-COMPLETE (`a72b920`)** — the tail's nine sections enlaned (1310, 8606,
-Roth tracker, 1040-X, installment sales, like-kind, noncash
-contributions, partnership distributions incl. the nested property
-rows on the PARENT's lane, state tax payments). Every save path in the
-1040 editor now reports its outcome or is a deliberate draft-flow
-exception. **FOUND: `tsc --noEmit -p .` was a NO-OP the whole time**
-(the root tsconfig is references-only) — the real gate is
-`-p tsconfig.renderer.json`, which surfaced real errors in this
-sweep's own widenings (fixed; sweep files now typecheck CLEAN) and 57
-PRE-EXISTING errors in old code (spun off as its own task chip).
-vitest (1706) green throughout. **The standing queue is now EMPTY** —
-the loop idles for Codex batches; the pre-season debounce stays
-shelved for Ken's timing. Earlier today: s261-s259 (the sweep),
-s258/s257 (Ken's rulings), s256-s253b (the NOL day) — all LIVE.*
+*Last updated: 2026-08-13 (s262c). **✅✅ BATCH-007 BUILT → Done
+(`3149676`) — the AL/NC/SC import lane, landed ON the state registry
+per Ken's live "registry first" ruling.** One day, three units: the
+registry (four maps → one table, a corporate-fallback trap retired),
+the lane (`state_returns` rows with staging refusals before any write,
+per-face reconciliation over the union of faces and expectations, the
+state_persistence cleanup gate, schema regenerated), and earlier the
+raw-mutation sweep's completion + the vacuous-typecheck find. The
+queue is EMPTY again — idle for Codex. Earlier today: s262-s259 (the
+sweep), s258/s257 (Ken's rulings), s256-s253b (the NOL day) — all
+LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -42,6 +38,33 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅✅ s262c — BATCH-007 BUILT AND DONE (`3149676`): the AL/NC/SC lane
+Ken ruled "registry first" live; both legs shipped same-day and the
+batch file moved to Done with its build annex. Load-bearing:
+- **`state_returns` on backentry.v1**: registry-validated staging
+  refusals BEFORE any write (unsupported → names the
+  out_of_scope_states closeout; FL/TN negative control; GA →
+  ga500_fields; duplicates; filed-AND-out-of-scope contradiction);
+  commit ensures/applies/computes per state; `state_faces` echoes;
+  **per-face reconciliation over the UNION of faces and expectations**
+  (a tied federal can't mask an untied SC; a never-attached face fails
+  against zeros, never silently skips); the state_persistence cleanup
+  gate; schema regenerated with both examples.
+- **⚠⚠ CONTROL LINES COME FROM THE SEEDERS, NOT THE COMPUTES' KEY
+  LISTS** — SC's compute doc says withholding = key "22"; the seeded
+  FACE line is "16". The first commit test caught it.
+- **Withholding routing is safe BY CONSTRUCTION** — no state compute
+  reads W-2 state rows (verified); each state's withholding is
+  direct-entry on its own face.
+- NOT done, deliberately: the six named acceptance packets' re-pass
+  (real PDFs, post-deploy acceptance — Codex/preparer work; the NC
+  resident packet can't complete regardless, missing 1040 faces).
+
+### ▶ NEXT — the queue is EMPTY again: idle for Codex
+Shelved: the pre-season recompute debounce (Ken's timing); the
+57-error typecheck chip. RS agenda: the charitable per-vintage
+amendment (BATCH-002 #9).
+
 ### ✅ s262b — the state-registry refactor, LEG 1 (`76d9d6b`)
 Ken ruled **"registry first"** on the gate below (DECISIONS.md). Leg 1 is
 the foundation BATCH-007's lane lands on:
@@ -63,16 +86,6 @@ the foundation BATCH-007's lane lands on:
   backentry** = BATCH-007's leg 2.
 - FL/TN absent by design (no individual income tax) — pinned as the
   batch's negative control. 14 pins + 750 green; no migration.
-
-### ▶ NEXT — leg 2: the AL/NC/SC import lane (BATCH-007's actual ask)
-`backentry.py` is the last GA-only seam (`_ensure_ga500`, `ga500_fields`,
-4 literals). Generalize onto the registry: a `state_returns`-shaped
-payload path, staging refusal of unsupported/uninstalled states
-(`supported_state_codes` is the allowlist), per-face reconciliation so
-one tied face can't mask an untied one, and cleanup/Filed gating on
-every included return. Then BATCH-007 gets its build annex and moves to
-Done. ⚠ Its acceptance packets carry REAL CLIENT NAMES — state + item
-only, never into a commit/STATUS/mirror.
 
 ### ⛔ (RESOLVED) BATCH-007's gate — kept for the reasoning
 Codex posted a **one-item** 1040 batch (2026-08-13, late s262): extend
@@ -115,11 +128,6 @@ Design record: the s262 commit. Load-bearing:
 - The onUpdate widening literal that satisfies FieldStateInput:
   `void | Promise<{ ok: boolean; message?: string } | undefined>`
   (undefined ⊆ void inside CommitOutcome's promise).
-
-### ⭐ NEXT — the queue is EMPTY: idle for Codex
-No standing units remain. Each tick: boot + sweep the three CC Changes
-folders; a posted batch is the next unit. Shelved for Ken: the
-pre-season recompute debounce; the 57-error typecheck-debt chip.
 
 ### ✅ s261 — sweep leg 3: the singletons + W-2G
 Design record: the s261 commit. Load-bearing:
