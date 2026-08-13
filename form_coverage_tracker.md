@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 260 — SWEEP LEG 2 ✅ (`e1d7da8`).** The five
+> income screens (INT/DIV/1099-G/MISC/PATR) guarded: per-row
+> verdict-returning PATCH lanes + guarded creates with visible add
+> state. ⚠⚠ Found live: the six income-document create endpoints
+> IGNORED X-Idempotency-Key — a retry after timeout DUPLICATED the row;
+> @idempotent_create added to all six (incl. capital-transactions,
+> s259's own gap) with a parametrized pin each. 14 new tests; 1706
+> client + server gates green.
+>
 > **2026-08-13 session 259 — RAW-MUTATION SWEEP LEG 1 ✅ (`a8dcaaf`,
 > client-only).** Schedule D's row PATCH enlaned + verdict-returning;
 > the Slate add guarded (a failed add used to vanish the typed row).
