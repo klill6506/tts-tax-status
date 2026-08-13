@@ -28,8 +28,8 @@ s246b REP, s243b — all LIVE.*
 
 ## ⚠⚠ STANDING FACT: PUSHING TO `main` DEPLOYS
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
-`delvio-tax`; demo = `tts-tax-demo`. **The orphan third service
-`tts-tax-app` still fails every push — Ken should delete it.**
+`delvio-tax`; demo = `tts-tax-demo`. *(The orphan third service was
+DELETED 2026-08-13 on Ken's live approval — s253b.)*
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
@@ -237,9 +237,11 @@ builder.
   bare recompute (−5,491 each), face still a tie.
 
 ### ✅ KEN DECISIONS OUTSTANDING
-- **⛔ KEN (s231)**: §38(c)(6)(A) MFS threshold — flat $25,000 vs statutory
-  $12,500; OVER-allows. Buildable without Ken; the ruling is the gate.
-- **⛔ KEN (s227)**: the out-of-scope-state packet-disposition marker.
+- ~~⛔ KEN (s231)~~ **✅ RULED 08-13 (live): BUILD the §38(c)(6)(A) MFS
+  $12,500 halving** — queued after the NOL app build.
+- ~~⛔ KEN (s227)~~ **✅ RULED 08-13 (live): BUILD the out-of-scope-state
+  named hold** (`out_of_scope_states` + cleanup-gate surfacing) — queued
+  after the NOL app build.
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
   before a TY2026 season.
 - **1040 v5.4 business rules still not in hand** (v5.4 schemas ARE on disk).
