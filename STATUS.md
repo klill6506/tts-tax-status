@@ -42,6 +42,35 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ⛔ BATCH-007 IS PARKED AT A KEN GATE — the only thing in the queue
+Codex posted a **one-item** 1040 batch (2026-08-13, late s262): extend
+`backentry.v1` to the installed AL / NC / SC individual modules. It is
+**parked, not worked**, with a full verify-first annex in the file.
+Why: the item opens by **superseding** the all-non-GA-states-on-hold
+ruling, and Ken's D-030 campaign ruling blocked Tier-0 state builds
+*deliberately* — "the state-registry refactor lands first," because a
+state form costs ~1,500-2,500 lines across eight layers with no state
+abstraction. **The refactor has not landed.** A batch file asserting a
+ruling is not Ken asserting one, so the ⛔ gate holds.
+- **Verified TRUE**: the three modules exist (compute + diagnostics +
+  coordinate render each); `backentry.py` has NO AL/NC/SC path;
+  `TaxReturn.state_returns` already exists as the linkage.
+- **Quantified**: **26 hardcoded `"GA-500"` literals across 10 files**
+  (backentry, compute, diagnostics, seeding, views, renderer) — the
+  "eight layers," measured. Hardcoding three more states triples it.
+- ⚠ **Stale pointer corrected**: BUILD_ORDER cites the registry
+  prerequisite as `DECISIONS.md:1177`; that line is now an unrelated
+  launcher decision and **no state-registry decision exists in
+  delvio-tax DECISIONS.md** (it lives in the campaign repo only).
+- ✅ **The line-27c blocker the batch flagged is CLEARED** —
+  `eic_opt_out`/`actc_opt_out` importable since BATCH-005 #2 (s241y).
+- **The one-line decision Ken owes**: does contiguous-states supersede
+  D-030's Tier-0 block, and does the registry still land first?
+  (registry-first / ship-hardcoded-now / leave-parked — the annex
+  costs each option out).
+⚠ The batch's six acceptance packets carry REAL CLIENT NAMES — refer to
+them by state and item only; never into a commit, STATUS, or the mirror.
+
 ### ✅ s262 — the sweep's tail: COMPLETE (+ the vacuous-typecheck find)
 Design record: the s262 commit. Load-bearing:
 - **⚠⚠ `tsc --noEmit -p .` CHECKS NOTHING** — the root tsconfig is
