@@ -1,24 +1,27 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s250). **✅ BATCH-006 #10 BUILT — the 8959
-multi-W-2 aggregate rides FILED evidence**: `Taxpayer.amt_8959_filed`
-(mig 0318) transcribes "the packet prints a filed Form 8959" and
-engages the form when no Who-Must-File arm is evaluable from
-aggregate-only multi-W-2 data — never an invented per-employer
-allocation; substance-gated. The 215,945 / 3,187 / 3,131 / 56 → 25c
-pins land with BOTH source W-2 rows. Bridge-gate repair rode along:
-8959 sourcing + engagement are now ONE set of shared helpers
-(`resolve_8959_medicare_wages` / `resolve_8959_max_single_w2` /
-`form_8959_engagement`) used by compute AND the D_8959_* rules — the
-rules had been silently blind on aggregate-sourced returns (no b009
-valve, no s227 identity valve); D_8959_001 gained a tax-actually-due
-gate. Staging warning now points at the remedy and stands down when
-the flag is supplied; batch-import schema regenerated. 11 regressions
-+ 716 neighbors green. BATCH-006 remainder: **#2-#5 (the Slate
-save-lifecycle family — NEXT, investigated together)**. Earlier today:
-s249 (#1 alimony received), s248 (#9 1099-C), s247 (trio adjudicated),
-s246b (REP routing), s246 (NOL brief), s245b/245/244/243b/243 — all
-LIVE.*
+*Last updated: 2026-08-12 (s251). **🔎 BATCH-006 #2-#5 INVESTIGATED
+TOGETHER — root cause FOUND, no code changed yet (the batch's own
+directive: repro before fix).** The four reports are one gap: **~103
+raw `await post/patch` mutation call sites; only the W-2 archetype
+rides the s119 saveScope lifecycle** (lanes, pending, failure pill,
+idempotency). Verified live in a browser: a >30s create aborts at the
+client's 30s bound, surfaces only a NATIVE alert() ("Failed to create
+return" — suppressed in automated browsers), **and completes
+server-side anyway** (201 logged; the return existed) — the delayed-
+duplicate window is real and the naked call sites have no idempotency
+key. `DependentsSection.handleAdd` is the exemplar: no res.ok check,
+no lane, no pending, silent on failure (= item #2 exactly). Prod
+latency measured: 1.3-1.8s per taxpayer PATCH (fine solo; queues on 2
+workers under rapid sessions — REVIEW_QUEUE capacity flag filed).
+Local dev is 30-40s/PATCH (~120ms×227 queries to the pooler) — the
+abort reproduces on the first try there. DB audit: the overnight
+re-staging wave (04:14-04:24) rebuilt the batch's named returns and
+destroyed the row-level evidence for item #3; item #4's first-1099-R
+entry WAS made through the UI and landed; item #2's dependent and the
+two item-#4 add-button rows never landed (the naked-create class).
+Full annex in BATCH-006. **NEXT: the guarded-mutation build** (see ⭐).
+s250 and the nine earlier units all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -64,14 +67,21 @@ Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
 - Codex re-stages the two-W-2 production batch adding
   `"amt_8959_filed": true` (annex guidance).
 
-### ⭐ NEXT UNIT — **BATCH-006 #2/#3/#4/#5: the Slate save-lifecycle family**
-Four reports, ONE suspected root cause in the Slate save lane:
-type-to-add rows (#2), add buttons (#3), field-edit persistence (#4),
-taxpayer occupation/address fields (#5). All four are PRODUCTION-only
-reports — the client vitest suite passes, so the REPRO PATH is the
-finding. Investigate together before changing anything; the repro
-recipe (which screen, which save path, browser evidence) comes first.
-BUILD_ORDER carries the detail.
+### ⭐ NEXT UNIT — **the guarded-mutation build (BATCH-006 #2-#5, leg 1)**
+The s251 investigation is the spec (the annex in BATCH-006 + this
+block). Build order: (1) a shared guarded-mutation helper on the W-2
+`handleAdd` archetype (saveScope lane + one X-Idempotency-Key per user
+intent + pending state + rowErrorText surfacing); migrate the CREATE
+call sites on the reported screens FIRST — dependents type-to-add,
+Schedule C add, rental add, 1099-R add, W-2 add (already done — the
+template), the taxpayer-header PATCH lane; (2) per-row/per-field
+saving/saved/failed affordances; (3) retire native alert()/confirm()
+in mutation paths; (4) the items' integration tests (failure leaves
+the value visible + retryable; delayed success cannot duplicate —
+the idempotency key is the mechanism). Then sweep the remaining ~100
+call sites until dry, multi-tick. ⚠ Client-only work — no migration,
+no compute change; vitest + `tsc --noEmit` are the gates, plus the
+targeted Slate screen tests.
 
 ### ✅ s249 — BATCH-006 #1 built (alimony received, the s241j twin)
 Two lines, not a document family: `sch1_fields["2a"]/["2b"]` import;
