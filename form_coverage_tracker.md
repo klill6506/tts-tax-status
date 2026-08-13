@@ -1,6 +1,13 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 261 — SWEEP LEG 3 ✅ (`a9e9ada`).** The
+> singleton sections (Form 1116 — both lanes on ONE ordered per-screen
+> lane — Schedule J, Form 8615) + W-2G converted: verdict-returning
+> saveScope lanes; the Slate cells light the s253 overlays. W-2G's
+> create guarded AND its endpoint decorated `@idempotent_create` in the
+> same slice (7 endpoints pinned). 1706 client + 526 FAs green.
+>
 > **2026-08-13 session 260 — SWEEP LEG 2 ✅ (`e1d7da8`).** The five
 > income screens (INT/DIV/1099-G/MISC/PATR) guarded: per-row
 > verdict-returning PATCH lanes + guarded creates with visible add
