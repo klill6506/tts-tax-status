@@ -1,18 +1,24 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s249). **✅ BATCH-006 #1 BUILT — alimony
-received**, the s241j paid-side twin resolved the same way (two lines,
-not a document family): `sch1_fields["2a"]/["2b"]` now import
-(SCH1_DIRECT_LINES); D_SCH1_007 enforces BOTH directions of Topic 452
-(a post-2018 instrument's receipts are NOT income — overstates AGI);
-D_SCH1_008 prompts the express-modification question on both sides
-(never guessed from a date — the s241j ruling); NEW D_SCH1_009 flags a
-generic-item duplicate of 2a. The $1,000/1971 packet chain pinned to
-AGI. No migration. Earlier tonight: s248 (#9 1099-C), s247 (the trio
-adjudicated), s246b (#5 REP routing), s246 (NOL brief), s245b/245/244/
-243b/243 — all LIVE. BATCH-006 remainder: #10 (8959 aggregate — NEXT),
-#2-#5 (the Slate save-lifecycle family). BATCH-001 closed except #4
-(the NOL walk — Ken answers later).*
+*Last updated: 2026-08-12 (s250). **✅ BATCH-006 #10 BUILT — the 8959
+multi-W-2 aggregate rides FILED evidence**: `Taxpayer.amt_8959_filed`
+(mig 0318) transcribes "the packet prints a filed Form 8959" and
+engages the form when no Who-Must-File arm is evaluable from
+aggregate-only multi-W-2 data — never an invented per-employer
+allocation; substance-gated. The 215,945 / 3,187 / 3,131 / 56 → 25c
+pins land with BOTH source W-2 rows. Bridge-gate repair rode along:
+8959 sourcing + engagement are now ONE set of shared helpers
+(`resolve_8959_medicare_wages` / `resolve_8959_max_single_w2` /
+`form_8959_engagement`) used by compute AND the D_8959_* rules — the
+rules had been silently blind on aggregate-sourced returns (no b009
+valve, no s227 identity valve); D_8959_001 gained a tax-actually-due
+gate. Staging warning now points at the remedy and stands down when
+the flag is supplied; batch-import schema regenerated. 11 regressions
++ 716 neighbors green. BATCH-006 remainder: **#2-#5 (the Slate
+save-lifecycle family — NEXT, investigated together)**. Earlier today:
+s249 (#1 alimony received), s248 (#9 1099-C), s247 (trio adjudicated),
+s246b (REP routing), s246 (NOL brief), s245b/245/244/243b/243 — all
+LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -40,140 +46,82 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ✅ s244 COMPLETE — BATCH-001 #6, the Form 8862 multi-category expansion
-Design record: the s244 annex in `CC_CODE_CHANGES_1040_BATCH-001.md`.
-Load-bearing facts a future session needs:
-- **The category predicate** (claimed ∧ previously disallowed) is shared
-  verbatim by `_f8862_engagement` (builder), `_f8862_categories`
-  (rules_eic), and render_8862's per-Part gates. "CTC claimed" includes
-  **Schedule 8812 line 12** (`L_12` in the DB) — a line-19-zeroed,
-  ACTC-opted-out return still claims; ATS Scenario 5's answer key pins
-  that shape and its fixture now states all three disallowances.
-- D_8862_002 stays EIC-scoped + ENGAGEMENT-gated on purpose (claimed-
-  gating would be circular: the missing facts it names are what zero the
-  credit). Parts III/IV have nothing keyed to be missing — their
-  shortfall is D_8862_006 (category unanswered) + D_8862_004/005.
-- A keyed 8862 with NO resolving category REFUSES at composition by
-  name; a claimed credit whose flag is None never transmits its
-  box/part (unanswered ≠ No ≠ Yes).
-- The back-entry `taxpayer` lane also gained
-  `eic_qualifying_child_of_another` / `eic_claimed_as_dependent` — the
-  form_8862s refusal message directed packets there while the lane
-  refused the keys (a childless-EIC 8862 was unimportable end-to-end).
-- Housekeeping: `test_non_engaged_return_leaves_27a_quiet` (the s235
-  known-red) was a STALE pre-Leg-C pin contradicting
-  `test_leg_c_eic_autocompute` — proven pre-existing via worktree at
-  `bb282b0`, updated to an out-of-band DOB. The known-red list shrinks.
-- Regression home: `server/tests/test_8862_multicategory.py` (24) + the
-  CTC-only render test in `test_topic7_render_leg.py`.
+### ✅ s250 — BATCH-006 #10 built (the 8959 multi-W-2 aggregate)
+Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
++ `server/tests/test_batch006_item10_8959_agg.py` (11). Load-bearing:
+- **`amt_8959_filed` is TRANSCRIBED EVIDENCE, not a computed arm** — the
+  representation-choice class of the s227 identity valve, NOT a revival
+  of the removed 'line 22 > 0' arm (spec amendment 2026-07-02 stands).
+  Substance gate: engages only when line 4 or line 19 is nonzero.
+- **The engagement decision now lives in ONE place** —
+  `form_8959_engagement` (compute + all three D_8959_* rules). Any
+  future valve goes THERE or the diagnostics go blind again.
+- Per-row box 5 still wins over the aggregate (duplication guard);
+  without the flag the multi-row aggregate shape still disengages.
+- D_8959_001 fires only when line 18 > 0 (its threshold-exceeded
+  message was false on no-tax-due engagements; D_8959_003 owns the
+  25c-reconciliation story and now fires on aggregate-sourced returns).
+- Codex re-stages the two-W-2 production batch adding
+  `"amt_8959_filed": true` (annex guidance).
 
-### ✅ s243b (earlier today) — Ken's four-return unblock (`bb282b0`, LIVE)
-**Codex can rerun the four production dry-runs.** Verdicts: Return W /
-T / G tie (G's payload must supply the new DIS-DATE/TYPE via
-`ga500_fields` — D_GA500_7C_DETAILS demands them); **Return P NO TIE
-by design — refuted as an app defect** (the FILED Schedule D face
-doesn't foot by exactly $2,229; source-side gap, waiting on Ken/Codex).
-`seed_ga500` (157 lines) + `seed_form_2441` (23 lines) already run.
-Regression home: `server/tests/test_four_return_unblock_s243b.py`.
+### ⭐ NEXT UNIT — **BATCH-006 #2/#3/#4/#5: the Slate save-lifecycle family**
+Four reports, ONE suspected root cause in the Slate save lane:
+type-to-add rows (#2), add buttons (#3), field-edit persistence (#4),
+taxpayer occupation/address fields (#5). All four are PRODUCTION-only
+reports — the client vitest suite passes, so the REPRO PATH is the
+finding. Investigate together before changing anything; the repro
+recipe (which screen, which save path, browser evidence) comes first.
+BUILD_ORDER carries the detail.
 
-### ✅ s245 — BATCH-001 #2 closed (verified built), #5 ⛔ KEN (parked)
-- **#2**: every ask resolves to the s235 layer; the reported shape is now
-  pinned (`test_8582_amt_carryover.py`, 6 — regular computes 27,960 per
-  activity while the AMT pool holds 19,490; both roll independently; the
-  worksheet prints; D_CFWD_001 errors). The "computed next-year AMT"
-  refigure needs FORM_8582 AMT rules that DO NOT EXIST (zero AMT content
-  in the export) → RS agenda. Design record: the s245 batch annex.
-- **#5**: asks to build the nonpassive-rental routing Ken's 2026-06-13
-  8582 kickoff scope decision RED-deferred (`D_8582_RE_PRO`). ⛔ KEN —
-  batched in REVIEW_QUEUE with a build recommendation. (The BUILD_ORDER
-  note's "2026-07-06" date was loose; the ruling on record is the
-  kickoff's scope decision 3, STATUS_ARCHIVE.)
-
-### ✅ s245b — BATCH-001 #10 built (the 1099-Q unit). Design record:
-the s245b batch annex + `server/specs/_1099q_source_brief.md` +
-`server/tests/test_1099q_unit.py` (24). Load-bearing facts:
-- ONE classifier (`compute_1099q.classify_row`) drives compute,
-  diagnostics and the worksheet: skip / covered / computed /
-  refuse_partial / refuse_underivable. A COVERED row (AQEE ≥ gross) is
-  tax-free WITHOUT earnings — box 2 blank must not refuse there.
-- The 8z share rides `compute_1099misc_db` (sixth contributor, the 8814
-  block pattern); `form_1099q_8z_share` also persists each row's
-  `computed_taxable_earnings` (never importable).
-- 5329 Part II line 5 = `Form5329.edu_able_dist` (the MODEL field; the
-  `f5329_line5_*` names are compute-INPUT keys — a rule reading those
-  off the model AttributeErrors, caught by the quiet-case test).
-- The Pub rounds EVERY derivation step to whole dollars.
-
-### ✅ s246b — BATCH-001 #5 built (REP nonpassive routing; Ken's live go)
-Design record: the s246b batch annex + `test_8582_rep_nonpassive.py`.
-Load-bearing: ONE predicate (`rental_rep_nonpassive` — REP assertion +
-per-row material_participation True + NO prior carryover) shared by
-compute/diagnostics; the bypass = the §469(g)-release mechanics; the
-REP loss is a MAGI ADD-BACK (R-8582-MAGI — pinned); §469(f)
-former-passive rows STAY passive (D_8582_FPA error).
-
-### ✅ s247 — BATCH-006 triage: the trio closed at HEAD (#6/#7/#8)
-- **#6 REFUTED, inference corrected**: 6b = 5,602 (cap) stable ×2
-  passes, D_RET_012 quiet, AGI = the dry-run's own 142,229 WITH 6b
-  correct — the $2,229 is the adjudicated source-side Schedule D
-  non-foot (rows sum 71,954; the filed face carried 74,183 per the
-  payload's own `f4952_net_capital_gain`). Regression:
-  `test_batch006_item6_ss_stability.py`. Codex should expect 142,229
-  from this payload until the missing source item is found.
-- **#7/#8 FIXED by s243b** (deployed before the batch published);
-  evidence re-run green; residues named in the annex (line-22 SE-DCB
-  zero; GA MeF refuted — no GA e-file; no GA line rolls forward by
-  design).
+### ✅ s249 — BATCH-006 #1 built (alimony received, the s241j twin)
+Two lines, not a document family: `sch1_fields["2a"]/["2b"]` import;
+D_SCH1_007 enforces BOTH Topic 452 directions; D_SCH1_008 prompts the
+modification question both sides; D_SCH1_009 flags a generic duplicate.
+Regression: `test_alimony_received_s249.py` (6). No migration.
 
 ### ✅ s248 — BATCH-006 #9 built (the Form 1099-C unit)
 Design record: the s248 batch annex + `_1099c_source_brief.md` +
-`test_1099c_unit.py` (15). Load-bearing: Schedule 1 line 8c now
-DERIVES (`compute_1099c_db`, the 8v/8h shape — blank-on-removal,
-override-safe; `sch1_fields["8c"]` stays un-importable); business
-routes are traceability-only and feed nothing (Pub 4681, the PATR
-doctrine);
-§108 exclusions transcribe the filed 982 figure and D_1099C_001
-demands the manual 982; box-3 interest carves only on the asserted
-deductibility; the MeF seam needed nothing (DebtCancellationAmt is a
-plain S1-F1040-080-03 member). Migs 0316/0317 + seed_rules applied.
-Codex re-stages the held return with a `c_1099s` row (annex guidance).
+`test_1099c_unit.py` (15). Load-bearing: Schedule 1 line 8c now DERIVES
+(`compute_1099c_db`, the 8v/8h shape; `sch1_fields["8c"]`
+un-importable); business routes feed nothing (Pub 4681, the PATR
+doctrine); §108 exclusions transcribe the filed 982 figure (D_1099C_001
+demands the manual 982); box-3 interest carves only on asserted
+deductibility. Migs 0316/0317.
 
-### ⭐ NEXT UNIT — **BATCH-006 #10: the 8959 multi-W-2 aggregate**
-Extends the earlier single-W-2 aggregate fix: a packet with TWO W-2s
-whose per-employer box 5 is absent + the filed Form 8959 aggregates
-(line 1 = 215,945; line 19 withholding 3,187; line 21 regular 3,131;
-line 24 excess 56 → 1040 25c/25d). ⚠ Engagement must ride the FILED
-8959 EVIDENCE, never an invented per-employer allocation — and the
-aggregate must not double the W-2 box-5 rows when they ARE present.
-⚠ Read the earlier aggregate unit's design (the b009 valve:
-`amt_medicare_wages_agg` used only when no W-2 row carries box 5) and
-the staging warning the item quotes. Then the Slate save-lifecycle
-family #2-#5 together. BUILD_ORDER carries the detail.
+### ✅ s247 — BATCH-006 triage: the trio closed at HEAD (#6/#7/#8)
+- **#6 REFUTED, inference corrected**: 6b = 5,602 (cap) stable ×2,
+  D_RET_012 quiet, AGI = the dry-run's own 142,229 WITH 6b correct —
+  the $2,229 is the adjudicated source-side Schedule D non-foot.
+  Regression: `test_batch006_item6_ss_stability.py`.
+- **#7/#8 FIXED by s243b** (deployed before the batch published);
+  residues named in the annex.
 
-### 📗 Codex's evening production run (tmp/BATCH001_UNBLOCKED…md)
-Two more returns tied/Filed/moved to Done on the s243b build; one held
-on BATCH-006 #9 (the 1099-C gap); the NOL / #5-routing / AMT-pool parks
-acknowledged on their side. (Their "#5 preparer decision outstanding"
-note predates Ken's evening go — s246b built it.)
+### ✅ s246b — BATCH-001 #5 built (REP nonpassive routing; Ken's live go)
+Design record: the s246b batch annex + `test_8582_rep_nonpassive.py`.
+ONE predicate (`rental_rep_nonpassive`) shared by compute/diagnostics;
+the bypass = the §469(g)-release mechanics; the REP loss is a MAGI
+ADD-BACK; §469(f) former-passive rows STAY passive (D_8582_FPA).
+
+### ✅ s243b (earlier today) — Ken's four-return unblock (`bb282b0`, LIVE)
+Verdicts: Return W / T / G tie; **Return P NO TIE by design** (the FILED
+Schedule D face doesn't foot by exactly $2,229; source-side gap).
+Regression home: `server/tests/test_four_return_unblock_s243b.py`.
 
 ### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
 Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
-territory). The s242u model is Section C only; the line-36 cross-check
-stays unbuilt until an A/B carrier exists (parked with Ken's s224
-keyed-only ruling; revisit only on his direction).
+territory). Parked with Ken's s224 keyed-only ruling.
 
 ### ✅ THE E-FILE GAP LIST IS EMPTY (as of s242z)
-`IRS4797` (s242c) · `IRS8853` (s242x) · `IRS1116` (s242y) · amended MeF
-(s242z). What remains refused at composition is NAMED per-case, never a
-missing builder.
+What remains refused at composition is NAMED per-case, never a missing
+builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **BATCH-001 — every buildable item
-  CLOSED** (#10 ✅ s245b, #2 ✅ s245, #6 ✅ s244, #8 ✅ s243,
-  #1/#3/#7/#9 earlier); #4 NOL-parked (RS agenda), #5 ⛔ KEN — the batch
-  file stays in the queue carrying those two. **BATCH-002 — open as to
-  the NOL-blocked COMPUTES only**; **BATCH-003/004/005 — ✅ DONE,
-  moved.** Every worked file carries a result annex; read it first.
+- **1040** (`1040\CC Changes\`): **BATCH-006 — #1/#6/#7/#8/#9/#10 ✅
+  closed; #2-#5 open (the Slate family, next)**. **BATCH-001 — every
+  buildable item CLOSED**; #4 NOL-parked (RS agenda; Ken answers the
+  brief's four questions later). **BATCH-002 — open as to the
+  NOL-blocked COMPUTES only**; **BATCH-003/004/005 — ✅ DONE, moved.**
+  Every worked file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -181,38 +129,31 @@ missing builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
-- **s246b: NONE beyond new-fact reach.** The REP routing engages only
-  when a rental's `material_participation` is True (NULL on every
-  existing row) — no existing return moves until the fact is keyed. The
-  three new/rebuilt diagnostics fire only under the REP assertion or the
-  new flag. Migration 0315 nullable-additive.
-- **s245b: NONE beyond new-row reach.** The 8z composition gains its
-  sixth share only when a `Form1099Q` row exists (none do); the share is
-  0 on every existing return by construction, and the worksheet renders
-  only when rows exist. Migrations 0313/0314 additive.
-- **⚠ s244 MOVES E-FILE OUTPUT + PRINT on the 8862 class (all
-  corrections toward i8862):** (1) a return transmitting an 8862 whose
-  CTC/AOTC boxes rode claims alone now transmits them ONLY when the
-  category's flag is True — unanswered flags drop the box/part and
-  D_8862_006 warns; (2) a keyed 8862 with no resolving category now
-  REFUSES composition by name (was: transmitted per claims); (3) a
-  CTC/AOTC-only recert now renders/attaches an 8862 it previously
-  omitted entirely; (4) 8867 line 7a now answers "true" on a CTC/AOTC
-  disallowance. No dollar-line movement anywhere.
+- **s250: NONE beyond new-fact reach on ENGAGEMENT** (`amt_8959_filed`
+  is False everywhere until keyed). **⚠ but the DIAGNOSTICS bridge-gate
+  repair moves rule output on already-engaged aggregate returns**: an
+  aggregate-sourced return that compute engaged (the s227 single-W-2
+  shape) now fires D_8959_003 where all D_8959_* rules were silent; a
+  no-tax-due engaged return LOSES a false D_8959_001 (correction both
+  ways). No dollar-line movement.
+- **s249/s241j MOVE DIAGNOSTICS**: post-2018 alimony instruments fire
+  `D_SCH1_007` (error) on BOTH the paid and received sides.
+- **s248: NONE beyond new-row reach** (8c derives only when a
+  `Form1099C` row exists; none do).
+- **s246b: NONE beyond new-fact reach** (REP routing needs
+  `material_participation` True — NULL on every existing row).
 - **⚠⚠ s243b MOVES THREE CLASSES (each a correction):** (1) basis-only
-  8606 + IRA-path 1099-Rs — 4b regains box-2a taxable (AGI, SS
-  worksheet, GA RIE L11 move); (2) employer DCB with expenses below the
-  plan cap — the 2441 line-17 cap raises 1e/1z/AGI (zero expenses → all
-  benefits taxable); (3) GA under-62 disability RIE prints on S1 7c/7f
-  with date/type; missing details fire D_GA500_7C_DETAILS.
-- **⚠ s243 MOVES GEORGIA RETURNS carrying a federal 2441 credit** (the
-  IND-CR 202 feed; line 20 gains the credit — a correction).
-- **⚠ s242z/y/x MOVE E-FILE OUTPUT** on the amended / full-1116 / keyed-8e
-  classes respectively (compose-or-named-refusal changes; no compute
-  movement). s242q moves the stale-line-7 disengage class (correction).
+  8606 + IRA-path 1099-Rs — 4b regains box-2a taxable; (2) employer DCB
+  below the plan cap — 2441 line-17 cap raises 1e/1z/AGI; (3) GA
+  under-62 disability RIE prints on S1 7c/7f with date/type.
+- **⚠ s243 MOVES GEORGIA RETURNS carrying a federal 2441 credit**
+  (IND-CR 202 feed — correction).
+- **⚠ s244 MOVES E-FILE OUTPUT + PRINT on the 8862 class** (all
+  corrections toward i8862 — category flags gate boxes/parts; no
+  resolving category refuses by name; CTC/AOTC-only recerts now attach).
+- **⚠ s242z/y/x MOVE E-FILE OUTPUT** on the amended / full-1116 /
+  keyed-8e classes (compose-or-named-refusal; no compute movement).
 - **⚠ s241o MOVES GEORGIA RETURNS carrying a 1099-PATR** (RIE L10 feed).
-- **⚠ s241j MOVES DIAGNOSTICS**: post-2018 alimony instruments fire
-  `D_SCH1_007` (error).
 - Carried from s240: passive/PTP K-1 §1231 losses fire RED; a non-zero
   Schedule 1 line 4 refuses at MeF composition.
 - Carried from s239: Roth 1099-Rs move 5a/5b → 4a/4b; GA partnership K-1s
@@ -224,8 +165,6 @@ missing builder.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py`
   (3, s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn`
   (3, s239).
-- ~~`test_non_engaged_return_leaves_27a_quiet`~~ — **FIXED s244** (stale
-  pre-Leg-C pin; out-of-band DOB preserves its intent).
 - **`test_1040.py` — 6 pipeline tests**, unscoped `_fv` `.get()` (s234).
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
   (s219). `test_4868.py` (4) — ⛔ KEN (s217).
@@ -249,7 +188,7 @@ missing builder.
 - A timed-out `pytest | Select-Object` loses ALL output — redirect to a file.
 - `poetry run python > file` BUFFERS (use `-u`); stdout redirects go through
   cp1252 (write UTF-8 from inside Python); **never rewrite a UTF-8 file via
-  `Set-Content`** — use the Write/Edit tools.
+  `Set-Content`/`Add-Content`** — use the Write/Edit tools or Python io.
 - **`poetry run` only works from `server\`**; Windows `python` cannot read the
   Bash tool's `/tmp` — use the scratchpad; DB probes: a throwaway
   `tests/test_zz_*.py` with `-s`, deleted after.
