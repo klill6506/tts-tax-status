@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 257 — FORM 3800: THE §38(c)(6)(A) MFS THRESHOLD ✅
+> (`cb86103`, mig 0321).** Line 13's $25,000 → $12,500 on MFS, with the
+> statute's exception built (spouse-has-NO-credit restores $25,000 —
+> preparer-asserted `f3800_mfs_spouse_has_credit`, nullable; unanswered
+> = $12,500 + D_3800_010, fires only when line 12 > $12,500). One reader
+> feeds compute + diagnostic. RS spec amended same pass
+> (R-3800-MFS-THRESHOLD verbatim + key excerpt; cache re-verified).
+> 13 tests; all four 3800 suites + 526 FAs green.
+>
 > **2026-08-13 session 256 — FORM 172 LEG 3 ✅: THE NOL UNIT IS
 > COMPLETE (`43768c7`, no migration).** ONE data source
 > (`form_172_statement_data`, persisted rows) feeds the printed 1040's
