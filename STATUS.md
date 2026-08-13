@@ -1,38 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s254). **✅ FORM 172 LEG 1 IS LIVE
-(`baa5c49`, no migration) — THE NOL DEDUCTION COMPUTES.** The §172(a)(2)
-two-tier engine runs off the `nol_regular` vintage pools: pre-2018
-UNCAPPED, post-2017 capped at 80% of the base AFTER pre-2018 NOLs reduce
-it (spec T7 pins 16,000-not-40,000); Schedule 1 8a derives NEGATIVE with
-engagement memory (keyed 8a survives poolless returns; stale 8a blanks
-on disengage); oldest-first MTI absorption writes per-vintage
-used/remaining back; **D_CFWD_001 retires for nol_regular** (nol_amt
-keeps its red — Ken ruling #3); the 20-year expiry fence enforces;
-D_172_SS_BASE/80PCT_STATEMENT/EXPIRING/EXPIRED live; the counterfactual
-base per Ken's 01:00 ruling (AGI-derived items held, flagged). 16 new
-tests + 573 carryforward/FA + 172 sequence neighbors green; FORM_172
-worksheet seeded; the five FA-1040-NOL rows staged (s242x pattern).
-Remaining legs: Part I generation, farming-carryback refusal (lane
-fact), the statement page, MeF seam. BATCH-001 #4's park LIFTED (annex
-posted); BATCH-002 NOL computes re-triage next boot. Earlier: s253b (the
-spec round-trip + Ken's seven rulings), s253/252/251 (BATCH-006 all
-ten), s250-s243 — all LIVE. Earlier s253: **✅✅ BATCH-006 IS COMPLETE — ALL TEN
-ITEMS; the file moved to Done.** Leg 2 shipped (`77d7950`, no
-migration): **per-field saving/saved/failed states** — FieldStateInput
-renders `is-saving` (dashed) while the LATEST commit is in flight and
-`is-savefailed` (red ring + reason in the title, value KEPT) on
-failure; a new edit supersedes the verdict. `useTaxpayerFacts.commit`
-resolves with the committing FIELD's verdict (partial-credit honored)
-— occupation/address (#5) ride it; the W-2 boxes + nested rows return
-their lane verdicts (#3); the 1099-R per-field PATCH (was: NO ok
-check) joins a per-row lane. Verified live: commit → is-saving → the
-local 30s abort → is-savefailed with the reason, value on screen.
-Gates: 1,696 client + tsc. Leg 1 (s252 `ac04c1b`): the guarded-create
-hook + dependents/rentals/Start-Return migrations + 409-heals +
-server rental idempotency. **NEXT: the ~95-site raw-mutation sweep**
-(see ⭐). Earlier today: s250 #10 8959, s249 #1, s248 #9, s247 trio,
-s246b REP, s243b — all LIVE.*
+*Last updated: 2026-08-13 (s255). **✅ FORM 172 LEG 2 LIVE (`ca6202c`,
+migs 0319/0320) — PART I GENERATION COMPUTES; THE NOL LIFECYCLE IS
+CLOSED.** The Form172 singleton (OneToOne + RLS) carries the Part I
+classification inputs; compute_172_part_i transcribes lines 1-24 off the
+face (T1-T4/T11 pinned pure + a REAL 50,000 Schedule C loss year lands
+line 24 = −50,000); the generation pass runs at the END of the 1040
+block, opens an ENGINE-MANAGED loss-year vintage (remaining = |l24| +
+the §461(l) EBL), clears it when the loss disappears, and REFUSES to
+open it on a claimed farming carryback (Ken ruling #2 — 1045/1040-X +
+the waiver named). D_CFWD_003 gained the generated-vintage carve-out;
+`form_172s` lane + validator + /form-172/ singleton endpoint + schema
+regen; 4 new diagnostics. `test_rows_feed_no_tax_line` NARROWED to the
+engineless kinds (its own tripwire fired as designed). 13 new tests +
+677 gates green. With s254: generate → deduct (80%-capped) → roll →
+expire, all live. Remaining legs: the 80%-statement page, MeF seam,
+BATCH-002 re-triage. Earlier today: s254 (deduction engine), s253b (the
+spec + Ken's seven rulings), s253-s251 (BATCH-006 all ten) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**

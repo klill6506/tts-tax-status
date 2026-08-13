@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 255 — FORM 172 LEG 2 ✅: PART I GENERATION
+> (`ca6202c`; migs 0319/0320 — Form172 OneToOne + RLS).** Lines 1-24
+> off the face (spec T1-T4/T11 pinned; a real 50,000 Sch C loss year →
+> line 24 = −50,000); the loss-year vintage opens engine-managed
+> (+§461(l) EBL), clears on recompute-to-no-loss, REFUSES on a claimed
+> farming carryback; `form_172s` lane + /form-172/ singleton; 4
+> diagnostics; D_CFWD_003 carve-out. **The NOL lifecycle is CLOSED
+> (generate → deduct → roll → expire).** *Legs:* ✅ deduction · ✅
+> generation · ✅ pools lane · ✅ worksheet · ❌ statement page · ❌ MeF
+> seam.
+
 > **2026-08-13 session 254 — FORM 172 LEG 1 ✅: THE NOL DEDUCTION
 > COMPUTES (`baa5c49`, no migration).** The §172(a)(2) two-tier engine
 > off the nol_regular vintage pools (pre-2018 uncapped; post-2017 at 80%
