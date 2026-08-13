@@ -1,6 +1,18 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 254 — FORM 172 LEG 1 ✅: THE NOL DEDUCTION
+> COMPUTES (`baa5c49`, no migration).** The §172(a)(2) two-tier engine
+> off the nol_regular vintage pools (pre-2018 uncapped; post-2017 at 80%
+> of the base AFTER pre-2018 reduces it — spec T7 pinned pure + through
+> the return); Schedule 1 8a derives NEGATIVE with engagement memory;
+> oldest-first MTI absorption writes used/remaining back; **D_CFWD_001
+> retires for nol_regular** (nol_amt keeps its red — Ken ruling #3); the
+> 20-year expiry fence; 4 diagnostics; FA-1040-NOL-01..05 staged.
+> *Legs:* ✅ deduction compute · ✅ pools lane (s235) · ✅ worksheet seed ·
+> ❌ Part I generation · ❌ farming-carryback refusal (lane fact) ·
+> ❌ statement page · ❌ MeF seam. BATCH-001 #4's park LIFTED.
+
 > **2026-08-13 session 253b — FORM_172 (NOLs) SPEC LEG ✅: authored,
 > Gate-1 APPROVED by Ken in-session, seeded (RS 136 forms), exported
 > (200), cached (`form_172_spec.json`, verified).** Ken's four rulings

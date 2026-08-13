@@ -1,6 +1,23 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s253b — the NOL spec round-trip; see ✅ s253b below; NEXT = the Form 172 app build). Earlier s253: **✅✅ BATCH-006 IS COMPLETE — ALL TEN
+*Last updated: 2026-08-13 (s254). **✅ FORM 172 LEG 1 IS LIVE
+(`baa5c49`, no migration) — THE NOL DEDUCTION COMPUTES.** The §172(a)(2)
+two-tier engine runs off the `nol_regular` vintage pools: pre-2018
+UNCAPPED, post-2017 capped at 80% of the base AFTER pre-2018 NOLs reduce
+it (spec T7 pins 16,000-not-40,000); Schedule 1 8a derives NEGATIVE with
+engagement memory (keyed 8a survives poolless returns; stale 8a blanks
+on disengage); oldest-first MTI absorption writes per-vintage
+used/remaining back; **D_CFWD_001 retires for nol_regular** (nol_amt
+keeps its red — Ken ruling #3); the 20-year expiry fence enforces;
+D_172_SS_BASE/80PCT_STATEMENT/EXPIRING/EXPIRED live; the counterfactual
+base per Ken's 01:00 ruling (AGI-derived items held, flagged). 16 new
+tests + 573 carryforward/FA + 172 sequence neighbors green; FORM_172
+worksheet seeded; the five FA-1040-NOL rows staged (s242x pattern).
+Remaining legs: Part I generation, farming-carryback refusal (lane
+fact), the statement page, MeF seam. BATCH-001 #4's park LIFTED (annex
+posted); BATCH-002 NOL computes re-triage next boot. Earlier: s253b (the
+spec round-trip + Ken's seven rulings), s253/252/251 (BATCH-006 all
+ten), s250-s243 — all LIVE. Earlier s253: **✅✅ BATCH-006 IS COMPLETE — ALL TEN
 ITEMS; the file moved to Done.** Leg 2 shipped (`77d7950`, no
 migration): **per-field saving/saved/failed states** — FieldStateInput
 renders `is-saving` (dashed) while the LATEST commit is in flight and
