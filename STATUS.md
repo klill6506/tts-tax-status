@@ -1,18 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s257). **✅ THE §38(c)(6)(A) MFS $12,500
-THRESHOLD LIVE (`cb86103`, mig 0321 additive) — Ken's 00:45 ruling #1
-built, statute verified live INCLUDING the exception the request never
-mentioned**: the halving "shall not apply" when the spouse has no
-business credit — a fact about the SPOUSE'S return, so it is
-preparer-asserted (`f3800_mfs_spouse_has_credit`, nullable; the
-esb-gross-receipts pattern). Unanswered on MFS uses $12,500 (allows
-LESS credit — never a silent over-allowance) + D_3800_010 (fires only
-when line 12 > $12,500, where the answer can matter). ONE reader
-(`form_3800_mfs_threshold`) feeds compute + diagnostic. **The RS spec
-was amended in the same pass** (R-3800-MFS-THRESHOLD, statute verbatim
-+ the IRC_38 key excerpt; rule-studio `ee4dece`; cache re-exported and
-content-verified). 13 new tests + 568 neighbors green. Earlier today:
+*Last updated: 2026-08-13 (s258). **✅ THE OUT-OF-SCOPE-STATE NAMED
+HOLD LIVE (`0efc148`, NO migration) — Ken's 00:45 ruling #2 built; his
+whole ruled backlog is now shipped.** A packet declares
+`out_of_scope_states` (e.g. ["CA"]) on the return payload — a new
+backentry.v1 key (validated: US/DC codes; GA refuses — in scope; empty
+list refuses). No model change: the payload lives on StagedReturn
+already. Surfaced without re-opening the PII payload: the staged
+summary echoes the codes; the cleanup closeout records "federal
+complete; CA → the paper preparer" on ELIGIBLE packets — NEVER a hold
+(supersedes the s227 un-filed limbo). Schema regenerated; the NZ
+legacy file's #10 annexed with its new staging path. 8 tests + 623
+neighbors green. Earlier today: s257 (MFS threshold + RS amendment),
 s256 (the NOL unit completes + the singleton hotfix), s255/s254/s253b
 (the NOL build day) — all LIVE.*
 
@@ -42,6 +41,24 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s258 — the out-of-scope-state named hold (Ken ruling #2)
+Design record: `server/tests/test_backentry_oos_states_s258.py` (8) +
+the NZ-file annex. Load-bearing:
+- **A payload key, not a model field** — the payload lives whole on
+  StagedReturn, so the marker needed NO migration. Read server-side by
+  `payload_out_of_scope_states` (codes only — PII-safe by construction,
+  the source_provenance pattern).
+- **NON-blocking is the tested contract**: the cleanup row stays
+  eligible with the marker; the closeout entry carries
+  `state_disposition: "federal complete; CA → the paper preparer"`.
+- GA refuses inside the marker (it is IN scope); unknown codes refuse
+  (typo fence); the published batch-import.schema.json documents it.
+
+### ⭐ NEXT UNIT — the raw-mutation sweep, leg 1 (client-only)
+The ~95 unguarded save/create call sites (see the LATER UNIT block
+below for the slice order — capital-transactions patchRow first).
+vitest + `tsc --noEmit` gates; no server deploy expected.
+
 ### ✅ s257 — the §38(c)(6)(A) MFS $12,500 threshold (Ken ruling #1)
 Design record: `server/tests/test_form3800_mfs_threshold_s257.py` (13) +
 the RS amendment (rule-studio `ee4dece`). Load-bearing:
@@ -55,13 +72,6 @@ the RS amendment (rule-studio `ee4dece`). Load-bearing:
 - The spec amendment rode the same session (never let app and spec
   drift): R-3800-MFS-THRESHOLD + the key excerpt + D_3800_010 in the
   spec's diagnostics; cache refreshed + content-verified.
-
-### ⭐ NEXT UNIT — the out-of-scope-state named hold (Ken ruling #2)
-`out_of_scope_states` marker on StagedReturn + cleanup-gate surfacing —
-an out-of-state return in a batch packet gets an honest "goes to the
-paper preparer" disposition instead of limbo. Unblocks the parked
-BATCH-001 #9-shape packets and the NZ legacy file's #10. Then: the
-raw-mutation sweep leg 1 (details below).
 
 ### ✅ s256 — Form 172 leg 3: the NOL unit COMPLETE (+ the commit hotfix)
 Design record: the s256 annexes in BATCH-001/BATCH-002 +

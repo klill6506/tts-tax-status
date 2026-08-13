@@ -1,6 +1,15 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 258 — THE OUT-OF-SCOPE-STATE NAMED HOLD ✅
+> (`0efc148`, no migration).** Backentry gains the `out_of_scope_states`
+> payload key (validated; GA refuses — in scope): the staged summary
+> echoes the codes and the cleanup closeout records "federal complete;
+> CA → the paper preparer" — NEVER a hold. The NZ file's #10
+> (multi-state) now has a staging path; non-GA computes stay with the
+> paper preparer by name. Ken's 00:45 ruled backlog is fully shipped.
+> 8 tests + 623 neighbors green.
+>
 > **2026-08-13 session 257 — FORM 3800: THE §38(c)(6)(A) MFS THRESHOLD ✅
 > (`cb86103`, mig 0321).** Line 13's $25,000 → $12,500 on MFS, with the
 > statute's exception built (spouse-has-NO-credit restores $25,000 —
