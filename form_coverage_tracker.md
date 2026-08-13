@@ -1,6 +1,13 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 263 — THE RECOMPUTE DEBOUNCE, SERVER LEG ✅
+> (`55f0be4`, mig 0322).** Ken's January-capacity ruling: defer_compute
+> persists-but-skips at the one mutation chokepoint; /compute/ settles;
+> retrieve + render-pdf heal orphaned defers (stale values can never
+> show or print). Inert until the client leg lands (next). 6 tests +
+> 705 neighbors green.
+>
 > **2026-08-13 session 262c — ✅✅ THE AL/NC/SC IMPORT LANE (BATCH-007
 > BUILT → Done, `3149676`).** `state_returns` rows on backentry.v1,
 > landed ON the registry: staging refuses before any write (FL/TN
