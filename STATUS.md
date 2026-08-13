@@ -1,16 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s248). **✅ BATCH-006 #9 BUILT — Form 1099-C
-→ Schedule 1 line 8c** (migs 0316/0317; the line's first deriving
-writer; Pub 4681 routing + §108 transcription + the 982 warning; the
-reported $877 pinned end to end). Earlier tonight: s247 (the BATCH-006
-trio adjudicated — #6 refuted with the corrected inference, #7/#8 fixed
-by s243b), s246b (#5 REP routing on Ken's live go), s246 (the NOL
-brief), s245b (#10 1099-Q), s245 (#2), s244 (#6 8862), s243b (Ken's
-four-return unblock), s243 (#8) — all LIVE. BATCH-006 remainder: #1
-(alimony received — NEXT), #10 (8959 aggregate), #2-#5 (the Slate
-save-lifecycle family). BATCH-001 closed except #4 (the NOL walk —
-Ken answers later).*
+*Last updated: 2026-08-12 (s249). **✅ BATCH-006 #1 BUILT — alimony
+received**, the s241j paid-side twin resolved the same way (two lines,
+not a document family): `sch1_fields["2a"]/["2b"]` now import
+(SCH1_DIRECT_LINES); D_SCH1_007 enforces BOTH directions of Topic 452
+(a post-2018 instrument's receipts are NOT income — overstates AGI);
+D_SCH1_008 prompts the express-modification question on both sides
+(never guessed from a date — the s241j ruling); NEW D_SCH1_009 flags a
+generic-item duplicate of 2a. The $1,000/1971 packet chain pinned to
+AGI. No migration. Earlier tonight: s248 (#9 1099-C), s247 (the trio
+adjudicated), s246b (#5 REP routing), s246 (NOL brief), s245b/245/244/
+243b/243 — all LIVE. BATCH-006 remainder: #10 (8959 aggregate — NEXT),
+#2-#5 (the Slate save-lifecycle family). BATCH-001 closed except #4
+(the NOL walk — Ken answers later).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -136,16 +138,17 @@ deductibility; the MeF seam needed nothing (DebtCancellationAmt is a
 plain S1-F1040-080-03 member). Migs 0316/0317 + seed_rules applied.
 Codex re-stages the held return with a `c_1099s` row (annex guidance).
 
-### ⭐ NEXT UNIT — **BATCH-006 #1: alimony received (pre-2019)**
-The s241j alimony-PAID mirror: owner-attributed amount + original
-instrument date + modification/opt-in + the TCJA §11051 transition
-(pre-2019 taxable on Schedule 1 2a/2b; post-2018 nontaxable) → 1040
-line 8, SS taxation, Schedule 1-A, GA. ⚠ Read the s241j design first
-(the instrument-date facts and the "modification must expressly state"
-rule are the same law); ⚠ line 2b (the date) is a TEXT face line —
-check who owns 2a/2b today (seeded direct-entry). Then #10 (8959
-multi-W-2 aggregate), then the Slate family #2-#5. BUILD_ORDER
-carries the detail.
+### ⭐ NEXT UNIT — **BATCH-006 #10: the 8959 multi-W-2 aggregate**
+Extends the earlier single-W-2 aggregate fix: a packet with TWO W-2s
+whose per-employer box 5 is absent + the filed Form 8959 aggregates
+(line 1 = 215,945; line 19 withholding 3,187; line 21 regular 3,131;
+line 24 excess 56 → 1040 25c/25d). ⚠ Engagement must ride the FILED
+8959 EVIDENCE, never an invented per-employer allocation — and the
+aggregate must not double the W-2 box-5 rows when they ARE present.
+⚠ Read the earlier aggregate unit's design (the b009 valve:
+`amt_medicare_wages_agg` used only when no W-2 row carries box 5) and
+the staging warning the item quotes. Then the Slate save-lifecycle
+family #2-#5 together. BUILD_ORDER carries the detail.
 
 ### 📗 Codex's evening production run (tmp/BATCH001_UNBLOCKED…md)
 Two more returns tied/Filed/moved to Done on the s243b build; one held
