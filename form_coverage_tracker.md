@@ -1,6 +1,18 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-12 session 252 — THE GUARDED-MUTATION BUILD LEG 1
+> (BATCH-006 #2/#4; `ac04c1b`; client + one view decorator, no
+> migration).** Not a form unit: `lib/recordSaves.ts` promotes the W-2
+> save-lifecycle archetype to a shared hook (lane + idempotency key per
+> intent + lane-derived error + add-doubles-as-retry); dependents
+> type-to-add, both rental adds, and Start Return ×2 migrated;
+> rental-properties joins @idempotent_create server-side; api.ts routes
+> the friendly timeout message into data.error. Verified live: pending →
+> visible timeout error with the typed name kept → aborted-but-completed
+> create left exactly one row. Leg 2 next: per-field save states (#3) +
+> the taxpayer header (#5). No form legs affected.
+
 > **2026-08-12 session 251 — BATCH-006 #2-#5 INVESTIGATION (no code
 > change by design; the annex is the spec).** Not a form unit: the four
 > UI save-reliability reports reduce to ~103 raw mutation call sites vs

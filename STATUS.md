@@ -1,27 +1,24 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-12 (s251). **🔎 BATCH-006 #2-#5 INVESTIGATED
-TOGETHER — root cause FOUND, no code changed yet (the batch's own
-directive: repro before fix).** The four reports are one gap: **~103
-raw `await post/patch` mutation call sites; only the W-2 archetype
-rides the s119 saveScope lifecycle** (lanes, pending, failure pill,
-idempotency). Verified live in a browser: a >30s create aborts at the
-client's 30s bound, surfaces only a NATIVE alert() ("Failed to create
-return" — suppressed in automated browsers), **and completes
-server-side anyway** (201 logged; the return existed) — the delayed-
-duplicate window is real and the naked call sites have no idempotency
-key. `DependentsSection.handleAdd` is the exemplar: no res.ok check,
-no lane, no pending, silent on failure (= item #2 exactly). Prod
-latency measured: 1.3-1.8s per taxpayer PATCH (fine solo; queues on 2
-workers under rapid sessions — REVIEW_QUEUE capacity flag filed).
-Local dev is 30-40s/PATCH (~120ms×227 queries to the pooler) — the
-abort reproduces on the first try there. DB audit: the overnight
-re-staging wave (04:14-04:24) rebuilt the batch's named returns and
-destroyed the row-level evidence for item #3; item #4's first-1099-R
-entry WAS made through the UI and landed; item #2's dependent and the
-two item-#4 add-button rows never landed (the naked-create class).
-Full annex in BATCH-006. **NEXT: the guarded-mutation build** (see ⭐).
-s250 and the nine earlier units all LIVE.*
+*Last updated: 2026-08-12 (s252). **✅ THE GUARDED-MUTATION BUILD LEG 1
+IS LIVE (`ac04c1b`, no migration)** — the s251 investigation's fix,
+first slice: NEW `lib/recordSaves.ts` (the W-2 archetype's contract as
+ONE shared hook — lane + idempotency key per intent + pending +
+lane-DERIVED addError + add-doubles-as-retry replaying the SAME
+key/body). Migrated: the dependents type-to-add (#2), both rental adds
+(#4; the endpoint also joins server-side @idempotent_create), and
+Start Return on both pages (90s bound for the measured 10-45s create;
+409 HEALS by opening the return the earlier attempt made; inline
+errors replace the suppressed native alert()). api.ts now puts the
+friendly timeout text in data.error (the raw DOMException leaked).
+**Verified live in a browser**: typed EDWARD → "Adding…" → the 30s
+abort surfaced a visible alert with the name kept → the aborted
+request completed server-side → EXACTLY ONE row. Gates: 1,687 client
+tests + tsc clean, 10/10 autosave-stabilization (new rental
+idempotency pin), 526 flow assertions. **NEXT: leg 2 — per-field
+saving/saved/failed on the W-2/1099-R worksheets (#3) + the taxpayer
+header (#5), then the ~95-site sweep** (see ⭐). Earlier: s250 #10 8959,
+s249 #1, s248 #9, s247 trio, s246b REP, s243b — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -67,21 +64,24 @@ Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
 - Codex re-stages the two-W-2 production batch adding
   `"amt_8959_filed": true` (annex guidance).
 
-### ⭐ NEXT UNIT — **the guarded-mutation build (BATCH-006 #2-#5, leg 1)**
-The s251 investigation is the spec (the annex in BATCH-006 + this
-block). Build order: (1) a shared guarded-mutation helper on the W-2
-`handleAdd` archetype (saveScope lane + one X-Idempotency-Key per user
-intent + pending state + rowErrorText surfacing); migrate the CREATE
-call sites on the reported screens FIRST — dependents type-to-add,
-Schedule C add, rental add, 1099-R add, W-2 add (already done — the
-template), the taxpayer-header PATCH lane; (2) per-row/per-field
-saving/saved/failed affordances; (3) retire native alert()/confirm()
-in mutation paths; (4) the items' integration tests (failure leaves
-the value visible + retryable; delayed success cannot duplicate —
-the idempotency key is the mechanism). Then sweep the remaining ~100
-call sites until dry, multi-tick. ⚠ Client-only work — no migration,
-no compute change; vitest + `tsc --noEmit` are the gates, plus the
-targeted Slate screen tests.
+### ⭐ NEXT UNIT — **the guarded-mutation build, leg 2 (BATCH-006 #3/#5)**
+Leg 1 (creates) shipped in s252. Leg 2 = the FIELD-EDIT lifecycle:
+- **#3**: the W-2/1099-R worksheets' PATCH lanes exist (queueW2Patch /
+  the 1099-R draft flow) but a failure surfaces only in the header
+  pill + an 8s toast while FieldStateInput reverts the cell — add a
+  per-field saving/saved/failed affordance (the items ask for it
+  explicitly). Read `FieldStateInput.tsx`'s revert contract first
+  (s199/046 #8 history in its header) — the failure REVERT is
+  deliberate; the missing piece is the visible per-cell state.
+- **#5**: the taxpayer-header PATCHes (FormEditor lines ~2982/3566/
+  12983/24436 + `useTaxpayerFacts`) — establish which lane each rides,
+  add pending/failed surfacing, and consider whether they should ride
+  `useRecordSaves.upd`-style lanes per field family.
+- Then the ~95-site sweep until dry (multi-tick; the Schedule C add,
+  W-2/1099-R creates already ride the machinery; the 1099-R "+ Add"
+  client-draft flow's card IS its pending state — don't break it).
+⚠ Client-only; vitest + `tsc --noEmit` + targeted screen tests are the
+gates. The s251/s252 annexes in BATCH-006 are the design record.
 
 ### ✅ s249 — BATCH-006 #1 built (alimony received, the s241j twin)
 Two lines, not a document family: `sch1_fields["2a"]/["2b"]` import;
