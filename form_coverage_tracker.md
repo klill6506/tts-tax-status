@@ -1,6 +1,14 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 262 — ✅✅ THE RAW-MUTATION SWEEP COMPLETES
+> (`a72b920`).** The tail's nine sections enlaned; every 1040-editor
+> save path now reports its outcome or is a deliberate draft-flow
+> exception. ⚠⚠ Found: `tsc -p .` was a references-only NO-OP — the
+> real gate (`-p tsconfig.renderer.json`) shows the sweep's files
+> CLEAN and 57 pre-existing errors in old code (task chip spawned).
+> The standing queue is EMPTY — idle for Codex.
+>
 > **2026-08-13 session 261 — SWEEP LEG 3 ✅ (`a9e9ada`).** The
 > singleton sections (Form 1116 — both lanes on ONE ordered per-screen
 > lane — Schedule J, Form 8615) + W-2G converted: verdict-returning
