@@ -1,6 +1,20 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-13 session 253b — FORM_172 (NOLs) SPEC LEG ✅: authored,
+> Gate-1 APPROVED by Ken in-session, seeded (RS 136 forms), exported
+> (200), cached (`form_172_spec.json`, verified).** Ken's four rulings
+> (DECISIONS.md): BOTH SIDES v1; farming carryback refuses by name;
+> ATNOLD preserve-only; the 80% base verbatim — ⚠⚠ incl. the pre-2018
+> subtraction the brief's short form dropped (spec T7 pins cap 16,000
+> not 40,000). 37 facts / 15 rules all cited / 35 lines / 10 diagnostics
+> / 11 scenarios (T9 = the IRS's own EBL example) / FA-1040-NOL-01..05.
+> Integrity gate: no shared math; 6-defect negative control all caught.
+> **The 404-STOP lifts for NOLs; the app build (legs: compute → 8a
+> derive → Part I → diagnostics → statement → FA wiring → MeF seam) is
+> NEXT — it retires D_CFWD_001 for `nol_regular` and unblocks BATCH-001
+> #4 + BATCH-002's NOL computes.**
+
 > **2026-08-12 session 253 — GUARDED-MUTATION LEG 2: PER-FIELD SAVE
 > STATES (BATCH-006 #3/#5 → ✅✅ THE BATCH COMPLETES, all ten, moved to
 > Done; `77d7950`, no migration).** Not a form unit: FieldStateInput
