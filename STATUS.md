@@ -1,16 +1,17 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s262c). **✅✅ BATCH-007 BUILT → Done
-(`3149676`) — the AL/NC/SC import lane, landed ON the state registry
-per Ken's live "registry first" ruling.** One day, three units: the
-registry (four maps → one table, a corporate-fallback trap retired),
-the lane (`state_returns` rows with staging refusals before any write,
-per-face reconciliation over the union of faces and expectations, the
-state_persistence cleanup gate, schema regenerated), and earlier the
-raw-mutation sweep's completion + the vacuous-typecheck find. The
-queue is EMPTY again — idle for Codex. Earlier today: s262-s259 (the
-sweep), s258/s257 (Ken's rulings), s256-s253b (the NOL day) — all
-LIVE.*
+*Last updated: 2026-08-13 (s263). **✅ THE RECOMPUTE DEBOUNCE, SERVER
+LEG (`55f0be4`, mig 0322 additive+db_default)** — Ken said "continue
+with the build list," and the debounce is his last ruled-unbuilt item.
+`?defer_compute=1` on any mutation persists the write, sets
+`TaxReturn.compute_stale`, and SKIPS the ~1.5s recompute; POST
+/compute/ is the settle (computes + clears + fresh_return); retrieve
+and render-pdf HEAL an orphaned defer so stale values can never show
+or PRINT. Inert until the client opts in — that's the next leg
+(saveScope sends the flag on editor lanes + debounces one settle per
+return). 6 tests + 705 neighbors green. Earlier: s262c (BATCH-007
+built → Done), s262b (the registry), s262-s259 (the sweep), s258-s253b
+(rulings + the NOL day) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -38,6 +39,29 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s263 — the recompute debounce, SERVER leg (`55f0be4`, mig 0322)
+Load-bearing:
+- **The ONE chokepoint made it cheap**: _recompute_1040 (174 call
+  sites) gained the defer branch; nothing else moved. Persist-first
+  untouched — the deferred response carries NO fresh_return (nothing
+  fresh to carry).
+- **The heal set is exactly two**: retrieve + render-pdf. Diagnostics
+  already computes first; backentry/e-file compute explicitly
+  (verified, not assumed). Render's heal is the load-bearing one —
+  render stopped computing in the 2026-07-02 stale-print fix, so an
+  orphaned defer would otherwise PRINT stale values.
+- An undeferred mutation clears prior staleness (the flag can never
+  wedge on).
+
+### ▶ NEXT — the debounce's CLIENT leg
+api.ts/saveScope: editor field lanes (`fields:`, the per-row PATCH
+lanes) send `defer_compute=1`; saveScope debounces ONE settle op per
+return (~1s after the last mutation settles) → POST
+/compute/?fresh_return=1 → onRefresh with the authoritative payload.
+The pill's pending state covers the settle window. ⚠ Computed cells
+(gain_loss etc.) go stale between keystroke and settle BY DESIGN —
+that is the ruling's tradeoff. A posted Codex batch preempts.
+
 ### ✅✅ s262c — BATCH-007 BUILT AND DONE (`3149676`): the AL/NC/SC lane
 Ken ruled "registry first" live; both legs shipped same-day and the
 batch file moved to Done with its build annex. Load-bearing:
@@ -59,11 +83,6 @@ batch file moved to Done with its build annex. Load-bearing:
 - NOT done, deliberately: the six named acceptance packets' re-pass
   (real PDFs, post-deploy acceptance — Codex/preparer work; the NC
   resident packet can't complete regardless, missing 1040 faces).
-
-### ▶ NEXT — the queue is EMPTY again: idle for Codex
-Shelved: the pre-season recompute debounce (Ken's timing); the
-57-error typecheck chip. RS agenda: the charitable per-vintage
-amendment (BATCH-002 #9).
 
 ### ✅ s262b — the state-registry refactor, LEG 1 (`76d9d6b`)
 Ken ruled **"registry first"** on the gate below (DECISIONS.md). Leg 1 is
