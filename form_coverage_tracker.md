@@ -1,6 +1,14 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-14 session 263b — ✅✅ THE RECOMPUTE DEBOUNCE IS COMPLETE
+> (`d6c6e95`).** Client leg: debounced settle with a quiescence rule,
+> on a normal lane, blocking navigation while scheduled. ⚠⚠ Live
+> verification caught the server leg's miss — `update_fields` never
+> routed through the mutation chokepoint, so THE per-keystroke lane was
+> still computing; fixed + pinned. Proven live: deferred save = 46
+> bytes, settle = 188,821. 9 + 9 tests; 1715 + 545 green.
+>
 > **2026-08-13 session 263 — THE RECOMPUTE DEBOUNCE, SERVER LEG ✅
 > (`55f0be4`, mig 0322).** Ken's January-capacity ruling: defer_compute
 > persists-but-skips at the one mutation chokepoint; /compute/ settles;

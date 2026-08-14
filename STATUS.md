@@ -1,17 +1,16 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-13 (s263). **✅ THE RECOMPUTE DEBOUNCE, SERVER
-LEG (`55f0be4`, mig 0322 additive+db_default)** — Ken said "continue
-with the build list," and the debounce is his last ruled-unbuilt item.
-`?defer_compute=1` on any mutation persists the write, sets
-`TaxReturn.compute_stale`, and SKIPS the ~1.5s recompute; POST
-/compute/ is the settle (computes + clears + fresh_return); retrieve
-and render-pdf HEAL an orphaned defer so stale values can never show
-or PRINT. Inert until the client opts in — that's the next leg
-(saveScope sends the flag on editor lanes + debounces one settle per
-return). 6 tests + 705 neighbors green. Earlier: s262c (BATCH-007
-built → Done), s262b (the registry), s262-s259 (the sweep), s258-s253b
-(rulings + the NOL day) — all LIVE.*
+*Last updated: 2026-08-14 (s263b). **✅✅ THE RECOMPUTE DEBOUNCE IS
+COMPLETE (`d6c6e95`)** — Ken's January-capacity ruling, both legs. A
+form-line edit sends `?defer_compute=1` (persists, marks stale, skips
+the ~1.5s compute) and schedules ONE settle ~1s after the burst
+quiesces; the settle's `?fresh_return=1` payload repaints. **Live-proven
+on the dev server: the deferred save answers in 46 BYTES, the settle in
+188,821** — that contrast is the debounce. ⚠ Verification also caught a
+real defect: `update_fields` does NOT route through the mutation
+chokepoint, so s263's server leg had missed THE per-keystroke lane and
+it was still computing; fixed + pinned. Earlier: s262c (BATCH-007 →
+Done), s262b (the state registry), s262-s259 (the sweep) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -39,6 +38,30 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅✅ s263b — the debounce's CLIENT leg + the field-lane defect
+Load-bearing:
+- **⚠⚠ THE CHOKEPOINT WASN'T THE ONLY WRITER.** `update_fields` has its
+  own persist-first + GA-sync block and never routed through
+  `_recompute_1040` — so the s263 server leg covered 174 call sites and
+  MISSED the one path Ken's ruling is about. Only live verification
+  found it (the deferred PATCH still ran the full compute). 3 tests now
+  pin that lane directly.
+- **⚠ A deferred response must refresh NOTHING**: `refreshReturn()`
+  without a payload falls back to a GET, which the server HEALS by
+  computing — that alone would have silently defeated the debounce.
+- **The settle waits for QUIESCENCE**, not just the timer (observed
+  live holding while a write was pending), rides a normal lane, and
+  counts as unacknowledged work so navigation blocks on it.
+- ⚠ Local end-to-end in ONE shot isn't possible: writes exceed the
+  client's 30s timeout (the ~20× pooler amplification), so a real
+  deferred save fails before its settle schedules. The halves were
+  verified separately against the live server.
+
+### ▶ NEXT — the queue is EMPTY: idle for Codex
+Ken (2026-08-13): continue the build list until the next Codex update.
+Nothing ruled-but-unbuilt remains. Shelved: the 57-error typecheck
+chip. RS agenda: the charitable per-vintage amendment (BATCH-002 #9).
+
 ### ✅ s263 — the recompute debounce, SERVER leg (`55f0be4`, mig 0322)
 Load-bearing:
 - **The ONE chokepoint made it cheap**: _recompute_1040 (174 call
@@ -52,15 +75,6 @@ Load-bearing:
   orphaned defer would otherwise PRINT stale values.
 - An undeferred mutation clears prior staleness (the flag can never
   wedge on).
-
-### ▶ NEXT — the debounce's CLIENT leg
-api.ts/saveScope: editor field lanes (`fields:`, the per-row PATCH
-lanes) send `defer_compute=1`; saveScope debounces ONE settle op per
-return (~1s after the last mutation settles) → POST
-/compute/?fresh_return=1 → onRefresh with the authoritative payload.
-The pill's pending state covers the settle window. ⚠ Computed cells
-(gain_loss etc.) go stale between keystroke and settle BY DESIGN —
-that is the ruling's tradeoff. A posted Codex batch preempts.
 
 ### ✅✅ s262c — BATCH-007 BUILT AND DONE (`3149676`): the AL/NC/SC lane
 Ken ruled "registry first" live; both legs shipped same-day and the
