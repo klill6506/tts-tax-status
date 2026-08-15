@@ -1,9 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-15 (s266). **✅ THE SEVEN-CLASS CHARITABLE UNIT IS
-BUILT AND COMMITTED (`f8248dd`, mig 0323) — BATCH-002 CLOSED, THE ENTIRE
-1040 CC QUEUE IS EMPTY — but ⚠ NOT YET LIVE: see the RED blocker below
-(Render build minutes exhausted since 08-13; Ken action).** Ken approved the `R-SCHA-CHARITABLE` amendment at
+*Last updated: 2026-08-15 (s266, evening). **✅✅ THE SEVEN-CLASS
+CHARITABLE UNIT IS LIVE (`f8248dd`, mig 0323, deployed in `f21cfe5`) —
+BATCH-002 CLOSED, EVERY CC QUEUE IS EMPTY, and the two-day deploy void
+is RESOLVED (Ken raised the Render build limit; see below).** Ken approved the `R-SCHA-CHARITABLE` amendment at
 Gate 1 in-session; spec amended/seeded/exported/cached (RS `ee4dece`+)
 and the app build shipped the same day. All three defects were IN THE
 RULE (the code implemented it faithfully): (1) K-1 codes B/D/F/G refused
@@ -31,28 +31,19 @@ below). Earlier: s265 (typecheck gate 57→0), s264 (e-file readiness
 
 ---
 
-## 🔴🔴 BLOCKER — RENDER IS OUT OF BUILD MINUTES; NOTHING SINCE s258 IS LIVE
-**Found s266 (2026-08-15). Every deploy since 2026-08-13 07:57 has been
-CANCELED by Render** — build log verbatim: *"Build canceled: your
-workspace has run out of build pipeline minutes for the current billing
-period."* ~30 consecutive `build_failed` deploys. **prep.delviotax.com
-is pinned at `0efc148` (s258, 08-13 07:55).** Committed but NOT live:
-the s259–s262 save sweep, the state registry + AL/NC/SC lane, the
-recompute debounce (both legs), s264 e-file readiness, s265 typecheck
-fixes (client), s266 charitable. **The fix is Ken's — a billing
-setting**: raise the build spend limit / upgrade at
-dashboard.render.com → workspace settings → build pipeline (CC does not
-touch billing). No re-push needed after; Render redeploys the latest
-commit. Ken push-notified 08-15.
-**Skew inventory (checked, currently safe):** migs 0322/0323 ARE
-applied to the shared DB while prod runs old code — safe by design, the
-s190 `db_default` rule is what makes old-code INSERTs work; s264's
-D_EFILE rule rows name `rules_efile`, which prod's old build lacks, so
-prod diagnostics runs will label those ENGINE FAULTS and mark the run
-FAILED (the s233 guard doing exactly its job — degraded, not lying).
-⚠ Session annexes since 08-13 that say "deployed"/"LIVE" are wrong on
-that one point — the pushes happened, the builds did not. The work
-itself is committed, tested, and deploys on the first successful build.
+## ✅ RESOLVED s266 (same day) — the two-day deploy void is CLOSED
+Render ran out of build-pipeline minutes 08-13 07:57; ~30 consecutive
+deploys were CANCELED while prep sat pinned at `0efc148` (s258) and
+session annexes said "LIVE". **Ken raised the build spend limit
+$50 → $200 (2026-08-15 evening); deploy `f21cfe5` (the main tip —
+carries the s259–s266 backlog: save sweep, state registry + AL/NC/SC
+lane, debounce, e-file readiness, typecheck fixes, the charitable unit)
+is LIVE and verified** (Render status + prep 200). The D_EFILE
+engine-fault degradation clears by construction — `rules_efile` is on
+the server now. The skew window was safe throughout: s190 `db_default`
+covered migs 0322/0323 against old code; s233's engine-fault labeling
+kept diagnostics honest. ⚠ Annexes dated 08-13→08-15 claiming
+"deployed" were wrong on that one point until tonight; correct since.
 
 ## ⚠⚠ STANDING FACT: PUSHING TO `main` DEPLOYS (WHEN BUILDS RUN)
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
