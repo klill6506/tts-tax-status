@@ -113,26 +113,42 @@ for cluster 2:
 3. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22,
    #25, #28, #30.
 
-**⛔ KEN — ONE CALL, #5 AND #8 TOGETHER (the NOL preservation
-question).** Codex asks that `carryforward_attributes` rows with an
-explicit `amount_used_current_year: 0` stop feeding the current return,
-citing "the schema contract that carryforward rows feed no
-computation." **That premise is stale** — s254–s256 deliberately made
-`nol_regular` engine-computed (`compute_form_172` OVERWRITES
-`amount_used_current_year`; D_CFWD_001 was retired for that kind).
-Underneath is a real tax question: **§172(a) makes the NOL deduction
-mandatory, not elective**, so Delvio applying $2,089 (80% of the
-$2,611 taxable income before the NOL) may be CORRECT and the source
-worksheet's blank "used this year" column may be the error. Both
-readings need Ken; do not build either silently.
+**✅ KEN RULED ALL THREE OPEN QUESTIONS (2026-08-15, s267, live).** No
+BATCH-296 item is waiting on him. Full reasoning in DECISIONS.md +
+REVIEW_QUEUE:
+1. **#5/#8, the NOL:** *the engine ALWAYS computes; a disagreeing
+   source is a reconciliation FINDING, not a different number.* The
+   preservation-only marker was costed and DECLINED (it would let a
+   preparer switch off a mandatory deduction and propagate a source
+   error into the roll-forward); the hard-blocking-error variant was
+   declined too. ⚠ **This generalizes beyond NOLs** — where the Code
+   makes a deduction mandatory, the engine owns the number.
+   → Build: confirm current behavior is exactly this, downgrade the
+   mismatch to a resolvable finding, add the missing **current-year
+   vintage fence** (below), regression-pin Mote's shape.
+2. **Code L:** *build it properly in cluster 2* — verify §72(p),
+   handle the basis consequence (taxed, loan not cancelled, no basis
+   increase until repaid). Not the one-line admission.
+3. **#19 NC:** *restage first, build only what genuinely fails.*
+   Expect Schedule PN's nonresident allocation alone.
 
-**⚠ #19 (NC D-400) — RE-VERIFY BEFORE BUILDING.** Its production
-rejection of `state_returns` / `expected.nc_d400` happened INSIDE the
-deploy void, against an image pinned at s258. The AL/NC/SC back-entry
-lane shipped in `3149676` (s262c) and is live; s267's #29 fix puts
-`expected.nc_d400` in the published schema. Restage the two fixtures
-against the current image first — only Schedule PN's nonresident
-allocation is genuinely unbuilt.
+⚠ **A REAL LATENT BUG FOUND WHILE VERIFYING #5** — the NOL deduction
+engine filters vintages for EXPIRY ONLY (`compute_form_172.py` ~238);
+there is **no fence excluding a loss year equal to the current year**.
+A 2025-vintage pool on a 2025 return is treated as available. Littleton
+is safe only by arithmetic accident (a loss year has TI ≤ 0, so the 80%
+cap computes to zero — the s220 "cancels by luck" class). The reachable
+case is a **mis-keyed vintage**, and TaxWise's worksheet is titled
+"Carryovers from 2025 to 2026", so keying 2025 for an older loss is an
+easy slip that would deduct a carryforward a year early, silently. One
+fence + a diagnostic; cluster 2.
+
+⚠ **Codex's #5 symptom does NOT reproduce at HEAD** — `D_CFWD_001`
+cannot fire for `nol_regular`: s254 added the kind to
+`ENGINE_COMPUTED_KINDS` (models.py ~12251), the lane creates rows via
+`objects.create()` (which runs `save()`, setting `engine_computes`), and
+the rule skips any row where that flag is true. Ask Codex to re-run
+Littleton against the current image before building for it.
 
 **Large units deferred to later clusters:** #10 (Form 4835), #23/#24
 (Schedule C / Schedule E depreciation asset ledgers with AMT basis and
@@ -142,8 +158,10 @@ amended-return lifecycle). Each is a multi-session build.
 ⚠ **Code L is the next code-M** — deemed distributions (§72(p)), also
 "used with 1, 2, 4, 7, or B", still outside `SUPPORTED_CODES`, so an
 "L7" doc will blank the whole pension column exactly as "7M" did.
-Deliberately not admitted in s267 (out of scope; a deemed distribution
-has its own basis consequences). REVIEW_QUEUE.
+**Ken ruled 2026-08-15: BUILD IT PROPERLY in cluster 2** (not the
+one-line admission) — verify §72(p) against the instructions and handle
+the basis consequence: the amount is taxed, the loan is NOT cancelled,
+and it does not add to basis until repaid.
 
 ### ✅ s266b — the 1120-S inbox: THREE HELD RETURNS FILED (Ken's ask)
 **114 Harmony Pet + 201 Oconee Interiors + 212 Hickory Hill — each
