@@ -1,26 +1,33 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-15 (s266, evening). **✅✅ THE SEVEN-CLASS
-CHARITABLE UNIT IS LIVE (`f8248dd`, mig 0323, deployed in `f21cfe5`) —
-BATCH-002 CLOSED, EVERY CC QUEUE IS EMPTY, and the two-day deploy void
-is RESOLVED (Ken raised the Render build limit; see below).** Ken approved the `R-SCHA-CHARITABLE` amendment at
-Gate 1 in-session; spec amended/seeded/exported/cached (RS `ee4dece`+)
-and the app build shipped the same day. All three defects were IN THE
-RULE (the code implemented it faithfully): (1) K-1 codes B/D/F/G refused
-→ contribution deducted NOWHERE, tax OVERSTATED — now all seven
-§170(b)(1) classes compute with the statutory residual ceilings, reach
-7203 line 42 basis, and import through the lane (schema regenerated);
-(2) the TY2026 0.5% floor was a deduction haircut — §170(b)(1)(I)
-reduces CONTRIBUTIONS in the order D→C→B→E→A→G (methods diverge when a
-ceiling binds; pinned 60,000 vs 59,500); (3) the floored amount was
-DESTROYED — §170(d)(1)(C) carries it. Per-class per-vintage carryovers:
-current-year first, oldest first, 5-year expiry, floored-once relief
-(PROVISIONAL pending Pub 526 (2026) — see REVIEW_QUEUE). D_SCHA_007
-retired; 015/016/017 added (a seeded-ID collision with the app's live
-012 was caught and fixed). Earlier today: BATCH-001 filed to Done as
-`-001B` (the number 001 was issued TWICE — see the queue-collision note
-below). Earlier: s265 (typecheck gate 57→0), s264 (e-file readiness
-17c), s263b (the debounce) — all LIVE.*
+*Last updated: 2026-08-15 (s267, late). **▶ 1040 BATCH-296 IS OPEN AND
+BEING WORKED IN CLUSTERS. Cluster 1 shipped (`ca078dd`) — seven items
+(1/6/15/17/29/32/33), no migration.** ⚠ The batch posted **33 items**,
+27 of them filing blockers — about 3× the lane's normal size, and
+several are whole build units, so "one deploy per batch file" is being
+read as one deploy per session-cluster with a running annex; the file
+moves to Done only when every item is resolved.*
+
+*⚠⚠ **THE BIGGEST FINDING IS THAT ITEM 6 NEEDED NO CODE.** Codex
+reported `apps.diagnostics.rules_efile` missing from production as a
+GLOBAL filing blocker — it has been at HEAD since s264 (`ab931d4`). The
+three `D_EFILE_*` engine faults were the 08-13→08-15 build-minutes
+void. Shared-DB evidence: last faulting run **20:22 UTC**, every run
+from **21:15 clean**. `f42e729` going live unblocked Codex's entire
+Inbox before this session started — items 31/32/33 exist only because
+the s264 rules finally ran for the first time.*
+
+*Also s267: the Form 8606 supersession was one boolean over two
+independent parts (a Part-III-only Roth row dropped a fully taxable
+$37,500 traditional IRA out of 4b/AGI/GA-RIE); box-7 **code M** was
+unsupported and blanked the whole pension column (the code-U defect
+verbatim); the RRTA e-file gate was reading a **form constant** (line
+15 = the filing-status threshold — 21 returns carry a Part III value
+and all 21 are that line); the published schema was stricter than the
+server on state answer keys; and the 8949 date column has two writers
+that disagree. Earlier: s266b (three 1120-S returns FILED), s266 (the
+charitable unit), s265 (typecheck 57→0), s264 (e-file readiness) — all
+LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -84,14 +91,59 @@ Load-bearing:
 ⚠ Commit messages with backticks/`!!` must go through `git commit -F`
 (bash mangles them) — the s242k lesson, re-learned.
 
-### ▶ NEXT — 1040 BATCH-296 (30 items, posted 2026-08-15 evening)
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` (Codex numbered it 296 —
-unique across queue ∪ Done, fine). Item 1 is a FILING BLOCKER: a
-Part-III-only Form 8606 (Roth basis only) suppresses the same owner's
-fully taxable code-7 traditional-IRA 1099-R ($37,500 dropped from AGI)
-— smells like the s243b basis-only-8606 supersession rule missing an
-engagement predicate for Part-III-only rows. Verify-first, one deploy,
-annex, Done.
+### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 2
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **33 items, OPEN.**
+Cluster 1 (s267, `ca078dd`) closed 1/6/15/17/29/32/33; the annex in the
+file carries the per-item reasoning and the triage notes below. Order
+for cluster 2:
+
+1. **#31 — multi-packet cleanup 500s.** A workflow blocker throttling
+   Codex to ONE packet per request (10 and 5 both 500 after ~2 min; a
+   single packet succeeds in ~25s). Smells like cumulative diagnostic
+   latency against a request/connection ceiling, not a return defect.
+2. The small compute defects: **#7** (Schedule 2 counts an $7,288 8962
+   repayment in BOTH Part I and the Part II subtotal), **#14** (GA
+   spouse RIE loses exactly $17 — a taxpayer-owned interest row leaking
+   across owners), **#3** (D_GA500_016 reports $0 excluded while
+   D_GA500_003 in the SAME run reports $25,982 — check the SPOUSE
+   column and the pre/post-recompute read), **#4** (8862 `part_ii`
+   derived row never populated after import; the editor shows it
+   disabled so no preparer can fix it), **#9** (8962 monthly
+   contribution rounding, $9).
+3. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22,
+   #25, #28, #30.
+
+**⛔ KEN — ONE CALL, #5 AND #8 TOGETHER (the NOL preservation
+question).** Codex asks that `carryforward_attributes` rows with an
+explicit `amount_used_current_year: 0` stop feeding the current return,
+citing "the schema contract that carryforward rows feed no
+computation." **That premise is stale** — s254–s256 deliberately made
+`nol_regular` engine-computed (`compute_form_172` OVERWRITES
+`amount_used_current_year`; D_CFWD_001 was retired for that kind).
+Underneath is a real tax question: **§172(a) makes the NOL deduction
+mandatory, not elective**, so Delvio applying $2,089 (80% of the
+$2,611 taxable income before the NOL) may be CORRECT and the source
+worksheet's blank "used this year" column may be the error. Both
+readings need Ken; do not build either silently.
+
+**⚠ #19 (NC D-400) — RE-VERIFY BEFORE BUILDING.** Its production
+rejection of `state_returns` / `expected.nc_d400` happened INSIDE the
+deploy void, against an image pinned at s258. The AL/NC/SC back-entry
+lane shipped in `3149676` (s262c) and is live; s267's #29 fix puts
+`expected.nc_d400` in the published schema. Restage the two fixtures
+against the current image first — only Schedule PN's nonresident
+allocation is genuinely unbuilt.
+
+**Large units deferred to later clusters:** #10 (Form 4835), #23/#24
+(Schedule C / Schedule E depreciation asset ledgers with AMT basis and
+property linkage), #26 (detailed Form 8829), #27 (federal + Georgia
+amended-return lifecycle). Each is a multi-session build.
+
+⚠ **Code L is the next code-M** — deemed distributions (§72(p)), also
+"used with 1, 2, 4, 7, or B", still outside `SUPPORTED_CODES`, so an
+"L7" doc will blank the whole pension column exactly as "7M" did.
+Deliberately not admitted in s267 (out of scope; a deemed distribution
+has its own basis consequences). REVIEW_QUEUE.
 
 ### ✅ s266b — the 1120-S inbox: THREE HELD RETURNS FILED (Ken's ask)
 **114 Harmony Pet + 201 Oconee Interiors + 212 Hickory Hill — each
@@ -468,23 +520,15 @@ What remains refused at composition is NAMED per-case, never a missing
 builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **ONE open file — BATCH-002, open as to
-  item 9's RS-gated charitable compute ONLY** (item 10 closed s256).
-  **BATCH-001 ✅ COMPLETE (all ten) and MOVED to Done in s266** — it had
-  been left sitting in the queue since s256 closed its last item (#4, the
-  NOL unit); Ken caught it 2026-08-15.
-  ⚠⚠ **IT FILED AS `CC_CODE_CHANGES_1040_BATCH-001B.md`, RENAMED ON THE
-  WAY IN — THE NUMBER 001 WAS ISSUED TWICE.** Done already held a
-  DIFFERENT `BATCH-001` (Schedule F other-expense rows, the line-36
-  election, 2210 source-penalty fields, Form 540, 8959) worked in s227
-  under deploy `9b9673c` and filed 2026-08-07 20:38. Same filename,
-  unrelated content: a routine move would have **silently overwritten ten
-  resolved findings and their annex.** Cause: the next batch number was
-  taken from the QUEUE folder alone, and filing the first 001 emptied the
-  queue of any 001. The lane README now requires numbering from
-  queue ∪ Done and a name-exists check before filing.
-  **BATCH-003/004/005/006/007 — ✅ DONE, moved.** Every worked file
-  carries a result annex; read it first.
+- **1040** (`1040\CC Changes\`): **ONE open file — BATCH-296, 33 items,
+  7 closed in s267 cluster 1.** Its running annex is the record; read it
+  before touching any item. BATCH-001/002/003/004/005/006/007 are all
+  ✅ DONE and moved.
+  ⚠ Historical: **BATCH-001 filed as `-001B`** — the number 001 was
+  issued TWICE and a routine move would have silently overwritten the
+  s227 record. The lane README now requires numbering from
+  queue ∪ Done and a destination-name check before any move.
+  Every worked file carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -492,6 +536,16 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s267 MOVES FOUR CLASSES (every one a correction):** (1) a return
+  whose owner has BOTH a Part-III-only Form 8606 and traditional-IRA
+  1099-Rs regains the traditional taxable on 4b, in AGI, and in the GA
+  RIE line-11 base (it had been zeroed); (2) any 1099-R carrying box-7
+  code M stops blanking the WHOLE pension column for its return —
+  5a/5b/AGI all move on such returns; (3) **e-file composition now
+  SUCCEEDS where it refused**: every ordinary high-wage Form 8959 (21
+  returns carry the line-15 threshold) and every 8949 row stored with an
+  ISO date; (4) the published `batch-import.schema.json` now accepts
+  `expected.sc1040/al40/nc_d400`. No migration; nothing else moves.
 - **⚠ s257 MOVES MFS RETURNS with a GBC and line 12 > $12,500** (a
   correction): line 13 rises to the §38(c)(6)(A) threshold → less
   credit allowed unless the preparer answers spouse-has-no-credit
