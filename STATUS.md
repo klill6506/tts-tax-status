@@ -65,7 +65,20 @@ Load-bearing:
 TaxWise forms-usage report, which is not in the tree and is a
 long-standing external dependency. ⛔ 17d (Form 8879) is gated on Ken's
 WO-33. The loop sweeps the CC folders each tick; a posted Codex batch
-is the next unit. RS agenda: BATCH-002 #9's charitable amendment.
+is the next unit.
+
+**The one buildable thing waiting on Ken — BATCH-002 #9 (charitable
+carryovers).** It is NOT blocked on tax law: §170(b)(1) and Pub 526
+specify the percentage classes and §170(d) the 5-year carryover
+ordering. It is blocked because `R-SCHA-CHARITABLE` models the
+carryover as ONE aggregate, and `compute_schedule_a.charitable_line14`
+models only 3 of the 7 buckets — A (cash 60%), C (noncash 50%),
+E (capital-gain/30%). K-1 codes B, D, F and G are REFUSED outright.
+⚠ **CHECK THE SIGN: a refused code is not deducted AT ALL — it
+OVERSTATES tax**, and no diagnostic can fire because the data model
+cannot represent the amount. Path (the FORM_172 precedent, s253b):
+draft the spec amendment → Ken approves at Gate 1 → build. The
+taxpayer-side twin `D_SCHA_007` closes in the same unit.
 
 ### ✅ s264 — e-file readiness diagnostics (spine 17c)
 Load-bearing:
@@ -386,13 +399,23 @@ What remains refused at composition is NAMED per-case, never a missing
 builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **BATCH-006 — ✅✅ COMPLETE (all ten),
-  moved to Done (s253)**. **BATCH-001 — every buildable item CLOSED**;
-  #4 ✅ CLOSED (the NOL unit shipped s253b→s256; final annex posted).
-  **BATCH-002 — open as to item 9's RS-gated charitable compute ONLY
-  (item 10 closed s256)**;
-  **BATCH-003/004/005 — ✅ DONE, moved.** Every worked file carries a
-  result annex; read it first.
+- **1040** (`1040\CC Changes\`): **ONE open file — BATCH-002, open as to
+  item 9's RS-gated charitable compute ONLY** (item 10 closed s256).
+  **BATCH-001 ✅ COMPLETE (all ten) and MOVED to Done in s266** — it had
+  been left sitting in the queue since s256 closed its last item (#4, the
+  NOL unit); Ken caught it 2026-08-15.
+  ⚠⚠ **IT FILED AS `CC_CODE_CHANGES_1040_BATCH-001B.md`, RENAMED ON THE
+  WAY IN — THE NUMBER 001 WAS ISSUED TWICE.** Done already held a
+  DIFFERENT `BATCH-001` (Schedule F other-expense rows, the line-36
+  election, 2210 source-penalty fields, Form 540, 8959) worked in s227
+  under deploy `9b9673c` and filed 2026-08-07 20:38. Same filename,
+  unrelated content: a routine move would have **silently overwritten ten
+  resolved findings and their annex.** Cause: the next batch number was
+  taken from the QUEUE folder alone, and filing the first 001 emptied the
+  queue of any 001. The lane README now requires numbering from
+  queue ∪ Done and a name-exists check before filing.
+  **BATCH-003/004/005/006/007 — ✅ DONE, moved.** Every worked file
+  carries a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
