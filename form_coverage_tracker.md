@@ -1,6 +1,16 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-14 session 264 — E-FILE READINESS DIAGNOSTICS ✅ (spine 17c,
+> `ab931d4`).** The composition layer's **174 named refusals** now reach
+> a preparer in REVIEW instead of at the wire: the rule runs the REAL
+> extract and reports its `UnmappableValue` verbatim (no
+> re-implementation — a second source drifts). Status-gated to
+> `in_review`+ so drafts stay quiet; a composition crash is its own
+> isolated finding; "composes cleanly" ≠ "the IRS will accept it".
+> 13 tests (12 mocked + 1 unmocked, because mocks are blind to the
+> integration). ⚠ Rules need `seed_rules` before they appear live.
+>
 > **2026-08-14 session 263b — ✅✅ THE RECOMPUTE DEBOUNCE IS COMPLETE
 > (`d6c6e95`).** Client leg: debounced settle with a quiescence rule,
 > on a normal lane, blocking navigation while scheduled. ⚠⚠ Live
