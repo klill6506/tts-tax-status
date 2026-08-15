@@ -1,19 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-14 (s264). **✅ E-FILE READINESS DIAGNOSTICS —
-SPINE 17c (`ab931d4`, no migration).** The composition layer refuses BY
-NAME in **174 places**, and not one of those messages was reachable
-until someone tried to transmit — at the front of the queue. They now
-surface in REVIEW through the ordinary diagnostics framework: the rule
-runs the REAL extract and reports its refusal verbatim (no
-re-implementation — a second source drifts and lies). Status-gated to
-`in_review`+ so drafts stay quiet; a composition CRASH becomes its own
-visible internal-fault finding rather than failing the whole run;
-"composes cleanly" is explicitly NOT a promise of IRS acceptance. 13
-tests (12 mocked + 1 against the REAL composer, because mocked tests
-are blind to the integration). Earlier: s263b (the recompute debounce
-COMPLETE), s262c (BATCH-007 → Done), s262b (the state registry) — all
-LIVE.*
+*Last updated: 2026-08-15 (s265). **✅ THE CLIENT TYPECHECK GATE IS
+ALIVE (`631fbb3`) — 57 errors → 0.** It had never actually run (s262:
+the root tsconfig is references-only, so `-p .` checks nothing), which
+meant every client change this month landed unchecked. Two root causes
+cleared 33: **TaxpayerData was an `interface`** (TS gives implicit index
+signatures to type ALIASES only, so it was unassignable to
+TaxpayerLike) and **the 12 Form 8960 inputs were never declared** on it.
+The rest fixed at cause — generic api helpers, pdfjs 5.x's required
+`canvas` (verified against the installed .d.ts; Context7's snapshot is
+v3-era), `!!` on unknown JSX guards (also safer — React PRINTS a falsy
+non-boolean), a widened create callback replacing an unsound cast, and
+test fixtures completed rather than types loosened. `npm run typecheck`
+is now the one valid command and CLAUDE.md records why. 1715 tests
+green. Earlier: s264 (e-file readiness 17c, rules seeded + live),
+s263b (the debounce COMPLETE), s262c (BATCH-007 → Done) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -41,6 +42,31 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s265 — the typecheck gate: DEAD → green (57 → 0)
+Load-bearing:
+- **⚠⚠ `npm run typecheck` is the ONLY valid command** (=
+  `tsc --noEmit -p tsconfig.renderer.json`). The bare `-p .` form is a
+  no-op; CLAUDE.md now says so, so the dead gate can't come back.
+- **An INTERFACE is not assignable to `Record<string, unknown>`** — only
+  a type ALIAS gets the implicit index signature. That one keyword was
+  21 of the 57. The comment on TaxpayerData says keep it a `type`.
+- **Verified pdfjs against the INSTALLED .d.ts, not the doc snapshot** —
+  5.5.207 requires `RenderParameters.canvas` and calls `canvasContext`
+  legacy; Context7's index is v3-era and would have misled.
+- **`{unknown && <JSX/>}` → `{!!unknown && …}`** is a bug fix as well as
+  a type fix: React renders a falsy non-boolean (0 prints).
+- Fixtures were COMPLETED, never loosened — a loosened row type stops
+  catching real shape drift.
+⚠ Commit messages with backticks/`!!` must go through `git commit -F`
+(bash mangles them) — the s242k lesson, re-learned.
+
+### ▶ NEXT — the queue is EMPTY
+⛔ 17a (e-file coverage audit) is PARKED: its ranking half needs the
+TaxWise forms-usage report, which is not in the tree and is a
+long-standing external dependency. ⛔ 17d (Form 8879) is gated on Ken's
+WO-33. The loop sweeps the CC folders each tick; a posted Codex batch
+is the next unit. RS agenda: BATCH-002 #9's charitable amendment.
+
 ### ✅ s264 — e-file readiness diagnostics (spine 17c)
 Load-bearing:
 - **The refusals ARE the spec.** The rule calls `extract_return` and
@@ -55,15 +81,6 @@ Load-bearing:
 - ⚠ 12 of 13 tests MOCK the composer. The 13th runs the real one — if
   the import path, signature, or exception type drifts, the mocked
   twelve stay green and only that one fails.
-
-### ▶ NEXT — the queue is EMPTY; next spine item is 17a
-**17a · E-file coverage audit** — rank the doc-mapper backlog against
-the practice's real form mix. ⚠ Needs the TaxWise forms-usage report
-to rank properly (the Lacerte-regression half can start any time), so
-confirm the data exists before committing to it. ⛔ 17d (Form 8879
-workflow) stays gated on Ken's WO-33 Gate-1 approval. Shelved: the
-57-error typecheck chip. RS agenda: BATCH-002 #9's charitable
-per-vintage amendment.
 
 ### ✅✅ s263b — the debounce's CLIENT leg + the field-lane defect
 Load-bearing:

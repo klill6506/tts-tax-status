@@ -1,6 +1,14 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-15 session 265 — THE CLIENT TYPECHECK GATE IS ALIVE ✅
+> (`631fbb3`, types only).** It had never actually run (references-only
+> root tsconfig), hiding 57 errors; all cleared at root cause — an
+> `interface` that should have been a `type` (21 alone), the 12
+> undeclared Form 8960 inputs, generic api helpers, pdfjs 5.x's required
+> `canvas`, `!!` on unknown JSX guards. **`npm run typecheck` is the one
+> valid command.** No behavior changes; 1715 tests green.
+>
 > **2026-08-14 session 264 — E-FILE READINESS DIAGNOSTICS ✅ (spine 17c,
 > `ab931d4`).** The composition layer's **174 named refusals** now reach
 > a preparer in REVIEW instead of at the wire: the rule runs the REAL
