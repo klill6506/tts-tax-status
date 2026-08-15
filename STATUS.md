@@ -1,16 +1,19 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-14 (s263b). **✅✅ THE RECOMPUTE DEBOUNCE IS
-COMPLETE (`d6c6e95`)** — Ken's January-capacity ruling, both legs. A
-form-line edit sends `?defer_compute=1` (persists, marks stale, skips
-the ~1.5s compute) and schedules ONE settle ~1s after the burst
-quiesces; the settle's `?fresh_return=1` payload repaints. **Live-proven
-on the dev server: the deferred save answers in 46 BYTES, the settle in
-188,821** — that contrast is the debounce. ⚠ Verification also caught a
-real defect: `update_fields` does NOT route through the mutation
-chokepoint, so s263's server leg had missed THE per-keystroke lane and
-it was still computing; fixed + pinned. Earlier: s262c (BATCH-007 →
-Done), s262b (the state registry), s262-s259 (the sweep) — all LIVE.*
+*Last updated: 2026-08-14 (s264). **✅ E-FILE READINESS DIAGNOSTICS —
+SPINE 17c (`ab931d4`, no migration).** The composition layer refuses BY
+NAME in **174 places**, and not one of those messages was reachable
+until someone tried to transmit — at the front of the queue. They now
+surface in REVIEW through the ordinary diagnostics framework: the rule
+runs the REAL extract and reports its refusal verbatim (no
+re-implementation — a second source drifts and lies). Status-gated to
+`in_review`+ so drafts stay quiet; a composition CRASH becomes its own
+visible internal-fault finding rather than failing the whole run;
+"composes cleanly" is explicitly NOT a promise of IRS acceptance. 13
+tests (12 mocked + 1 against the REAL composer, because mocked tests
+are blind to the integration). Earlier: s263b (the recompute debounce
+COMPLETE), s262c (BATCH-007 → Done), s262b (the state registry) — all
+LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -38,6 +41,30 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
+### ✅ s264 — e-file readiness diagnostics (spine 17c)
+Load-bearing:
+- **The refusals ARE the spec.** The rule calls `extract_return` and
+  reports its `UnmappableValue` verbatim. Re-implementing "what would
+  refuse?" would be the s233/s241c divergence class.
+- **Status gate is the whole usability question**: `in_review` onward.
+  A draft refuses honestly and constantly; a RED on each one trains
+  preparers to ignore the finding that matters later.
+- **A composition crash is isolated, not swallowed** (D_EFILE_002) —
+  the runner marks a run FAILED on a rule raise, which would couple
+  every diagnostic to composition's health.
+- ⚠ 12 of 13 tests MOCK the composer. The 13th runs the real one — if
+  the import path, signature, or exception type drifts, the mocked
+  twelve stay green and only that one fails.
+
+### ▶ NEXT — the queue is EMPTY; next spine item is 17a
+**17a · E-file coverage audit** — rank the doc-mapper backlog against
+the practice's real form mix. ⚠ Needs the TaxWise forms-usage report
+to rank properly (the Lacerte-regression half can start any time), so
+confirm the data exists before committing to it. ⛔ 17d (Form 8879
+workflow) stays gated on Ken's WO-33 Gate-1 approval. Shelved: the
+57-error typecheck chip. RS agenda: BATCH-002 #9's charitable
+per-vintage amendment.
+
 ### ✅✅ s263b — the debounce's CLIENT leg + the field-lane defect
 Load-bearing:
 - **⚠⚠ THE CHOKEPOINT WASN'T THE ONLY WRITER.** `update_fields` has its
@@ -56,11 +83,6 @@ Load-bearing:
   client's 30s timeout (the ~20× pooler amplification), so a real
   deferred save fails before its settle schedules. The halves were
   verified separately against the live server.
-
-### ▶ NEXT — the queue is EMPTY: idle for Codex
-Ken (2026-08-13): continue the build list until the next Codex update.
-Nothing ruled-but-unbuilt remains. Shelved: the 57-error typecheck
-chip. RS agenda: the charitable per-vintage amendment (BATCH-002 #9).
 
 ### ✅ s263 — the recompute debounce, SERVER leg (`55f0be4`, mig 0322)
 Load-bearing:
