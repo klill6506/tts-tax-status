@@ -84,13 +84,48 @@ Load-bearing:
 ⚠ Commit messages with backticks/`!!` must go through `git commit -F`
 (bash mangles them) — the s242k lesson, re-learned.
 
-### ▶ NEXT — the queue is EMPTY (all of it, for the first time)
-Every 1040 batch file is resolved and in Done; the 1120-S queue holds
-only its README; the legacy root has the long-standing NZ #10
-(multi-state, parked under the states ruling). ⛔ 17a (e-file coverage
-audit) PARKED: needs the TaxWise forms-usage report (external). ⛔ 17d
-(Form 8879) gated on Ken's WO-33. The loop sweeps the CC folders each
-tick; a posted Codex batch is the next unit.
+### ▶ NEXT — 1040 BATCH-296 (30 items, posted 2026-08-15 evening)
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` (Codex numbered it 296 —
+unique across queue ∪ Done, fine). Item 1 is a FILING BLOCKER: a
+Part-III-only Form 8606 (Roth basis only) suppresses the same owner's
+fully taxable code-7 traditional-IRA 1099-R ($37,500 dropped from AGI)
+— smells like the s243b basis-only-8606 supersession rule missing an
+engagement predicate for Part-III-only rows. Verify-first, one deploy,
+annex, Done.
+
+### ✅ s266b — the 1120-S inbox: THREE HELD RETURNS FILED (Ken's ask)
+**114 Harmony Pet + 201 Oconee Interiors + 212 Hickory Hill — each
+FILED federal + GA-600S via closeout on prep.** How:
+- `D_4562_METHOD` taught the Batch-013 #9 line-16/override rule
+  (deploy `012b7bd`; three-way bounded tests) — the uncounted
+  regression both 114 and 201's holds documented.
+- 201 also needed a zero-movement data repair: the lane had defaulted
+  `amt_prior` to 0 on two fully-recovered SL/3yr rows (SL software has
+  no AMT difference; no face line moved).
+- 212: the batch-007 #7 answer applied — keyed `ga600s_fields.S5_4=0`;
+  ⚠ the first restage was REPLAYED (same batch key = the OLD payload,
+  silently) — bump the key when a payload changes. Exact TIE; closeout
+  `-SourceVerified`.
+- ⚠⚠ **RETIRE A DIAGNOSTIC BY `is_active=False` + A KEPT STUB, NEVER
+  BY DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the
+  seeded DB row dangling and EVERY diagnostics run errored "failed to
+  execute" (found live by the first closeout attempt). Also the s266
+  unit had missed the seed-rules step entirely (015/016/017 were
+  absent from the shared DB). Both repaired in-session; hotfix commit
+  carries the convention + tests.
+
+**Still held in the 1120-S Inbox — SIX NEED KEN** (see
+`SOURCE_DECISIONS_NEEDED.md`): 129 ($1 imbalance), 170 (GA §179
+election), 180 (Lacerte negative-AAA override), 214 (mixed-entity PDF),
+ACECOMM + MWELDING ($1 register diffs), CATALANC (trailer
+contribution). **Two are NEXT BUILD UNITS:** 227 — the Form 6765 spec
+now EXISTS (RS lookup 200; model/compute/K13g all built; only the
+entity-lane section is missing); OTISUPER — the grouped bulk-sale path
+needs a `business_use_pct` on DepreciationAsset (the Ford: full 39,108
+summed where the source uses the 66.70% business basis 26,085).
+`Hold\` folder unchanged (non-GA corporate states, K-2/K-3).
+
+⛔ 17a (TaxWise report) · ⛔ 17d (WO-33) unchanged.
 
 ### ✅ s266 — the seven-class charitable unit (`f8248dd`, mig 0323)
 The header block above carries the substance. Load-bearing residue:
