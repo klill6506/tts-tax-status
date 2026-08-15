@@ -1,20 +1,25 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-15 (s265). **✅ THE CLIENT TYPECHECK GATE IS
-ALIVE (`631fbb3`) — 57 errors → 0.** It had never actually run (s262:
-the root tsconfig is references-only, so `-p .` checks nothing), which
-meant every client change this month landed unchecked. Two root causes
-cleared 33: **TaxpayerData was an `interface`** (TS gives implicit index
-signatures to type ALIASES only, so it was unassignable to
-TaxpayerLike) and **the 12 Form 8960 inputs were never declared** on it.
-The rest fixed at cause — generic api helpers, pdfjs 5.x's required
-`canvas` (verified against the installed .d.ts; Context7's snapshot is
-v3-era), `!!` on unknown JSX guards (also safer — React PRINTS a falsy
-non-boolean), a widened create callback replacing an unsound cast, and
-test fixtures completed rather than types loosened. `npm run typecheck`
-is now the one valid command and CLAUDE.md records why. 1715 tests
-green. Earlier: s264 (e-file readiness 17c, rules seeded + live),
-s263b (the debounce COMPLETE), s262c (BATCH-007 → Done) — all LIVE.*
+*Last updated: 2026-08-15 (s266). **✅✅ THE SEVEN-CLASS CHARITABLE UNIT
+SHIPPED (`f8248dd`, mig 0323) — BATCH-002 CLOSED, AND THE ENTIRE 1040 CC
+QUEUE IS EMPTY.** Ken approved the `R-SCHA-CHARITABLE` amendment at
+Gate 1 in-session; spec amended/seeded/exported/cached (RS `ee4dece`+)
+and the app build shipped the same day. All three defects were IN THE
+RULE (the code implemented it faithfully): (1) K-1 codes B/D/F/G refused
+→ contribution deducted NOWHERE, tax OVERSTATED — now all seven
+§170(b)(1) classes compute with the statutory residual ceilings, reach
+7203 line 42 basis, and import through the lane (schema regenerated);
+(2) the TY2026 0.5% floor was a deduction haircut — §170(b)(1)(I)
+reduces CONTRIBUTIONS in the order D→C→B→E→A→G (methods diverge when a
+ceiling binds; pinned 60,000 vs 59,500); (3) the floored amount was
+DESTROYED — §170(d)(1)(C) carries it. Per-class per-vintage carryovers:
+current-year first, oldest first, 5-year expiry, floored-once relief
+(PROVISIONAL pending Pub 526 (2026) — see REVIEW_QUEUE). D_SCHA_007
+retired; 015/016/017 added (a seeded-ID collision with the app's live
+012 was caught and fixed). Earlier today: BATCH-001 filed to Done as
+`-001B` (the number 001 was issued TWICE — see the queue-collision note
+below). Earlier: s265 (typecheck gate 57→0), s264 (e-file readiness
+17c), s263b (the debounce) — all LIVE.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -60,25 +65,35 @@ Load-bearing:
 ⚠ Commit messages with backticks/`!!` must go through `git commit -F`
 (bash mangles them) — the s242k lesson, re-learned.
 
-### ▶ NEXT — the queue is EMPTY
-⛔ 17a (e-file coverage audit) is PARKED: its ranking half needs the
-TaxWise forms-usage report, which is not in the tree and is a
-long-standing external dependency. ⛔ 17d (Form 8879) is gated on Ken's
-WO-33. The loop sweeps the CC folders each tick; a posted Codex batch
-is the next unit.
+### ▶ NEXT — the queue is EMPTY (all of it, for the first time)
+Every 1040 batch file is resolved and in Done; the 1120-S queue holds
+only its README; the legacy root has the long-standing NZ #10
+(multi-state, parked under the states ruling). ⛔ 17a (e-file coverage
+audit) PARKED: needs the TaxWise forms-usage report (external). ⛔ 17d
+(Form 8879) gated on Ken's WO-33. The loop sweeps the CC folders each
+tick; a posted Codex batch is the next unit.
 
-**The one buildable thing waiting on Ken — BATCH-002 #9 (charitable
-carryovers).** It is NOT blocked on tax law: §170(b)(1) and Pub 526
-specify the percentage classes and §170(d) the 5-year carryover
-ordering. It is blocked because `R-SCHA-CHARITABLE` models the
-carryover as ONE aggregate, and `compute_schedule_a.charitable_line14`
-models only 3 of the 7 buckets — A (cash 60%), C (noncash 50%),
-E (capital-gain/30%). K-1 codes B, D, F and G are REFUSED outright.
-⚠ **CHECK THE SIGN: a refused code is not deducted AT ALL — it
-OVERSTATES tax**, and no diagnostic can fire because the data model
-cannot represent the amount. Path (the FORM_172 precedent, s253b):
-draft the spec amendment → Ken approves at Gate 1 → build. The
-taxpayer-side twin `D_SCHA_007` closes in the same unit.
+### ✅ s266 — the seven-class charitable unit (`f8248dd`, mig 0323)
+The header block above carries the substance. Load-bearing residue:
+- **PROVISIONAL, on the season checklist (REVIEW_QUEUE):** the TY2026
+  floor's C-before-B tiebreak and the floored-once relief are
+  `requires_human_review` in the spec — **re-verify against Pub 526
+  (2026) + the 2026 Schedule A instructions when they publish.** Five
+  attempts at verbatim §70425 text were blocked; the D→C→B→E→A→G order
+  rests on two agreeing independent readings. A correction is ONE
+  constant (`FLOOR_ORDER`).
+- **REVIEW_QUEUE also holds the (G)/(A) coordination question:** this
+  build PRESERVED the pre-existing "own ceilings + overall 60% cap"
+  treatment for cash-60 + noncash-50. Pub 526's Worksheet 2 may reduce
+  the 50% ceiling by cash gifts (stricter). Pre-existing, out of the
+  approved scope, not changed silently.
+- **Test-isolation chip:** `test_backentry_oos_states_s258` has two
+  order-dependent tests that assume an unseeded rule registry —
+  pre-existing (s264's readiness rules trip them), alphabetical order
+  safe, chipped for Ken (task_4f671e83).
+- The queue-collision guard from this morning stands: **number batches
+  from queue ∪ Done; check the destination name before ANY
+  move-to-archive** (BATCH-001 filed as `-001B`; README amended).
 
 ### ✅ s264 — e-file readiness diagnostics (spine 17c)
 Load-bearing:

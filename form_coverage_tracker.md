@@ -1456,8 +1456,17 @@
 > ⛔ **Form 172 / regular NOL has NO leg and cannot get one yet — there is no
 > Rule Studio spec** (`lookup/172/`, `lookup/NOL/`, `lookup/FORM_172/`,
 > `lookup/1045/` all 404). Preservation is built; the computation is BLOCKED at
-> the 404-STOP gate. Same for the Schedule A per-vintage charitable ordering,
-> whose RS rule models only an aggregate.
+> the 404-STOP gate. *(NOL: UNBLOCKED s253b→s256 — the FORM_172 unit is
+> COMPLETE.)* **The Schedule A per-vintage charitable ordering: BUILT s266**
+> (`f8248dd`, mig 0323; Ken Gate-1 approved the R-SCHA-CHARITABLE amendment
+> same-day). All seven §170(b)(1) classes compute (K-1 B/D/F/G were refused
+> — tax OVERSTATED); the TY2026 0.5% floor now reduces CONTRIBUTIONS in the
+> statutory D→C→B→E→A→G order and the floored amount CARRIES per
+> §170(d)(1)(C) (both were live TY2026 defects IN THE RULE); per-class
+> per-vintage carryovers current-year-first / oldest-first / 5-year expiry;
+> D_SCHA_007 retired, D_SCHA_015/016/017 added; 7203 line 42 gets the new
+> classes' basis reduction. ⚠ PROVISIONAL pending Pub 526 (2026): the
+> C-before-B floor tiebreak + the floored-once relief (REVIEW_QUEUE).
 > **Form 4562 (input leg) — CLOSED for the §179 carryover.** BATCH-002 #1 was a
 > LANE-ONLY gap: compute has owned lines 9/10/11/12/13 since the depreciation
 > build (4562 R001/R014/R015) and proforma already rolled line 13 forward, but
