@@ -106,13 +106,21 @@ to ask three questions of one answer.
 closed.** The running annex in the file is the record; read it first.
 Order for cluster 3:
 
-1. **#7 — Schedule 2 double-counts a $7,288 8962 repayment.**
-   ⚠ **s268 TRIAGE, DO NOT SKIP: the addend list is CORRECT.**
-   `SCH2_L21_ADDENDS` is `("4","7","8","9","11","12","13","14","15","16",
-   "18","19")` — it excludes `1a`/`1z`/`3`, so Part I cannot reach line 21
-   through the subtotal; and `compute_8962` writes exactly ONE Schedule 2
-   line, `1a`. The leak is a **third writer or a line-number collision**.
-   Anyone "fixing" the tuple breaks a correct line and leaves the bug.
+1. ~~**#7**~~ ✅ **CLOSED s268 — DOES NOT REPRODUCE at HEAD.**
+   `SCH2_L21_ADDENDS` excludes `1a`/`1z`/`3` (Part I cannot reach line 21);
+   every Schedule 2 writer targets a distinct line and the ONLY writer of
+   the repayment (1a) is `compute_8962`; and **the cited packet carries no
+   `form_1095as` key at all**, so it cannot produce a $7,288 repayment (its
+   resolved return is an empty draft). Proven by running the mixed
+   Part-I/Part-II case the item asks for:
+   `server/tests/test_batch296_item7_s268.py` (4). ⚠ **The obvious fix —
+   editing the addend tuple — would have broken a correct line.**
+   ⚠ Fixture traps pinned there: the 8962 suite seeds no Form 8959, and
+   8959 computes on W-2 **box 5**, so a careless fixture silently degrades
+   the mixed case into the Part-I-only case and "passes".
+   ⚠⚠ **THIRD ITEM IN THIS BATCH THAT PREDATES THE DEPLOY** (#6 refuted,
+   #19 flagged, now #7) — Codex has been asked to re-run the remaining open
+   items against the current image before we build for them.
 2. The other small compute defects: **#14** (GA spouse RIE loses exactly
    $17 — a taxpayer-owned interest row leaking across owners), **#3**
    (D_GA500_016 reports $0 excluded while D_GA500_003 in the SAME run
