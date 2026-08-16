@@ -121,13 +121,28 @@ Order for cluster 3:
    ⚠⚠ **THIRD ITEM IN THIS BATCH THAT PREDATES THE DEPLOY** (#6 refuted,
    #19 flagged, now #7) — Codex has been asked to re-run the remaining open
    items against the current image before we build for them.
-2. The other small compute defects: **#14** (GA spouse RIE loses exactly
-   $17 — a taxpayer-owned interest row leaking across owners), **#3**
-   (D_GA500_016 reports $0 excluded while D_GA500_003 in the SAME run
-   reports $25,982 — check the SPOUSE column and the pre/post-recompute
-   read), **#4** (8862 `part_ii` derived row never populated after import;
-   the editor shows it disabled so no preparer can fix it), **#9** (8962
-   monthly contribution rounding, $9).
+2. ~~#14, #3, #4, #9~~ ✅ **ALL FOUR BUILT s268.** Load-bearing:
+   - **#14** — the GA RIE US-obligation subtraction **prorated across
+     owners** when no interest row carried `treasury_interest`, shrinking a
+     spouse figure the preparer supplied. Attribution is now tagged-row or
+     single-owner only; ambiguous → **both bases untouched + new
+     `D_GA500_020`** (seeded, 957→958 rules). ⚠ Deliberate trade-off pinned
+     by test: an untagged joint return keeps the interest in the base
+     (possible double exclusion, capped) rather than crossing owners.
+   - **#3** — D_GA500_016 fired on EITHER owner's zero column; now judges
+     the **combined** exclusion. Teeth pinned (a genuinely zero election
+     still fires).
+   - **#4** — nothing ever DERIVED `8862.part_ii`; compute only backfilled
+     the row's existence, so D_8862_003 blocked returns the editor could
+     not fix. One reader now (`f8862_eic_category_ticked`). ⚠ **CTC/AOTC
+     boxes are still un-derived** — their claimed-tests live in the
+     diagnostics ctx; same blocker will appear there.
+   - **#9** — ⚠⚠ **THE TITLE WAS WRONG.** Not rounding (`_round0` is
+     already HALF_UP and correct) — `applicable_figure` used **float +
+     Python's banker's `round()`**, and in the 300-400% band (step 0.00025)
+     every ODD percentage is an exact half-way case: **29 of 100 came back
+     0.0001 LOW**. Understates the required contribution → **overstates the
+     credit, understates the repayment**. Now exact Decimal.
 3. **Code L (§72(p))** — Ken ruled BUILD IT PROPERLY: verify the statute
    and handle the basis consequence (taxed; loan NOT cancelled; no basis
    increase until repaid). It is the code-M/code-U trap a third time: "L7"
@@ -261,6 +276,17 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s268 cluster 3 MOVES FOUR CLASSES (each a correction):**
+  (1) **every Form 8962 return between 300% and 400% FPL on an ODD
+  percentage** — 29 of those 100 percentages had an applicable figure
+  0.0001 low, so the credit falls and the excess-APTC repayment RISES
+  (money the taxpayer owes back). The largest reach of anything in this
+  cluster; (2) a joint GA return with an untagged US-obligation
+  subtraction stops shrinking the spouse's RIE and may now exclude more
+  (with `D_GA500_020` explaining); (3) D_GA500_016 goes quiet on joint
+  returns where one owner's column is empty; (4) an EIC recertification
+  return gains a ticked `8862.part_ii`, clearing D_8862_003 and changing
+  what the face and MeF carry. No migration.
 - **s268: NO tax-output movement.** Diagnostics findings are identical —
   only the query count changes. Two BEHAVIOR changes: (1) the cleanup
   endpoint can now return `not_evaluated` rows instead of a 500, and its
