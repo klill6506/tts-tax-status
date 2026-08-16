@@ -164,9 +164,40 @@ DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the seeded DB row
 dangling and EVERY diagnostics run errored. ⚠ A REPLAYED batch key
 silently reuses the OLD payload — bump the key when a payload changes.
 
-**Still held in the 1120-S Inbox — THREE NEED KEN** (was six; see
+**Still held in the 1120-S Inbox — FOUR NEED KEN** (was six; see
 `SOURCE_DECISIONS_NEEDED.md`): 180 (Lacerte negative-AAA override), 214
-(mixed-entity PDF), CATALANC (trailer contribution).
+(mixed-entity PDF), CATALANC (trailer contribution), and **129 (NEW shape —
+one line, below)**.
+
+✅✅ **s268 FILED TWO under the ≤$1 ruling: ACECOMM + MWELDING** — federal +
+GA, reconciliation TIE, zero errors, no holds. ⚠ `SCHED_L_DEPR_TIE` has been
+a WARNING since batch-012 #1 (a tax register cannot error against a book
+balance sheet), so `source_verified` clears it; **the hold notes calling it
+"error-severity" were stale ledgers.**
+
+⛔ **129 does NOT close, and the gate is right.** Restaged
+(`entity-b003-129-s268c`) with the key's `L15a` corrected 40,691 → 40,690:
+**reconciliation now TIES**, but closeout refuses on `MATH_BALANCE_SHEET`
+(error; errors are never acknowledgeable). ⚠ **129 is a DIFFERENT SHAPE from
+ACECOMM/MWELDING** — there the source's *face* disagreed with its own
+*register* (presentation; the return was sound). Here the RETURN's own
+balance sheet does not balance ($40,690 assets vs $40,691 L&E), which is
+exactly what that check exists for. **Do NOT add a ≤$1 tolerance** — it
+would blind the check on every future entity return. **One line from Ken:
+where does the $1 go?** (name an asset, or add $1 to cash — a decision, not
+the "hunting" the ruling rejects). Committed DRAFT, not filed.
+
+⚠⚠ **170 IS NO LONGER A HELD PACKET — IT IS A BUILD ITEM.** Ken's ruling
+points at the APP, not the source face: the printed GA-600S reports regular
+depreciation only ($2,175 / $5,541, GA income $102,800) — what Georgia
+sharing the full federal §179 looks like — and the payload agrees (federal
+override total **2,175**, state **5,541**, §179 **57,920 on five assets, no
+state §179**). Production instead computes **S7_8 $31,435 / S8_5 $3,673 / GA
+income $133,928**, introducing a federal-vs-GA §179 difference the size of
+the §179 itself, which HB 1199 conformity says should cancel. → **Post a CC
+change: the GA-600S Schedule 7/8 adjustment must not treat federal §179 as a
+Georgia difference for TY2025.** ⚠ Verify the mechanism first — the above is
+the dollar signature + payload evidence, not a read of the compute path.
 ✅ **RULED 2026-08-16 (s268), unblocking four:** the **≤$1 class rule** —
 a mismatch between a source packet's own printed face and its own register
 is a SOURCE defect; record the $1 and close the packet (129, ACECOMM,
