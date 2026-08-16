@@ -132,6 +132,13 @@ Order for cluster 3:
 5. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22, #25,
    #28, #30.
 
+✅ **KEN RULED 2026-08-16: the next BIG unit after the small defects is
+#23/#24 — the Schedule C / Schedule E depreciation asset ledgers** (AMT
+basis + property linkage), ahead of #27 (amended-return lifecycle), #26
+(Form 8829 detail) and #10 (Form 4835). Depreciation is the practice's
+specialty and touches the largest share of returns, and #23/#24 also
+unlock the OTISUPER `business_use_pct` 1120-S unit already waiting.
+
 **✅ KEN RULED ALL THREE OPEN QUESTIONS (2026-08-15, live).** Nothing in
 BATCH-296 waits on him. (1) **#5/#8 NOL:** the engine ALWAYS computes; a
 disagreeing source is a reconciliation FINDING, not a different number —
@@ -157,10 +164,19 @@ DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the seeded DB row
 dangling and EVERY diagnostics run errored. ⚠ A REPLAYED batch key
 silently reuses the OLD payload — bump the key when a payload changes.
 
-**Still held in the 1120-S Inbox — SIX NEED KEN** (see
-`SOURCE_DECISIONS_NEEDED.md`): 129 ($1 imbalance), 170 (GA §179 election),
-180 (Lacerte negative-AAA override), 214 (mixed-entity PDF), ACECOMM +
-MWELDING ($1 register diffs), CATALANC (trailer contribution).
+**Still held in the 1120-S Inbox — THREE NEED KEN** (was six; see
+`SOURCE_DECISIONS_NEEDED.md`): 180 (Lacerte negative-AAA override), 214
+(mixed-entity PDF), CATALANC (trailer contribution).
+✅ **RULED 2026-08-16 (s268), unblocking four:** the **≤$1 class rule** —
+a mismatch between a source packet's own printed face and its own register
+is a SOURCE defect; record the $1 and close the packet (129, ACECOMM,
+MWELDING). ⚠ Narrow by design: ≤$1 and only where the source contradicts
+ITSELF — an app-vs-consistent-source gap still holds, at any amount.
+And **packet 170: Georgia SHARES the federal $57,920 §179 election** per
+HB 1199 conformity; the source used the stale pre-conformity limit (§179
+only — GA still does not conform to §168(k) bonus). Both in DECISIONS.md.
+▶ **The three ruled $1 packets and 170 are now closeable — do that first
+in cluster 3** (restage/closeout, no code).
 **Two are NEXT BUILD UNITS:** 227 — the Form 6765 spec now EXISTS (only
 the entity-lane section is missing); OTISUPER — the grouped bulk-sale path
 needs a `business_use_pct` on DepreciationAsset.
