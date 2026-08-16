@@ -164,28 +164,28 @@ DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the seeded DB row
 dangling and EVERY diagnostics run errored. ⚠ A REPLAYED batch key
 silently reuses the OLD payload — bump the key when a payload changes.
 
-**Still held in the 1120-S Inbox — FOUR NEED KEN** (was six; see
+**Still held in the 1120-S Inbox — THREE NEED KEN** (was six; see
 `SOURCE_DECISIONS_NEEDED.md`): 180 (Lacerte negative-AAA override), 214
-(mixed-entity PDF), CATALANC (trailer contribution), and **129 (NEW shape —
-one line, below)**.
+(mixed-entity PDF), CATALANC (trailer contribution). *(227 needs a 6765
+spec, not a source answer.)*
 
-✅✅ **s268 FILED TWO under the ≤$1 ruling: ACECOMM + MWELDING** — federal +
-GA, reconciliation TIE, zero errors, no holds. ⚠ `SCHED_L_DEPR_TIE` has been
-a WARNING since batch-012 #1 (a tax register cannot error against a book
-balance sheet), so `source_verified` clears it; **the hold notes calling it
-"error-severity" were stale ledgers.**
-
-⛔ **129 does NOT close, and the gate is right.** Restaged
-(`entity-b003-129-s268c`) with the key's `L15a` corrected 40,691 → 40,690:
-**reconciliation now TIES**, but closeout refuses on `MATH_BALANCE_SHEET`
-(error; errors are never acknowledgeable). ⚠ **129 is a DIFFERENT SHAPE from
-ACECOMM/MWELDING** — there the source's *face* disagreed with its own
-*register* (presentation; the return was sound). Here the RETURN's own
-balance sheet does not balance ($40,690 assets vs $40,691 L&E), which is
-exactly what that check exists for. **Do NOT add a ≤$1 tolerance** — it
-would blind the check on every future entity return. **One line from Ken:
-where does the $1 go?** (name an asset, or add $1 to cash — a decision, not
-the "hunting" the ruling rejects). Committed DRAFT, not filed.
+✅✅✅ **s268 FILED THREE: 129 + ACECOMM + MWELDING** — federal + GA,
+reconciliation TIE, zero errors, no holds.
+- ACECOMM/MWELDING closed under the **≤$1 SOURCE-defect rule** (the source's
+  face vs its own register). ⚠ `SCHED_L_DEPR_TIE` has been a WARNING since
+  batch-012 #1 (a tax register cannot error against a book balance sheet),
+  so `source_verified` clears it — **the hold notes calling it
+  "error-severity" were STALE, and no ≤$1 tolerance code was needed.**
+- **129 needed a SECOND, different ruling.** The first pass applied the
+  ≤$1 source rule (key `L15a` 40,691→40,690): it TIED but closeout correctly
+  refused on `MATH_BALANCE_SHEET` (error; never acknowledgeable) — because
+  129 is a different shape: the RETURN's own balance sheet did not balance,
+  not just the source's presentation. **Ken then ruled generally: "if ever
+  the balance sheet is out of balance $1, balance to CASH"** (DECISIONS.md).
+  Beginning cash 39,856 → 39,857; both sides $40,691; **the answer key stood
+  exactly as authored** and it FILED. ⚠ The check was NOT relaxed, and the
+  app was NOT changed to auto-plug — silently balancing to cash would mask
+  the real keying errors `MATH_BALANCE_SHEET` exists to catch.
 
 ⚠⚠ **170 IS NO LONGER A HELD PACKET — IT IS A BUILD ITEM.** Ken's ruling
 points at the APP, not the source face: the printed GA-600S reports regular
