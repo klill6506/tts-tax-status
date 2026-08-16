@@ -1,33 +1,19 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-15 (s267, late). **▶ 1040 BATCH-296 IS OPEN AND
-BEING WORKED IN CLUSTERS. Cluster 1 shipped (`ca078dd`) — seven items
-(1/6/15/17/29/32/33), no migration.** ⚠ The batch posted **33 items**,
-27 of them filing blockers — about 3× the lane's normal size, and
-several are whole build units, so "one deploy per batch file" is being
-read as one deploy per session-cluster with a running annex; the file
-moves to Done only when every item is resolved.*
+*Last updated: 2026-08-16 (s268). **▶ 1040 BATCH-296 IS OPEN. Cluster 2
+shipped item #31 (`c0b5f52`) — the multi-packet cleanup 500.** Cluster 1
+(`ca078dd`, s267) closed 1/6/15/17/29/32/33. 25 items remain.*
 
-*⚠⚠ **THE BIGGEST FINDING IS THAT ITEM 6 NEEDED NO CODE.** Codex
-reported `apps.diagnostics.rules_efile` missing from production as a
-GLOBAL filing blocker — it has been at HEAD since s264 (`ab931d4`). The
-three `D_EFILE_*` engine faults were the 08-13→08-15 build-minutes
-void. Shared-DB evidence: last faulting run **20:22 UTC**, every run
-from **21:15 clean**. `f42e729` going live unblocked Codex's entire
-Inbox before this session started — items 31/32/33 exist only because
-the s264 rules finally ran for the first time.*
-
-*Also s267: the Form 8606 supersession was one boolean over two
-independent parts (a Part-III-only Roth row dropped a fully taxable
-$37,500 traditional IRA out of 4b/AGI/GA-RIE); box-7 **code M** was
-unsupported and blanked the whole pension column (the code-U defect
-verbatim); the RRTA e-file gate was reading a **form constant** (line
-15 = the filing-status threshold — 21 returns carry a Part III value
-and all 21 are that line); the published schema was stricter than the
-server on state answer keys; and the 8949 date column has two writers
-that disagree. Earlier: s266b (three 1120-S returns FILED), s266 (the
-charitable unit), s265 (typecheck 57→0), s264 (e-file readiness) — all
-LIVE.*
+*⚠⚠ **THE s268 DEPLOY IS PUSHED BUT NOT VERIFIED LIVE.** `c0b5f52` pushed
+to `main` at ~00:18 UTC and Render was `build_in_progress` at last check.
+Verification then became impossible: **outbound TLS from this machine began
+failing with `SEC_E_UNTRUSTED_ROOT`** (git, curl and PowerShell alike — a
+certificate-chain trust failure, almost certainly a proxy/VPN or trust-store
+change on the workstation). It was NOT worked around; disabling certificate
+verification is not an option. **FIRST ACTION NEXT BOOT: confirm
+`c0b5f52` is live** (Render API, or prep `/version`) before believing any
+report about the cleanup endpoint. The s266b lesson stands — a push is not
+a deploy.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -35,31 +21,19 @@ LIVE.*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names, no packet codenames, no SSNs/EFINs.
+- *s268 moved the s243b→s263b session blocks into `STATUS_ARCHIVE.md` (308 lines, purely
+  additive — verified by `git diff --stat`) so this file stops being an append-log.*
 
 ---
 
-## ✅ RESOLVED s266 (same day) — the two-day deploy void is CLOSED
-Render ran out of build-pipeline minutes 08-13 07:57; ~30 consecutive
-deploys were CANCELED while prep sat pinned at `0efc148` (s258) and
-session annexes said "LIVE". **Ken raised the build spend limit
-$50 → $200 (2026-08-15 evening); deploy `f21cfe5` (the main tip —
-carries the s259–s266 backlog: save sweep, state registry + AL/NC/SC
-lane, debounce, e-file readiness, typecheck fixes, the charitable unit)
-is LIVE and verified** (Render status + prep 200). The D_EFILE
-engine-fault degradation clears by construction — `rules_efile` is on
-the server now. The skew window was safe throughout: s190 `db_default`
-covered migs 0322/0323 against old code; s233's engine-fault labeling
-kept diagnostics honest. ⚠ Annexes dated 08-13→08-15 claiming
-"deployed" were wrong on that one point until tonight; correct since.
-
 ## ⚠⚠ STANDING FACT: PUSHING TO `main` DEPLOYS (WHEN BUILDS RUN)
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
-`delvio-tax`; demo = `tts-tax-demo`. *(The orphan third service was
-DELETED 2026-08-13 on Ken's live approval — s253b.)* ⚠ **A push is not
-a deploy — CHECK THE DEPLOY STATUS after pushing** (the Render API key
-in `D:\dev\Passwords & Secrets\render-api-key.txt`; service
-srv-d6geloa4d50c73el2trg): 30 pushes "deployed" into a canceled-build
-void over two days before anyone looked.
+`delvio-tax` (srv-d6geloa4d50c73el2trg); demo = `tts-tax-demo`. ⚠ **A push
+is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
+`D:\dev\Passwords & Secrets\render-api-key.txt`): 30 pushes "deployed"
+into a canceled-build void over two days (08-13→08-15) before anyone
+looked. Ken raised the build spend limit $50 → $200 on 2026-08-15, which
+resolved that void.
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
@@ -73,480 +47,157 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 
 ## ▶ RESUME HERE
 
-### ✅ s265 — the typecheck gate: DEAD → green (57 → 0)
-Load-bearing:
-- **⚠⚠ `npm run typecheck` is the ONLY valid command** (=
-  `tsc --noEmit -p tsconfig.renderer.json`). The bare `-p .` form is a
-  no-op; CLAUDE.md now says so, so the dead gate can't come back.
-- **An INTERFACE is not assignable to `Record<string, unknown>`** — only
-  a type ALIAS gets the implicit index signature. That one keyword was
-  21 of the 57. The comment on TaxpayerData says keep it a `type`.
-- **Verified pdfjs against the INSTALLED .d.ts, not the doc snapshot** —
-  5.5.207 requires `RenderParameters.canvas` and calls `canvasContext`
-  legacy; Context7's index is v3-era and would have misled.
-- **`{unknown && <JSX/>}` → `{!!unknown && …}`** is a bug fix as well as
-  a type fix: React renders a falsy non-boolean (0 prints).
-- Fixtures were COMPLETED, never loosened — a loosened row type stops
-  catching real shape drift.
-⚠ Commit messages with backticks/`!!` must go through `git commit -F`
-(bash mangles them) — the s242k lesson, re-learned.
+### 0. Confirm the s268 deploy (`c0b5f52`) is live — see the header warning.
+Then re-check that outbound TLS works at all; the whole verify-the-deploy
+discipline is blind until it does.
 
-### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 2
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **33 items, OPEN.**
-Cluster 1 (s267, `ca078dd`) closed 1/6/15/17/29/32/33; the annex in the
-file carries the per-item reasoning and the triage notes below. Order
-for cluster 2:
+### ✅ s268 — BATCH-296 #31: the multi-packet cleanup 500 (`c0b5f52`)
+`POST /api/v1/backentry/cleanup/` documents ten packets but 500'd after
+~2 min for both ten and five, while one packet succeeded in ~25s.
+**Two independent causes** — either alone would have left it broken:
+- **Cumulative latency past gunicorn's `--timeout 120`** (checked against
+  the LIVE service via the API, not just `render.yaml` — only the live
+  value binds). That is why FIVE packets failed exactly like ten: the
+  worker dies at the boundary regardless, taking the already-passed
+  packets' results with it.
+- **No per-packet isolation** — `run_cleanup_check` was a bare list
+  comprehension, so one packet raising discarded every other result.
 
-1. **#31 — multi-packet cleanup 500s.** A workflow blocker throttling
-   Codex to ONE packet per request (10 and 5 both 500 after ~2 min; a
-   single packet succeeds in ~25s). Smells like cumulative diagnostic
-   latency against a request/connection ceiling, not a return defect.
-2. The small compute defects: **#7** (Schedule 2 counts an $7,288 8962
-   repayment in BOTH Part I and the Part II subtotal), **#14** (GA
-   spouse RIE loses exactly $17 — a taxpayer-owned interest row leaking
-   across owners), **#3** (D_GA500_016 reports $0 excluded while
-   D_GA500_003 in the SAME run reports $25,982 — check the SPOUSE
-   column and the pre/post-recompute read), **#4** (8862 `part_ii`
-   derived row never populated after import; the editor shows it
-   disabled so no preparer can fix it), **#9** (8962 monthly
-   contribution rounding, $9).
-3. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22,
-   #25, #28, #30.
+**⚠⚠ THE MEASUREMENT IS THE FINDING.** Executing all **957 active rules**
+read-only against a real filed 2025 return: **4,395 queries per diagnostics
+run**, and **2,910 of them (66%) were the same four reads repeated** — the
+1040 TaxReturn 939×, its FormFieldValue set 812×, Taxpayer 605×, Dependents
+554×. `_ctx_1040` has **413 call sites** and had no memo, so every rule
+re-read a tax year that no rule modifies. Separately the three `D_EFILE_*`
+rules each ran the **whole composition extract** (145 queries, ~17s apiece)
+to ask three questions of one answer.
+- Fix: **`apps/diagnostics/run_cache.py`** — a per-run memo table
+  `run_diagnostics` installs around its rule loop and resets in a `finally`.
+  `_ctx_1040`, `_readiness_check`, `_ctx_ga500`, `_ctx_8995a` consult it.
+  Re-measured: **1,604 queries (−64%)**, wall −63%. Extrapolated to the
+  production rate implied by the reported ~25s/packet: a packet ≈9s, ten
+  packets ≈91s, inside the 120s timeout. **⚠ THAT IS ARITHMETIC, NOT A
+  MEASUREMENT — time a real production run once TLS works.**
+- **Safety was verified, not assumed**: rules are read-only (no rule writes
+  return data; none mutates the ctx it is handed — checked across all 103
+  `rules*.py`); no `ATOMIC_REQUESTS`, so a raised packet cannot poison the
+  next one's transaction. The memo cannot outlive its run and one test
+  exists purely to fail if that changes.
+- **A 95s wall-clock budget** bounds the request: packets past it return as
+  `not_evaluated` rows naming what to resubmit; the FIRST packet always
+  runs. A slow DB now degrades into an honest partial 200, never a 500.
+- **API note (additive)**: `counts` gained `not_evaluated`. Not-checked ≠
+  failed-a-gate, and the closeout report must not conflate them.
+- **NOT done, deliberately**: raising the gunicorn worker timeout — a
+  production infra change and **Ken's call**. Named in the annex as the
+  next lever if deferrals persist.
+- ⚠ **The s268 suite EMPTIES `DiagnosticRule` per test (autouse).** It
+  passed alone and failed in the full sweep two ways at once: earlier
+  modules seed the built-ins from module-scoped fixtures writing OUTSIDE
+  the per-test transaction, so real findings fired AND an already-seeded
+  code violated the unique constraint. Same class as the s266 isolation
+  chip. **The cleanup suite's docstring still claims "the test DB starts
+  empty" — untrue in a sweep.**
+- Regression home: `server/tests/test_batch296_s268.py` (13).
 
-**✅ KEN RULED ALL THREE OPEN QUESTIONS (2026-08-15, s267, live).** No
-BATCH-296 item is waiting on him. Full reasoning in DECISIONS.md +
-REVIEW_QUEUE:
-1. **#5/#8, the NOL:** *the engine ALWAYS computes; a disagreeing
-   source is a reconciliation FINDING, not a different number.* The
-   preservation-only marker was costed and DECLINED (it would let a
-   preparer switch off a mandatory deduction and propagate a source
-   error into the roll-forward); the hard-blocking-error variant was
-   declined too. ⚠ **This generalizes beyond NOLs** — where the Code
-   makes a deduction mandatory, the engine owns the number.
-   → Build: confirm current behavior is exactly this, downgrade the
-   mismatch to a resolvable finding, add the missing **current-year
-   vintage fence** (below), regression-pin Mote's shape.
-2. **Code L:** *build it properly in cluster 2* — verify §72(p),
-   handle the basis consequence (taxed, loan not cancelled, no basis
-   increase until repaid). Not the one-line admission.
-3. **#19 NC:** *restage first, build only what genuinely fails.*
-   Expect Schedule PN's nonresident allocation alone.
+### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 3
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **33 items, OPEN, 8
+closed.** The running annex in the file is the record; read it first.
+Order for cluster 3:
 
-⚠ **A REAL LATENT BUG FOUND WHILE VERIFYING #5** — the NOL deduction
-engine filters vintages for EXPIRY ONLY (`compute_form_172.py` ~238);
-there is **no fence excluding a loss year equal to the current year**.
-A 2025-vintage pool on a 2025 return is treated as available. Littleton
-is safe only by arithmetic accident (a loss year has TI ≤ 0, so the 80%
-cap computes to zero — the s220 "cancels by luck" class). The reachable
-case is a **mis-keyed vintage**, and TaxWise's worksheet is titled
-"Carryovers from 2025 to 2026", so keying 2025 for an older loss is an
-easy slip that would deduct a carryforward a year early, silently. One
-fence + a diagnostic; cluster 2.
+1. **#7 — Schedule 2 double-counts a $7,288 8962 repayment.**
+   ⚠ **s268 TRIAGE, DO NOT SKIP: the addend list is CORRECT.**
+   `SCH2_L21_ADDENDS` is `("4","7","8","9","11","12","13","14","15","16",
+   "18","19")` — it excludes `1a`/`1z`/`3`, so Part I cannot reach line 21
+   through the subtotal; and `compute_8962` writes exactly ONE Schedule 2
+   line, `1a`. The leak is a **third writer or a line-number collision**.
+   Anyone "fixing" the tuple breaks a correct line and leaves the bug.
+2. The other small compute defects: **#14** (GA spouse RIE loses exactly
+   $17 — a taxpayer-owned interest row leaking across owners), **#3**
+   (D_GA500_016 reports $0 excluded while D_GA500_003 in the SAME run
+   reports $25,982 — check the SPOUSE column and the pre/post-recompute
+   read), **#4** (8862 `part_ii` derived row never populated after import;
+   the editor shows it disabled so no preparer can fix it), **#9** (8962
+   monthly contribution rounding, $9).
+3. **Code L (§72(p))** — Ken ruled BUILD IT PROPERLY: verify the statute
+   and handle the basis consequence (taxed; loan NOT cancelled; no basis
+   increase until repaid). It is the code-M/code-U trap a third time: "L7"
+   will blank the whole pension column until admitted.
+4. **The NOL current-year vintage fence** (s267 finding): the engine
+   filters vintages for EXPIRY ONLY (`compute_form_172.py` ~238); nothing
+   excludes a loss year equal to the current year. Safe today only by
+   arithmetic accident (the s220 cancels-by-luck class). One fence + a
+   diagnostic.
+5. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22, #25,
+   #28, #30.
 
-⚠ **Codex's #5 symptom does NOT reproduce at HEAD** — `D_CFWD_001`
-cannot fire for `nol_regular`: s254 added the kind to
-`ENGINE_COMPUTED_KINDS` (models.py ~12251), the lane creates rows via
-`objects.create()` (which runs `save()`, setting `engine_computes`), and
-the rule skips any row where that flag is true. Ask Codex to re-run
-Littleton against the current image before building for it.
+**✅ KEN RULED ALL THREE OPEN QUESTIONS (2026-08-15, live).** Nothing in
+BATCH-296 waits on him. (1) **#5/#8 NOL:** the engine ALWAYS computes; a
+disagreeing source is a reconciliation FINDING, not a different number —
+the preservation-only marker and the hard-error variant were both costed
+and DECLINED. ⚠ Generalizes: where the Code makes a deduction mandatory,
+the engine owns the number. (2) **Code L:** build it properly. (3) **#19
+NC:** restage first, build only what genuinely fails (expect Schedule PN's
+nonresident allocation alone).
+
+⚠ **Codex's #5 symptom does NOT reproduce at HEAD** — `D_CFWD_001` cannot
+fire for `nol_regular` (s254 made it engine-computed). Ask him to re-run
+against the current image before building for it.
 
 **Large units deferred to later clusters:** #10 (Form 4835), #23/#24
-(Schedule C / Schedule E depreciation asset ledgers with AMT basis and
-property linkage), #26 (detailed Form 8829), #27 (federal + Georgia
-amended-return lifecycle). Each is a multi-session build.
+(Schedule C / E depreciation asset ledgers with AMT basis and property
+linkage), #26 (detailed Form 8829), #27 (federal + Georgia amended-return
+lifecycle). Each is a multi-session build.
 
-⚠ **Code L is the next code-M** — deemed distributions (§72(p)), also
-"used with 1, 2, 4, 7, or B", still outside `SUPPORTED_CODES`, so an
-"L7" doc will blank the whole pension column exactly as "7M" did.
-**Ken ruled 2026-08-15: BUILD IT PROPERLY in cluster 2** (not the
-one-line admission) — verify §72(p) against the instructions and handle
-the basis consequence: the amount is taxed, the loan is NOT cancelled,
-and it does not add to basis until repaid.
-
-### ✅ s266b — the 1120-S inbox: THREE HELD RETURNS FILED (Ken's ask)
-**114 Harmony Pet + 201 Oconee Interiors + 212 Hickory Hill — each
-FILED federal + GA-600S via closeout on prep.** How:
-- `D_4562_METHOD` taught the Batch-013 #9 line-16/override rule
-  (deploy `012b7bd`; three-way bounded tests) — the uncounted
-  regression both 114 and 201's holds documented.
-- 201 also needed a zero-movement data repair: the lane had defaulted
-  `amt_prior` to 0 on two fully-recovered SL/3yr rows (SL software has
-  no AMT difference; no face line moved).
-- 212: the batch-007 #7 answer applied — keyed `ga600s_fields.S5_4=0`;
-  ⚠ the first restage was REPLAYED (same batch key = the OLD payload,
-  silently) — bump the key when a payload changes. Exact TIE; closeout
-  `-SourceVerified`.
-- ⚠⚠ **RETIRE A DIAGNOSTIC BY `is_active=False` + A KEPT STUB, NEVER
-  BY DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the
-  seeded DB row dangling and EVERY diagnostics run errored "failed to
-  execute" (found live by the first closeout attempt). Also the s266
-  unit had missed the seed-rules step entirely (015/016/017 were
-  absent from the shared DB). Both repaired in-session; hotfix commit
-  carries the convention + tests.
+### ✅ s266b — the 1120-S inbox: THREE HELD RETURNS FILED
+114 / 201 / 212 each FILED federal + GA-600S via closeout on prep.
+⚠⚠ **RETIRE A DIAGNOSTIC BY `is_active=False` + A KEPT STUB, NEVER BY
+DELETING THE REGISTRY ENTRY** — deleting D_SCHA_007 left the seeded DB row
+dangling and EVERY diagnostics run errored. ⚠ A REPLAYED batch key
+silently reuses the OLD payload — bump the key when a payload changes.
 
 **Still held in the 1120-S Inbox — SIX NEED KEN** (see
-`SOURCE_DECISIONS_NEEDED.md`): 129 ($1 imbalance), 170 (GA §179
-election), 180 (Lacerte negative-AAA override), 214 (mixed-entity PDF),
-ACECOMM + MWELDING ($1 register diffs), CATALANC (trailer
-contribution). **Two are NEXT BUILD UNITS:** 227 — the Form 6765 spec
-now EXISTS (RS lookup 200; model/compute/K13g all built; only the
-entity-lane section is missing); OTISUPER — the grouped bulk-sale path
-needs a `business_use_pct` on DepreciationAsset (the Ford: full 39,108
-summed where the source uses the 66.70% business basis 26,085).
-`Hold\` folder unchanged (non-GA corporate states, K-2/K-3).
+`SOURCE_DECISIONS_NEEDED.md`): 129 ($1 imbalance), 170 (GA §179 election),
+180 (Lacerte negative-AAA override), 214 (mixed-entity PDF), ACECOMM +
+MWELDING ($1 register diffs), CATALANC (trailer contribution).
+**Two are NEXT BUILD UNITS:** 227 — the Form 6765 spec now EXISTS (only
+the entity-lane section is missing); OTISUPER — the grouped bulk-sale path
+needs a `business_use_pct` on DepreciationAsset.
 
 ⛔ 17a (TaxWise report) · ⛔ 17d (WO-33) unchanged.
 
 ### ✅ s266 — the seven-class charitable unit (`f8248dd`, mig 0323)
-The header block above carries the substance. Load-bearing residue:
 - **PROVISIONAL, on the season checklist (REVIEW_QUEUE):** the TY2026
   floor's C-before-B tiebreak and the floored-once relief are
-  `requires_human_review` in the spec — **re-verify against Pub 526
-  (2026) + the 2026 Schedule A instructions when they publish.** Five
-  attempts at verbatim §70425 text were blocked; the D→C→B→E→A→G order
-  rests on two agreeing independent readings. A correction is ONE
+  `requires_human_review` — **re-verify against Pub 526 (2026) + the 2026
+  Schedule A instructions when they publish.** A correction is ONE
   constant (`FLOOR_ORDER`).
-- **REVIEW_QUEUE also holds the (G)/(A) coordination question:** this
-  build PRESERVED the pre-existing "own ceilings + overall 60% cap"
-  treatment for cash-60 + noncash-50. Pub 526's Worksheet 2 may reduce
-  the 50% ceiling by cash gifts (stricter). Pre-existing, out of the
-  approved scope, not changed silently.
-- **Test-isolation chip:** `test_backentry_oos_states_s258` has two
-  order-dependent tests that assume an unseeded rule registry —
-  pre-existing (s264's readiness rules trip them), alphabetical order
-  safe, chipped for Ken (task_4f671e83).
-- The queue-collision guard from this morning stands: **number batches
-  from queue ∪ Done; check the destination name before ANY
-  move-to-archive** (BATCH-001 filed as `-001B`; README amended).
+- REVIEW_QUEUE also holds the (G)/(A) coordination question: this build
+  PRESERVED the pre-existing "own ceilings + overall 60% cap" treatment.
+- ⚠ Number batches from **queue ∪ Done**; check the destination name
+  before ANY move-to-archive (BATCH-001 was issued twice).
+
+### ✅ s265 — the typecheck gate: DEAD → green (57 → 0)
+- **⚠⚠ `npm run typecheck` is the ONLY valid command.** The bare `-p .`
+  form is a no-op.
+- **An INTERFACE is not assignable to `Record<string, unknown>`** — only a
+  type ALIAS gets the implicit index signature (21 of the 57).
+- ⚠ Commit messages with backticks must go through `git commit -F`.
 
 ### ✅ s264 — e-file readiness diagnostics (spine 17c)
-Load-bearing:
-- **The refusals ARE the spec.** The rule calls `extract_return` and
-  reports its `UnmappableValue` verbatim. Re-implementing "what would
-  refuse?" would be the s233/s241c divergence class.
-- **Status gate is the whole usability question**: `in_review` onward.
-  A draft refuses honestly and constantly; a RED on each one trains
-  preparers to ignore the finding that matters later.
-- **A composition crash is isolated, not swallowed** (D_EFILE_002) —
-  the runner marks a run FAILED on a rule raise, which would couple
-  every diagnostic to composition's health.
-- ⚠ 12 of 13 tests MOCK the composer. The 13th runs the real one — if
-  the import path, signature, or exception type drifts, the mocked
-  twelve stay green and only that one fails.
-
-### ✅✅ s263b — the debounce's CLIENT leg + the field-lane defect
-Load-bearing:
-- **⚠⚠ THE CHOKEPOINT WASN'T THE ONLY WRITER.** `update_fields` has its
-  own persist-first + GA-sync block and never routed through
-  `_recompute_1040` — so the s263 server leg covered 174 call sites and
-  MISSED the one path Ken's ruling is about. Only live verification
-  found it (the deferred PATCH still ran the full compute). 3 tests now
-  pin that lane directly.
-- **⚠ A deferred response must refresh NOTHING**: `refreshReturn()`
-  without a payload falls back to a GET, which the server HEALS by
-  computing — that alone would have silently defeated the debounce.
-- **The settle waits for QUIESCENCE**, not just the timer (observed
-  live holding while a write was pending), rides a normal lane, and
-  counts as unacknowledged work so navigation blocks on it.
-- ⚠ Local end-to-end in ONE shot isn't possible: writes exceed the
-  client's 30s timeout (the ~20× pooler amplification), so a real
-  deferred save fails before its settle schedules. The halves were
-  verified separately against the live server.
-
-### ✅ s263 — the recompute debounce, SERVER leg (`55f0be4`, mig 0322)
-Load-bearing:
-- **The ONE chokepoint made it cheap**: _recompute_1040 (174 call
-  sites) gained the defer branch; nothing else moved. Persist-first
-  untouched — the deferred response carries NO fresh_return (nothing
-  fresh to carry).
-- **The heal set is exactly two**: retrieve + render-pdf. Diagnostics
-  already computes first; backentry/e-file compute explicitly
-  (verified, not assumed). Render's heal is the load-bearing one —
-  render stopped computing in the 2026-07-02 stale-print fix, so an
-  orphaned defer would otherwise PRINT stale values.
-- An undeferred mutation clears prior staleness (the flag can never
-  wedge on).
-
-### ✅✅ s262c — BATCH-007 BUILT AND DONE (`3149676`): the AL/NC/SC lane
-Ken ruled "registry first" live; both legs shipped same-day and the
-batch file moved to Done with its build annex. Load-bearing:
-- **`state_returns` on backentry.v1**: registry-validated staging
-  refusals BEFORE any write (unsupported → names the
-  out_of_scope_states closeout; FL/TN negative control; GA →
-  ga500_fields; duplicates; filed-AND-out-of-scope contradiction);
-  commit ensures/applies/computes per state; `state_faces` echoes;
-  **per-face reconciliation over the UNION of faces and expectations**
-  (a tied federal can't mask an untied SC; a never-attached face fails
-  against zeros, never silently skips); the state_persistence cleanup
-  gate; schema regenerated with both examples.
-- **⚠⚠ CONTROL LINES COME FROM THE SEEDERS, NOT THE COMPUTES' KEY
-  LISTS** — SC's compute doc says withholding = key "22"; the seeded
-  FACE line is "16". The first commit test caught it.
-- **Withholding routing is safe BY CONSTRUCTION** — no state compute
-  reads W-2 state rows (verified); each state's withholding is
-  direct-entry on its own face.
-- NOT done, deliberately: the six named acceptance packets' re-pass
-  (real PDFs, post-deploy acceptance — Codex/preparer work; the NC
-  resident packet can't complete regardless, missing 1040 faces).
-
-### ✅ s262b — the state-registry refactor, LEG 1 (`76d9d6b`)
-Ken ruled **"registry first"** on the gate below (DECISIONS.md). Leg 1 is
-the foundation BATCH-007's lane lands on:
-- **NEW `apps/returns/state_registry.py`** — one table keyed by
-  (state_code, entity_kind), 7 rows (GA's four forms + SC/AL/NC
-  individual). views.py's **four** parallel per-entity-kind dicts are
-  RETIRED and their resolver is one call. Adding a state = a row; a new
-  entity kind no longer needs a fifth map.
-- **A latent trap retired**: the old resolver fell back to the CORPORATE
-  form when a 1040/1065 state had no individual/partnership form —
-  provably dead, and it would have attached a corporate state return to
-  a 1040. Now resolves to None and 400s by name.
-- ⚠ **Verify-first corrections to the gate's framing** (in the module
-  docstring so nobody re-derives them): of the 26 `"GA-500"` literals,
-  only those in GENERIC machinery are refactor business — a Georgia
-  diagnostic naming GA-500 is CORRECT. Compute already dispatches all
-  four state individual forms; the render package already ends in a
-  generic fallback (checked, not assumed). **The real remaining gap is
-  backentry** = BATCH-007's leg 2.
-- FL/TN absent by design (no individual income tax) — pinned as the
-  batch's negative control. 14 pins + 750 green; no migration.
-
-### ⛔ (RESOLVED) BATCH-007's gate — kept for the reasoning
-Codex posted a **one-item** 1040 batch (2026-08-13, late s262): extend
-`backentry.v1` to the installed AL / NC / SC individual modules. It is
-**parked, not worked**, with a full verify-first annex in the file.
-Why: the item opens by **superseding** the all-non-GA-states-on-hold
-ruling, and Ken's D-030 campaign ruling blocked Tier-0 state builds
-*deliberately* — "the state-registry refactor lands first," because a
-state form costs ~1,500-2,500 lines across eight layers with no state
-abstraction. **The refactor has not landed.** A batch file asserting a
-ruling is not Ken asserting one, so the ⛔ gate holds.
-- **Verified TRUE**: the three modules exist (compute + diagnostics +
-  coordinate render each); `backentry.py` has NO AL/NC/SC path;
-  `TaxReturn.state_returns` already exists as the linkage.
-- **Quantified**: **26 hardcoded `"GA-500"` literals across 10 files**
-  (backentry, compute, diagnostics, seeding, views, renderer) — the
-  "eight layers," measured. Hardcoding three more states triples it.
-- ⚠ **Stale pointer corrected**: BUILD_ORDER cites the registry
-  prerequisite as `DECISIONS.md:1177`; that line is now an unrelated
-  launcher decision and **no state-registry decision exists in
-  delvio-tax DECISIONS.md** (it lives in the campaign repo only).
-- ✅ **The line-27c blocker the batch flagged is CLEARED** —
-  `eic_opt_out`/`actc_opt_out` importable since BATCH-005 #2 (s241y).
-- **The one-line decision Ken owes**: does contiguous-states supersede
-  D-030's Tier-0 block, and does the registry still land first?
-  (registry-first / ship-hardcoded-now / leave-parked — the annex
-  costs each option out).
-⚠ The batch's six acceptance packets carry REAL CLIENT NAMES — refer to
-them by state and item only; never into a commit, STATUS, or the mirror.
-
-### ✅ s262 — the sweep's tail: COMPLETE (+ the vacuous-typecheck find)
-Design record: the s262 commit. Load-bearing:
-- **⚠⚠ `tsc --noEmit -p .` CHECKS NOTHING** — the root tsconfig is
-  references-only (no files); every "tsc clean" since the gate was
-  adopted was vacuous. The real command:
-  `npx tsc --noEmit -p tsconfig.renderer.json`. The sweep's files are
-  clean under it; the 57 pre-existing errors are a spawned task chip.
-- The nested partnership-distribution property rows ride the PARENT
-  distribution's lane (one consistency unit — the s261 rule).
-- The onUpdate widening literal that satisfies FieldStateInput:
-  `void | Promise<{ ok: boolean; message?: string } | undefined>`
-  (undefined ⊆ void inside CommitOutcome's promise).
-
-### ✅ s261 — sweep leg 3: the singletons + W-2G
-Design record: the s261 commit. Load-bearing:
-- **One lane per SINGLETON SCREEN, not per endpoint** — Form 1116's row
-  PATCH and its Taxpayer-election PATCH share `f1116:{id}` so the
-  screen's writes stay strictly ordered (two lanes could interleave a
-  row write with the election that changes its meaning).
-- The s260 create-guard checklist applied: W-2G's endpoint got
-  `@idempotent_create` IN THE SAME SLICE as its client guard.
-- Mechanical replication of the s259/s260-proven shape — no separate
-  live pass needed; the screens' unit suites exercise the wiring.
-
-### ✅ s260 — sweep leg 2: five income screens + the server idempotency gap
-Design record: the s260 commit + `test_sweep_idempotent_creates_s260.py`.
-Load-bearing:
-- **⚠⚠ A CLIENT-SIDE IDEMPOTENCY KEY IS HALF A CONTRACT** — useRecordSaves
-  re-sends the ORIGINAL intent key on retry, but an endpoint without
-  `@idempotent_create` ignores it and DUPLICATES. Reproduced live (the
-  add timed out at 30s, Django answered 201 late, the retry made row 2).
-  When guarding a create client-side, CHECK THE ENDPOINT HAS THE
-  DECORATOR — the parametrized test is the template for future slices.
-- The 1099-G block has TWO adds: the legacy button's `addDoc` + the
-  guarded `addLane` — name collisions in big FormEditor components are
-  real; grep the component before inserting.
-- ⚠ tsc --noEmit MISSED the duplicate-const (esbuild/vitest caught it) —
-  run vitest collection as the syntax gate, never tsc alone.
-
-### ✅ s259 — the raw-mutation sweep, leg 1 (Schedule D + PayerTable)
-Design record: the s259 commit message + the 2 new
-slateScheduleDScreen tests. Load-bearing:
-- **⚠⚠ PayerTable's commitSlim DROPPED every verdict** — the s253
-  per-cell overlays were unreachable on EVERY PayerTable screen no
-  matter how the caller was wired. Now returns onUpdate's result; a
-  verdict-returning handler lights the cell, a void caller changes
-  nothing. Future sweep slices get the cell overlays FREE by just
-  dropping the `void` at their FormEditor boundary.
-- The SchD draft flow untouched (its card IS the pending state).
-- Live verification reproduced the s251 class faithfully: a ~30s local
-  PATCH (pooler amplification) times out client-side EXACTLY as Django
-  completes — "may not have reached the server" is the honest message;
-  the idempotent retry replayed without duplicating (row count 1).
-- The synthetic verification fixture: client #99259 on dev's demo
-  firm (a synthetic identity) — reusable for future sweep-slice
-  live checks.
-
-### ✅ s258 — the out-of-scope-state named hold (Ken ruling #2)
-Design record: `server/tests/test_backentry_oos_states_s258.py` (8) +
-the NZ-file annex. Load-bearing:
-- **A payload key, not a model field** — the payload lives whole on
-  StagedReturn, so the marker needed NO migration. Read server-side by
-  `payload_out_of_scope_states` (codes only — PII-safe by construction,
-  the source_provenance pattern).
-- **NON-blocking is the tested contract**: the cleanup row stays
-  eligible with the marker; the closeout entry carries
-  `state_disposition: "federal complete; CA → the paper preparer"`.
-- GA refuses inside the marker (it is IN scope); unknown codes refuse
-  (typo fence); the published batch-import.schema.json documents it.
-
-### ✅ s257 — the §38(c)(6)(A) MFS $12,500 threshold (Ken ruling #1)
-Design record: `server/tests/test_form3800_mfs_threshold_s257.py` (13) +
-the RS amendment (rule-studio `ee4dece`). Load-bearing:
-- **The statute's second sentence is the build's substance**: MFS +
-  spouse-has-NO-credit keeps $25,000. The request said "halve it";
-  the verbatim text said "unless". Verify-first caught the difference.
-- **The spouse fact is preparer-asserted, nullable** — never derivable
-  from this return. Unanswered → $12,500 (conservative) + D_3800_010.
-- **One reader** (`form_3800_mfs_threshold`) feeds compute AND the
-  diagnostic — they cannot diverge.
-- The spec amendment rode the same session (never let app and spec
-  drift): R-3800-MFS-THRESHOLD + the key excerpt + D_3800_010 in the
-  spec's diagnostics; cache refreshed + content-verified.
-
-### ✅ s256 — Form 172 leg 3: the NOL unit COMPLETE (+ the commit hotfix)
-Design record: the s256 annexes in BATCH-001/BATCH-002 +
-`server/tests/test_form_172_statement.py` (11). Load-bearing:
-- **⚠⚠ THE HOTFIX**: a OneToOne backentry section needs ALL THREE
-  registries — SECTION_RELATED + LIST_SECTIONS + **SINGLETON_SECTIONS**.
-  Missing the third made `_section_qs` hit the raising reverse accessor
-  on EVERY commit (s255→s256 window). The invariant test in
-  `test_form_172_generation.py` now derives the requirement from the
-  descriptor type — the next singleton lane can't repeat this.
-- **One data source for the attach duty**: `form_172_statement_data`
-  reads persisted rows only; print page + MeF text both consume it.
-- **MeF sign flip**: Schedule 1 8a transmits POSITIVE
-  (USAmountNNType; S1-F1040-080 subtracts) with referenceDocumentId →
-  NOLCarryforwardDedStatement (slot 2406). Emitted iff 8a > 0 — both
-  IND rules hold by construction.
-- **Keyed 8a with no Form 172 detail = named e-file refusal** (the app
-  holds only a total; it will not improvise the computation statement).
-  Print attaches nothing in that shape.
-
-### ✅ s250 — BATCH-006 #10 built (the 8959 multi-W-2 aggregate)
-Design record: the s250 batch annex in `CC_CODE_CHANGES_1040_BATCH-006.md`
-+ `server/tests/test_batch006_item10_8959_agg.py` (11). Load-bearing:
-- **`amt_8959_filed` is TRANSCRIBED EVIDENCE, not a computed arm** — the
-  representation-choice class of the s227 identity valve, NOT a revival
-  of the removed 'line 22 > 0' arm (spec amendment 2026-07-02 stands).
-  Substance gate: engages only when line 4 or line 19 is nonzero.
-- **The engagement decision now lives in ONE place** —
-  `form_8959_engagement` (compute + all three D_8959_* rules). Any
-  future valve goes THERE or the diagnostics go blind again.
-- Per-row box 5 still wins over the aggregate (duplication guard);
-  without the flag the multi-row aggregate shape still disengages.
-- D_8959_001 fires only when line 18 > 0 (its threshold-exceeded
-  message was false on no-tax-due engagements; D_8959_003 owns the
-  25c-reconciliation story and now fires on aggregate-sourced returns).
-- Codex re-stages the two-W-2 production batch adding
-  `"amt_8959_filed": true` (annex guidance).
-
-### ✅ s253b — THE NOL SPEC ROUND-TRIP (Ken live: rulings + Gate 1 approved)
-Ken answered the s246 brief's four questions (~23:15) and approved Gate 1
-in-session. FORM_172 authored / seeded / exported / **cached to
-`server/specs/form_172_spec.json` (contents verified)**. Rulings in
-DECISIONS.md: BOTH SIDES v1; farming carryback refuses by name; ATNOLD
-preserve-only; the 80% base verbatim — ⚠⚠ including the clause the brief's
-short form dropped: the cap is 80% of (TI-without-NOL/QBI/§250 MINUS
-pre-2018 NOLs); spec scenario T7 pins 16,000-not-40,000. The absorption
-synthesis is requires_human_review, Ken-approved. **The 404-STOP lifted
-and the full app build shipped the same day (s254/s255/s256):
-BATCH-001 #4 + BATCH-002 #10 closed; D_CFWD_001 retired for
-`nol_regular`.**
-
-### ⭐ LATER UNIT — behind the two small ruled units: **the raw-mutation sweep, leg 1**
-BATCH-006's named screens are done; ~95 raw `await post/patch` call
-sites remain outside the guarded machinery. Sweep by traffic, highest
-first, converting each to `useRecordSaves`/lane + verdict-returning
-commits (per-cell states come free via FieldStateInput now):
-- The capital-transactions `patchRow` (FormEditor ~17985 — the same
-  naked shape the 1099-R one had) + its `createDraft`.
-- The PayerTable-family screens' `onUpdate` chains (interest,
-  dividends, 1099-G/MISC/PATR…) — many ride `useNestedRowSaves.upd`
-  already (verdicts free); convert the ones that don't.
-- The singleton-PATCH sections (form-1116 `update`, schedule-j,
-  8615-style) — `const res = await patch(...); onRefresh(freshOf(res))`
-  with no ok check.
-Grep the remaining sites: `grep -rn "await post(\|await patch(" pages/
-slate/ components/ | grep -v saveScope|recordSaves|test`. Convert in
-slices; each tick's slice ships with tests. ⚠ Don't break the 1099-R/
-Schedule-D client-draft flows (their card IS the pending state).
-⚠ Client-only; vitest + `tsc --noEmit` gates. After the sweep: the NOL
-computes stay parked on Ken's brief answers; the RS agenda carries the
-rest; Codex may post a new batch any boot.
-
-### ✅ s249 — BATCH-006 #1 built (alimony received, the s241j twin)
-Two lines, not a document family: `sch1_fields["2a"]/["2b"]` import;
-D_SCH1_007 enforces BOTH Topic 452 directions; D_SCH1_008 prompts the
-modification question both sides; D_SCH1_009 flags a generic duplicate.
-Regression: `test_alimony_received_s249.py` (6). No migration.
-
-### ✅ s248 — BATCH-006 #9 built (the Form 1099-C unit)
-Design record: the s248 batch annex + `_1099c_source_brief.md` +
-`test_1099c_unit.py` (15). Load-bearing: Schedule 1 line 8c now DERIVES
-(`compute_1099c_db`, the 8v/8h shape; `sch1_fields["8c"]`
-un-importable); business routes feed nothing (Pub 4681, the PATR
-doctrine); §108 exclusions transcribe the filed 982 figure (D_1099C_001
-demands the manual 982); box-3 interest carves only on asserted
-deductibility. Migs 0316/0317.
-
-### ✅ s247 — BATCH-006 triage: the trio closed at HEAD (#6/#7/#8)
-- **#6 REFUTED, inference corrected**: 6b = 5,602 (cap) stable ×2,
-  D_RET_012 quiet, AGI = the dry-run's own 142,229 WITH 6b correct —
-  the $2,229 is the adjudicated source-side Schedule D non-foot.
-  Regression: `test_batch006_item6_ss_stability.py`.
-- **#7/#8 FIXED by s243b** (deployed before the batch published);
-  residues named in the annex.
-
-### ✅ s246b — BATCH-001 #5 built (REP nonpassive routing; Ken's live go)
-Design record: the s246b batch annex + `test_8582_rep_nonpassive.py`.
-ONE predicate (`rental_rep_nonpassive`) shared by compute/diagnostics;
-the bypass = the §469(g)-release mechanics; the REP loss is a MAGI
-ADD-BACK; §469(f) former-passive rows STAY passive (D_8582_FPA).
-
-### ✅ s243b (earlier today) — Ken's four-return unblock (`bb282b0`, LIVE)
-Verdicts: Return W / T / G tie; **Return P NO TIE by design** (the FILED
-Schedule D face doesn't foot by exactly $2,229; source-side gap).
-Regression home: `server/tests/test_four_return_unblock_s243b.py`.
-
-### ⚠ s241's Form 5329 cross-check — still waiting on Sections A/B
-Form 5329 line 36 takes "Form 8853 line 8" (Archer MSA — Section A/B
-territory). Parked with Ken's s224 keyed-only ruling.
+- **The refusals ARE the spec** — the rule calls `extract_return` and
+  reports its `UnmappableValue` verbatim. (s268 memoized this: all three
+  `D_EFILE_*` rules now share one extract per run.)
+- Status gate is `in_review` onward; a composition crash is isolated.
 
 ### ✅ THE E-FILE GAP LIST IS EMPTY (as of s242z)
 What remains refused at composition is NAMED per-case, never a missing
 builder.
 
 ### The rest of the queue
-- **1040** (`1040\CC Changes\`): **ONE open file — BATCH-296, 33 items,
-  7 closed in s267 cluster 1.** Its running annex is the record; read it
-  before touching any item. BATCH-001/002/003/004/005/006/007 are all
-  ✅ DONE and moved.
-  ⚠ Historical: **BATCH-001 filed as `-001B`** — the number 001 was
-  issued TWICE and a routine move would have silently overwritten the
-  s227 record. The lane README now requires numbering from
-  queue ∪ Done and a destination-name check before any move.
-  Every worked file carries a result annex; read it first.
+- **1040** (`1040\CC Changes\`): **ONE open file — BATCH-296, 33 items, 8
+  closed.** BATCH-001..007 all ✅ DONE and moved. Every worked file carries
+  a result annex; read it first.
 - **1120-S** (`1120S\CC Changes\`): EMPTY (README only).
 - **Legacy root** (`CC Code Changes\`): ONE open file — the NZ file (9 of
   10; #10 multi-state parked under the states-on-hold ruling). Unchanged.
@@ -554,62 +205,54 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s268: NO tax-output movement.** Diagnostics findings are identical —
+  only the query count changes. Two BEHAVIOR changes: (1) the cleanup
+  endpoint can now return `not_evaluated` rows instead of a 500, and its
+  `counts` gained a fourth key; (2) an exception in one packet no longer
+  fails the whole request.
 - **⚠⚠ s267 MOVES FOUR CLASSES (every one a correction):** (1) a return
   whose owner has BOTH a Part-III-only Form 8606 and traditional-IRA
-  1099-Rs regains the traditional taxable on 4b, in AGI, and in the GA
-  RIE line-11 base (it had been zeroed); (2) any 1099-R carrying box-7
-  code M stops blanking the WHOLE pension column for its return —
-  5a/5b/AGI all move on such returns; (3) **e-file composition now
-  SUCCEEDS where it refused**: every ordinary high-wage Form 8959 (21
-  returns carry the line-15 threshold) and every 8949 row stored with an
-  ISO date; (4) the published `batch-import.schema.json` now accepts
-  `expected.sc1040/al40/nc_d400`. No migration; nothing else moves.
+  1099-Rs regains the traditional taxable on 4b, in AGI, and in the GA RIE
+  line-11 base; (2) any 1099-R carrying box-7 code M stops blanking the
+  WHOLE pension column; (3) e-file composition now SUCCEEDS where it
+  refused (every ordinary high-wage Form 8959; every 8949 row stored with
+  an ISO date); (4) the published `batch-import.schema.json` accepts
+  `expected.sc1040/al40/nc_d400`.
 - **⚠ s257 MOVES MFS RETURNS with a GBC and line 12 > $12,500** (a
-  correction): line 13 rises to the §38(c)(6)(A) threshold → less
-  credit allowed unless the preparer answers spouse-has-no-credit
-  (which restores $25,000). D_3800_010 (error) fires on the unanswered
-  shape. No existing MFS-with-GBC returns are known in the test data.
-- **⚠ s256 MOVES PRINT + E-FILE OUTPUT on NOL returns (corrections)**:
-  the 1040 PDF gains the line-8a statement page; MeF flips 8a to its
-  positive magnitude + emits the statement document; a keyed-8a-no-
-  detail return now REFUSES e-file by name (it previously composed an
-  invalid negative with a missing document — an IRS reject either way).
-  D_172_80PCT_STATEMENT downgrades warning→info. **The HOTFIX restores
-  backentry commits** (500 since `ca6202c`).
-- **s255: NONE beyond new-fact reach** (generation needs a Form172 row).
-- **s250: NONE beyond new-fact reach on ENGAGEMENT** (`amt_8959_filed`
-  is False everywhere until keyed). **⚠ but the DIAGNOSTICS bridge-gate
-  repair moves rule output on already-engaged aggregate returns**: an
-  aggregate-sourced return that compute engaged (the s227 single-W-2
-  shape) now fires D_8959_003 where all D_8959_* rules were silent; a
-  no-tax-due engaged return LOSES a false D_8959_001 (correction both
-  ways). No dollar-line movement.
+  correction) — line 13 rises to the §38(c)(6)(A) threshold unless the
+  preparer answers spouse-has-no-credit.
+- **⚠ s256 MOVES PRINT + E-FILE OUTPUT on NOL returns** (corrections): the
+  1040 PDF gains the line-8a statement page; MeF flips 8a positive + emits
+  the statement; a keyed-8a-no-detail return REFUSES e-file by name.
+- **s250/s248/s246b/s255: NONE beyond new-fact reach.**
 - **s249/s241j MOVE DIAGNOSTICS**: post-2018 alimony instruments fire
-  `D_SCH1_007` (error) on BOTH the paid and received sides.
-- **s248: NONE beyond new-row reach** (8c derives only when a
-  `Form1099C` row exists; none do).
-- **s246b: NONE beyond new-fact reach** (REP routing needs
-  `material_participation` True — NULL on every existing row).
-- **⚠⚠ s243b MOVES THREE CLASSES (each a correction):** (1) basis-only
-  8606 + IRA-path 1099-Rs — 4b regains box-2a taxable; (2) employer DCB
-  below the plan cap — 2441 line-17 cap raises 1e/1z/AGI; (3) GA
-  under-62 disability RIE prints on S1 7c/7f with date/type.
-- **⚠ s243 MOVES GEORGIA RETURNS carrying a federal 2441 credit**
-  (IND-CR 202 feed — correction).
-- **⚠ s244 MOVES E-FILE OUTPUT + PRINT on the 8862 class** (all
-  corrections toward i8862 — category flags gate boxes/parts; no
-  resolving category refuses by name; CTC/AOTC-only recerts now attach).
-- **⚠ s242z/y/x MOVE E-FILE OUTPUT** on the amended / full-1116 /
-  keyed-8e classes (compose-or-named-refusal; no compute movement).
-- **⚠ s241o MOVES GEORGIA RETURNS carrying a 1099-PATR** (RIE L10 feed).
-- Carried from s240: passive/PTP K-1 §1231 losses fire RED; a non-zero
-  Schedule 1 line 4 refuses at MeF composition.
-- Carried from s239: Roth 1099-Rs move 5a/5b → 4a/4b; GA partnership K-1s
-  move RIE L2↔L13; code-U un-blanks the pension taxable column.
-- Carried from s236/s235: GA RIE line 13 on suspended passive K-1 losses;
-  GA dependent exemptions on an untouched 7a.
+  `D_SCH1_007` (error) on BOTH sides.
+- **⚠⚠ s243b MOVES THREE CLASSES (each a correction):** basis-only 8606 +
+  IRA-path 1099-Rs; employer DCB below the plan cap; GA under-62
+  disability RIE.
+- **⚠ s243 / s244 / s242z-y-x / s241o** — GA 2441 IND-CR 202 feed; the
+  8862 class print + e-file; amended / full-1116 / keyed-8e e-file; GA
+  1099-PATR RIE L10.
+- Carried from s240/s239/s236/s235: passive/PTP K-1 §1231 losses fire RED;
+  Roth 1099-Rs move 5a/5b → 4a/4b; GA partnership K-1s move RIE L2↔L13;
+  code-U un-blanks the pension taxable column; GA RIE line 13 on suspended
+  passive K-1 losses; GA dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted
+- **⚠ NEW (s268), BOTH PROVEN PRE-EXISTING at `9e5cc91` in a pristine
+  worktree — neither was previously recorded:**
+  - `test_1040_spine_diagnostics.py::test_gate_blanks_line_16_on_capital_loss`
+    — a COMPUTE test that never touches diagnostics: `1475` where it
+    expects a blank line 16. **Possible tax-output defect, FOR KEN.** My
+    read: it asserts the old *bridge* behavior (a capital LOSS blanks line
+    16 because the return "needs Schedule D"); Schedule D has since been
+    built, so a real line 16 may now be correct and the TEST stale — the
+    s240 class. It could equally be a genuine defect. Not touched.
+  - `test_schedule_k1_diagnostics_leg.py::test_family_registration` — five
+    K1 rules exist in the code registry but not in the test's `_FAMILY`
+    constant (`D_K1_UPE_PASSIVE`, `D_K1_UPE_SE`, `D_K1_7203_GENCHAR`,
+    `D_K1_SPLIT_ARITH`, `D_K1_SPLIT_8582`). Fails in 0.2s with no DB, so
+    it has been red a while unnoticed. Mechanical to fix.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py`
   (3, s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn`
   (3, s239).
@@ -622,27 +265,30 @@ builder.
   `test_line_key_registry_sweep.py::test_formula_targets_resolve` —
   `FORMULA_REGISTRY["1120-S"]` targets `M2_DIST_EXCESS` / `L24_BOOK_BRIDGE`,
   neither seeded. 1120-S only. Deserves its own unit.
-- **Client typecheck**: project tsconfig CLEAN (s244 ran `tsc --noEmit`
-  exit 0); vitest 1,680 passed / 140 files.
+- **Client typecheck**: green under `npm run typecheck` (s265).
 
 ### ⚠ Test-run hazards (standing)
-- **Never run two `pytest` invocations concurrently** — one shared test DB,
-  cross-repo (`test_postgres`). A stalled background sweep beside foreground
-  runs is contention, not a hang (s241o).
-- A broad `-k` sweep blows the 600s timeout — background it; keep `-k` tight.
+- **Never run two `pytest` invocations concurrently** — one shared test DB
+  (`test_postgres`), cross-repo.
+- **⚠⚠ A `-k` sweep over all of `tests/` is ~5 HOURS here** (s268 measured
+  3% in ~10 min). Scope a sweep to the actual blast radius instead: for a
+  diagnostics change that is the **76 files matching `run_diagnostics`**
+  (~22 min, 1,938 tests) — the cache is inert outside a run, so tests that
+  call rule functions directly are provably unaffected.
+- **⚠ NEVER pipe pytest through `Select-Object`** — it buffers the whole
+  stream and a timeout loses ALL output. Redirect to a file and tail it.
 - `--create-db` does not reliably drop here; prove a pre-existing red via
-  `git worktree` at a pristine SHA with the main venv + copied `server/.env`
-  (worked again in s244).
-- A timed-out `pytest | Select-Object` loses ALL output — redirect to a file.
+  `git worktree` at a pristine SHA with the main venv + copied
+  `server/.env` (worked twice in s268).
 - `poetry run python > file` BUFFERS (use `-u`); stdout redirects go through
   cp1252 (write UTF-8 from inside Python); **never rewrite a UTF-8 file via
   `Set-Content`/`Add-Content`** — use the Write/Edit tools or Python io.
-- **`poetry run` only works from `server\`**; Windows `python` cannot read the
-  Bash tool's `/tmp` — use the scratchpad; DB probes: a throwaway
-  `tests/test_zz_*.py` with `-s`, deleted after.
+  ⚠ `Measure-Object -Line` miscounts here — verify file edits with
+  `git diff --stat`, which is authoritative.
+- **`poetry run` only works from `server\`**; a script run from outside
+  needs `sys.path.insert(0, r"D:\dev\delvio-tax\server")`. Windows `python`
+  cannot read the Bash tool's `/tmp` — use the scratchpad.
 - `manage.py seed_rules` against the pooler takes >5 min — background it.
-- Cloudflare-403 law sites and `rules.sos.ga.gov`: the in-app browser gets the
-  text where WebFetch and curl fail (s239/s241o).
 - Staging answers **201 even for an invalid payload** — the verdict is
   `row["status"]`; return CRUD routes are `/api/v1/tax-returns/…` with the
   trailing slash; `filing_status` is `"mfj"`.
@@ -651,6 +297,10 @@ builder.
   "spouse" before "taxpayer" (s241w).
 
 ### 🔎 Carried for triage — NOT claims
+- **From s268**: after the memo cache, **1,604 queries per run remain
+  across 957 rules** — a long tail of per-rule reads, no single hot spot
+  left. If throughput matters again, the levers are (a) more loaders on
+  `run_cache`, (b) the gunicorn worker timeout (Ken's call).
 - **From s241o**: RIE L8 alimony underived; a fuller L10 derive possible in
   principle but per-owner attribution + the (4)(b)2 gambling carve-out make
   it a design pass.
@@ -663,13 +313,10 @@ builder.
   bare recompute (−5,491 each), face still a tie.
 
 ### ✅ KEN DECISIONS OUTSTANDING
-- ~~⛔ KEN (s231)~~ **✅ RULED 08-13 (live): BUILD the §38(c)(6)(A) MFS
-  $12,500 halving** — queued after the NOL app build.
-- ~~⛔ KEN (s227)~~ **✅ RULED 08-13 (live): BUILD the out-of-scope-state
-  named hold** (`out_of_scope_states` + cleanup-gate surfacing) — queued
-  after the NOL app build.
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
   before a TY2026 season.
+- **⛔ NEW (s268)**: the capital-loss line-16 red above — stale test or real
+  defect? (One-line answer; see Known red.)
 - **1040 v5.4 business rules still not in hand** (v5.4 schemas ARE on disk).
   ⚠ s240/s241w read the **v5.3** rules — re-check `S1-F1040-118-01` and the
   `SH-F1040-*` family against v5.4 on arrival.
@@ -678,20 +325,11 @@ builder.
 - **(s242x) The TEN staged FA definitions**: FA-1040-8853C-01..05 + FA-4562-
   DEST/ROUND/280F + FA-1040-2210-08/09 — author in RS, re-export, move from
   `flow_assertions_1040_pending.json` to the gate mirror.
-- **✅ RESOLVED s253b: THE NOL SPEC EXISTS** — FORM_172 authored, Gate-1
-  approved by Ken in-session, seeded (RS DB 136 forms), exported (200),
-  cached (`server/specs/form_172_spec.json`, verified). Ken's four rulings
-  in DECISIONS.md (BOTH SIDES; farming-carryback refusal; ATNOLD
-  preserve-only; the 80% base verbatim incl. the pre-2018 subtraction).
-  The APP BUILD is the next unit; the five FA-1040-NOL definitions are
-  authored in RS and export with the flow-assertion feed.
 - (s241b, reaffirmed s244): the `8862` spec is a draft collapsing each PART
   to one boolean — re-author per-line from the Rev. 12-2025 face. ⚠ The
-  seeded app face still carries a `part_v` pseudo-line from that draft; the
-  Dec-2025 revision DROPPED Part V (qualifying-child-of-more-than-one-person
-  is now caution text, no answer field). D_EIC_016 keys on the row as an
-  app-internal preparer flag — harmless, but the re-authoring should retire
-  or rename it.
+  seeded app face still carries a `part_v` pseudo-line the Dec-2025
+  revision DROPPED; D_EIC_016 keys on it — retire or rename in the
+  re-authoring.
 - (s241w): `SCHEDULE_H` is a DRAFT covering 7 of ~27 lines — re-author.
 - (s241s): the GA QEE credit has NO SPEC (two carryforward regimes).
 - (s241p): `4547` and `8879_TA` have NO SPEC; record `IND-476`.
