@@ -4,16 +4,21 @@
 shipped item #31 (`c0b5f52`) — the multi-packet cleanup 500.** Cluster 1
 (`ca078dd`, s267) closed 1/6/15/17/29/32/33. 25 items remain.*
 
-*⚠⚠ **THE s268 DEPLOY IS PUSHED BUT NOT VERIFIED LIVE.** `c0b5f52` pushed
-to `main` at ~00:18 UTC and Render was `build_in_progress` at last check.
-Verification then became impossible: **outbound TLS from this machine began
-failing with `SEC_E_UNTRUSTED_ROOT`** (git, curl and PowerShell alike — a
-certificate-chain trust failure, almost certainly a proxy/VPN or trust-store
-change on the workstation). It was NOT worked around; disabling certificate
-verification is not an option. **FIRST ACTION NEXT BOOT: confirm
-`c0b5f52` is live** (Render API, or prep `/version`) before believing any
-report about the cleanup endpoint. The s266b lesson stands — a push is not
-a deploy.*
+*✅ **DEPLOY `c0b5f52` IS LIVE** — Render confirms it went live 2026-08-16
+00:21:48 UTC; prep serves normally. All three repos pushed and the status
+mirror is synced.*
+
+*⚠ **A TLS OUTAGE ON THE WORKSTATION BLOCKED VERIFICATION FOR ~30 MINUTES**
+mid-session: git, curl and PowerShell/.NET all failed with
+`SEC_E_UNTRUSTED_ROOT` (no proxy env vars; git uses schannel, the Windows
+store) — a VPN/proxy or trust-store change on the machine, not the app. It
+was NOT worked around (disabling certificate verification is not an option)
+and it cleared on its own. **If it recurs: deploys cannot be verified and
+pushes will fail — say so rather than recording a push as a deploy.***
+
+*⚠ **The ~9s/packet production figure is still ARITHMETIC, not a
+measurement** — extrapolated from Codex's reported 25s. Time a real
+production run when convenient.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -46,10 +51,6 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 ---
 
 ## ▶ RESUME HERE
-
-### 0. Confirm the s268 deploy (`c0b5f52`) is live — see the header warning.
-Then re-check that outbound TLS works at all; the whole verify-the-deploy
-discipline is blind until it does.
 
 ### ✅ s268 — BATCH-296 #31: the multi-packet cleanup 500 (`c0b5f52`)
 `POST /api/v1/backentry/cleanup/` documents ten packets but 500'd after
