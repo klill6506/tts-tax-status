@@ -240,15 +240,21 @@ builder.
   passive K-1 losses; GA dependent exemptions on an untouched 7a.
 
 ### ⚠ Known red / rotted
-- **⚠ NEW (s268), BOTH PROVEN PRE-EXISTING at `9e5cc91` in a pristine
-  worktree — neither was previously recorded:**
-  - `test_1040_spine_diagnostics.py::test_gate_blanks_line_16_on_capital_loss`
-    — a COMPUTE test that never touches diagnostics: `1475` where it
-    expects a blank line 16. **Possible tax-output defect, FOR KEN.** My
-    read: it asserts the old *bridge* behavior (a capital LOSS blanks line
-    16 because the return "needs Schedule D"); Schedule D has since been
-    built, so a real line 16 may now be correct and the TEST stale — the
-    s240 class. It could equally be a genuine defect. Not touched.
+- ✅ **RESOLVED (s268, `317ded5`) — the capital-loss line-16 red.** Ken
+  ruled 2026-08-16 "treat it as a stale test", and verifying before
+  rewriting showed *why* it was stale: **the fixture never had a capital
+  loss.** It poked `-1500.00` into line 7, which **s242q made
+  ENGINE-OWNED** — with no `CapitalTransaction` row, carryover, K-1 or 4797
+  gain, `schedule_d_engaged()` is False and the compute CLEARS line 7
+  (leaving a stale value there had caused a real defect: a stale 114
+  survived removing the last Form 8814 and then BLOCKED line 16). So the
+  return is correctly taxed on wages alone; a preparer holding a manual
+  Schedule D uses an OVERRIDE, which is still respected. ⚠ The $1,475 was
+  DERIVED, not blessed (IRS Tax Table single, 14,250-14,300 bracket,
+  midpoint 14,275 → 1,474.50 → 1,475) and the test now asserts lines
+  7/11/12/15/16 so every step is checkable. Spine suite 52/52.
+- **⚠ STILL RED (s268), PROVEN PRE-EXISTING at `9e5cc91` in a pristine
+  worktree and not previously recorded:**
   - `test_schedule_k1_diagnostics_leg.py::test_family_registration` — five
     K1 rules exist in the code registry but not in the test's `_FAMILY`
     constant (`D_K1_UPE_PASSIVE`, `D_K1_UPE_SE`, `D_K1_7203_GENCHAR`,
@@ -316,8 +322,6 @@ builder.
 ### ✅ KEN DECISIONS OUTSTANDING
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
   before a TY2026 season.
-- **⛔ NEW (s268)**: the capital-loss line-16 red above — stale test or real
-  defect? (One-line answer; see Known red.)
 - **1040 v5.4 business rules still not in hand** (v5.4 schemas ARE on disk).
   ⚠ s240/s241w read the **v5.3** rules — re-check `S1-F1040-118-01` and the
   `SH-F1040-*` family against v5.4 on arrival.
