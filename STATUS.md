@@ -1,9 +1,13 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-17 (s269). **▶ 1040 BATCH-296 IS OPEN — 42 items, 17
-closed, cluster 4 in progress.** s269 shipped **#34** (the W-2G payer
-identity, `b04a73f`) and appended the **#35 annex s268 never wrote** (the
-build landed 4 minutes after the file's last write).*
+*Last updated: 2026-08-17 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 17
+closed, cluster 4 in progress.** ⚠ **s270 STOPPED MID-BUILD ON #38 at Ken's
+call (travel).** The committed state is deliberately INERT — see the #38
+block below before doing anything else.*
+
+*s269 shipped **#34** (the W-2G payer identity, `b04a73f`) and appended the
+**#35 annex s268 never wrote** (the build landed 4 minutes after the file's
+last write).*
 
 *✅ **DEPLOY `25a462b` WENT LIVE 2026-08-17 07:55 UTC**, carrying all of
 s268 including #35. `b04a73f` (#34) pushed and deploying behind it.*
@@ -151,9 +155,70 @@ to ask three questions of one answer.
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
-### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 4
+### ▶▶ RESUME HERE — s270 STOPPED MID-BUILD ON #38 (Sch 2 line 14)
+
+**Stopped at Ken's call (travel), not at a breakpoint. Nothing is finished;
+nothing is broken.** ⚠ **The committed code is INERT in production**: the
+compute leg writes Schedule 2 line 14 only when `Taxpayer
+.sch2_l14_source_amount` is not None, and NOTHING can set it yet — the field
+is not in `TaxpayerSerializer.fields` and not in the back-entry allowlist. No
+existing return can move. Migration **0324** is additive (three nullable /
+`db_default` columns).
+
+**DONE (committed):**
+- `Taxpayer.sch2_l14_source_amount / _label / _note` + migration **0324**
+  (⚠ 0324 also carries an unrelated, PRE-EXISTING `AlterField` on
+  `scha_charitable_carryover_in` — **help_text only, no schema change** — that
+  s266 left un-migrated and `makemigrations` swept in).
+- `compute_sch123.py`: readers `sch2_l14_source_amount` /
+  `sch2_l14_source_documented`, and the line-14 write inside `compute_sch_2`
+  (before the line-21 sum).
+
+**NOT DONE — the next four steps, in order:**
+1. `TaxpayerSerializer`: add the three fields + the cross-field rule (label
+   AND note required when the amount is set) — copy `_validate_2210_source_override`.
+2. `backentry.py`: add the three to the taxpayer allowlist (near
+   `t2210_penalty_source_*`, ~line 244) + `_validate_sch2_l14_source_trio`
+   mirroring `_validate_2210_source_trio` (~line 3085).
+3. Diagnostics in `rules_6252.py`: **D_6252_009** (warning — the line is
+   source-controlled, naming the amount + label) and **D_6252_010** (the
+   contradiction). Then `seed_rules` (>5 min — background it).
+4. Regression file `server/tests/test_batch296_item38_s270.py`; gates =
+   `pytest tests/test_flow_assertions.py` + the Schedule 2 / sch123 suites.
+
+**⚠⚠ THE TWO TRAPS THIS BUILD TURNS ON — do not lose these:**
+- **⚠⚠ LINE 14 IS A TWO-WRITER LINE.** It is a DIRECT-ENTRY line a preparer can
+  already key (RS `SCH_2` spec types it `input`, no calculation — confirmed
+  against the LIVE Rule Studio export, not just the cached copy). The write is
+  therefore scoped to "only while a source is recorded", the `compute_6252`
+  line-15 shape — **NOT** the line-13 feeder shape, which writes
+  unconditionally and would silently zero a preparer's keyed figure on the next
+  recompute. `_write_line` respects `is_overridden`, so a source landing on an
+  OVERRIDDEN line 14 is silently ignored — **that is what D_6252_010 is for**
+  (the app files the override; the disagreement must not be silent).
+- **⚠⚠ THE NEW RULES MUST NOT BE GATED ON `form_6252_engaged`.** Every existing
+  `D_6252_*` rule no-ops via `_state()` when Form 6252 is not in play — but the
+  whole point of #38 is a packet that prints line 14 with **NO Form 6252 and no
+  computation behind it**. Use `_ctx_1040` directly and pin it with a test, or
+  the next tidy-up silences them.
+
+**Verify-first already settled these (don't redo):**
+- Two of the four acceptance criteria are ALREADY TRUE at HEAD: `"14"` is
+  already in `SCH2_L21_ADDENDS` (→ line 21 → 1040 23 → 24, exactly once), and
+  `f1040s2_2025.py` already maps line 14. **The render leg needs nothing.**
+- The item's core claim HOLDS: `backentry.py` has no path to any Schedule 2
+  line (its only mention is a comment that line 9 "stays preparer-keyed").
+- Cite verified at LII 2026-08-17: **§453(l)(3)**, on the §453(l)(2)(B)
+  timeshare / residential-lot dispositions. The app computes no §453(l)(3)
+  figure and this build does not add one.
+- Since the source WRITES (never adds), the item's "silently double-counting"
+  is structurally impossible — pin that with a test rather than building a
+  guard for it.
+
+### ▶ THEN — 1040 BATCH-296, CLUSTER 4
 `1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 17
 closed.** The running annex in the file is the record; read it first.
+⚠ **No annex was appended for #38** — it is not built.
 
 **▶ NEXT, in order:** **#38** (source-controlled Sch 2 line 14 — small, follows
 the existing 1040 line-38 source-penalty pattern), **#36** (a death date stops
