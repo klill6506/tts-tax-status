@@ -1,12 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-16 (s268). **▶ 1040 BATCH-296 IS OPEN. Cluster 2
-shipped item #31 (`c0b5f52`) — the multi-packet cleanup 500.** Cluster 1
-(`ca078dd`, s267) closed 1/6/15/17/29/32/33. 25 items remain.*
+*Last updated: 2026-08-17 (s269). **▶ 1040 BATCH-296 IS OPEN — 42 items, 17
+closed, cluster 4 in progress.** s269 shipped **#34** (the W-2G payer
+identity, `b04a73f`) and appended the **#35 annex s268 never wrote** (the
+build landed 4 minutes after the file's last write).*
 
-*✅ **DEPLOY `c0b5f52` IS LIVE** — Render confirms it went live 2026-08-16
-00:21:48 UTC; prep serves normally. All three repos pushed and the status
-mirror is synced.*
+*✅ **DEPLOY `25a462b` WENT LIVE 2026-08-17 07:55 UTC**, carrying all of
+s268 including #35. `b04a73f` (#34) pushed and deploying behind it.*
+
+*⚠ **s269 ADDS A NEW ERROR THAT WILL LOOK LIKE A WAVE** — `D_W2G_PAYER_ID`
+fires on essentially every already-committed W-2G return, because the payer
+EIN was never importable until now. That is the true state of those returns
+(they could not have been e-filed); it is not a regression. See the
+classes-that-move section.*
 
 *⚠ **A TLS OUTAGE ON THE WORKSTATION BLOCKED VERIFICATION FOR ~30 MINUTES**
 mid-session: git, curl and PowerShell/.NET all failed with
@@ -51,6 +57,50 @@ Nothing is on a clock in that window; the next hard deadline is 2026-09-15.
 ---
 
 ## ▶ RESUME HERE
+
+### ✅ s269 — BATCH-296 #34: the W-2G payer identity (`b04a73f`)
+**⚠⚠ VERIFY-FIRST CHANGED THE SIZE OF THE ITEM.** It reads as "expose and
+persist the W-2G payer TIN and identity fields" — a model + schema + plumbing
+build. It was **one allowlist**. `FormW2G.payer_ein` / `payer_street` /
+`payer_city` / `payer_state` / `payer_zip` / `box14_state_winnings` have
+existed since **migration 0196**; the serializer exposes them, the Slate
+misc-income screen edits them, and `_extract_w2gs` already READS every one to
+build `<IRSW2G>`. Only `backentry.W2G_FIELDS` omitted them — while the sibling
+`R1099_FIELDS` carries the identical block. **No migration, no new columns, no
+new UI.** ⚠ The generalizable trap: *a payer-identity block that drifts from
+`R1099_FIELDS` is invisible until e-file runs.* A test now fails if any
+`payer_*` key exists there and not on W-2G.
+- **The payer ADDRESS travels with the EIN.** The IRSW2G payer US address is
+  schema-required and `read_model` refuses on the very next line, so admitting
+  the EIN alone would have moved the refusal one line down and left the
+  document just as untransmittable. ⚠ **Open question put to Codex:** the
+  three fixtures quote an EIN but no payer address — if the source does not
+  print one, those packets will now stop on the address instead.
+- **⚠⚠ MISSING vs MALFORMED IS THE DESIGN.** A malformed EIN is refused at
+  **staging** (`_validate_w2g`; both `58-2025627` and `582025627` accepted). A
+  **missing** one still stages — refusing it would fail a whole ten-return
+  batch over a field the preparer keys in the editor, and a source that does
+  not print an EIN is not a defective payload. The missing case is the new
+  **`D_W2G_PAYER_ID`** (error, seeded), reported **per row at every status**,
+  naming the row, its owner and which fields are absent.
+- That is **s264's principle in the other direction**: `D_EFILE_001` was
+  already right, it just speaks only from `in_review` and names ONE refusal
+  for the whole return. ⚠ A test pins that **"row 2" means the same row in
+  both messages** (both enumerate the queryset under `Meta.ordering`).
+- **The recipient identity was already correct and is now FENCED** — derived
+  from `owner` + the return identity, so nothing was added to the payload and
+  a test FAILS if anyone adds `recipient_ssn`/`ssn`/`recipient_name` to the
+  allowlist. A second copy of an SSN in a PII lane is a second thing to get
+  wrong.
+- **The compound refusal is split.** One refusal covered four facts, so a
+  blank EIN and a mis-keyed 8-digit one gave the SAME sentence — and it named
+  "recipient SSN" as though it were a W-2G field, sending the fix to the wrong
+  screen. One message per field now; the EIN message quotes what it found.
+- ⚠ **Deliberately NOT widened:** `int_1099s`/`div_1099s`/`r_1099s` also carry
+  an unvalidated `payer_ein`. Tightening a PUBLISHED contract can reject
+  packets that stage today — its own change, not a side effect of this one.
+- Regression: `server/tests/test_batch296_item34_s269.py` (33). Gates: 850
+  green. No migration.
 
 ### ✅ s268 — BATCH-296 #31: the multi-packet cleanup 500 (`c0b5f52`)
 `POST /api/v1/backentry/cleanup/` documents ten packets but 500'd after
@@ -101,10 +151,25 @@ to ask three questions of one answer.
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
-### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 3
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN** (33 + Codex's 35-42), 14
+### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 4
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 17
 closed.** The running annex in the file is the record; read it first.
-Order for cluster 3:
+
+**▶ NEXT, in order:** **#38** (source-controlled Sch 2 line 14 — small, follows
+the existing 1040 line-38 source-penalty pattern), **#36** (a death date stops
+the LINKED GA return recomputing; ⚠ confirm whether the death date or the NOL
+attributes on the same payload actually cause it), **#39** (K-1
+`collectibles_28` ignored by the Sch D Tax Worksheet, $45; ⚠ it is a SUBSET,
+not extra capital income), **#41** (SC additions/subtractions on the s262b
+state registry), the **297 addendum to #19** (⚠ re-verify first — #19 was
+gathered inside the deploy void). Then the mid-size 1040 units #11, #12, #13,
+#16, #18, #20, #21, #22, #25, #28, #30.
+
+⚠ **#37 duplicates #2** — treat 37 as the live spec; do not work both.
+⛔ **#40 is a LARGE multi-session build** (AMT passive losses = an AMT shadow
+of Form 8582) and belongs after the big units, not in this cluster.
+
+*Cluster 3 (all closed, s268):*
 
 1. ~~**#7**~~ ✅ **CLOSED s268 — DOES NOT REPRODUCE at HEAD.**
    `SCH2_L21_ADDENDS` excludes `1a`/`1z`/`3` (Part I cannot reach line 21);
@@ -216,12 +281,12 @@ multi-session (AMT passive losses = an AMT shadow of Form 8582; ⚠ blocked by
 `D_CFWD_001` and Ken's NOL ruling generalizes — the engine owns the number);
 **#41** state-lane build on the s262b registry (SC additions/subtractions
 not importable, $85 off); **297 addendum to #19** — re-verify first, #19 was
-gathered inside the deploy void. **#34** (W-2G `payer_ein` + recipient
-identity derived from `owner`) small-med, well specified, three exact
-fixtures, no ruling needed — ⚠ it was MISSED by the first triage pass
-because it sits before the s267 annex rather than with 35-42. It is a
-NEW-SURFACE item, visible only because s264's e-file readiness rules
-started running.
+gathered inside the deploy void. ~~**#34**~~ ✅ **BUILT s269** — a NEW-SURFACE
+item (visible only because s264's readiness rules started running) that the
+first triage pass MISSED because it sits before the s267 annex rather than
+with 35-42. ⚠ Its classification as "small-to-medium build" was still an
+over-estimate: verify-first found it was one allowlist. See the resume
+section.
 
 ✅ **KEN RULED 2026-08-16: the next BIG unit after the small defects is
 #23/#24 — the Schedule C / Schedule E depreciation asset ledgers** (AMT
@@ -344,6 +409,19 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s269 MOVES DIAGNOSTICS ON EVERY W-2G RETURN, and it will look like a
+  regression.** `D_W2G_PAYER_ID` (error) fires on any W-2G row missing the
+  payer name, a nine-digit EIN, or the full US payer address — which is
+  essentially every already-committed W-2G return, because none of those
+  fields was importable until this commit. **Those returns genuinely could
+  not have been e-filed**; the rule reports a true state that was previously
+  only visible as a single `D_EFILE_001` refusal at `in_review`. It clears by
+  keying the payer block (every field is editable on the Slate misc-income
+  screen) or re-importing with the now-accepted keys.
+  **No tax-output movement** — no compute path changed. The other s269 change
+  is message text: `_extract_w2gs`'s four-fact refusal became four
+  field-specific ones (same refusal set, different wording), so anything
+  matching those strings loosely should be re-read.
 - **⚠⚠ s268 cluster 3 MOVES FOUR CLASSES (each a correction):**
   (1) **every Form 8962 return between 300% and 400% FPL on an ODD
   percentage** — 29 of those 100 percentages had an applicable figure
