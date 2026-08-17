@@ -102,7 +102,7 @@ to ask three questions of one answer.
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
 ### ▶ RESUME HERE — 1040 BATCH-296, CLUSTER 3
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **33 items, OPEN, 8
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN** (33 + Codex's 35-42), 14
 closed.** The running annex in the file is the record; read it first.
 Order for cluster 3:
 
@@ -150,17 +150,65 @@ Order for cluster 3:
      every ODD percentage is an exact half-way case: **29 of 100 came back
      0.0001 LOW**. Understates the required contribution → **overstates the
      credit, understates the repayment**. Now exact Decimal.
-3. **Code L (§72(p))** — Ken ruled BUILD IT PROPERLY: verify the statute
-   and handle the basis consequence (taxed; loan NOT cancelled; no basis
-   increase until repaid). It is the code-M/code-U trap a third time: "L7"
-   will blank the whole pension column until admitted.
-4. **The NOL current-year vintage fence** (s267 finding): the engine
-   filters vintages for EXPIRY ONLY (`compute_form_172.py` ~238); nothing
-   excludes a loss year equal to the current year. Safe today only by
-   arithmetic accident (the s220 cancels-by-luck class). One fence + a
-   diagnostic.
+3. ~~**Code L (§72(p))**~~ ✅ **BUILT s268.** Admitted to
+   `SUPPORTED_CODES` — the FOURTH time an unsupported box-7 code blanked
+   the whole pension column (U s239, 6, M s267, L).
+   ⚠⚠ **VERIFY-FIRST CORRECTION — three places carried one wrong fact.**
+   BATCH-296, this file and the code comment all said code L is "used with
+   1, 2, 4, 7, or B" and predicted an **"L7"** doc. The i1099-R Table 1
+   (fetched 2026-08-17) says **"Used with code 1 or B"** — that wider list
+   is code M's. **L7 IS NOT AN IRS COMBINATION**; the real pairings are L1
+   and LB. The sentence had been copied from the code-M note, never read
+   from the table.
+   Box 2a governs (normal §72 rules), so admission was the whole fix.
+   **The basis consequence:** the loan is NOT cancelled and the amount does
+   NOT add to basis when deemed distributed — basis moves only on
+   REPAYMENT, which is a PLAN-SIDE ledger the payer reports through box 5.
+   The app holds no plan-loan basis, so there is nothing to accrue and
+   nothing it may infer (recorded so nobody "fixes" the absence).
+4. ~~**The NOL current-year vintage fence**~~ ✅ **BUILT s268.**
+   `compute_form_172` now also requires `source_tax_year < current_year`
+   (§172(b)(2): a loss carries forward only to years FOLLOWING the loss
+   year), plus **`D_172_VINTAGE_FUTURE` (ERROR** — the amount is dropped
+   from the deduction, so a real prior-year loss keyed with the wrong year
+   must not lose it quietly; the message explains that a schedule headed
+   "Carryovers from X to Y" names the year amounts carry TO, not the loss
+   year). ⚠ The fence's TEETH are pinned: a genuine prior-year vintage
+   must survive.
 5. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22, #25,
    #28, #30.
+
+### ⚠⚠ THE BATCH GREW: 33 → 42 ITEMS (Codex posted 35-42 + a 297 addendum)
+Triaged s268 (2026-08-17), nothing built. **Two findings gate the work:**
+
+1. **⛔ KEN — #35 and #42 are ONE defect with CONTRADICTORY prescriptions.**
+   Same return, same $1,105 1099-MISC, same `RIE-TP-17` 5,041-vs-6,146, same
+   $58. **#35 routes it to the UNEARNED base; #42 to the age-62-64 EARNED
+   bucket.** ⚠ **The earned side is CAPPED at $5,000, the unearned side is
+   not** — both reach 6,146 on THIS return, so the acceptance figures cannot
+   distinguish them, but they diverge on any return already at the cap.
+   **Our reading: #35 is right.** 1099-MISC **box 3 is "Other income"** —
+   not compensation for services (box 1 rent / box 7 NEC), no SE tax — and
+   s241o established for the analogous 1099-PATR case that such income is
+   UNEARNED, and only when not tied to a business/farm (else double-counted
+   AND moved to the capped side). Building #42 as written would put uncapped
+   income under the cap. **Neither started until Ken confirms** — building
+   the wrong one is worse than waiting.
+2. **#37 DUPLICATES #2** (zero-tax installment sale blocked by unrecaptured
+   §1250). 37 adds the Form 6251 framing + acceptance test; treat 37 as the
+   live spec, don't work both.
+
+Classification of the rest: **#36** real bug, small-med (a death date stops
+the LINKED GA return recomputing — confirm whether the death date or the NOL
+attributes on the same payload actually cause it); **#38** small build
+(source-controlled Sch 2 line 14, follows the 1040 line-38 pattern);
+**#39** medium (`collectibles_28` persists but the Sch D Tax Worksheet
+ignores it, $45 — ⚠ it is a SUBSET, not extra capital income); **#40** LARGE
+multi-session (AMT passive losses = an AMT shadow of Form 8582; ⚠ blocked by
+`D_CFWD_001` and Ken's NOL ruling generalizes — the engine owns the number);
+**#41** state-lane build on the s262b registry (SC additions/subtractions
+not importable, $85 off); **297 addendum to #19** — re-verify first, #19 was
+gathered inside the deploy void.
 
 ✅ **KEN RULED 2026-08-16: the next BIG unit after the small defects is
 #23/#24 — the Schedule C / Schedule E depreciation asset ledgers** (AMT
