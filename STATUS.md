@@ -404,13 +404,15 @@ builder.
   DERIVED, not blessed (IRS Tax Table single, 14,250-14,300 bracket,
   midpoint 14,275 → 1,474.50 → 1,475) and the test now asserts lines
   7/11/12/15/16 so every step is checkable. Spine suite 52/52.
-- **⚠ STILL RED (s268), PROVEN PRE-EXISTING at `9e5cc91` in a pristine
-  worktree and not previously recorded:**
-  - `test_schedule_k1_diagnostics_leg.py::test_family_registration` — five
-    K1 rules exist in the code registry but not in the test's `_FAMILY`
-    constant (`D_K1_UPE_PASSIVE`, `D_K1_UPE_SE`, `D_K1_7203_GENCHAR`,
-    `D_K1_SPLIT_ARITH`, `D_K1_SPLIT_8582`). Fails in 0.2s with no DB, so
-    it has been red a while unnoticed. Mechanical to fix.
+- ✅ **RESOLVED (s268) — the K1 `test_family_registration` red.** Five rules
+  (`D_K1_UPE_PASSIVE`, `D_K1_UPE_SE`, `D_K1_7203_GENCHAR`,
+  `D_K1_SPLIT_ARITH`, `D_K1_SPLIT_8582`) were in the REGISTRY but never in
+  the test's `RULE_FNS` dispatch map, and `_FAMILY` derives from that map —
+  so the trip-wire was short. ⚠ **It needs no DB and fails in 0.2s, which is
+  exactly why it stayed red unnoticed**: nothing in a targeted run touched
+  it. Map completed + severities recorded; 26 green.
+  **BOTH s268-discovered pre-existing reds are now cleared** (this and the
+  capital-loss line 16, which Ken ruled a stale test).
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py`
   (3, s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn`
   (3, s239).
