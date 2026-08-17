@@ -178,7 +178,7 @@ Order for cluster 3:
 5. Then the mid-size units: #11, #12, #13, #16, #18, #20, #21, #22, #25,
    #28, #30.
 
-### ⚠⚠ THE BATCH GREW: 33 → 42 ITEMS (Codex posted 35-42 + a 297 addendum)
+### ⚠⚠ THE BATCH GREW: 33 → 42 ITEMS (Codex posted 34-42 + a 297 addendum)
 Triaged s268 (2026-08-17), nothing built. **Two findings gate the work:**
 
 1. **⛔ KEN — #35 and #42 are ONE defect with CONTRADICTORY prescriptions.**
@@ -208,7 +208,12 @@ multi-session (AMT passive losses = an AMT shadow of Form 8582; ⚠ blocked by
 `D_CFWD_001` and Ken's NOL ruling generalizes — the engine owns the number);
 **#41** state-lane build on the s262b registry (SC additions/subtractions
 not importable, $85 off); **297 addendum to #19** — re-verify first, #19 was
-gathered inside the deploy void.
+gathered inside the deploy void. **#34** (W-2G `payer_ein` + recipient
+identity derived from `owner`) small-med, well specified, three exact
+fixtures, no ruling needed — ⚠ it was MISSED by the first triage pass
+because it sits before the s267 annex rather than with 35-42. It is a
+NEW-SURFACE item, visible only because s264's e-file readiness rules
+started running.
 
 ✅ **KEN RULED 2026-08-16: the next BIG unit after the small defects is
 #23/#24 — the Schedule C / Schedule E depreciation asset ledgers** (AMT
