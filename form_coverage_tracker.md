@@ -1,6 +1,22 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-17 session 269 — FORM W-2G: THE IMPORT LEG CATCHES UP WITH THE
+> E-FILE LEG ✅ (BATCH-296 #34, `b04a73f`, no migration).** ⚠⚠ **A UNIT CAN
+> BE "COMPLETE" AND STILL HAVE AN UNREACHABLE LEG.** s80 (2026-07-14, above
+> at the S-22b entry) added the FormW2G e-file identity fields — payer EIN +
+> US address, mig 0196 — and `_extract_w2gs` has read them ever since. **The
+> import lane was never extended to match**, so `backentry.W2G_FIELDS` could
+> not carry a single one of them and every exactly-committed W-2G return was
+> refused by `D_EFILE_001`. Six fields joined the allowlist (the sibling
+> `R1099_FIELDS` had carried the identical block all along); a test now fails
+> if the two ever drift again. Plus: a malformed EIN refused at STAGING, a
+> MISSING one reported per row by the new **`D_W2G_PAYER_ID`** (error) at
+> every status rather than as one composition refusal at `in_review`, the
+> recipient identity fenced as derive-only (no SSN may enter the payload),
+> and the four-fact compound refusal split into field-specific messages.
+> 33 tests; 850 green.
+>
 > **2026-08-15 session 265 — THE CLIENT TYPECHECK GATE IS ALIVE ✅
 > (`631fbb3`, types only).** It had never actually run (references-only
 > root tsconfig), hiding 57 errors; all cleared at root cause — an
