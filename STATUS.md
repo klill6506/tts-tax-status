@@ -136,7 +136,14 @@ Order for cluster 3:
      the row's existence, so D_8862_003 blocked returns the editor could
      not fix. One reader now (`f8862_eic_category_ticked`). ⚠ **CTC/AOTC
      boxes are still un-derived** — their claimed-tests live in the
-     diagnostics ctx; same blocker will appear there.
+     diagnostics ctx. ✅ **FINISHED 2026-08-17 on Ken's go (`1f1feac`)** —
+     all three boxes derive from ONE reader
+     (`compute_eic.f8862_category_claims`, called by compute AND by
+     `rules_eic._f8862_categories`, with a test pinning they agree).
+     ⚠ The derive MOVED out of compute_eic into the 1040 pipeline after
+     `compute_sch_8812` + the 19/27/28 sync — the CTC category reads lines
+     19/28 and Sch 8812 L_12, and compute_eic runs BEFORE 8812, so it would
+     have ticked a pass late.
    - **#9** — ⚠⚠ **THE TITLE WAS WRONG.** Not rounding (`_round0` is
      already HALF_UP and correct) — `applicable_figure` used **float +
      Python's banker's `round()`**, and in the 300-400% band (step 0.00025)
@@ -286,7 +293,9 @@ builder.
   (with `D_GA500_020` explaining); (3) D_GA500_016 goes quiet on joint
   returns where one owner's column is empty; (4) an EIC recertification
   return gains a ticked `8862.part_ii`, clearing D_8862_003 and changing
-  what the face and MeF carry. No migration.
+  what the face and MeF carry — and since 2026-08-17 the SAME applies to
+  CTC and AOTC recertification returns (`part_iii` / `part_iv`).
+  No migration.
 - **s268: NO tax-output movement.** Diagnostics findings are identical —
   only the query count changes. Two BEHAVIOR changes: (1) the cleanup
   endpoint can now return `not_evaluated` rows instead of a 500, and its
