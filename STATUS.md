@@ -192,8 +192,16 @@ Triaged s268 (2026-08-17), nothing built. **Two findings gate the work:**
    s241o established for the analogous 1099-PATR case that such income is
    UNEARNED, and only when not tied to a business/farm (else double-counted
    AND moved to the capped side). Building #42 as written would put uncapped
-   income under the cap. **Neither started until Ken confirms** — building
-   the wrong one is worse than waiting.
+   income under the cap. ✅ **KEN RULED 2026-08-17: UNEARNED** — *"It's why we
+   put it on Box 3. If it were earned we would put it on Schedule C."*
+   **BUILT (`ac2b289`)**: `compute_1099misc.ga_rie_other_income_by_owner`
+   feeds RIE **L10** (other income), 8z-ROUTE ONLY — a row routed to a
+   Schedule C/F is earned and already inside that schedule's net profit on
+   L2, so feeding it here would double-count AND move it to the capped side
+   (load-bearing negative test). ⚠ **Box 8 deliberately excluded** (a
+   dividend substitute — different character, separate question).
+   ⚠ A test pins the divergence the acceptance figures could not show:
+   at the $5,000 cap the earned reading gives $5,000, unearned $6,105.
 2. **#37 DUPLICATES #2** (zero-tax installment sale blocked by unrecaptured
    §1250). 37 adds the Form 6251 framing + acceptance test; treat 37 as the
    live spec, don't work both.
