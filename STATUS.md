@@ -1,9 +1,10 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 19
-closed, cluster 4 in progress.** s270 shipped **#38** (the source-controlled
-Schedule 2 line 14, live `2c6ee8a`) and **#36** (the GA residency attach
-trigger — the item's OWN diagnosis was wrong on both counts; see the block).*
+*Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 20
+closed, cluster 4 in progress.** s270 shipped **#38** (Sch 2 line 14 source
+lane, live `2c6ee8a`), **#36** (GA residency attach, live `e1d3242`) and
+**#39** (K-1 collectibles → the 28% rate group — the fix was ONE FEED whose
+parameter had been named for it all along).*
 
 *s269 shipped **#34** (the W-2G payer identity, `b04a73f`) and appended the
 **#35 annex s268 never wrote** (the build landed 4 minutes after the file's
@@ -155,6 +156,42 @@ to ask three questions of one answer.
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
+### ✅ s270 — BATCH-296 #39: K-1 collectibles → the 28% rate group
+**THE FIX WAS ONE FEED, AND THE PARAMETER HAD BEEN WAITING BY NAME.**
+`compute_28pct_worksheet`'s line-4 argument is literally named
+`div_2d_plus_k1` and the RS `w28_4` routes "K-1" there — but the call site
+never fed the K-1 term, so `schedule_k1s.collectibles_28` persisted with no
+consumer, line 18 stayed 0, the route stayed QDCGT, and line 16 ran $45 low
+(the 28%-vs-QDCGT spread on $500). Now `k1_collectibles_28_total` → w28 L4 →
+Schedule D line 18 → the SDTW 28% rate group. **A SUBSET, not income** — box 9b
+re-labels part of box 9a (already in line 12); the subset control pins that
+lines 15/16/7/AGI/taxable are IDENTICAL with and without it, and line 16 tax
+moves +$45 exactly.
+- **Acceptance through the REAL lane** (stage+commit, the dry-run's path),
+  the filed face to the dollar: AGI 277,598 · taxable 239,208 · 16 = 43,009 ·
+  24 = 48,765 · 37 = 14,016 · 38 = 407 · Sch D 16 = 652 · 18 = 500. The
+  omitted control reproduces the report: 18 = 0, 16 = 42,964.
+- **⚠ D_K1_SPECIAL_GAIN NARROWED to unrecap-§1250-only** (s225
+  both-in-one-pass): firing prepare-manually on collectibles the engine now
+  computes would be wrong. The §1250 half stays RED (its K-1 feed into the
+  §1250 worksheet is still unbuilt). ⚠ Its docstring's "the SDTW is
+  deferred" was STALE — compute_sdtw has been live since Topic 9. Re-seeded.
+- **⚠ Latent double-count hazard, checked not guarded**:
+  `schd_other_collectibles` (the old spec's K-1 path) feeds the same W[4]. A
+  return carrying the gain in both places would double line 18. **Zero rows
+  in the shared DB carry either field nonzero (read-only check 2026-08-18)**;
+  recorded at the call site.
+- **RS AGENDA — three spec items now trail the build**: `w28_4`'s line-map
+  note ("the K-1/other fact"), `R-K1-RED-DEFER`, and `FA-1040-K1-07`'s
+  `blockers` list all still name collectibles_28 as deferred. The
+  flow-assertion gate carries an explicit `__COMPUTES__` sentinel until the
+  RS amendment lands; the sentinel then retires.
+- Regression: `server/tests/test_batch296_item39_s270.py` (5). Gates: **675
+  green** (flow assertions, Sch D spec suite, SDTW §1250 suite, INT/DIV
+  scenarios, K-1 diagnostics leg, backentry commit). Teeth proven by
+  reverting the feed (acceptance + subset control fail = the $42,964 repro).
+  No migration.
+
 ### ✅ s270 — BATCH-296 #36: the GA residency attach trigger
 **⚠⚠ THE ITEM'S DIAGNOSIS WAS WRONG ON BOTH COUNTS — the death date and the
 NOL rows were BOTH innocent.** Nothing in the GA path reads a death date
@@ -244,12 +281,10 @@ was half-built already. The batch's size estimates run high.)*
   That is no longer true: the lane is open as of this session's second commit.
 
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 19
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 20
 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT, in order:** **#39** (K-1
-`collectibles_28` ignored by the Sch D Tax Worksheet, $45; ⚠ it is a SUBSET,
-not extra capital income), **#41** (SC additions/subtractions on the s262b
+**▶ NEXT, in order:** **#41** (SC additions/subtractions on the s262b
 state registry), the **297 addendum to #19** (⚠ re-verify first — #19 was
 gathered inside the deploy void). Then the mid-size 1040 units #11, #12, #13,
 #16, #18, #20, #21, #22, #25, #28, #30.
@@ -367,8 +402,8 @@ trigger); ~~**#38**~~ ✅ **BUILT s270**
 (source-controlled Sch 2 line 14 — ⚠ the "follows the 1040 line-38 pattern"
 framing was only half right: line 38 is engine-computed, line 14 is
 DIRECT-ENTRY, which made it a two-writer line and changed the design);
-**#39** medium (`collectibles_28` persists but the Sch D Tax Worksheet
-ignores it, $45 — ⚠ it is a SUBSET, not extra capital income); **#40** LARGE
+~~**#39**~~ ✅ **BUILT s270** (one feed — the parameter was NAMED
+`div_2d_plus_k1` all along; D_K1_SPECIAL_GAIN narrowed to §1250-only); **#40** LARGE
 multi-session (AMT passive losses = an AMT shadow of Form 8582; ⚠ blocked by
 `D_CFWD_001` and Ken's NOL ruling generalizes — the engine owns the number);
 **#41** state-lane build on the s262b registry (SC additions/subtractions
@@ -501,6 +536,10 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **s270 #39 MOVES a class only a new import can create**: a return with a
+  nonzero K-1 `collectibles_28` gains Schedule D line 18 and, where the 28%
+  rate group binds, more line-16 tax (a correction). Zero such returns exist in
+  the shared DB today, so nothing already committed moves.
 - **⚠⚠ s270 #36 MOVES A CLASS: every GA-home-address 1040 with no GA-tagged
   document and no GA-500 gains an auto-attached Georgia return on its next
   save or import.** For GA-resident retirees that is the missing state filing

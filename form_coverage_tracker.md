@@ -1,6 +1,21 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-18 session 270 — K-1 COLLECTIBLES REACH THE 28% RATE GROUP ✅
+> (BATCH-296 #39, no migration).** `schedule_k1s.collectibles_28` persisted
+> with NO consumer — `compute_28pct_worksheet`'s line-4 parameter is named
+> `div_2d_plus_k1` and the RS `w28_4` routes "K-1" there, but the call site
+> never fed the K-1 term, so Schedule D line 18 stayed 0, the route stayed
+> QDCGT, and 1040 line 16 ran $45 low. One feed fixed it:
+> `k1_collectibles_28_total` → w28 L4 → line 18 → the SDTW 28% rate group. A
+> SUBSET, not income (box 9b re-labels part of box 9a) — pinned: AGI and
+> Schedule D lines 15/16 identical with and without it, tax +$45 exactly.
+> Acceptance through the real lane ties the filed face to the dollar.
+> ⚠ D_K1_SPECIAL_GAIN narrowed to §1250-only (its "SDTW is deferred"
+> docstring was stale); re-seeded. ⚠ RS agenda ×3: w28_4's note,
+> R-K1-RED-DEFER, FA-1040-K1-07 all still call collectibles deferred.
+> 5 tests; 675 green; teeth proven by reverting the feed.
+>
 > **2026-08-18 session 270 — GA-500 ATTACH: RESIDENCY JOINS THE TRIGGER ✅
 > (BATCH-296 #36, no migration).** A GA-resident decedent's Georgia figures
 > were all zero, blamed on the death date or the NOL rows — **both innocent**
