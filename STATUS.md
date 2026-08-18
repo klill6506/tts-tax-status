@@ -1,10 +1,11 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 20
+*Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 21
 closed, cluster 4 in progress.** s270 shipped **#38** (Sch 2 line 14 source
-lane, live `2c6ee8a`), **#36** (GA residency attach, live `e1d3242`) and
-**#39** (K-1 collectibles → the 28% rate group — the fix was ONE FEED whose
-parameter had been named for it all along).*
+lane), **#36** (GA residency attach), **#39** (K-1 collectibles → the 28%
+rate group) and **#41** (the SC contract — whose acceptance FLUSHED OUT A
+REAL SC TAX-TABLE DEFECT: the published rows are $100 wide from $7,000 up;
+ours were $50 everywhere. Every SC return in [$7k, $100k) moves ±$3).*
 
 *s269 shipped **#34** (the W-2G payer identity, `b04a73f`) and appended the
 **#35 annex s268 never wrote** (the build landed 4 minutes after the file's
@@ -156,6 +157,40 @@ to ask three questions of one answer.
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
+### ✅ s270 — BATCH-296 #41: the SC contract + THE TABLE DEFECT UNDER IT
+**Part 1 — verify-first: the components were importable ALL ALONG.** The SC
+engine has carried `add-oth` (→ line 2) and `ltcg` (full gain; engine × 44%
+→ line i → 4) since s262b, and `_apply_state_fields` accepts any seeded
+line. What was missing was DISCOVERABILITY: the schema's prose said key "the
+printed face lines" (→ Codex keyed the COMPUTED totals, silently recomputed
+from empty components — the $85), unknown keys refused only at COMMIT, and
+nothing documented computed-vs-input. Fixed at the contract level,
+registry-first: `state_registry.line_vocabulary()` (from the seeders'
+SECTIONS — s262c's control-lines rule), staging refuses unknown state line
+keys PER KEY + WARNS on keyed computed lines naming the remedy, and the
+schema now carries `$defs.state_line_vocabulary` + per-state propertyNames
+enums + corrected prose naming add-oth/ltcg.
+- **⚠⚠ Part 2 — THE ACCEPTANCE FAILED BY $1 AND EXPOSED A REAL TAX-TABLE
+  DEFECT.** Engine $3,626 vs filed $3,627 on $71,136. Fetched the published
+  SC1040TT_2025 from dor.sc.gov rather than argue: **rows are $50 wide only
+  below $7,000; $100 wide from $7,000 to $100,000.** s262b assumed $50
+  everywhere — its "verified 138/138" parse never reached the $100 region —
+  so EVERY SC return in [$7,000, $100,000) taxed off the wrong midpoint
+  (±$3). `_sc1040tt` corrected + verified against ALL 1,070 published rows
+  (zero mismatches); 15 rows spanning both seams pinned in the suite.
+- ⚠ **THREE STALE PINS FELL WITH IT**: our $50k scenario (2,360 → published
+  **2,361**), $75k (3,860 → **3,861**) — and ⚠ **the RS spec's SC1040
+  scenario still says 2,360** (RS agenda). ⚠ Codex's dry-run control
+  ($3,542/$231) was itself computed BY the broken table — the published row
+  says $3,543/$230, which the control now pins.
+- **⚠⚠ MOVEMENT CLASS — REAL AND WIDE**: every SC1040 with taxable income
+  in [$7,000, $100,000) may move up to ±$3 on next recompute (a correction
+  toward the published table). AL/NC untouched.
+- Regression: `server/tests/test_batch296_item41_s270.py` (9). Gates: **634
+  green** (s262c state-lane suite, SC compute suite, flow assertions,
+  backentry commit). Teeth twice: the acceptance itself failed pre-table-fix;
+  disabling the staging check fails both contract pins. No migration.
+
 ### ✅ s270 — BATCH-296 #39: K-1 collectibles → the 28% rate group
 **THE FIX WAS ONE FEED, AND THE PARAMETER HAD BEEN WAITING BY NAME.**
 `compute_28pct_worksheet`'s line-4 argument is literally named
@@ -281,11 +316,10 @@ was half-built already. The batch's size estimates run high.)*
   That is no longer true: the lane is open as of this session's second commit.
 
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 20
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 21
 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT, in order:** **#41** (SC additions/subtractions on the s262b
-state registry), the **297 addendum to #19** (⚠ re-verify first — #19 was
+**▶ NEXT, in order:** the **297 addendum to #19** (⚠ re-verify first — #19 was
 gathered inside the deploy void). Then the mid-size 1040 units #11, #12, #13,
 #16, #18, #20, #21, #22, #25, #28, #30.
 
@@ -406,8 +440,9 @@ DIRECT-ENTRY, which made it a two-writer line and changed the design);
 `div_2d_plus_k1` all along; D_K1_SPECIAL_GAIN narrowed to §1250-only); **#40** LARGE
 multi-session (AMT passive losses = an AMT shadow of Form 8582; ⚠ blocked by
 `D_CFWD_001` and Ken's NOL ruling generalizes — the engine owns the number);
-**#41** state-lane build on the s262b registry (SC additions/subtractions
-not importable, $85 off); **297 addendum to #19** — re-verify first, #19 was
+~~**#41**~~ ✅ **BUILT s270** (⚠ the components were importable all along —
+the CONTRACT was undiscoverable; and the acceptance flushed out the SC
+tax-table $50-vs-$100-row defect); **297 addendum to #19** — re-verify first, #19 was
 gathered inside the deploy void. ~~**#34**~~ ✅ **BUILT s269** — a NEW-SURFACE
 item (visible only because s264's readiness rules started running) that the
 first triage pass MISSED because it sits before the s267 annex rather than
@@ -536,6 +571,9 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s270 #41 MOVES EVERY SC RETURN with taxable income in [$7,000,
+  $100,000)** — up to ±$3 of SC tax on next recompute, a CORRECTION toward
+  the published SC1040TT (the $50-row assumption was wrong above $7,000).
 - **s270 #39 MOVES a class only a new import can create**: a return with a
   nonzero K-1 `collectibles_28` gains Schedule D line 18 and, where the 28%
   rate group binds, more line-16 tax (a correction). Zero such returns exist in
