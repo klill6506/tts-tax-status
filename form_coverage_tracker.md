@@ -1,6 +1,23 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-18 session 270 — GA-500 ATTACH: RESIDENCY JOINS THE TRIGGER ✅
+> (BATCH-296 #36, no migration).** A GA-resident decedent's Georgia figures
+> were all zero, blamed on the death date or the NOL rows — **both innocent**
+> (nothing in the GA path reads a death date; the vintages compute $0 on
+> MTI ≤ 0). **The GA-500 was never ATTACHED**: the trigger required a
+> GA-*tagged* document, and a retiree packet with zero state withholding has
+> none — the QA Batch-001 retiree class one layer deeper than s106b.
+> `_has_ga_home_address` now attaches on the home-address state, both lanes,
+> as a predicate SEPARATE from the line-24-mirroring document trigger.
+> Acceptance ties the filed GA return line for line (RIE 15,981 = int
+> 17,696 + div 1,285 − 3,000 cap loss; GA AGI −14). ⚠ The answer key put
+> the printed TOTAL subtractions on the RIE-only line because the echo had
+> no total key — **S1-13 joined `GA500_SUMMARY_LINES`**, schema regenerated.
+> ⚠ Movement class: GA-address returns without tagged docs gain a GA-500 on
+> next mutation (the missing resident filing). 9 tests; 633 green; teeth
+> proven by revert.
+>
 > **2026-08-17 session 270 — SCHEDULE 2 LINE 14: A SOURCE-CONTROLLED
 > §453(l)(3) FIGURE BECOMES TRANSCRIBABLE ✅ (BATCH-296 #38, mig 0324).**
 > Line 14 carries interest on tax due on installment income from certain

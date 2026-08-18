@@ -1,9 +1,9 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-17 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 18
+*Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 19
 closed, cluster 4 in progress.** s270 shipped **#38** (the source-controlled
-Schedule 2 line 14). ⚠ The session was interrupted mid-build and resumed;
-leg 1 landed inert in `74bcfb9`, the rest completed after.*
+Schedule 2 line 14, live `2c6ee8a`) and **#36** (the GA residency attach
+trigger — the item's OWN diagnosis was wrong on both counts; see the block).*
 
 *s269 shipped **#34** (the W-2G payer identity, `b04a73f`) and appended the
 **#35 annex s268 never wrote** (the build landed 4 minutes after the file's
@@ -155,6 +155,40 @@ to ask three questions of one answer.
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
 
+### ✅ s270 — BATCH-296 #36: the GA residency attach trigger
+**⚠⚠ THE ITEM'S DIAGNOSIS WAS WRONG ON BOTH COUNTS — the death date and the
+NOL rows were BOTH innocent.** Nothing in the GA path reads a death date
+(grep: zero references), and the NOL vintages compute a $0 deduction on this
+shape (MTI ≤ 0) and preserve untouched. **The real cause: the GA-500 was
+NEVER ATTACHED.** `_auto_sync_ga500` attached only on a GA-*tagged* income
+document (W-2 state row / 1099-R / INT / DIV state boxes — the s106b
+widening), and this GA-resident decedent's INT/DIV rows carry NO state boxes
+(zero state withholding in the whole packet). No tagged doc → no GA return →
+every GA expectation reconciled against zeros. The QA Batch-001 retiree class
+ONE LAYER DEEPER: s106b widened W-2s→tagged documents; a resident with
+UNTAGGED documents still fell through.
+- **Fix: `_has_ga_home_address`** — a GA home address now attaches, both
+  lanes (commit runs the same auto-sync). ⚠ A SEPARATE predicate on purpose:
+  `_has_ga_source_document`'s "mirrors line-24 exactly" contract is
+  load-bearing — residency is an attach question, never a withholding
+  source. A test pins that separation.
+- **Acceptance ties the filed GA return line for line** (synthetic twin, real
+  dollars): GA 8 = 16,803 · RIE-TP-17 = 15,981 (= 17,696 int + 1,285 div −
+  3,000 cap loss — the s182 "Capital gains (LOSSES)" pull, sign preserved) ·
+  S1-8 = 836 · S1-13 = 16,817 · GA AGI = −14 · tax 0. Controls: a LIVING
+  twin is identical; NO-NOL twin identical; an SC address attaches nothing.
+- **⚠ THE ANSWER KEY MIS-KEYED ONE LINE AND THE ECHO INVITED IT** —
+  `expected.ga500["S1-7"]=16817` put the printed TOTAL subtractions on the
+  RIE-only line (correctly 15,981); the echo had no total-subtractions key,
+  so the total had nowhere else to go. **S1-13 joined `GA500_SUMMARY_LINES`**
+  (schema regenerated); the annex tells Codex how to re-key. Expect the S1-7
+  row to no-tie on an unchanged re-stage — every other GA line ties.
+- Regression: `server/tests/test_batch296_item36_s270.py` (9). Gates: 633
+  green incl. flow assertions, backentry commit, the GA-500 band, the s106
+  auto-attach suite (document trigger intact), GA RIE retirement suite.
+  Teeth proven by reverting the trigger (all four attach-dependent tests
+  fail = the repro). No migration.
+
 ### ✅ s270 — BATCH-296 #38: the source-controlled Schedule 2 line 14
 **⚠ VERIFY-FIRST CUT THE ITEM ROUGHLY IN HALF — TWO of the four acceptance
 criteria were ALREADY TRUE at HEAD.** `"14"` has always been in
@@ -210,12 +244,10 @@ was half-built already. The batch's size estimates run high.)*
   That is no longer true: the lane is open as of this session's second commit.
 
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 18
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 19
 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT, in order:** **#36** (a death date stops
-the LINKED GA return recomputing; ⚠ confirm whether the death date or the NOL
-attributes on the same payload actually cause it), **#39** (K-1
+**▶ NEXT, in order:** **#39** (K-1
 `collectibles_28` ignored by the Sch D Tax Worksheet, $45; ⚠ it is a SUBSET,
 not extra capital income), **#41** (SC additions/subtractions on the s262b
 state registry), the **297 addendum to #19** (⚠ re-verify first — #19 was
@@ -328,9 +360,10 @@ Triaged s268 (2026-08-17), nothing built. **Two findings gate the work:**
    §1250). 37 adds the Form 6251 framing + acceptance test; treat 37 as the
    live spec, don't work both.
 
-Classification of the rest: **#36** real bug, small-med (a death date stops
-the LINKED GA return recomputing — confirm whether the death date or the NOL
-attributes on the same payload actually cause it); ~~**#38**~~ ✅ **BUILT s270**
+Classification of the rest: ~~**#36**~~ ✅ **BUILT s270** (⚠ the death date AND the NOL attributes were
+both innocent — the GA-500 was never ATTACHED: no state-tagged document
+anywhere in a GA-resident retiree packet; fixed with the residency-by-address
+trigger); ~~**#38**~~ ✅ **BUILT s270**
 (source-controlled Sch 2 line 14 — ⚠ the "follows the 1040 line-38 pattern"
 framing was only half right: line 38 is engine-computed, line 14 is
 DIRECT-ENTRY, which made it a two-writer line and changed the design);
@@ -468,7 +501,14 @@ builder.
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
-- **✅ s270 MOVES NOTHING — the opposite of s269.** `sch2_l14_source_amount` is
+- **⚠⚠ s270 #36 MOVES A CLASS: every GA-home-address 1040 with no GA-tagged
+  document and no GA-500 gains an auto-attached Georgia return on its next
+  save or import.** For GA-resident retirees that is the missing state filing
+  the item reported — a correction, not a regression. Known caveat recorded
+  in code: a mailing address is not proof of residency (in-care-of, a
+  nonresident at a GA relative's address) — those rare shapes simply don't
+  use the attached GA-500.
+- **✅ s270 #38 MOVES NOTHING — the opposite of s269.** `sch2_l14_source_amount` is
   NULL on every existing row, so compute does not touch Schedule 2 line 14 on
   any return that exists today, and `D_6252_009/010` are both silent without a
   recorded source. A return only changes once a preparer or an import records
