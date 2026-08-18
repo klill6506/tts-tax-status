@@ -1,6 +1,22 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-18 session 270 — SC1040: THE CONTRACT OPENS, AND THE TAX TABLE
+> UNDER IT WAS WRONG ✅⚠ (BATCH-296 #41, no migration).** The SC
+> addition/subtraction components (`add-oth`, `ltcg`) were importable all
+> along — undiscoverable: the schema said key "the printed face lines"
+> (computed totals, silently recomputed from empty components), unknown keys
+> refused only at commit. Now: `state_registry.line_vocabulary()` from the
+> seeders' SECTIONS; staging refuses unknown state keys per key and warns on
+> keyed computed lines; the schema documents every SC/AL/NC line with its
+> computed flag and hard-validates keys. **⚠⚠ The acceptance then failed by
+> $1 and exposed a REAL defect: the published SC1040TT's rows are $100 wide
+> from $7,000 up — ours were $50 everywhere, so every SC return in [$7k,
+> $100k) taxed off the wrong row midpoint (±$3).** `_sc1040tt` corrected,
+> verified against all 1,070 published rows (dor.sc.gov PDF, zero
+> mismatches); three stale pins corrected (published 50k row = $2,361 — the
+> RS spec's 2,360 scenario is on the RS agenda). 9 tests; 634 green.
+>
 > **2026-08-18 session 270 — K-1 COLLECTIBLES REACH THE 28% RATE GROUP ✅
 > (BATCH-296 #39, no migration).** `schedule_k1s.collectibles_28` persisted
 > with NO consumer — `compute_28pct_worksheet`'s line-4 parameter is named
