@@ -1,6 +1,32 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-17 session 270 — SCHEDULE 2 LINE 14: A SOURCE-CONTROLLED
+> §453(l)(3) FIGURE BECOMES TRANSCRIBABLE ✅ (BATCH-296 #38, mig 0324).**
+> Line 14 carries interest on tax due on installment income from certain
+> residential lots and timeshares. A filed packet can print it with **no Form
+> 6252 and no separate computation behind it** — and the RS `SCH_2` spec types
+> the line `input` with no calculation, so the app computes no such figure and
+> this build adds none. The only faithful transcription is the source's own
+> number, which the lane had no way to carry. Now `Taxpayer
+> .sch2_l14_source_amount/_label/_note` (the Form 2210 documented-source
+> shape; NULLABLE, so blank stays distinct from a source asserting $0),
+> refused undocumented at BOTH the lane and the serializer.
+> ⚠⚠ **VERIFY-FIRST FOUND TWO OF THE FOUR ACCEPTANCE CRITERIA ALREADY TRUE**
+> — `"14"` was already in `SCH2_L21_ADDENDS` and already in the f1040s2 field
+> map, so **the render leg needed nothing**. Third consecutive item in this
+> batch whose triaged size ran high.
+> ⚠⚠ **THE DESIGN POINT: LINE 14 IS A TWO-WRITER LINE.** Unlike 1040 line 38
+> (engine-computed), line 14 is DIRECT-ENTRY — a preparer can key it today. So
+> the source write is scoped to *"only while a source is recorded"*, NOT the
+> Schedule 2 line-13 feeder shape, which writes unconditionally and here would
+> have silently zeroed a keyed figure on the next recompute. An override still
+> wins and files — reported, never silent, by the new **`D_6252_010`**;
+> **`D_6252_009`** is the source-verified advisory. Both WARNINGS, never
+> errors. ⚠ Both deliberately bypass `rules_6252._state()`, whose
+> `form_6252_engaged` gate would silence them on exactly the returns they
+> exist for. 21 tests; 1,046 green; moves nothing on existing returns.
+>
 > **2026-08-17 session 269 — FORM W-2G: THE IMPORT LEG CATCHES UP WITH THE
 > E-FILE LEG ✅ (BATCH-296 #34, `b04a73f`, no migration).** ⚠⚠ **A UNIT CAN
 > BE "COMPLETE" AND STILL HAVE AN UNREACHABLE LEG.** s80 (2026-07-14, above
