@@ -1,6 +1,35 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-19 session 272 — FORM 2441: THE PART III LINE-16 FACT, AND LINE 3
+> STOPS DOUBLE-REDUCING ✅⚠⚠ (BATCH-296 #46, migration 0326).** The item asked
+> for one missing source fact; the 2025 face had **three** defects, and the
+> item's own acceptance was unreachable without the second. (1)
+> `f2441_dcb_qualified_expenses` — **NULLABLE**, so NULL keeps the derive from
+> the dependent rows while an asserted **0** stays a real assertion (nothing
+> incurred → every benefit dollar taxable, the s243b Tucker shape); wired into
+> `_gather_2441_inputs`, the one chokepoint both consumers read. (2) **⚠⚠ LINE
+> 3 DOUBLE-REDUCED.** It computed `max(0, min(col_d, cap) − excluded)`, but
+> column (d) is **already net** — both the line-2(d) and line-30 instructions
+> say *"don't include in column (d) any benefits shown on line 28."* The face's
+> chain is `27 → 28 = 24+25 → 29 = 27−28 → 30 = col-(d) sum → 31 = min(29,30)
+> → line 3`; the fixture computed line 3 = 0 and lost the **entire** credit.
+> (3) **Logical "31" held the excluded-benefit amount and PRINTED it** — the
+> pre-2025 face's numbering from the RS spec's stale `line_map`. Widget
+> geometry proves `f2_20` **is** paper line 31 (f2_4..f2_20 = paper 15..31 in
+> order), so the face showed $5,000 where the filed face shows $1,000; lines
+> 28/29/30 and the s243b Part III detail (15-25, computed and persisted since
+> s243b but **never printed**) now render. **⚠ The RS spec is NOT contradicted
+> — scenario 2441-T4 still passes**, because every spec test puts the GROSS
+> figure in column (d), where the two formulas agree; `R-2441-EXPENSE-CAP`'s
+> shorthand is simply not general (RS agenda, with the pre-2025 `line_map` and
+> a re-export of `FA-1040-2441-05`). **MOVEMENT: only returns WITH dependent
+> care benefits whose column-(d) sum is below the cap — and they can only GAIN
+> credit** (`new = min(cap−excl, col_d) >= old` always); a return with no
+> benefits does not move at all. 19 tests; 526 FA + 975 + 496 + typecheck +
+> 1715 vitest green; teeth proven by injecting both defects (5 pins fell, then
+> 2); four stale line-31 pins corrected in the same pass.
+>
 > **2026-08-19 session 271 — SCHEDULE D: THE BOX-2B DIVIDEND AGGREGATE, AND
 > IT FLIPS THE TAX ROUTE ✅⚠ (BATCH-296 #47, migration 0325).** A packet may
 > print payer rows of ordinary dividends and only a RETURN-LEVEL unrecaptured

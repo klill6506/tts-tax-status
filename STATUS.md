@@ -1,16 +1,15 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-19 (s271). **▶ 1040 BATCH-296 IS OPEN — 49 items, 23
-closed.** s271 shipped **#49** (Form 4797 line 8 into the import lane) and
-**#47** (the box-2b dividend aggregate, mig 0325), and TRIAGED the other five
-newly-posted items (43-46, 48). ⛔ **#11 and #44 are the two things waiting on
-Ken** — see KEN DECISIONS. ⛔ **#48 is blocked: Form 4136 has no Rule Studio
-spec** (404 live, none cached).*
+*Last updated: 2026-08-19 (s272). **▶ 1040 BATCH-296 IS OPEN — the batch grew
+to items 50-53; 24 closed.** s272 shipped **#46** (Form 2441 Part III line 16
++ the line-3 double-reduction, mig 0326, `aec81be` **LIVE 17:53 UTC —
+verified**) and TRIAGED all five newly-posted items. ⛔ **#11, #44 and now
+#50 are the three things waiting on Ken** — see KEN DECISIONS. ⛔ **#48 and
+#52 are blocked: no Rule Studio spec** (Form 4136; Alabama Form 40NR).*
 
-*⚠ **Both s271 deploys were VERIFIED, not assumed**: `36f9c70` (#49) went
-LIVE 2026-08-19 07:43 UTC; `c889431` (#47, carrying migration 0325) was
-deploying at session close — **confirm it reached `live` before trusting
-#47 in production.***
+*⚠ **Numbering collision in the batch file: TWO different items are numbered
+51** (jury-duty pay, and the GA Schedule 1 line-5 additions). Both triaged;
+Codex has been asked to renumber one.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -18,7 +17,7 @@ deploying at session close — **confirm it reached `live` before trusting
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names, no packet codenames, no SSNs/EFINs.
-- *s271 moved the s269 + s270 per-leg blocks into `STATUS_ARCHIVE.md` (275 lines, purely
+- *s272 moved the s271 per-leg blocks into `STATUS_ARCHIVE.md` (46 lines, purely
   additive — verified by `git diff --stat`), continuing what s268 started.*
 
 ---
@@ -40,77 +39,84 @@ find defects. State the finding and move on.
 
 ## ▶ RESUME HERE
 
-### ✅ s271 — BATCH-296 #49: Form 4797 line 8 (`36f9c70`, LIVE)
-**One allowlist entry.** `Taxpayer.f4797_nonrecaptured_1231_losses` has
-existed since migration 0123 — compute (`recaptured = min(l7,l8)` → line 12
-ordinary → Sch 1 line 4; `l9 = max(0, l7−l8)` → the Sch D long-term netting),
-serializer, the `P4797_8` render map and `D_4797_001` were all already there.
-Only `backentry.TAXPAYER_FIELDS` omitted it, so a filed line 8 could not be
-transcribed and the lane overstated LTCG / understated ordinary income.
-- **Staging refuses a NEGATIVE** (`_validate_f4797_lookback`) — not cosmetic:
-  a negative would make `min(l7, −x)` a negative ordinary "gain" on line 12
-  and ADD to the Sch D LTCG. Zero and absence both stage.
-- Acceptance: l7 32,062 / l8 5,544 / l9 26,518 → Sch 1 L4 5,544; with ST/LT
-  carryovers 32,755 / 33,735 the Sch D face nets (32,755) / (7,217) /
-  (39,972) / (3,000) and carries ST 29,755 / LT 7,217. Driven stage → commit
-  → reopen.
-- Regression: `server/tests/test_batch296_item49_s271.py` (10). Gates: 614 +
-  507 (every backentry suite). Teeth proven by injecting both defects.
-  **No migration.**
-
-### ✅ s271 — BATCH-296 #47: the box-2b dividend aggregate (`c889431`, mig 0325)
-`div_unrecap_1250_agg` — the third member of the `div_qualified_agg` /
-`div_capgain_dist_agg` family, same valve (used ONLY when no payer row carries
-box 2b, so per-row always wins and it can never feed twice).
-- **⚠⚠ THE AMOUNT CHANGES THE ROUTE, NOT JUST A LINE.** Line 19 = 0 → the
-  QDCGT worksheet; nonzero → the Schedule D Tax Worksheet
-  (`schedule_d_route`). The omission computed all of line 16 by a *different
-  worksheet* — which is why the reported gap was a clean $82.
-- **⚠ THE RATE IS NOT 25%.** Unrecaptured §1250 gain is taxed at the ORDINARY
-  rate, CAPPED at 25% (§1(h)(1)(D)). The fixture is at 24%, so the $905 the
-  worksheet can reach leaves the 15% group and is taxed at 24%: +217 ordinary
-  − 136 fifteen-percent = **$81**. My first pin assumed a flat 25% and was
-  WRONG; the suite now asserts the mechanism step by step.
-- **⚠ THE SINGLE SOURCE IS THE POINT.** Box 2b has three consumers that must
-  agree — Sch D ENGAGEMENT, the §1250 worksheet line 11 → Sch D line 19, and
-  the Exception-1 block test. An aggregate wired only into the worksheet would
-  compute a line 19 on a return Schedule D never engaged for. A test pins that
-  the aggregate ALONE engages Schedule D.
-- The item's "reject or diagnose a conflicting aggregate plus payer total" is
-  a staging **warning**: the double count is structurally impossible, so the
-  only question is which figure was mistranscribed (the #38 precedent —
-  pin an impossible risk rather than guard against it).
-- Regression: `server/tests/test_batch296_item47_s271.py` (10). Gates: 536 +
-  267 (Sch D / int-div / SDTW / 8814 / 4952) + 68. Teeth proven by reverting
-  the 2b wiring to the bare row sum (3 pins fell, engagement among them).
+### ✅ s272 — BATCH-296 #46: Form 2441 line 16, and line 3 stops double-reducing (`aec81be`, mig 0326, **LIVE 17:53 UTC — verified**)
+The item asked for ONE fact. The 2025 face had **three** defects, and the
+item's own acceptance was unreachable without the second.
+- **① The line-16 source fact.** `Taxpayer.f2441_dcb_qualified_expenses`,
+  **NULLABLE** — NULL keeps the derive, a value (**0 included**) is the
+  assertion. 0 had to stay distinct from blank: an asserted zero says no
+  qualified expenses were incurred, which correctly makes every benefit
+  dollar taxable (the s243b Tucker shape). Wired into `_gather_2441_inputs`,
+  the ONE chokepoint both consumers read — not into either consumer.
+- **⚠⚠ ② LINE 3 DOUBLE-REDUCED.** It computed
+  `max(0, min(col_d_sum, cap) − excluded)`, but column (d) is **already net**:
+  both the line-2(d) and line-30 instructions say *"don't include in column
+  (d) any benefits shown on line 28."* The face's chain is
+  `27 → 28 = 24+25 → 29 = 27−28 → 30 = the col-(d) sum → 31 = min(29,30) →
+  line 3`. The fixture computed line 3 = **0** and lost the **whole** credit.
+  **Adding the line-16 fact alone would NOT have fixed it** — the two defects
+  had to be separated, and a test pins each half independently.
+- **⚠ ③ Logical "31" held the WRONG figure AND PRINTED IT.** It carried the
+  excluded-benefit amount — the pre-2025 face's numbering, inherited from the
+  RS spec's stale `line_map`. Widget geometry against the IRS template proves
+  `f2_20` **is** paper line 31 (f2_4..f2_20 = paper 15..31 in order), so the
+  face printed $5,000 where the filed face prints $1,000. Paper lines 28/29/30
+  are now seeded + rendered, along with the s243b Part III detail (15-25),
+  which had been computed and persisted since s243b but **never printed**.
+- **AUTHORITY: the 2025 face + instructions, not the spec.** ⚠ But the RS
+  spec is **not contradicted** — scenario **2441-T4 still passes unchanged**,
+  because every spec test puts the GROSS figure in column (d), where the two
+  formulas agree. `R-2441-EXPENSE-CAP`'s shorthand was never wrong in any
+  scenario the spec exercises; it is simply not general. Both it and the
+  pre-2025 `line_map` go on the RS agenda.
+- **Reachability**: on BOTH screens (Slate + FormEditor) via
+  `useTaxpayerFacts`' `nullableKeys`, so a cleared box sends `null`, never
+  `"0"` (the 2210-override precedent). Staging refuses a negative and warns
+  twice. Regression: `server/tests/test_batch296_item46_s272.py` (19).
+  Gates: 526 flow assertions + 975 (2441 blast radius) + 496 backentry +
+  typecheck + 1715 vitest. Teeth proven by injecting BOTH defects (5 pins
+  fell, then 2). **Four stale line-31 pins corrected in the same pass — one
+  of them the flow assertion `FA-1040-2441-05` (RS agenda: re-export).**
 
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
-`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **49 items, OPEN, 23
-closed.** The running annex in the file is the record; read it first.
+`1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **items now run to 53,
+OPEN, 24 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT:** **#46** (the smallest of the new ones — see the triage below),
-then the mid-size 1040 units **#12, #13, #15, #16, #17, #18, #20, #21, #22,
-#25, #28, #30**, then Ken's ruled next big unit **#23/#24** (the depreciation
-asset ledgers).
+**▶ NEXT:** the mid-size 1040 units **#12, #13, #15, #16, #17, #18, #20,
+#21, #22, #25, #28, #30**, then the big unit **#23/#24/#53** (see below —
+they are ONE build, not three).
 
 ⚠ **#37 duplicates #2** — treat 37 as the live spec; do not work both.
 ⛔ **#40 is a LARGE multi-session build** (AMT passive losses = an AMT shadow
 of Form 8582) and belongs after the big units.
 
-### ⚠ s271 TRIAGE of the seven new items (43-49) — full evidence in the batch annex
+### ⚠ s272 TRIAGE of the five new items (50-53) — full evidence in the batch annex
+⚠ **The batch file numbers TWO different items 51.** Codex asked to renumber.
+
 | Item | Verdict |
 |---|---|
-| 43 | **Confirmed at HEAD, both halves** (`schedule_e_p2_totals_from_rows` consumes `passive_8582_allowed` only in the `net<0` branch; the gather `continue`s past every material-participation K-1). Medium-LARGE — half of it is a **new former-passive §469(f) regime**. Sequence with the big units. |
-| 44 | ⛔ **KEN — do not build yet.** Ken's 2026-08-16 **≤$1 source-defect rule** likely already answers it (the source's own columns cannot reproduce its own printed (h) after cents were rounded away). Building the override would add an input whose only job is to reproduce arithmetic the source cannot show. |
-| 45 | **Confirmed, but two different kinds of work.** The **Form 8960 half is a plain defect** (`schedule_e_non_1411_income` keys on the single `material_participation` boolean, which cannot represent a mixed row — the **s267 class**). The **8582 half is a documented v1 DEFERRAL** (s242t) that `D_K1_SPLIT_8582` already warns about; lifting it is a design change and must retire/narrow that rule in the same pass (s225). |
-| 46 | **HALF ALREADY BUILT — the #39 pattern.** `compute_2441_lines` already takes a separate `dcb_expenses`, the caller already passes it, and `_gather_2441_inputs` already computes it over a **different claim-blind population**. Missing: only the **Part III line-16 SOURCE fact**. Small. |
-| 47 | ✅ **BUILT s271.** |
-| 48 | ⛔ **BLOCKED — Form 4136 has NO Rule Studio spec** (`/api/forms/lookup/4136/export/` → 404 live 2026-08-19; nothing cached in `server/specs/`). Per the mandatory RS rule we do not improvise a form. **RS agenda.** |
-| 49 | ✅ **BUILT s271.** |
+| 50 (AL Form 40 line-12 PYR override) | ⛔ **KEN — the engine is RIGHT, the filed return is wrong.** Confirmed at HEAD ($527 computed vs $568 filed), but the **2025 Alabama Form 40 Booklet p.5** makes the proration MANDATORY and the engine's ratio matches it verbatim. Building the override would encode an Alabama error — the **#11 pattern**. Recommend: record the $41 as a source defect. |
+| 51 (jury duty → Sch 1 line 8h) | ✅ **REFUTED — fully built since s241z.** `other_income_items.route` is a CLOSED enum containing `"8h"`, labelled "jury duty pay" in the code. The existing suite already pins the item's exact fixture: a **$25 "County jury duty"** row → line 8h → line 9 → line 10 (25 tests green at HEAD). **No code needed.** |
+| 51 (GA Sch 1 line 5 other additions) | ⚠ **PREMISE REFUTED — keyable today.** `ga500_fields` has **no allowlist** (unlike `sch1_fields`), and `S1-5` "Add: other additions" is a seeded **non-computed** line with `S1-6` summing above it. Still open + smaller than stated: the *description* half, and an end-to-end fixture run. Re-scope. |
+| 52 (Alabama Form 40NR) | ⛔ **BLOCKED — no RS spec.** `AL_FORM_40NR` → 404; `AL_FORM_40` → **200** proves the convention. Code half confirmed (`compute_al40`: *"True nonresidents file Form 40NR (not computed)"*). Whole new form. **RS agenda.** |
+| 53 (Schedule F depreciation assets) | ⚠ **NOT a third item — #23/#24/#53 are ONE build.** `DepreciableAsset` **already** has FKs to `schedule_c`, `rental_property` AND `schedule_f`. What is missing is the import surface itself: **`backentry.py` has ZERO references to it**, so no asset ledger is importable for *any* parent. Costing these as three builds triple-counts the shared surface. |
+
+⚠ **The verify-first streak is unbroken:** of five new items, ZERO were
+buildable as written (one refuted, one premise refuted, one contradicted by
+its own state's instructions, one spec-blocked, one collapsing into #23/#24).
 
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **⚠⚠ s272 #46 MOVES A CLASS — every 2441 return WITH dependent care
+  benefits whose column-(d) sum is below the $3,000/$6,000 cap gains
+  credit** on next recompute. `new = min(cap − excl, col_d) >= old =
+  min(col_d, cap) − excl` **always**, so it can only rise — a correction
+  toward the printed face, pinned by a test over a grid of inputs. **A return
+  with NO dependent care benefits does not move at all** (line 28 = 0 makes
+  the two formulas bit-identical). Separately, every 2441 return with benefits
+  **gains printed values** on paper lines 15-17/20/21/23/25/28/29/30 and a
+  **corrected** line 31 (it was printing the excluded-benefit amount).
 - **✅ s271 #49 and #47 MOVE NOTHING that exists today.** Both new facts are
   absent/NULL on every existing row, and no compute path changed for a return
   that does not carry them. ⚠ But when a payload DOES carry
@@ -166,10 +172,10 @@ of Form 8582) and belongs after the big units.
 - **`--reuse-db` cross-module contamination**: `test_backentry_cleanup.py`
   (3, s225) and `test_mappings.py::TestApplyMappingAmbiguousFederalReturn`
   (3, s239).
-- ⚠ **NEW (s271): `test_backentry_oos_states_s258.py::TestCleanupDisposition`
-  (2) fails in a `-k backentry` sweep and PASSES alone** — the same
-  cross-module isolation class. Not caused by s271 (both cleared in isolation
-  and the suite is untouched by this session's changes).
+- ⚠ **`test_backentry_oos_states_s258.py::TestCleanupDisposition` (2) fails
+  in a backentry sweep and PASSES alone** — the same cross-module isolation
+  class. Reconfirmed in s272 (both cleared in isolation; neither s271 nor
+  s272 touches OOS states or cleanup).
 - **`test_1040.py` — 6 pipeline tests**, unscoped `_fv` `.get()` (s234).
 - `test_apr01_fixes.py` (8) + `test_mar30_session4.py` (1) — MagicMock UUID
   (s219). `test_4868.py` (4) — ⛔ KEN (s217).
@@ -252,6 +258,18 @@ record it and close.** Codex asks instead for a new preparer-assertable
 override. **Recommendation: apply the ≤$1 rule; do not build the override.**
 One question: which?
 
+### BATCH-296 #50 — the ENGINE is right and the FILED return is wrong (s272, not built)
+An Alabama part-year Form 40 whose filed line-12 federal-tax deduction was
+**not apportioned** ($568). The engine apportions to **$527**. The **2025
+Alabama Form 40 Booklet, page 5** settles it: *"Federal Tax Liability must be
+prorated by applying a percentage of Alabama adjusted gross income to Federal
+adjusted gross income in order to calculate the amount deductible on line 12
+of Form 40."* The engine's ratio matches that sentence verbatim. Codex asks
+for a source-visible override to preserve the filed figure. **Recommendation:
+do NOT build — record the $41 as a source-side defect.** Building it would let
+a packet assert a number Alabama forbids (the #11 pattern). One question:
+override, or source defect?
+
 ### Carried
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
   before a TY2026 season.
@@ -267,6 +285,16 @@ One question: which?
   ⛔ 17a (TaxWise report) · ⛔ 17d (WO-33) unchanged.
 
 ### RS AGENDA
+- ⚠ **NEW (s272): Alabama Form 40NR has NO SPEC** (`AL_FORM_40NR` 404;
+  `AL_FORM_40` 200 proves the convention) — blocks BATCH-296 #52 entirely.
+- ⚠ **NEW (s272): the `FORM_2441` spec needs three amendments** — (a) its
+  `line_map` is on the PRE-2025 face (no 16/17/26/28/29/30; "31" described as
+  "excludable/deductible benefits", which on the 2025 face is line 28);
+  (b) `R-2441-EXPENSE-CAP`'s formula is a shorthand valid only when column (d)
+  carries the GROSS figure — the face's rule is `line 3 = line 31 =
+  min(29, 30)`; (c) flow assertion **FA-1040-2441-05** was corrected in-app
+  and needs re-export. ⚠ Its scenario **2441-T4 still passes** — the spec's
+  tests never exercised the case that was wrong.
 - ⚠ **NEW (s271): Form 4136 has NO SPEC** — blocks BATCH-296 #48 entirely.
 - (s270) `w28_4`'s line-map note, `R-K1-RED-DEFER`, and `FA-1040-K1-07`'s
   `blockers` all still name `collectibles_28` as deferred; the FA gate carries
