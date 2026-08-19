@@ -1,6 +1,17 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-18 session 270 — NC D-400: THE THREE RETESTS WERE KEYED
+> COMPUTED LINES; ZERO CODE ✅ (the 297 addendum to #19).** The engine had
+> the component inputs all along: `pn-a`/`pn-b` → the Schedule PN ratio →
+> L14; `ded-other`/`sa-*`/`DED-ELECT` → L9/L11; `20` = withholding (the
+> "dropped" $429 was simply never keyed). All three filed fact patterns tie
+> through the component keys — pinned by 8 acceptance tests incl.
+> commit+reopen persistence and a full-year control. The #41 staging
+> warnings name these exact mistakes. ⚠ DEFERRED: part-year residency
+> DATES — the RS `NC_D400` spec defines none (21 lines); unspecced face
+> lines are the improvise path we refuse. RS agenda.
+>
 > **2026-08-18 session 270 — SC1040: THE CONTRACT OPENS, AND THE TAX TABLE
 > UNDER IT WAS WRONG ✅⚠ (BATCH-296 #41, no migration).** The SC
 > addition/subtraction components (`add-oth`, `ltcg`) were importable all

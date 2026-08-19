@@ -1,11 +1,14 @@
 # TTS Tax App — STATUS (current state only)
 
 *Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 21
-closed, cluster 4 in progress.** s270 shipped **#38** (Sch 2 line 14 source
-lane), **#36** (GA residency attach), **#39** (K-1 collectibles → the 28%
-rate group) and **#41** (the SC contract — whose acceptance FLUSHED OUT A
-REAL SC TAX-TABLE DEFECT: the published rows are $100 wide from $7,000 up;
-ours were $50 everywhere. Every SC return in [$7k, $100k) moves ±$3).*
+closed + the 297 addendum ANSWERED, cluster 4's small/mid defect list is
+DONE.** s270 shipped **#38** (Sch 2 line 14 source lane), **#36** (GA
+residency attach), **#39** (K-1 collectibles → the 28% rate group), **#41**
+(the SC contract — whose acceptance FLUSHED OUT A REAL SC TAX-TABLE DEFECT:
+the published rows are $100 wide from $7,000 up; every SC return in [$7k,
+$100k) moves ±$3), and **closed the 297 addendum to #19** (all three NC
+retests were keyed COMPUTED lines — zero code, 8 acceptance tests, one RS
+agenda item for the residency-date metadata).*
 
 *s269 shipped **#34** (the W-2G payer identity, `b04a73f`) and appended the
 **#35 annex s268 never wrote** (the build landed 4 minutes after the file's
@@ -156,6 +159,23 @@ to ask three questions of one answer.
   chip. **The cleanup suite's docstring still claims "the test DB starts
   empty" — untrue in a sweep.**
 - Regression home: `server/tests/test_batch296_s268.py` (13).
+
+### ✅ s270 — the 297 addendum to #19: three NC retests, ZERO code
+**All three were the #41 class — keyed COMPUTED lines — and the engine was
+already right.** The nonresident retest keyed `fields["13"]` (computed from
+`pn-a`/`pn-b` — the $476); the resident retest keyed lines 9/11 as totals
+(computed from `ded-other`/`sa-*`/`DED-ELECT` — the $2,676); the part-year
+fixture keyed seven computed lines and NEVER keyed line 20 (the whole of the
+"dropped" $429 withholding). All three filed fact patterns tie through the
+component keys, pinned: NR 0.7774 → tax 1,662/due 16; resident itemized →
+4,478/refund 4,747; part-year 0.5000 → 1,270/due 841 (+ commit/reopen
+persistence). The #41 staging warnings already name their exact mistakes.
+⚠ The full-year control doubles as the honest note: the "wrong" unallocated
+figures ARE correct for a full-year resident. ⚠ DEFERRED with reason:
+part-year residency DATES — the RS `NC_D400` spec (21 lines) defines none,
+and unspecced face lines are the improvise path we refuse. **RS agenda.**
+Tests: `test_batch296_item19_addendum_s270.py` (8); teeth by injecting the
+reported symptom (ratio ignored → three pins fail).
 
 ### ✅ s270 — BATCH-296 #41: the SC contract + THE TABLE DEFECT UNDER IT
 **Part 1 — verify-first: the components were importable ALL ALONG.** The SC
@@ -319,9 +339,9 @@ was half-built already. The batch's size estimates run high.)*
 `1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 21
 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT, in order:** the **297 addendum to #19** (⚠ re-verify first — #19 was
-gathered inside the deploy void). Then the mid-size 1040 units #11, #12, #13,
-#16, #18, #20, #21, #22, #25, #28, #30.
+**▶ NEXT:** the mid-size 1040 units **#11, #12, #13,
+#16, #18, #20, #21, #22, #25, #28, #30** — then Ken's ruled next big unit
+**#23/#24** (the depreciation asset ledgers).
 
 ⚠ **#37 duplicates #2** — treat 37 as the live spec; do not work both.
 ⛔ **#40 is a LARGE multi-session build** (AMT passive losses = an AMT shadow
