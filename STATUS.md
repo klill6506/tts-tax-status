@@ -2,7 +2,8 @@
 
 *Last updated: 2026-08-18 (s270). **▶ 1040 BATCH-296 IS OPEN — 42 items, 21
 closed + the 297 addendum ANSWERED, cluster 4's small/mid defect list is
-DONE.** s270 shipped **#38** (Sch 2 line 14 source lane), **#36** (GA
+DONE, and ⛔ #11 IS FLAGGED FOR KEN (both halves conflict with authority —
+Pub 560 and the GA reg; see KEN DECISIONS).** s270 shipped **#38** (Sch 2 line 14 source lane), **#36** (GA
 residency attach), **#39** (K-1 collectibles → the 28% rate group), **#41**
 (the SC contract — whose acceptance FLUSHED OUT A REAL SC TAX-TABLE DEFECT:
 the published rows are $100 wide from $7,000 up; every SC return in [$7k,
@@ -339,8 +340,8 @@ was half-built already. The batch's size estimates run high.)*
 `1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **42 items, OPEN, 21
 closed.** The running annex in the file is the record; read it first.
 
-**▶ NEXT:** the mid-size 1040 units **#11, #12, #13,
-#16, #18, #20, #21, #22, #25, #28, #30** — then Ken's ruled next big unit
+**▶ NEXT:** the mid-size 1040 units **#12, #13,
+#16, #18, #20, #21, #22, #25, #28, #30** (⛔ #11 flagged for Ken — see KEN DECISIONS) — then Ken's ruled next big unit
 **#23/#24** (the depreciation asset ledgers).
 
 ⚠ **#37 duplicates #2** — treat 37 as the live spec; do not work both.
@@ -751,7 +752,26 @@ builder.
 - Carried (s229): exact-tie 1040 shows `1040_SCHD_WS` clc_1/clc_3 drift on a
   bare recompute (−5,491 each), face still a tie.
 
-### ✅ KEN DECISIONS OUTSTANDING
+### ⛔ KEN — BATCH-296 #11: BOTH HALVES CONFLICT WITH AUTHORITY (s270, not built)
+Two decisions, one item. The fixture batch stays uncommitted; full evidence
+in the batch annex. **One decision each:**
+1. **Should an 1120-S K-1 `se_retirement_amount` flow to Schedule 1 line 16?**
+   The filed return took $5,031 there. **Pub 560: a shareholder-employee is
+   NOT self-employed — the CORPORATION deducts the contribution on the
+   1120-S** (the 1120-S K-1 has no box for it; the 1065's box 13 R is the
+   partner path, already built). **Recommendation: NO feed; add a diagnostic**
+   ("this amount deducts on the 1120-S, not here — confirm the filed line 16
+   against the source"). Cost if built as asked: encoding a Pub 560 error on
+   every S-corp owner packet.
+2. **GA RIE: does materially-participating S-corp income stay EARNED
+   (capped $5,000)?** The filed $35,000 exclusion is only reachable with it
+   UNEARNED (5,000 + 30,050 → capped 35,000) — contrary to Ga. Comp. R.
+   560-7-4-.02(4)(b)1's verbatim text, which s239 litigated and you ratified.
+   Our engine gives $5,000 — the reg's answer. **Recommendation: keep the reg
+   routing; treat the filed figure as source-side error.** If overruled, the
+   change is one branch of `k1_ordinary_is_earned` + the s239 tests.
+
+### ✅ KEN DECISIONS OUTSTANDING### ✅ KEN DECISIONS OUTSTANDING
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
   before a TY2026 season.
 - **1040 v5.4 business rules still not in hand** (v5.4 schemas ARE on disk).
