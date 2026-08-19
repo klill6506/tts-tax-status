@@ -1,6 +1,38 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-19 session 271 — SCHEDULE D: THE BOX-2B DIVIDEND AGGREGATE, AND
+> IT FLIPS THE TAX ROUTE ✅⚠ (BATCH-296 #47, migration 0325).** A packet may
+> print payer rows of ordinary dividends and only a RETURN-LEVEL unrecaptured
+> §1250 total; assigning it to a payer would invent source detail, so it was
+> dropped and Schedule D line 19 went to zero. `div_unrecap_1250_agg` is the
+> third member of the `div_qualified_agg`/`div_capgain_dist_agg` family, same
+> valve (used only when no row carries box 2b — per-row always wins, so it
+> can never feed twice). **⚠⚠ Line 19 selects the WORKSHEET: zero → QDCGT,
+> nonzero → the Schedule D Tax Worksheet**, so the omission computed all of
+> 1040 line 16 by a different worksheet. **⚠ The §1250 rate is the ORDINARY
+> rate CAPPED at 25% (§1(h)(1)(D))**, not a flat 25% — at a 24% bracket the
+> reachable gain is taxed at 24% (+217 ordinary − 136 fifteen-percent = $81).
+> ⚠ Box 2b's THREE consumers (engagement, the §1250 worksheet → line 19, the
+> Exception-1 block test) all read one shared source; an aggregate wired only
+> into the worksheet would compute a line 19 on a disengaged return (pinned).
+> 10 tests; 536 + 267 + 68 green; teeth proven by reverting the wiring.
+> *(Supersedes the 2026-08-?? note at line ~355 that boxes 2b/2c/2d remain
+> per-row only — 2b now has an aggregate; 2c/2d still do not.)*
+>
+> **2026-08-19 session 271 — FORM 4797 LINE 8 JOINS THE IMPORT LANE ✅
+> (BATCH-296 #49, no migration).** The §1231(c) 5-year lookback fact has
+> existed on the model since migration 0123 with compute, serializer,
+> `P4797_8` render and `D_4797_001` all reading it — **only the back-entry
+> allowlist omitted it**, so a filed line 8 could not be transcribed and the
+> lane overstated long-term capital gain while understating ordinary income.
+> Acceptance: l7 32,062 / l8 5,544 / l9 26,518 → Schedule 1 line 4 5,544, and
+> with ST/LT carryovers 32,755/33,735 the Schedule D face nets
+> (32,755)/(7,217)/(39,972)/(3,000). **⚠ Staging refuses a NEGATIVE** — it
+> would make `min(l7,−x)` a negative ordinary gain on line 12 AND add to the
+> Schedule D LTCG, a silently wrong face rather than a mis-print. 10 tests;
+> 614 + 507 green; teeth proven by injecting both defects.
+>
 > **2026-08-18 session 270 — NC D-400: THE THREE RETESTS WERE KEYED
 > COMPUTED LINES; ZERO CODE ✅ (the 297 addendum to #19).** The engine had
 > the component inputs all along: `pn-a`/`pn-b` → the Schedule PN ratio →
@@ -355,6 +387,9 @@
 > Schedule D 13 / engagement / SDTW. ⚠ Boxes 2b/2c/2d remain
 > per-payer-only (named residual). The FA-1040-INTDIV-03 sniff pins the
 > new call site + helper body.
+> *(⚠ SUPERSEDED IN PART, s271/BATCH-296 #47: box 2b now HAS an aggregate
+> — `div_unrecap_1250_agg`, mig 0325, with `unrecap_1250_dividends_total`
+> as its one source. 2c/2d remain per-payer-only.)*
 
 > **2026-08-11 session 242n — FORM 7203: the generic current-year
 > charitable deduction (BATCH-003 #9; `57c1886`; mig 0301).** A
