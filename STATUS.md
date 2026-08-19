@@ -78,6 +78,35 @@ item's own acceptance was unreachable without the second.
   fell, then 2). **Four stale line-31 pins corrected in the same pass — one
   of them the flow assertion `FA-1040-2441-05` (RS agenda: re-export).**
 
+### ▶ IN FLIGHT — a SECOND CC session is entering returns (opened 2026-08-19)
+Ken is running a parallel session, **"2025 Form 1040 returns processing"**
+(`local_48d66d7c-e56b-4b93-a93a-eef3331c2d52`, cwd `D:	ax-test-data`), in the
+Codex role: it enters returns and posts blockers; **this** session verifies,
+builds, deploys and annexes. **Work paused 2026-08-19 evening at Ken's
+direction (travelling) — resume tomorrow.**
+
+- **Split**: they own the HOLD/READY/QA notes and posting items; **we own
+  `STATUS.md`, `form_coverage_tracker.md`, `BUILD_ORDER.md` and the batch
+  file's ANNEX sections.** Neither edits the other's files (shared git repo).
+- **⚠⚠ NEVER RUN PYTEST WHILE THE OTHER SESSION IS RUNNING IT** — one shared
+  `test_postgres` across repos; concurrent runs corrupt each other. Coordinate
+  before any sweep (the backentry sweep is ~6.5 min, the 2441 radius ~5.5).
+- **Backlog measured 2026-08-19**: 966 packet dirs under `1040	mp`, **553 on
+  HOLD**, 112 closed, 30 completed, 30 ready.
+- **⚠ 47 of the 553 holds cite a blocker that is ALREADY BUILT and live** —
+  20 the dividend aggregates (`div_qualified_agg` / `div_capgain_dist_agg` /
+  `div_unrecap_1250_agg`, all in `TAXPAYER_FIELDS`), 11 Form 2441 (#46), 5
+  W-2G identity (#34), 5 box-2b (#47), 4 deceased-GA (#36), 3 collectibles
+  (#39), 1 each #35/#42 and #49. The packet list was sent to the other
+  session and saved (client names — NOT in this file, NOT in the mirror) at
+  `D:	ax-test-dataD0	mp\RERUN-CANDIDATES-2026-08-19-from-build-session.md`.
+  ⚠ Keyword-matched — a re-run CANDIDATE list, not a proven one.
+- **⚠ Only 36 of 553 holds name a CC item number**; the rest describe blockers
+  in prose with no dominant cluster. **We have ASKED the other session to rank
+  what is actually costing it the most returns** — that ranking should drive
+  the next build order. Until it arrives, the ranking is unknown, not empty.
+- **⛔ Do not re-report to them**: #11/#44/#50 are Ken's; #48/#52 have no RS spec.
+
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
 `1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **items now run to 53,
 OPEN, 24 closed.** The running annex in the file is the record; read it first.
