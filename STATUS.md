@@ -107,14 +107,52 @@ direction (travelling) — resume tomorrow.**
   the next build order. Until it arrives, the ranking is unknown, not empty.
 - **⛔ Do not re-report to them**: #11/#44/#50 are Ken's; #48/#52 have no RS spec.
 
+### ✅ s272 — #23/#24/#53 LEG 1: the filed depreciation total wins (`66bb3e6`, mig 0327)
+**The guard had to exist BEFORE the import lane, not after.**
+`aggregate_depreciation` opens `if not assets.exists(): return` — until now
+THAT early return was the only thing protecting an imported flat filed total
+(`backentry.py` says the Sch C L13 / Sch F L14 totals are importable
+*precisely because* "an import-built return has no asset register"). The
+moment leg 2 can create asset rows, the engine would overwrite the filed face
+that every acceptance criterion in the three items demands survive.
+- `depreciation_filed` on `ScheduleC` / `RentalProperty` / `ScheduleF`,
+  **NULLABLE** — NULL = engine behaves exactly as before; a value (**0
+  included**) is the source assertion and wins. The three blind `.update()`
+  calls route through one `_write_parent_depreciation` helper. **Per parent**,
+  not per return. The register still computes and still persists every
+  per-asset result — it is never inert.
+- **⚠ THE DIAGNOSTIC ALREADY EXISTED** — `D_4562_RECON` is the permanent
+  silent-routing-gap guard and IS the reconciliation Ken asked for, so it was
+  TAUGHT the assertion rather than duplicated. Disagreement → **warning**
+  naming both figures; a genuine routing gap with no assertion still raises
+  the original blocking **error**. It reads the engine's own saved
+  `current_depreciation` and never re-derives depreciation (s142).
+- Regression: `test_batch296_asset_register_filed_wins_s272.py` (10). Gates:
+  526 FA + 348 (depreciation radius, 16 files) + 136 diagnostics. Teeth proven
+  by injecting both defects (5 pins fell, then 2). **Movement: NONE** —
+  `depreciation_filed` is NULL everywhere and the write path is then
+  byte-identical.
+- ⚠ `FA-1040-SCHF-04` was a source-text grep for the literal `.update(` the
+  refactor replaced; it now asserts the new shape AND the guard. **RS agenda:
+  re-export it.**
+- ⚠ **The two `backentry.py` comments describing the old structural
+  protection are now STALE — correct them when leg 2 ships (s225).**
+
+### ▶ LEG 2 — the import surface itself (NOT started)
+A `depreciation_assets` section in `backentry.v1`: the field allowlist, the
+parent resolution (`flow_to` + which Schedule C / rental / farm), staging
+validation, and `depreciation_filed` joining the three parent sections.
+⚠ Model + engine + diagnostics are DONE; leg 2 is the lane only.
+
 ### ▶ THEN — 1040 BATCH-296, CLUSTER 4
 `1040\CC Changes\CC_CODE_CHANGES_BATCH-296.md` — **items now run to 53,
 OPEN, 24 closed.** The running annex in the file is the record; read it first.
 
 **▶ NEXT:** the mid-size 1040 units **#12, #13, #15, #16, #17, #18, #20,
 #21, #22, #25, #28, #30**, then the big unit **#23/#24/#53** (see below —
-they are ONE build, not three). ⛔ **#23/#24/#53 IS BLOCKED ON A KEN DESIGN
-DECISION** — see "the asset register vs the filed total" in KEN DECISIONS.
+they are ONE build, not three). ✅ **THE DESIGN CALL IS RULED (Ken, 2026-08-20):
+THE FILED TOTAL WINS** — DECISIONS.md, "Back-entry asset registers".
+**LEG 1 IS BUILT** (`66bb3e6`, mig 0327); the import lane itself is leg 2.
 
 ⚠⚠ **s272 CORRECTION (2026-08-20): the model is `DepreciationAsset`, NOT
 "DepreciableAsset"** — the earlier triage, the batch annex and the message to
@@ -145,6 +183,10 @@ its own state's instructions, one spec-blocked, one collapsing into #23/#24).
 ---
 
 ## ⚠ Classes that MOVE existing returns or output on next recompute
+- **✅ s272 #23/#24/#53 leg 1 MOVES NOTHING.** `depreciation_filed` is NULL on
+  every existing row, and with it NULL the depreciation write path is
+  byte-identical to before. The class it will create arrives with **leg 2**,
+  when a packet can actually assert a filed total.
 - **⚠⚠ s272 #46 MOVES A CLASS — every 2441 return WITH dependent care
   benefits whose column-(d) sum is below the $3,000/$6,000 cap gains
   credit** on next recompute. `new = min(cap − excl, col_d) >= old =
@@ -295,44 +337,6 @@ record it and close.** Codex asks instead for a new preparer-assertable
 override. **Recommendation: apply the ≤$1 rule; do not build the override.**
 One question: which?
 
-### BATCH-296 #23/#24/#53 — the asset register vs the filed total (s272, BLOCKS the big unit)
-The depreciation asset-ledger unit cannot start until this is settled, because
-it decides the whole shape of the build.
-
-**The mechanism.** `compute.aggregate_depreciation` opens with
-`if not assets.exists(): return`. That early return is *why* the flat filed
-`depreciation` total (Sch C line 13 / Sch E line 18 / Sch F line 14) is
-importable today — `backentry.py` says so in two comments. **The moment the
-lane can create `DepreciationAsset` rows, that protection is gone**: the
-engine recomputes depreciation from the register and OVERWRITES the filed
-total. Every one of #23/#24/#53's acceptance criteria demands the filed
-figure survive ("Schedule F line 14 remains $17,274", "remains $4,068").
-
-⚠ The `backentry.py` comments say register continuation "rides the existing
-conversion importer, not this lane" — but that importer
-(`manage.py import_depreciation`) requires a **Lacerte TXT export**, and
-these are PDF packets with printed asset pages. So it is NOT an alternative
-here, and both comments go stale the moment this ships (the s225 rule:
-correct the rule the new rule breaks, in the same pass).
-
-**The decision: when the register's computed depreciation disagrees with the
-filed total, which wins?**
-- **(a) The filed total wins** — the register is stored for its future-year /
-  AMT / state-basis facts, and the engine keeps the imported figure. Preserves
-  the acceptance by construction; the register is then partly inert in year 1.
-- **(b) The register wins** — the engine recomputes. Truest to how the app
-  works for a natively-prepared return, but it will silently move filed faces
-  whenever our conventions differ from Lacerte's by a dollar.
-- **(c) Filed wins, with a reconciliation diagnostic** naming both figures.
-  **Recommendation.** It matches the app's existing override-plus-diagnostic
-  idiom (#38, s270 #41), keeps back-entry source-faithful, and makes any
-  engine/Lacerte divergence visible instead of silent — which is exactly what
-  we want to learn before these registers roll forward to TY2026.
-
-⚠ This is an architecture call that sets the precedent for every future
-asset-register import, so it belongs in DECISIONS.md once ruled.
-**Reach: ~23 held returns name an asset register as their blocker.**
-
 ### BATCH-296 #50 — the ENGINE is right and the FILED return is wrong (s272, not built)
 An Alabama part-year Form 40 whose filed line-12 federal-tax deduction was
 **not apportioned** ($568). The engine apportions to **$527**. The **2025
@@ -360,6 +364,9 @@ override, or source defect?
   ⛔ 17a (TaxWise report) · ⛔ 17d (WO-33) unchanged.
 
 ### RS AGENDA
+- ⚠ **NEW (s272): `FA-1040-SCHF-04` needs re-export** — it was a source-text
+  grep for a literal `.update(` call the leg-1 refactor replaced; the app-side
+  assertion now pins the new shape plus the filed-wins guard.
 - ⚠ **NEW (s272): Alabama Form 40NR has NO SPEC** (`AL_FORM_40NR` 404;
   `AL_FORM_40` 200 proves the convention) — blocks BATCH-296 #52 entirely.
 - ⚠ **NEW (s272): the `FORM_2441` spec needs three amendments** — (a) its
