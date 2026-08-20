@@ -113,7 +113,15 @@ OPEN, 24 closed.** The running annex in the file is the record; read it first.
 
 **▶ NEXT:** the mid-size 1040 units **#12, #13, #15, #16, #17, #18, #20,
 #21, #22, #25, #28, #30**, then the big unit **#23/#24/#53** (see below —
-they are ONE build, not three).
+they are ONE build, not three). ⛔ **#23/#24/#53 IS BLOCKED ON A KEN DESIGN
+DECISION** — see "the asset register vs the filed total" in KEN DECISIONS.
+
+⚠⚠ **s272 CORRECTION (2026-08-20): the model is `DepreciationAsset`, NOT
+"DepreciableAsset"** — the earlier triage, the batch annex and the message to
+the entry session all used the wrong class name, and the resulting grep
+("zero references in `backentry.py`") was FALSE. There are two references,
+and they document a deliberate design decision. Corrected below and in the
+batch annex.
 
 ⚠ **#37 duplicates #2** — treat 37 as the live spec; do not work both.
 ⛔ **#40 is a LARGE multi-session build** (AMT passive losses = an AMT shadow
@@ -128,7 +136,7 @@ of Form 8582) and belongs after the big units.
 | 51 (jury duty → Sch 1 line 8h) | ✅ **REFUTED — fully built since s241z.** `other_income_items.route` is a CLOSED enum containing `"8h"`, labelled "jury duty pay" in the code. The existing suite already pins the item's exact fixture: a **$25 "County jury duty"** row → line 8h → line 9 → line 10 (25 tests green at HEAD). **No code needed.** |
 | 51 (GA Sch 1 line 5 other additions) | ⚠ **PREMISE REFUTED — keyable today.** `ga500_fields` has **no allowlist** (unlike `sch1_fields`), and `S1-5` "Add: other additions" is a seeded **non-computed** line with `S1-6` summing above it. Still open + smaller than stated: the *description* half, and an end-to-end fixture run. Re-scope. |
 | 52 (Alabama Form 40NR) | ⛔ **BLOCKED — no RS spec.** `AL_FORM_40NR` → 404; `AL_FORM_40` → **200** proves the convention. Code half confirmed (`compute_al40`: *"True nonresidents file Form 40NR (not computed)"*). Whole new form. **RS agenda.** |
-| 53 (Schedule F depreciation assets) | ⚠ **NOT a third item — #23/#24/#53 are ONE build.** `DepreciableAsset` **already** has FKs to `schedule_c`, `rental_property` AND `schedule_f`. What is missing is the import surface itself: **`backentry.py` has ZERO references to it**, so no asset ledger is importable for *any* parent. Costing these as three builds triple-counts the shared surface. |
+| 53 (Schedule F depreciation assets) | ⚠ **NOT a third item — #23/#24/#53 are ONE build.** `DepreciationAsset` **already** has FKs to `schedule_c`, `rental_property` AND `schedule_f`, plus a `flow_to` router. The import surface is missing, but **NOT by oversight — by DESIGN**: `backentry.py` documents that the flat filed `depreciation` total is importable *because* `aggregate_depreciation` early-returns when a return has no asset rows, and says asset-register continuation "rides the existing conversion importer, not this lane". ⚠⚠ **That importer needs a Lacerte TXT export these PDF packets do not have**, so the lane is genuinely the right home — and building it RETIRES that early-return protection. See the design question in KEN DECISIONS. |
 
 ⚠ **The verify-first streak is unbroken:** of five new items, ZERO were
 buildable as written (one refuted, one premise refuted, one contradicted by
@@ -286,6 +294,44 @@ answer this: a source packet contradicting ITSELF by ≤$1 is a SOURCE defect �
 record it and close.** Codex asks instead for a new preparer-assertable
 override. **Recommendation: apply the ≤$1 rule; do not build the override.**
 One question: which?
+
+### BATCH-296 #23/#24/#53 — the asset register vs the filed total (s272, BLOCKS the big unit)
+The depreciation asset-ledger unit cannot start until this is settled, because
+it decides the whole shape of the build.
+
+**The mechanism.** `compute.aggregate_depreciation` opens with
+`if not assets.exists(): return`. That early return is *why* the flat filed
+`depreciation` total (Sch C line 13 / Sch E line 18 / Sch F line 14) is
+importable today — `backentry.py` says so in two comments. **The moment the
+lane can create `DepreciationAsset` rows, that protection is gone**: the
+engine recomputes depreciation from the register and OVERWRITES the filed
+total. Every one of #23/#24/#53's acceptance criteria demands the filed
+figure survive ("Schedule F line 14 remains $17,274", "remains $4,068").
+
+⚠ The `backentry.py` comments say register continuation "rides the existing
+conversion importer, not this lane" — but that importer
+(`manage.py import_depreciation`) requires a **Lacerte TXT export**, and
+these are PDF packets with printed asset pages. So it is NOT an alternative
+here, and both comments go stale the moment this ships (the s225 rule:
+correct the rule the new rule breaks, in the same pass).
+
+**The decision: when the register's computed depreciation disagrees with the
+filed total, which wins?**
+- **(a) The filed total wins** — the register is stored for its future-year /
+  AMT / state-basis facts, and the engine keeps the imported figure. Preserves
+  the acceptance by construction; the register is then partly inert in year 1.
+- **(b) The register wins** — the engine recomputes. Truest to how the app
+  works for a natively-prepared return, but it will silently move filed faces
+  whenever our conventions differ from Lacerte's by a dollar.
+- **(c) Filed wins, with a reconciliation diagnostic** naming both figures.
+  **Recommendation.** It matches the app's existing override-plus-diagnostic
+  idiom (#38, s270 #41), keeps back-entry source-faithful, and makes any
+  engine/Lacerte divergence visible instead of silent — which is exactly what
+  we want to learn before these registers roll forward to TY2026.
+
+⚠ This is an architecture call that sets the precedent for every future
+asset-register import, so it belongs in DECISIONS.md once ruled.
+**Reach: ~23 held returns name an asset register as their blocker.**
 
 ### BATCH-296 #50 — the ENGINE is right and the FILED return is wrong (s272, not built)
 An Alabama part-year Form 40 whose filed line-12 federal-tax deduction was
