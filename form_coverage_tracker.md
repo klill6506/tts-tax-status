@@ -1,6 +1,38 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-20 session 272 — FORM 4562 / THE ASSET REGISTER: THE FILED TOTAL
+> WINS ✅⚠⚠ (BATCH-296 #23/#24/#53 leg 1, migration 0327).** Ken ruled that when
+> an imported depreciation asset register's computed total disagrees with the
+> packet's filed depreciation total, **the FILED total wins** and a
+> reconciliation diagnostic names both (DECISIONS.md). **⚠⚠ THE GUARD HAD TO
+> EXIST BEFORE THE IMPORT LANE, NOT AFTER**: `aggregate_depreciation` opens
+> `if not assets.exists(): return`, and until now THAT early return was the
+> only thing protecting an imported flat filed total — `backentry.py` documents
+> the Sch C line-13 / Sch F line-14 totals as importable *precisely because*
+> "an import-built return has no asset register, so the filed number holds".
+> The moment the lane can create asset rows the protection evaporates and the
+> engine silently overwrites the filed face that every acceptance criterion in
+> the three items demands survive. So: `depreciation_filed` on `ScheduleC` /
+> `RentalProperty` / `ScheduleF` (**NULLABLE** — NULL = unchanged behaviour, a
+> value including **0** is the source assertion and wins), and the three blind
+> `.update()` calls routed through one helper that skips a source-asserted
+> parent, **per parent, not per return**. The register still computes and still
+> persists every per-asset result — never inert. **⚠ THE DIAGNOSTIC ALREADY
+> EXISTED**: `D_4562_RECON` is the permanent silent-routing-gap guard and IS
+> the reconciliation asked for, so it was TAUGHT the assertion rather than
+> duplicated — disagreement is a **warning** naming both figures, while a
+> genuine routing gap with no assertion still raises the original blocking
+> **error**; it reads the engine's own saved `current_depreciation` and never
+> re-derives depreciation (s142). ⚠ `FA-1040-SCHF-04` was a source-text grep
+> for the literal `.update(` the refactor replaced — it now pins the new shape
+> AND the guard (RS agenda: re-export). 10 tests; 526 FA + 348 (depreciation
+> radius) + 136 diagnostics green; teeth proven by injecting both defects (5
+> pins fell, then 2). **Movement: NONE** — `depreciation_filed` is NULL
+> everywhere. **Leg 2 (the `depreciation_assets` import section) is the
+> remaining work**, and it must correct the two now-stale `backentry.py`
+> comments in the same pass (s225).
+>
 > **2026-08-19 session 272 — FORM 2441: THE PART III LINE-16 FACT, AND LINE 3
 > STOPS DOUBLE-REDUCING ✅⚠⚠ (BATCH-296 #46, migration 0326).** The item asked
 > for one missing source fact; the 2025 face had **three** defects, and the
