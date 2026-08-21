@@ -1,6 +1,26 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-21 session 272 — GA-500 RETIREMENT EXCLUSION: #11 CLOSED WITH NO
+> CODE, then the SOURCE-DEFECT EXCEPTION unit end to end ✅⚠⚠ (mig 0328).**
+> Ken reversed his own "S-corp income is unearned" ruling after the evidence
+> turned: a sweep found 14/14 decisive filed packets matching UNEARNED with
+> zero counter-examples — and that was the WRONG conclusion, because every
+> one came from ONE office on ONE software. **The sweep measured TaxWise, not
+> Georgia.** Both authorities (the reg; the 2025 IT-511 verbatim) put the
+> materially-participating case on line 2, and the engine had routed it there
+> all along. **Lesson: a filed return is evidence of what the preparing
+> software did, not of what the law requires.** Then: `source_defects`
+> (returns whose FILED figures are wrong can close, with a REQUIRED reason +
+> authority) and `comparison_notes` on the prior-year snapshot (next year's
+> preparer is told why a line moved) — proven on two real clients read back
+> from prod, including a TWO-cause return. **Four holes were found in
+> production by the parallel entry session, not by my tests** (an inert
+> allowlist key, three unpatched verdict gates, the `-65` cap flag the guard
+> missed, `null` writing a blank override). **⚠⚠ 147 staged returns hand-key
+> the RIE worksheet; the harm is MASKING** ($3 hidden the same way as
+> $54,360) — now warned everywhere and REFUSED on never-committed imports.
+>
 > **2026-08-20 session 272 — FORM 4562 / THE ASSET REGISTER: THE FILED TOTAL
 > WINS ✅⚠⚠ (BATCH-296 #23/#24/#53 leg 1, migration 0327).** Ken ruled that when
 > an imported depreciation asset register's computed total disagrees with the

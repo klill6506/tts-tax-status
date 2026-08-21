@@ -1,15 +1,27 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-19 (s272). **▶ 1040 BATCH-296 IS OPEN — the batch grew
-to items 50-53; 24 closed.** s272 shipped **#46** (Form 2441 Part III line 16
-+ the line-3 double-reduction, mig 0326, `aec81be` **LIVE 17:53 UTC —
-verified**) and TRIAGED all five newly-posted items. ⛔ **#11, #44 and now
-#50 are the three things waiting on Ken** — see KEN DECISIONS. ⛔ **#48 and
-#52 are blocked: no Rule Studio spec** (Form 4136; Alabama Form 40NR).*
+*Last updated: 2026-08-21 (s272, Friday — Ken back in office). **Nine
+deploys today, every one verified live.** The headline: **#11 half B is
+CLOSED WITH NO CODE** — Ken reversed his own "unearned" ruling after I
+showed that a 14/14 sweep had measured TaxWise, not Georgia; the engine's
+earned routing was right all along. Everything after that was the machinery
+to close returns whose FILED figures are wrong: `source_defects` exceptions
+(stuck returns file; next year's preparer is told why), which took **four
+rounds of production-found holes** (an inert allowlist key, three unpatched
+verdict gates, a `-65` flag the guard missed, and `null` writing a blank
+override instead of clearing). ⚠ **147 staged returns hand-key the GA RIE
+worksheet; the harm is MASKING, not magnitude.** Now warned on every payload
+and REFUSED on never-committed ones (Ken's call).*
 
-*⚠ **Numbering collision in the batch file: TWO different items are numbered
-51** (jury-duty pay, and the GA Schedule 1 line-5 additions). Both triaged;
-Codex has been asked to renumber one.*
+*⚠ **A parallel entry session ("2025 Form 1040 returns processing") found
+every one of those holes by testing against production while I tested
+against tests.** It is waiting on Ken's DIRECT go-ahead to reopen four filed
+returns — correctly refusing to act on my relay of his decision.*
+
+*Three commits on main today are Ken's own from the `delvio-states` session
+(`c64fd84` credential removal + rotation, `f6eaf78` its DECISIONS entry,
+`b32730d` the state-code parse fix). Recorded here so the log is honest; not
+this session's work.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -78,6 +90,47 @@ item's own acceptance was unreachable without the second.
   fell, then 2). **Four stale line-31 pins corrected in the same pass — one
   of them the flow assertion `FA-1040-2441-05` (RS agenda: re-export).**
 
+### ✅ s272 — #11 half A: `D_K1_SCORP_SERET` (`be41747`, no migration)
+Ken ruled 2026-08-20: **no 1120-S retirement feed — diagnostic instead.** An
+1120-S K-1 carrying `se_retirement_amount` now WARNS (Pub 560, quoted from a
+live fetch: a shareholder-employee is not self-employed; the corporation
+deducts on the 1120-S). The legitimate **1065 feed is pinned untouched** —
+that was the real risk of touching this area. 6 tests; teeth proven by
+dropping the entity-type filter (fired on a partner, failed the pin).
+`seed_rules` is a DEFERRED_SEED so the deploy registers the rule.
+- **#11 half B — ✅ RULED 2026-08-21: EARNED. NO CODE; the s239 routing in
+  `k1_ordinary_is_earned` is correct and unchanged.** Ken ruled "unearned"
+  on 08-20 and reversed on 08-21: *the nine packets that filed it unearned
+  are all TaxWise; Lacerte and the GA rule treat it as earned.*
+  ⚠⚠ **A sweep of the held population had found 14/14 decisive owner-columns
+  reproducing the filed figure under UNEARNED with zero counter-examples —
+  and that was still the wrong conclusion, because all nine clients came
+  from ONE office on ONE software. THE SWEEP MEASURED TAXWISE, NOT GEORGIA.**
+  See DECISIONS.md for the authorities and the general lesson.
+- **⚠ NINE CLIENTS CAN NEVER TIE** (nine packets, listed by key in the batch annex — ~$243k of over-claimed exclusion, ~$12.6k GA tax
+  at 5.19%). Their TaxWise answer keys are wrong on the GA RIE line, so
+  `reconcile_expected` can never return a tie. **They need the SOURCE-DEFECT
+  EXCEPTION disposition below — not an indefinite HOLD.**
+
+### ⚠⚠ s272 INCIDENT — the entry session wrote code in this repo, and my `git add -A` shipped it
+The "2025 Form 1040 returns processing" session (supposed to be entry-only;
+**Ken has since told it so directly**) built BATCH-296 **#61** (QBI ½-SE-tax
+allocation: non-QBI SE earnings — clergy, 1065 box 14A — join the
+`allocate_qbi_reductions` weights so a farm/business no longer absorbs the
+clergy share of the ½-SE deduction). My `git add -A` swept its IN-PROGRESS
+test + compute change into `be41747` under the #11 message; it then repaired
+its own test in `95d390c`. **Both are LIVE (deploy verified).**
+- **The code is now VERIFIED GREEN**: its 3 tests + **636** across the QBI /
+  8995 / clergy / Schedule-F radius, run clean after the collision cleared.
+  The change is a plausible correction (Treas. Reg. §1.199A-3(b)(1)(vi)) and
+  is treated as SHIPPED; the #61 annex/audit trail is owed to the batch file.
+- ⚠⚠ **We also COLLIDED ON THE SHARED TEST DB** mid-verification
+  (`test_postgres does not exist`) — the standing hazard, realized. Any test
+  result from ~22:50-23:05 UTC 2026-08-20 is untrustworthy.
+- **New working rules (proposed to the sibling, adopted here):** this session
+  stages EXPLICIT PATHS, never `git add -A`, while any sibling shares the
+  tree; one session at a time on pytest with an explicit hand-off.
+
 ### ▶ IN FLIGHT — a SECOND CC session is entering returns (opened 2026-08-19)
 Ken is running a parallel session, **"2025 Form 1040 returns processing"**
 (`local_48d66d7c-e56b-4b93-a93a-eef3331c2d52`, cwd `D:	ax-test-data`), in the
@@ -106,6 +159,81 @@ direction (travelling) — resume tomorrow.**
   what is actually costing it the most returns** — that ranking should drive
   the next build order. Until it arrives, the ranking is unknown, not empty.
 - **⛔ Do not re-report to them**: #11/#44/#50 are Ken's; #48/#52 have no RS spec.
+
+### ✅ s272 (Fri 08-21) — THE SOURCE-DEFECT EXCEPTION UNIT, end to end in prod
+Ken's ask: *"a notification when we file the 2026 return that the GA
+retirement exclusion was calculated incorrectly in 2025 ... I just want to
+get them done and out of the way so that we don't revisit them."* Both asks
+are ONE mechanism because they need the same data. **Proven live on two
+real clients** (one one-cause, one two-cause), read back from prod.
+- **Why those returns were stuck, which nobody had named**: `_mark_return_
+  filed` files ONLY on verdict `tie`. A wrong TaxWise answer key can never
+  tie, so the return sat committed-but-never-filed forever.
+- **`source_defects`** on the payload (`279c5c5`, mig 0328): each row
+  releases ONE `(form, line)` from the tie requirement; verdict
+  `tie_with_exception`. **Reason + authority REQUIRED** — an unexplained
+  "source was wrong" is indistinguishable from giving up, and that text IS
+  next year's note. **Per line** (a second unrelated mismatch still blocks);
+  **per owner** for free (RIE-TP-17 / RIE-SP-17 — on the one-cause fixture the taxpayer
+  column caps and hides the defect, only the spouse column moves).
+- **`comparison_notes`** on `PriorYearReturn`: filed vs computed vs reason
+  vs authority, surfaced by the proforma roll-forward. **Grouped per CAUSE
+  (the authority), never per line** — a cascade is one note listing every
+  line it moved; `causes_for_line` stamps how many causes a line has
+  (derived, never narrated).
+- **A line can have TWO causes** (`0a27187`): uniqueness is `(form, line,
+  AUTHORITY)`. The two-cause fixture: a federal Pub-560 defect AND the GA routing
+  move four Georgia lines together; neither alone yields the 1,611.
+- **⚠⚠ FOUR PRODUCTION-FOUND HOLES, all mine, all found by the entry
+  session:** (1) `source_defects` never joined `KNOWN_RETURN_KEYS` → inert
+  in prod (`4b3d598`; the same commit found `amendment` had NEVER been
+  published — the schema was stricter than prod; one equality invariant now
+  closes both directions); (2) FOUR places gate on the verdict, I patched
+  one → a return marked FILED but held by cleanup (`72e3c06`,
+  `FILEABLE_VERDICTS`); (3) the RIE guard matched lines 1-16 so `RIE-*-65`
+  — the $65k-vs-$35k cap flag — fell through (`0bcbcdf`; now the whole
+  worksheet except the un-derivable disability assertions); (4) `null` in
+  `ga500_fields` wrote an override to BLANK, so there was NO lane-side way
+  to undo a stored override (`e3b7484`; null now clears).
+
+### ⚠⚠ s272 — 147 STAGED RETURNS HAND-KEY THE GA RIE WORKSHEET
+`ga500_fields` declares ZERO properties with a permissive catch-all, so any
+line-shaped key staged clean. The retirement exclusion is engine-derived;
+keying its inputs forces the answer, so a green tie may be proving keyed
+data rather than a computation — **invisible precisely because it is
+green.** A/B on never-committed returns (diverging LINE SET, not verdict):
+one packet INERT; **one LOAD-BEARING — hiding a $3 divergence**.
+**The harm is MASKING, not magnitude**: the identical reflex hid $27,501
+(one spouse column) and $54,360 (one return, two columns), same green result.
+- Warned once per return naming every key (`ab98b70` → `0bcbcdf`).
+- **REFUSED on never-committed returns (Ken, 08-21; `4268c86`)** — the
+  population cannot grow; committed ones keep staging (they cannot be A/B
+  tested anyway). ⚠ Scope = the BULK IMPORT LANE only; preparers entering
+  2026 returns never see it.
+- **Four-way semantics for a stored preparer entry, now pinned in a test:**
+  absent = inherit · 0 = override · null = CLEAR (was: blank override).
+
+### ⛔ WAITING ON KEN — a DIRECT go-ahead to the entry session
+**Reopen the four filed returns named in the batch annex.**
+Ken ruled it to ME; the entry session correctly refuses to reopen four FILED
+production returns on a relay. It has the sequence (draft first — the filed
+sweep SKIPS already-filed returns, so a re-commit would never re-fire the
+note; null-clear every stored RIE key; dry-run; one ack per (line,
+authority); replace; sweep; cleanup) and the measured divergence sets for
+two of them (8 and 6 lines — ⚠ the second is NOT capped like the earlier
+example; that cap theory was about a spouse's $62k of gains, not the cap). **Ken tells it directly;
+it runs all four one at a time; I read each snapshot back from prod.**
+
+### ⚠ s272 — the import-lane DOC had rotted; the schema never had
+`CC_IMPORT_LANE_HANDOFF.md` section 0 was a hand-kept DENYLIST that still
+listed 1116 / education / adoption / Schedule H / every non-GA state as
+unsupported. The entry session re-scored 361 holds against the real schema:
+**102 stale and re-openable.** Fix is the SHAPE: the generator now emits
+`SUPPORTED-SECTIONS.md` (an exhaustive ALLOWLIST) beside the schema
+(`a323a78`), pinned to equal the published keys. ⚠ Two traps hit building
+it: the first cut omitted dict-shaped keys (incl. `state_returns`, the whole
+AL/NC/SC lane), and the test then passed only because I had named a key in
+prose. Generate, never narrate.
 
 ### ✅ s272 — #23/#24/#53 LEG 1: the filed depreciation total wins (`66bb3e6`, mig 0327)
 **The guard had to exist BEFORE the import lane, not after.**
@@ -314,40 +442,13 @@ its own state's instructions, one spec-blocked, one collapsing into #23/#24).
 
 ## ⛔ KEN DECISIONS OUTSTANDING
 
-### BATCH-296 #11 — BOTH HALVES CONFLICT WITH AUTHORITY (s270, not built)
-Two decisions, one item. The fixture batch stays uncommitted; full evidence
-in the batch annex.
-1. **Should an 1120-S K-1 `se_retirement_amount` flow to Schedule 1 line 16?**
-   The filed return took $5,031 there. **Pub 560: a shareholder-employee is
-   NOT self-employed — the CORPORATION deducts the contribution on the
-   1120-S.** **Recommendation: NO feed; add a diagnostic.** Cost if built as
-   asked: encoding a Pub 560 error on every S-corp owner packet.
-2. **GA RIE: does materially-participating S-corp income stay EARNED
-   (capped $5,000)?** The filed $35,000 exclusion is only reachable with it
-   UNEARNED — contrary to Ga. Comp. R. 560-7-4-.02(4)(b)1, which s239
-   litigated and you ratified. **Recommendation: keep the reg routing; treat
-   the filed figure as source-side error.**
-
-### BATCH-296 #44 — does the ≤$1 source rule already cover it? (s271, not built)
-A filed Form 8949 summary whose printed columns (d)/(e)/(g) cannot reproduce
-its own printed column (h), because the broker's cents were rounded away
-($(34) printed, $(35) computed). **Your 2026-08-16 ≤$1 class rule appears to
-answer this: a source packet contradicting ITSELF by ≤$1 is a SOURCE defect —
-record it and close.** Codex asks instead for a new preparer-assertable
-override. **Recommendation: apply the ≤$1 rule; do not build the override.**
-One question: which?
-
-### BATCH-296 #50 — the ENGINE is right and the FILED return is wrong (s272, not built)
-An Alabama part-year Form 40 whose filed line-12 federal-tax deduction was
-**not apportioned** ($568). The engine apportions to **$527**. The **2025
-Alabama Form 40 Booklet, page 5** settles it: *"Federal Tax Liability must be
-prorated by applying a percentage of Alabama adjusted gross income to Federal
-adjusted gross income in order to calculate the amount deductible on line 12
-of Form 40."* The engine's ratio matches that sentence verbatim. Codex asks
-for a source-visible override to preserve the filed figure. **Recommendation:
-do NOT build — record the $41 as a source-side defect.** Building it would let
-a packet assert a number Alabama forbids (the #11 pattern). One question:
-override, or source defect?
+### ✅ RULED 2026-08-20/21 — #11, #44, #50 (kept one line each; detail in DECISIONS.md)
+- **#11 half A**: no 1120-S retirement feed; `D_K1_SCORP_SERET` warns (Pub 560). Built.
+- **#11 half B**: materially-participating S-corp income is **EARNED** for the GA RIE.
+  Ken ruled unearned on 08-20 and REVERSED on 08-21 — the packets that filed it
+  unearned are all TaxWise, and TaxWise is wrong. **No code; engine was right.**
+- **#44**: the ≤$1 source-defect rule applies. Record-only close.
+- **#50**: the AL booklet makes the proration mandatory; engine right. Record-only close.
 
 ### Carried
 - **⛔ KEN (s230)**: Form 6765 Section G required for TY2026+ — re-author
