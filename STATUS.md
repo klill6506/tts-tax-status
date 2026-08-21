@@ -1,24 +1,45 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-21 end of day (s272, Friday). **Ken is gone for the
+*Last updated: 2026-08-21 late evening (s272, Friday). **Ken is gone for the
 weekend; groups C (14 TaxWise re-exports) and D (2 shells) are POSTPONED to
-Monday — or Saturday if he works — at his direction.** The build session
-continues unattended on **item 18** (Roy Cameron's two engine defects),
-then **item 20**. Eleven deploys today, all verified live.*
+Monday — or Saturday if he works — at his direction.** Items 18 and 20 are
+BUILT and PUSHED (`c866628`); deploy was in progress at write time — verify
+it reached live before trusting it.*
+
+*⚠⚠ DEPLOY ACTION REQUIRED: the #20 follow-up adds THREE NEW diagnostic rows
+(`D_7206_SCORP_K1_NOW2` — the first BLOCKING SEHI rule — plus
+`D_7206_SCORP_NOTBOX1` and `D_7206_SCORP_BOX1_HINT`). **`seed_rules` must run
+against prod or all three are INERT** — registered in code, absent from the
+DB, silently never evaluated.*
 
 *Closed today: #11 (no code — the engine was right; the sweep measured
 TaxWise), #66 (half — Worksheet B deferred by name), the source-defect
-exception unit end to end with four filed returns reopened and verified,
-the GA RIE worksheet guard (warn + refuse), the import-doc allowlist, and
-SIX of the ledger's "filed-return errors" that turned out to be worksheet-
-line misreads. Open for Ken Monday: [client] (capped vs uncapped
-repayment in the SEHI↔PTC loop) and item 68 (what "best" means for the SEP
-optimizer). Group C part 1 (the four box-5 W-2s) is DONE.*
+exception unit end to end with four filed returns reopened and verified, the
+GA RIE worksheet guard (warn + refuse), the import-doc allowlist, SIX of the
+ledger's "filed-return errors" that were worksheet-line misreads, **#18 (both
+halves — see the open question below) and #20 + its Ken-ruled follow-up**.*
 
-*⚠ A parallel entry session ("2025 Form 1040 returns processing") found
-five production holes in this session's work by testing against prod while
-I tested against tests. Keep the split. It refuses to act on relayed
-rulings — correctly.*
+*▶ OPEN FOR KEN MONDAY, needs the return in front of him — **#18's remaining
+$486 of NIIT**. Excluding an active K-1 §1231 gain from net investment income
+closes $615 of the item's reported $1,101; the filed return's $0 is reachable
+only by driving net gain to NEGATIVE, which Reg §1.1411-4(d)(2) forbids
+("The calculation of net gain may not be less than zero"). Engine and filed
+return disagree by $486 with the regulation on the engine's side. Full
+working — the three-way table and the related unfloored-`line5` flag — is in
+`DEFERRAL_AUDIT.md`. Also open: the capped-vs-uncapped repayment question in
+the SEHI↔PTC loop, and item 68 (what "best" means for the SEP optimizer).*
+
+*⚠ #20's lesson: the item's DIAGNOSIS was right and its stated CAUSE was
+wrong. It said no 1120-S arm existed on Form 7206; one existed and was wired.
+The premium simply had no way IN from the import lane — the K-1 spelling
+(`sehi_amount`) had no reader, and `k1_1065` filters `source_type == "1065"`
+so the row was dropped, not mis-routed. Building to the stated cause would
+have produced a SECOND S-corp arm beside the working one.*
+
+*⚠ A parallel entry session ("2025 Form 1040 returns processing") found five
+production holes in this session's work by testing against prod while I
+tested against tests. Keep the split. It refuses to act on relayed rulings —
+correctly.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
