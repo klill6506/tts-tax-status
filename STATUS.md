@@ -213,16 +213,32 @@ one packet INERT; **one LOAD-BEARING — hiding a $3 divergence**.
 - **Four-way semantics for a stored preparer entry, now pinned in a test:**
   absent = inherit · 0 = override · null = CLEAR (was: blank override).
 
-### ⛔ WAITING ON KEN — a DIRECT go-ahead to the entry session
-**Reopen the four filed returns named in the batch annex.**
-Ken ruled it to ME; the entry session correctly refuses to reopen four FILED
-production returns on a relay. It has the sequence (draft first — the filed
-sweep SKIPS already-filed returns, so a re-commit would never re-fire the
-note; null-clear every stored RIE key; dry-run; one ack per (line,
-authority); replace; sweep; cleanup) and the measured divergence sets for
-two of them (8 and 6 lines — ⚠ the second is NOT capped like the earlier
-example; that cap theory was about a spouse's $62k of gains, not the cap). **Ken tells it directly;
-it runs all four one at a time; I read each snapshot back from prod.**
+### ✅ THE FOUR FILED RETURNS ARE REOPENED, RE-FILED, AND CARRY THE NOTE
+Ken authorized the entry session directly (Fri afternoon). All four dropped
+to draft, every stored RIE key null-cleared (incl. APPL/-65, which re-derive
+from DOB), one acknowledgement per (line, IT-511), re-committed, swept,
+cleanup → Done. **Read back from prod by the build session: every check
+passes on all four** — filed, `tie_with_exception`, exactly ONE note each
+(the two-column return's two root lines with different reasons grouped into
+one nine-line note under the shared authority, as designed), every line
+carrying filed/computed/reason, `causes_for_line == 1` throughout.
+- ⚠⚠ **Two near-misses on the way, both caught by the entry session before
+  writing:** (1) my reopen sequence said "strip the keys" — that inherits
+  the stored override; `null` is the clear (and `null` used to write a
+  BLANK override); (2) clearing a single filer's overrides made her
+  interest VANISH from line 6 — an ORDERING bug (the GA sync respects
+  overrides and ran BEFORE the clear; nothing re-pulled after). Had the
+  sequence been followed, that would have been acknowledged as "TaxWise got
+  the interest wrong" in her permanent note. **TaxWise was right.** Fixed
+  (`7671861`): a clear re-pulls in the same commit.
+- **⚠ A THIRD KIND OF OVERRIDE, now in DECISIONS:** inert / masking a
+  SOURCE error / masking an ENGINE gap. The third must never become a
+  `source_defects` row. Rule out the engine first.
+- **⚠ REAL MONEY, for Ken (logged in FILED-RETURN-DISCREPANCIES.md):** the
+  four returns as filed with GEORGIA over-claimed ~$136k of exclusion,
+  ~$7,060 of GA tax. The note fixes OUR workflow; whether to amend the
+  state filings is a client-facing call. The same shape likely extends
+  across every TaxWise return with materially-participating S-corp income.
 
 ### ⚠ s272 — the import-lane DOC had rotted; the schema never had
 `CC_IMPORT_LANE_HANDOFF.md` section 0 was a hand-kept DENYLIST that still
