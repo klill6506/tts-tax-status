@@ -1,27 +1,24 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-21 (s272, Friday — Ken back in office). **Nine
-deploys today, every one verified live.** The headline: **#11 half B is
-CLOSED WITH NO CODE** — Ken reversed his own "unearned" ruling after I
-showed that a 14/14 sweep had measured TaxWise, not Georgia; the engine's
-earned routing was right all along. Everything after that was the machinery
-to close returns whose FILED figures are wrong: `source_defects` exceptions
-(stuck returns file; next year's preparer is told why), which took **four
-rounds of production-found holes** (an inert allowlist key, three unpatched
-verdict gates, a `-65` flag the guard missed, and `null` writing a blank
-override instead of clearing). ⚠ **147 staged returns hand-key the GA RIE
-worksheet; the harm is MASKING, not magnitude.** Now warned on every payload
-and REFUSED on never-committed ones (Ken's call).*
+*Last updated: 2026-08-21 end of day (s272, Friday). **Ken is gone for the
+weekend; groups C (14 TaxWise re-exports) and D (2 shells) are POSTPONED to
+Monday — or Saturday if he works — at his direction.** The build session
+continues unattended on **item 18** (Roy Cameron's two engine defects),
+then **item 20**. Eleven deploys today, all verified live.*
 
-*⚠ **A parallel entry session ("2025 Form 1040 returns processing") found
-every one of those holes by testing against production while I tested
-against tests.** It is waiting on Ken's DIRECT go-ahead to reopen four filed
-returns — correctly refusing to act on my relay of his decision.*
+*Closed today: #11 (no code — the engine was right; the sweep measured
+TaxWise), #66 (half — Worksheet B deferred by name), the source-defect
+exception unit end to end with four filed returns reopened and verified,
+the GA RIE worksheet guard (warn + refuse), the import-doc allowlist, and
+SIX of the ledger's "filed-return errors" that turned out to be worksheet-
+line misreads. Open for Ken Monday: [client] (capped vs uncapped
+repayment in the SEHI↔PTC loop) and item 68 (what "best" means for the SEP
+optimizer). Group C part 1 (the four box-5 W-2s) is DONE.*
 
-*Three commits on main today are Ken's own from the `delvio-states` session
-(`c64fd84` credential removal + rotation, `f6eaf78` its DECISIONS entry,
-`b32730d` the state-code parse fix). Recorded here so the log is honest; not
-this session's work.*
+*⚠ A parallel entry session ("2025 Form 1040 returns processing") found
+five production holes in this session's work by testing against prod while
+I tested against tests. Keep the split. It refuses to act on relayed
+rulings — correctly.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -159,6 +156,44 @@ direction (travelling) — resume tomorrow.**
   what is actually costing it the most returns** — that ranking should drive
   the next build order. Until it arrives, the ranking is unknown, not empty.
 - **⛔ Do not re-report to them**: #11/#44/#50 are Ken's; #48/#52 have no RS spec.
+
+### ✅ s272 (Fri) — #66: the adoption credit reaches the return (`c814f99`, LIVE); Worksheet B deferred BY NAME
+`compute_8839` produced the full Part II result and every consumer read it,
+but its docstring said "WRITES NOTHING in leg 1" and leg 2 never came — a
+$21,839 credit computed, displayed, dropped. `compute_8839_db` now feeds
+Sch 3 line 6c + 1040 line 30 through the override-respecting chokepoints
+(both halves of the 8863 line-29 pattern — `_write_row` AND `values[]`;
+doing only the second left the face blank, which the first test caught).
+- **⚠⚠ HALF THE ITEM DELIBERATELY NOT BUILT.** The acceptance's "3,400 of
+  CTC refundable as ACTC" needs the adoption credit to DISPLACE the CTC.
+  **i1040s8 verbatim: Worksheet A subtracts Sch 3 1-4/5b/6d/6f/6l/6m and NOT
+  6c** — our 8812 roster is correct. Displacement happens only via **Credit
+  Limit Worksheet B** (8839 is one of its four triggers), a Ken-scoped
+  Session-1 deferral. Adding 6c to Worksheet A would tie the #66 fixture and be
+  WRONG for every return without an adoption credit. Boundary pinned by a
+  test; `D_8812_009` already warns.
+- **Confirmed on the item's fixture in prod**: 7 mismatched lines → 3, and the 3
+  are ONE number (3,400) on 33/34/35a — a clean Worksheet-B residual, not a
+  note (category (c), engine gap). **▶ WORKSHEET B SHOULD BECOME A NAMED
+  BATCH ITEM** — it is the thing between the #66 fixture (and likely others) and a
+  clean tie.
+- 6 tests; 632 (8839 legs + every Sch 3 sibling + 526 FA) + 194 (8812 +
+  1040 spine). Teeth: unwiring the feed dropped 4 of 6; the override pin
+  and the deferral pin correctly held. **Movement: every return with 8839
+  children or adoption pools gains the credit on next recompute — a
+  correction.**
+
+### ▶ NEXT: items 18 and 20 — each unblocks ONE named held return
+- **#18** (one held return) — two independent halves: (a) a materially-
+  participating K-1's §1231 gain is being netted into NIIT (§1411(c)(1)
+  nonpassive trade-or-business exclusion) — $1,101 at 3.8%; (b) a
+  `federal_estimated_payments` row with `kind: extension` persists but never
+  reaches Sch 3 line 10 / 1040 line 31 ($79). Verify each against its own
+  authority before building; (b) smells like the one-wire class.
+- **#20** (two held returns) — Form 7206 has Sch C / Sch F / 1065
+  K-1 arms but no 1120-S >2%-shareholder arm: match the shareholder's W-2
+  by normalized EIN, line 11 = that W-2's box 5, limit line 1 against it
+  (§162(l)(5)(A); Notice 2008-1). Two fixtures, $10,207 and $22,438.
 
 ### ✅ s272 (Fri 08-21) — THE SOURCE-DEFECT EXCEPTION UNIT, end to end in prod
 Ken's ask: *"a notification when we file the 2026 return that the GA
