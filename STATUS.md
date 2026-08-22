@@ -1,66 +1,49 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-21 late evening (s272, Friday). **Ken is gone for the
-weekend; groups C (14 TaxWise re-exports) and D (2 shells) are POSTPONED to
-Monday — or Saturday if he works — at his direction.** Items 18 and 20 are
-BUILT and PUSHED (`c866628`); deploy was in progress at write time — verify
-it reached live before trusting it.*
+*Last updated: 2026-08-22 midday (s272, Saturday). Ken is switching
+accounts; session closed mid-item-26 at his request. **Local = origin
+(`9689a9b` deployed + verified live); ONE local-only WIP commit `679a1e1`
+sits on top — see the DO-NOT-DEPLOY note below.***
 
-*✅ THE THREE NEW DIAGNOSTIC ROWS ARE LIVE IN PROD (`D_7206_SCORP_K1_NOW2` —
-the first BLOCKING SEHI rule — plus `D_7206_SCORP_NOTBOX1` and
-`D_7206_SCORP_BOX1_HINT`), seeded 2026-08-21 23:57:40Z by the `c866628`
-deploy. **CORRECTION to this session's own earlier note**: `seed_rules` does
-NOT need running by hand — Render's release command runs the seeder, which is
-why no repo file greps for it. Verified rather than assumed: severities in
-the DB are error/warning/info as registered, all three `is_active`, and all
-**966** active rules resolve to a real function (no engine-fault risk — the
-s233 class). A read-only pre-flight also confirmed the re-seed left all **16**
-retired rules retired: `is_active` defaults to True in the seeder, so a rule
-retired ONLY in the DB would have been silently resurrected — none was.*
+*⚠⚠ RESUME POINT — BATCH-296 #26 (Form 8829 lane block) IS IN PROGRESS,
+commit `679a1e1` (LOCAL ONLY, not pushed). 6 of 7 tests green. The one
+failure: after a staged commit, `business_pct` is not ~8.57 for 144/1,680
+sq ft — NOT DIAGNOSED; candidates in the commit message (does the commit
+path run `compute_8829_db`? is the column stored as a fraction? compute
+order?). Diagnose FIRST, then run the full Schedule C radius, THEN push.
+Do not deploy `679a1e1` alone.*
 
-*Closed today: #11 (no code — the engine was right; the sweep measured
-TaxWise), #66 (half — Worksheet B deferred by name), the source-defect
-exception unit end to end with four filed returns reopened and verified, the
-GA RIE worksheet guard (warn + refuse), the import-doc allowlist, SIX of the
-ledger's "filed-return errors" that were worksheet-line misreads, **#18 (both
-halves — see the open question below) and #20 + its Ken-ruled follow-up**.*
+*✅ SHIPPED AND VERIFIED LIVE TODAY (through `9689a9b`): the 1065 lane's
+BATCH-001 worked as one unit — 9 of 10 BUILT, #6 RULED-NO-BUILD with the
+reasoning in `GATED_SOURCE_FORMS`, plus THREE defects the batch never
+listed: the `lookup_shells` NameError (EVERY entity shell lookup 500ing
+since `17dbdf7`, 1120-S included), the hardcoded reconcile loop that would
+have silently skipped a ga700 answer key, and the CLOSEOUT linked-state
+gate still reading 1120-S spellings — **my own annex had marked #9 BUILT
+without checking the closeout; corrected in the annex itself.** Also
+BATCH-296 **#25 CLOSED** (Schedule D 1a/8a direct aggregates — `schd_fields`
+surface, eleven packets unblocked, engine/render/MeF already existed) and
+**#22 REFUTED** (Form 4952 carryforward already round-trips; 7 pins so
+nobody rebuilds it).*
 
-*▶ OPEN FOR KEN MONDAY, needs the return in front of him — **#18's remaining
-$486 of NIIT**. Excluding an active K-1 §1231 gain from net investment income
-closes $615 of the item's reported $1,101; the filed return's $0 is reachable
-only by driving net gain to NEGATIVE, which Reg §1.1411-4(d)(2) forbids
-("The calculation of net gain may not be less than zero"). Engine and filed
-return disagree by $486 with the regulation on the engine's side. Full
-working — the three-way table and the related unfloored-`line5` flag — is in
-`DEFERRAL_AUDIT.md`. Also open: the capped-vs-uncapped repayment question in
-the SEHI↔PTC loop, and item 68 (what "best" means for the SEP optimizer).*
+*⚠ THE RECURRING LESSON, twice today in one shape: a patch script that
+aborts mid-run leaves a HALF-APPLIED file, and verifying the function you
+fixed says nothing about its sibling (`lookup_shells` → the closeout gate).
+Check every consumer of a changed contract, and run the thing, don't read
+it.*
 
-*✅ #23/#24/#53 LEG 2 SHIPPED AND LIVE (`27a7611`, mig 0329 applied to prod
-01:58Z). Three items, ONE surface — a `depreciation_assets` import section
-(`flow_to` routes, `link_key` names the parent, FKs never importable), ordered
-after its parents and pinned there. **Building it exposed three pre-existing
-defects, all now fixed:** (1) leg 1's "filed total wins" guard was UNREACHABLE
-from the lane — `depreciation_filed` was on the model but in no allowlist, so
-no packet could assert one (the s269 unreachable-leg class); (2) SEVEN
-engine-owned columns were briefly importable and an e2e commit showed an
-imported 12,950 of AMT depreciation come back 0.00 — accepting them is worse
-than omitting them, because the source figure lands and the first recompute
-silently replaces it; (3) four NOT-NULL columns 500'd mid-commit and are now
-refused at staging by name. **Ken ruled 2026-08-21: NO per-asset `*_filed`
-twin — "as long as we have the total"** (DECISIONS.md, extending "the filed
-total wins"; do not re-litigate).*
+*▶ THE 1065 PILOT IS UNBLOCKED. All 101 partnership shells exist in prod
+(the "67 missing" was an EIN-locator artifact — only 33 entities carry an
+EIN; Ken relayed the correction and Codex acknowledged). Codex verifies
+staging/closeout against deploy `9689a9b`+ and resumes the ten-return
+pilot, locating by name → client_number. ⚠ Standing data repair for Ken to
+schedule: backfill the 67 missing entity EINs (mandatory at e-file).*
 
-*⚠ #20's lesson: the item's DIAGNOSIS was right and its stated CAUSE was
-wrong. It said no 1120-S arm existed on Form 7206; one existed and was wired.
-The premium simply had no way IN from the import lane — the K-1 spelling
-(`sehi_amount`) had no reader, and `k1_1065` filters `source_type == "1065"`
-so the row was dropped, not mis-routed. Building to the stated cause would
-have produced a SECOND S-corp arm beside the working one.*
-
-*⚠ A parallel entry session ("2025 Form 1040 returns processing") found five
-production holes in this session's work by testing against prod while I
-tested against tests. Keep the split. It refuses to act on relayed rulings —
-correctly.*
+*▶ OPEN FOR KEN (unchanged): #18's $486 NIIT (DEFERRAL_AUDIT.md, needs the
+subject return in front of him) · packet 214's two replacement PDFs · the
+1120-S pre-incorporation trailer question (SOURCE_DECISIONS_NEEDED.md) ·
+groups C and D (14 TaxWise re-exports + 2 shells) · item 68 ("best" for the
+SEP optimizer) · the SEHI↔PTC capped-vs-uncapped repayment question.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -550,8 +533,8 @@ its own state's instructions, one spec-blocked, one collapsing into #23/#24).
   ⚠ s240/s241w read the **v5.3** rules — re-check `S1-F1040-118-01` and the
   `SH-F1040-*` family against v5.4 on arrival.
 - **1120-S Inbox still holds THREE for Ken** (see `SOURCE_DECISIONS_NEEDED.md`):
-  180 (Lacerte negative-AAA override), 214 (mixed-entity PDF), CATALANC
-  (trailer contribution). *(227 needs a 6765 spec, not a source answer.)*
+  180 (Lacerte negative-AAA override), 214 (mixed-entity PDF), and the
+  pre-incorporation trailer packet. *(227 needs a 6765 spec, not a source answer.)*
   ⚠ **170 is a BUILD ITEM, not a held packet** — the GA-600S Schedule 7/8
   adjustment must not treat federal §179 as a Georgia difference for TY2025
   (HB 1199 conformity). Verify the mechanism first.
