@@ -2,12 +2,27 @@
 
 *Last updated: 2026-08-22 late afternoon (s273, Saturday, new account).*
 
-*⚠⚠ RESUME POINT — **BATCH-296 #26 CLOSED** (pushed, `721d585` LIVE) and
-**1065 BATCH-002 BUILT: ten of ten** (9 full + #10's diagnostic half per
-Ken Decision C) — one BATCH-002 commit awaits Ken's push go-ahead;
-migrations 0331+0332 ride it (⚠ 0331 MUST deploy with/before the sibling's
-`ac35fe7`, which carries the model widening without it). After that: 1040
-BATCH-296 **#21** (PTP partially allowed ordinary loss).*
+*⚠⚠ RESUME POINT — EIGHT COMMITS AWAIT KEN'S PUSH (through merge
+`ade02de`, combined regression 692/692 green): the MS 84-105 + AL 65/20S
+state verticals (states session, merged), BATCH-296 **#65** (66-packet
+foreign-tax aggregate) + **#30** (§111 filed-transcription valve, migs
+0333+0334), the formula-order gate, and the #64 ruling record. ⚠ The
+PUBLISHED SCHEMAS already advertise the 65/30 keys (regenerated early —
+process now fixed to deploy-time); the entry session is told NOT to use
+them until the deploy lands. After the push + deploy verify: message
+"deployed" to Tax Return Entry (66 + 18 packet classes unblock), annex
+65/30 in the batch file, then next builds **#75** (Sch A line-16 MeF
+statement, design in scratchpad/item75_design.md — XSD enum read), **#76**
+(Credit Limit Worksheet B, posted with 2 fixtures), **#77** (GA-500 line
+19 eligible itemizer credit — VERIFY against IT-511 first, never the
+fixture), the CTC missing-DOB staging warning, the shell-lookup
+disambiguation (city — wrong-client-write hazard, near front), and the
+cleanup-API unknown-key 400. LIVE EARLIER: `721d585` + `bd8d45d` +
+`fca56cc` (item 26; 1065 BATCH-002 ten-for-ten; the 14a Code-A fix) — 1065
+lane handed to Codex (3 in Done), entry session on 1040s (527+ Done).
+Day's rulings in DECISIONS (#64) and the batch annexes (#26, #64, 1065
+B-002). Standing red: 46 order-independent test failures + the
+order-dependent QUINTET — both chipped.*
 
 *⚠⚠ MULTI-SESSION PROTOCOL (adopted 2026-08-22 after a working-tree
 collision with the Delvio-states session — its `git stash`/`pop` displaced
@@ -177,6 +192,31 @@ its own test in `95d390c`. **Both are LIVE (deploy verified).**
 - **New working rules (proposed to the sibling, adopted here):** this session
   stages EXPLICIT PATHS, never `git add -A`, while any sibling shares the
   tree; one session at a time on pytest with an explicit hand-off.
+
+### ▶ SINGLE-CHANNEL RULE (Ken, 2026-08-22 evening — "today at least")
+This session is the ONE coordination channel: the sibling Claude sessions
+(Delvio-states, Tax Return Entry) route all questions here, Ken-bound items
+included; Ken answers only through this session on their behalf. Both
+siblings acknowledged-by-notification. Re-confirm with Ken whether it
+carries past today at the next session boot.
+
+### ▶ LANE MAP (Ken-ruled 2026-08-22 evening, s273)
+- **Tax Return Entry (Claude)**: 1040s ONLY, in tandem with this session
+  (the established split below). Its last 1065 act: finish MADMACH #3024
+  against the live `fca56cc`, write the Codex handoff note, stand down.
+- **Codex**: owns the 1065 entry lane from MADMACH+1 (six remaining pilot
+  packets + the four-state multistate packet, which stays gated on Ken's
+  filing-scope ruling — its codename is in the 1065 handoff note, NOT here). ⚠ It
+  must NOT re-enter TTS-OFC #3447 / TTS-HAWTH #2466 (FILED, in 1065\Done)
+  and must re-derive payloads from source (the frozen p1065-* payloads are
+  NOT source-complete — entry session's finding).
+- **Delvio-states (Claude)**: MS_84_105 + AL_FORM_65/20S app builds in the
+  git worktree `D:\dev\delvio-tax-msal` (branch `wave6-msal-states`, based
+  `fca56cc`); merges back through this session; pytest by explicit window
+  only. Facsimile render ruled OK for v1 WITH a non-filing banner + a named
+  official-template deferral per state.
+- **This session**: holds the main tree + test_postgres; builds, deploys on
+  Ken's go, annexes.
 
 ### ▶ IN FLIGHT — a SECOND CC session is entering returns (opened 2026-08-19)
 Ken is running a parallel session, **"2025 Form 1040 returns processing"**
