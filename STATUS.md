@@ -6,11 +6,17 @@ Monday — or Saturday if he works — at his direction.** Items 18 and 20 are
 BUILT and PUSHED (`c866628`); deploy was in progress at write time — verify
 it reached live before trusting it.*
 
-*⚠⚠ DEPLOY ACTION REQUIRED: the #20 follow-up adds THREE NEW diagnostic rows
-(`D_7206_SCORP_K1_NOW2` — the first BLOCKING SEHI rule — plus
-`D_7206_SCORP_NOTBOX1` and `D_7206_SCORP_BOX1_HINT`). **`seed_rules` must run
-against prod or all three are INERT** — registered in code, absent from the
-DB, silently never evaluated.*
+*✅ THE THREE NEW DIAGNOSTIC ROWS ARE LIVE IN PROD (`D_7206_SCORP_K1_NOW2` —
+the first BLOCKING SEHI rule — plus `D_7206_SCORP_NOTBOX1` and
+`D_7206_SCORP_BOX1_HINT`), seeded 2026-08-21 23:57:40Z by the `c866628`
+deploy. **CORRECTION to this session's own earlier note**: `seed_rules` does
+NOT need running by hand — Render's release command runs the seeder, which is
+why no repo file greps for it. Verified rather than assumed: severities in
+the DB are error/warning/info as registered, all three `is_active`, and all
+**966** active rules resolve to a real function (no engine-fault risk — the
+s233 class). A read-only pre-flight also confirmed the re-seed left all **16**
+retired rules retired: `is_active` defaults to True in the seeder, so a rule
+retired ONLY in the DB would have been silently resurrected — none was.*
 
 *Closed today: #11 (no code — the engine was right; the sweep measured
 TaxWise), #66 (half — Worksheet B deferred by name), the source-defect
@@ -28,6 +34,21 @@ return disagree by $486 with the regulation on the engine's side. Full
 working — the three-way table and the related unfloored-`line5` flag — is in
 `DEFERRAL_AUDIT.md`. Also open: the capped-vs-uncapped repayment question in
 the SEHI↔PTC loop, and item 68 (what "best" means for the SEP optimizer).*
+
+*✅ #23/#24/#53 LEG 2 SHIPPED AND LIVE (`27a7611`, mig 0329 applied to prod
+01:58Z). Three items, ONE surface — a `depreciation_assets` import section
+(`flow_to` routes, `link_key` names the parent, FKs never importable), ordered
+after its parents and pinned there. **Building it exposed three pre-existing
+defects, all now fixed:** (1) leg 1's "filed total wins" guard was UNREACHABLE
+from the lane — `depreciation_filed` was on the model but in no allowlist, so
+no packet could assert one (the s269 unreachable-leg class); (2) SEVEN
+engine-owned columns were briefly importable and an e2e commit showed an
+imported 12,950 of AMT depreciation come back 0.00 — accepting them is worse
+than omitting them, because the source figure lands and the first recompute
+silently replaces it; (3) four NOT-NULL columns 500'd mid-commit and are now
+refused at staging by name. **Ken ruled 2026-08-21: NO per-asset `*_filed`
+twin — "as long as we have the total"** (DECISIONS.md, extending "the filed
+total wins"; do not re-litigate).*
 
 *⚠ #20's lesson: the item's DIAGNOSIS was right and its stated CAUSE was
 wrong. It said no 1120-S arm existed on Form 7206; one existed and was wired.
