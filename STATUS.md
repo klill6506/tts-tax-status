@@ -1,17 +1,42 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-22 midday (s272, Saturday). Ken is switching
-accounts; session closed mid-item-26 at his request. **Local = origin
-(`9689a9b` deployed + verified live); ONE local-only WIP commit `679a1e1`
-sits on top — see the DO-NOT-DEPLOY note below.***
+*Last updated: 2026-08-22 late afternoon (s273, Saturday, new account).*
 
-*⚠⚠ RESUME POINT — BATCH-296 #26 (Form 8829 lane block) IS IN PROGRESS,
-commit `679a1e1` (LOCAL ONLY, not pushed). 6 of 7 tests green. The one
-failure: after a staged commit, `business_pct` is not ~8.57 for 144/1,680
-sq ft — NOT DIAGNOSED; candidates in the commit message (does the commit
-path run `compute_8829_db`? is the column stored as a fraction? compute
-order?). Diagnose FIRST, then run the full Schedule C radius, THEN push.
-Do not deploy `679a1e1` alone.*
+*⚠⚠ RESUME POINT — **BATCH-296 #26 CLOSED** (pushed, `721d585` LIVE) and
+**1065 BATCH-002 BUILT: ten of ten** (9 full + #10's diagnostic half per
+Ken Decision C) — one BATCH-002 commit awaits Ken's push go-ahead;
+migrations 0331+0332 ride it (⚠ 0331 MUST deploy with/before the sibling's
+`ac35fe7`, which carries the model widening without it). After that: 1040
+BATCH-296 **#21** (PTP partially allowed ordinary loss).*
+
+*⚠⚠ MULTI-SESSION PROTOCOL (adopted 2026-08-22 after a working-tree
+collision with the Delvio-states session — its `git stash`/`pop` displaced
+this session's uncommitted edits, then restored them; two of our hunks rode
+into its commits): ONE session holds the delvio-tax tree at a time, explicit
+SendMessage handoffs; ONE session on pytest/test_postgres at a time; both
+sides EXPLICIT-PATH staging; NO `git stash` on the shared tree, ever;
+STATUS/BUILD_ORDER/DEFERRAL_AUDIT are THIS session's files. This session
+holds the tree + test DB now. The states lane's CO_DR0106 vertical
+(`ac35fe7`+`38a34d3`+`8e35b68`, local) is complete and rides our next push;
+its next builds (MS 84-105, AL 65/20S) are queued pending Ken's call on
+which lane builds them.*
+
+*⚠ CORRECTION to the s272 close note: `679a1e1` was NOT local-only — the
+session-close push carried it, and Render deployed it live 17:43 UTC
+(dep-da4ttrc9v7es73epn550). No harm: the commit was additive, and the one
+"failing" test was the TEST's bug — `business_pct` persists as a FRACTION
+(0.085714; the ×100 is print-time in render_8829). s273 (`721d585`, local):
+pinned the fraction exactly, 7/7 green, teeth proven by two injections;
+radius 218 passed; scrubbed a client surname the WIP left in three source
+files. THREE findings while closing: **(a)** the packet's filed $636
+depreciation is the 27.5-yr rate — i8829 line 41 (verified live) says
+2.564%, so lines 42/44 are a SOURCE DEFECT ($448/$1,719 correct, filed
+$636/$1,907 can never tie; annexed for the source-defect disposition);
+**(b)** the 8829 YEAR-ROLL is deferred BY NAME (no proforma block —
+DEFERRAL_AUDIT.md); **(c)** 3 test_backentry_cleanup failures in combined
+runs are PRE-EXISTING order dependence (seed_builtin_rules leakage, proven
+at `9689a9b`; minimal repro = 8829_diagnostics_leg + backentry_cleanup;
+task chip spawned).*
 
 *✅ SHIPPED AND VERIFIED LIVE TODAY (through `9689a9b`): the 1065 lane's
 BATCH-001 worked as one unit — 9 of 10 BUILT, #6 RULED-NO-BUILD with the
