@@ -34,12 +34,46 @@ D_RET_015 + revived; `seed_rules` run against the shared DB (012 =
 disability-MRA unchanged, 015 = invariant, both active;
 D_AL40_L12_OVERRIDE also seeded).*
 
+*▶ s279 SECOND HALF (post-close, Ken present) — TWO MORE BATCHES CLOSED,
+two more verified deploys:*
+
+*• **1040 BATCH-011 CLOSED** (`b217801` + generator `3033988`, deploy
+`dep-da5n7rnavr4c73f8dffg` LIVE; annexed; Done): NEW `sch3_fields` (v1 =
+line 6b, the Form 8801 allowed credit as filed — the sch1_fields shape;
+verified from code there was genuinely no Schedule 3 surface before
+concluding "no route," the 8960 lesson applied). The client-4545 149
+credit now reaches 1040 line 20; boundaries named: no 8801 form
+(exclusion items / carryforwards unmodeled, D_SCH3_003 = the honest
+attach warning) and **NO IRS8801 MeF builder — a 6b return ties/commits
+but cannot transmit** (a named future unit). The runner
+(`import-lane.ps1`) now SHOUTS on replayed=True stages (#2). Published
+1040 schema regenerated (the generator needed its own sch3_fields entry
+— the stricter-than-production class again).*
+
+*• **1120-S FORM6765 REQUEST CLOSED** (`5d263d8`, deploy
+`dep-da5nhamq1p3s73bdo810` LIVE; annexed; Done — the last 1120-S queue
+item, per Ken): BOTH blocking claims in the request were STALE — the RS
+6765 spec EXISTS (200; cached, draft-trap-passed) and the FORM has been
+built since s230. The true gap was the entity lane: new `form_6765`
+OBJECT section (24 input facts; computed lines refuse toward the K13g
+pin; fixed_base_pct FRACTION guard — >0.16 refuses as the
+percent-as-fraction slip), K13g joins the answer key (the K15f-omission
+class), closeout gains declared/present/ENGAGED holds. The packet-227
+chain reproduces with no override: QREs 53,704 → floor 26,852 binds →
+×15.8% = 4,243 → K13g → K-1 code M. Entity schema regenerated —
+including the PRE-EXISTING form_2553 advertisement omission, fixed same
+stroke. Codex re-stages packet 227 per the annex.*
+
 *▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
 BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
-annex). Queues otherwise clear (1120-S empty; 1040 empty — 009/010 in
-Done; legacy NZ #10 parked). Then per BUILD_ORDER. Awaiting from entry:
-packet-170 + investment-partnership re-stages; staging-guard fixture
-shapes. Awaiting from states: the AL_40NR spec (then the 40NR app build).*
+annex; Ken has the exact re-ask prompt). ALL queues now clear (1120-S,
+1040, legacy-parked). Then per BUILD_ORDER. Awaiting from entry:
+packet-170 + investment-partnership re-stages; packet-227 re-stage
+(form_6765); client-4545 re-dry-run (sch3_fields); staging-guard fixture
+shapes. Awaiting from states: the AL_40NR spec (Gate-1 with Ken; MS/CO
+C-corp specs also authored-and-gated tonight). E-FILE UNITS QUEUED from
+tonight: IRS8801 composer; the 6765-behind-K13g e-file leg is already
+built (MeF K-1 code M).*
 
 *⛔ KEN — parked with him (carried + s279 additions): (1) clients
 4387/3199 W-2 rounding-band acks; 3199 prior-year files. (2) The 2665
