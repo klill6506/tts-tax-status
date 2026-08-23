@@ -1,55 +1,56 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-23 ~04:00 (s276 — the overnight shift continues on
-Ken's standing authorization from ~00:15).*
+*Last updated: 2026-08-23 ~14:00 (s277 mid-day — Ken active; standing push
+authorization ruled this morning, every push Render-API-verified).*
 
-*⚠⚠ RESUME POINT — **s276 SHIPPED THREE UNITS ACROSS THREE VERIFIED
-DEPLOYS**: ① **BATCH-296 #37+#67 as one unit** (`2210c69`,
-dep-da59rpjl550s7384a2k0) — Form 6251 Part III now COMPUTES via the
-Schedule D Tax Worksheet (2025 face lines 12-40 transcribed verbatim, both
-skip rules; the gather reproduces the regular SDTW via the same pure
-`compute_sdtw` and PROVES it by tying line 47 to the return's line 16
-within $1 — mismatch keeps the D_6251_005 defer). Zero taxable excess
-never defers on §1250/28% gain; basis-difference facts still error;
-D_6251_008 warns. **Unblocks the EIGHT tied returns held solely by
-D_6251_005** — entry lane asked to re-run cleanup (no re-stage) and post
-the clears. Four injected defects each caught; FA 526. ② **The two
-entry-lane channel asks** (`129daab`, dep-da5a1qad0e5s73bg2jug) —
-shell-lookup rows now carry city/state (1040 Taxpayer / entity lanes;
-same-name disambiguation), and the cleanup API 400s on any unknown
-top-level or packet key naming the key + index + allowed vocabulary
-(a typo'd `source_verified` used to drop silently). ③ **The s275 #75
-deferred UI leg** (`44e9511`, dep-da5a549t0dsc73c8mveg verified LIVE
-~03:37) —
-`scha_other_itemized_type` dropdown on BOTH Schedule A screens (legacy +
-Slate), enum shared via `client/src/renderer/lib/otherItemizedTypes.ts`;
-typecheck clean, vitest 6/6 injection-proven.*
+*⚠⚠ RESUME POINT — **s276+s277 SHIPPED TWELVE VERIFIED DEPLOYS TODAY.**
+s276 overnight (③ units): 6251 Part III SDTW (`2210c69` — the EIGHT
+D_6251_005 holds ALL cleared in production); shell-lookup city/state +
+cleanup unknown-key 400 (`129daab`); Schedule A dropdown (`44e9511`).
+s277 (Ken present): **MFJ itemizer $600** ruled+built (`dcd35f4`,
+verified on a real return to the dollar); **1065 BATCH-004 #9+#10**
+(`1e2b821` — K15f answer key + schema parity-by-declaration); **#1+#8
+AJ/AN statement trios** (`316f0e3`, mig 0340); **Path2College
+per-beneficiary cap** ruled+built (`ae3c794`, mig 0341,
+`ga_529_beneficiary_count`; Ken: beneficiary need NOT be a dependent —
+no per-return ceiling); **iterative-SEHI e-file** (`33514d9` — composer
+omits IRS7206, proves line 17 vs re-derived Pub 974; 1917/2065 closed
+with ledgers); **GA-500 lines 18/20 honor overrides** (`4099d75` — the
+vanishing other-state credit; 1569 Done); **1065 #3 K13e coded
+deductions** (`658cb9e`, migs 0342+0343 — entity rows compose, box13
+partner categories, D_K1_13E, pro-rata suppression); **SEHI-BASE
+persistence** (`e284532` — the S-corp K-1 SEHI boundary; 4006/2665
+unblock on recompute); **the GA pair** (`b68c5bd`, mig 0344 — RIE
+dividend-line US-gov netting via `div_1099s[].us_government_income`
+(client-2552 class, additive, item-14 pins prove the old path
+byte-identical) + line 26 derives from dated GA estimate rows). All
+annexed (BATCH-296 entry-channel items A-E + the BATCH-004 annexes);
+both published schemas regenerated post-deploy each time.*
 
-*▶ NEXT: **still awaiting the entry session's hold shapes** for the
-staging-guard family (1310 date-of-death; asset `flow_to` unresolvable
-`link_key`; `mortgage_deductible` teaching refusal) + the CTC missing-DOB
-warning — re-asked by message this session. **The "EIC opt-out class
-(line 27c)" one-liner was verified NOT literal** — `eic_opt_out` exists
-end-to-end (BATCH-005 #2, D_EIC_017, mig 0156); asked the entry session
-for the real shape before building anything. Then the remaining BATCH-296
-opens (many are entry-shape- or Ken-gated; see the batch file's annex
-ledger).*
+*▶ ENTRY-LANE STATE (they report): SEVENTEEN packets to Done today;
+2552/2761/2887 re-staging on the just-live RIE dividend fix;
+4006/2665 recompute+cleanup on the SEHI-BASE fix. The lost-messages
+gap: the session channel dropped a whole morning BOTH ways — anything
+load-bearing now ALSO goes in batch-file annexes.*
 
-*⛔ KEN — MORNING QUESTIONS (carried from s275, still open): (1) **#77
-MFJ**: is the GA eligible-itemizer credit $600 on a joint return where
-both spouses itemize ("$300.00 per taxpayer", §48-7-27.1)? Engine derives
-nothing for MFJ until you rule. (2) **#82's fixture ruling**: is 2.564%
-(i8829 39-year) right for the client-4175 permanent note? (3) Carried:
-#8 GA-700 Sch 4 scope; #6 1065X/AAR spec + season-one scope; #68
-optimizer "best"; the s274 PII items (mirror history rewrite; guard
-blocklist hardening).*
+*▶ NEXT (build queue): 1065 BATCH-004 remaining — **#6** (PTP
+disposition → K11/box 11 ZZ routing; outside-in 550 → 272/6/272) then
+**#2** (Statement A — needs a per-activity ROW model), **#5**
+(lower-tier K-1 family, biggest), **#7** (Form 8990 — run the 404-STOP
+RS gate first). **#4 is BLOCKED on Codex**: the Box-2 statement's exact
+row-by-row arithmetic (question posted in the BATCH-004 annex — no
+payload path was given and sign conventions are not guessable).
+Awaiting from entry: the staging-guard fixture shapes (1310
+date-of-death; asset flow_to link_key; mortgage_deductible; CTC DOB) —
+real fixtures only.*
 
-*▶ s276 side effects: no migrations. The D_6251_005 seeded description
-narrows at deploy via seed_all/seed_rules (behavior is code-side and
-already live). RS note: the 6251 spec needed NO amendment — its
-R-6251-P3-CAPGAINS already sanctioned the SDTW reuse (the spec was ahead
-of the app); its D_6251_005 diagnostic description could take the
-narrowed wording in a courtesy pass (agenda'd, low priority).*
+*⛔ KEN — parked with him: (1) clients 4387 + 3199 W-2 box-3/5
+rounding-band acknowledgments (re-export the W-2 faces or acknowledge
+with the band); 3199 also needs 2020-2024 prior-year files for
+the §1231 lookback. (2) The 2665 Notice 2008-1 question (box 1 does not
+exceed box 5 → deduction may be unsupportable; entry session asked him
+directly). (3) Carried: #8 GA-700 Sch 4 scope; #6 1065X/AAR; #68
+optimizer "best"; s274 PII items.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -64,81 +65,64 @@ narrowed wording in a courtesy pass (agenda'd, low priority).*
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 `delvio-tax` (srv-d6geloa4d50c73el2trg); demo = `tts-tax-demo`. ⚠ **A push
 is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
-`D:\dev\Passwords & Secrets\render-api-key.txt`). *(s276: all three
-deploys API-verified LIVE.)*
+`D:\dev\Passwords & Secrets\render-api-key.txt`). **Standing push
+authorization (Ken 2026-08-23, DECISIONS.md): push at own judgment; verify
+every deploy; hold only for a named reason.**
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
 find defects. State the finding and move on.
 
 ## ▶ SINGLE-CHANNEL RULE — STANDING (Ken, 2026-08-22)
-**The build session MANAGES the sibling Claude sessions.** Overnight
-arrangement (Ken, ~00:15 8/23): both siblings route questions here;
-anything needing Ken directly (RS prod seeds, tax-treatment rulings)
-HOLDS for morning. GATE EXCEPTIONS stay human end-to-end. Coordination:
-ListAgents + SendMessage; ONE delvio-tax tree holder; ONE
-pytest/test_postgres holder; explicit-path staging; NO stash on the
-shared tree. *(s276 holds tree + test_postgres.)*
+**The build session MANAGES the sibling Claude sessions.** Coordination:
+ListAgents + SendMessage — ⚠ the channel DROPPED a whole morning of
+messages both ways (s277): anything load-bearing goes in batch-file
+annexes too. GATE EXCEPTIONS stay human end-to-end IN the acting session
+(the entry lane held the client-4175 write until Ken confirmed there — correct; and it
+REFUSED a relayed credential — also correct: **never relay tokens
+through the message channel**; the one I relayed was revoked at the DB).
+ONE delvio-tax tree holder; ONE pytest/test_postgres holder (s277 holds
+both). delvio-states: MD_500 seeded to RS prod (Ken-gated), VA LOI
+package done (D-22: declare 502+502PTET only; TY2026 LOI not yet
+published — weekly watch running).
 
-## ▶ LANE MAP (Ken-ruled 2026-08-22, s273; unchanged s276)
-- **Tax Return Entry (Claude)**: 1040s only. Owes s275/s276: the re-stage
-  proofs (#78 client 4502; the two #76 fixtures; #75 clients 2003/3731),
-  **the cleanup re-run on the eight D_6251_005 holds (s276)**, the
-  staging-guard hold shapes, the PSO E-flag sweep count, any MFJ
-  itemizer's printed line 19, the real EIC-opt-out-class shape.
-- **Codex**: 1065 entry lane; re-passes the 1065 Inbox against `e3e88a4`.
-- **Delvio-states (Claude)**: idle overnight; LA seeded NOT cleared;
-  state-spec priorities routed to Ken (AL 40NR / SC Sch NR / NC D-400).
-- **This session**: builds, deploys (Ken's overnight authorization),
-  annexes.
-
----
-
-## ⚠ Known red / rotted — THE ONE LIST (post-s276)
-- **The quintet** (s225/s258 files) — seed_builtin_rules leakage; fails
-  even per-file on a contaminated reuse-db; `--create-db` on the affected
-  files = reset AND non-implication proof (s275).
+## ⚠ Known red / rotted — THE ONE LIST (post-s277)
+- **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
+  `--create-db` on the affected files = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔
   KEN s217).
-- **Client typecheck**: green (`npm run typecheck`); s276's client change
-  (Schedule A dropdown) typechecked + vitest 6/6.
+- **Client typecheck**: green (`npm run typecheck`).
 
 ### ⚠ Test-run hazards (standing)
 - One shared `test_postgres` (RS suite included). Long runs DETACHED.
   Never pipe pytest through `Select-Object`; redirect to a file.
-  `poetry run` only from `server\`. Windows python can't read Bash /tmp.
-- ⚠⚠ PS5.1 encoding traps (s275, three hits in one night): `Set-Content
-  -Encoding utf8` BOMs (one reached a commit subject via `-F`);
-  `Get-Content -Raw` without -Encoding mojibakes UTF-8 before a rewrite
-  (double-encoded a batch-file annex AND compute_8839.py — the latter
-  restored from HEAD); regex-replace file rewrites are BANNED here — use
-  the Edit tool or `[IO.File]` with explicit BOM-less UTF8.
+  `poetry run` only from `server\` (the Bash tool silently prints
+  NOTHING for poetry one-liners — use the PowerShell tool).
+- ⚠⚠ PS5.1 encoding traps (s275): regex-replace file rewrites BANNED;
+  Edit tool or `[IO.File]` BOM-less UTF8; never `Set-Content` for UTF-8.
 - Staging answers **201 even for an invalid payload** — the verdict is
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
-- (s268) 1,604 queries/run across 957 rules; + s275 adds
-  `credit_limit_worksheet_b` running twice per pass (8839 limit + 8812);
-  + s276 adds the Part III gather re-running `compute_sdtw` per pass on
-  §1250/28% returns — all memoization candidates if the s268 unit lands.
+- (s268) 1,604 queries/run; + `credit_limit_worksheet_b` ×2/pass (s275);
+  + the Part III SDTW re-run per pass (s276); + `iterative_sehi_expected`
+  re-runs the Pub 974 loop at composition (s277) — all memoization
+  candidates if the s268 unit lands.
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
-  nonpassive K-1 AGI gap (repro in `test_8960_line4b_clamp.py`) ·
-  (s274) the shared-policy pair 8962 fixture · (s275, states session)
-  `.first()`-on-per-form-rules sweep chip (task_b1fd177f).
+  nonpassive K-1 AGI gap · (s274) the shared-policy pair 8962 fixture ·
+  (s275) `.first()`-on-per-form-rules sweep chip (task_b1fd177f — MINE,
+  not the states session's).
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 170 (GA-600S §179
   HB 1199) · 17a / 17d.
 
-## RS AGENDA — carried + s276 addition:
-FA-1040-SCHF-04 re-export · AL_FORM_40NR no spec (#52) · FORM_2441 three
-amendments · Form 4136 no spec (#48) · collectibles_28 notes · SC1040
-pins 2,360 · NC D400 part-year dates · ten staged FA definitions · 8862
-re-author · SCHEDULE_H draft · GA QEE / 4547 / 8879_TA no spec · `500`
-spec silent on RIE feeds, DIS gate, joint-split rounding, line-5 and
-line-19 derivations (s275) · R-RET-5AB lacks the §402(l) PSO fact (s275)
-· **6251 spec D_6251_005 description could take the narrowed
-irreproducible-worksheet wording (s276, courtesy)** · 1065 K-1 box-15
-letters (URGENT).
+## RS AGENDA — carried + s277 additions:
+Everything from s276 still stands, plus: `500` spec gains the line-18/20
+override convention + the line-26 derive + the RIE dividend-line US-gov
+netting (the s233 rule's second application); SCHEDULE_K1_1065 spec has
+no box-13 statement-category vocabulary (the K13e build is ahead of it);
+the 6251 D_6251_005 courtesy pass is QUEUED WITH THE STATES SESSION
+pending Ken's RS-prod gate; 1065 K-1 box-15 letters (URGENT).
