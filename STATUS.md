@@ -1,69 +1,60 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-23 ~17:30 (s278 — the two entity queues cleared,
-then the 1040 lane's fresh BATCH-008 worked to Done; four verified
-deploys).*
+*Last updated: 2026-08-23 ~late evening (s279 — two 1040-lane batches worked
+live during entry, the retired ledger's last three items resolved, and a
+seeder-collision guard that caught a silently dead diagnostic).*
 
-*▶ s278 LATE ADDITION — **1040 BATCH-008 CLOSED** (`9228c0e`, both items
-one deploy, annexed, moved to Done; the lane's NEW-SERIES file — the
-lane confirmed BATCH-296 is the retired old-scheme file): (1)
-`sch1_fields` non-amount lines — 2b/19c instrument dates + 19b SSN —
-now stage with their own shapes AND commit VERBATIM (the commit writer
-had coerced all three to "0"; a staged date/SSN never reached the face);
-(2) the GA RIE derive feeds worksheet line 8 (alimony) from Schedule 1
-line 2a on NON-JOINT returns; joint-with-alimony stays preparer-entered
-(no per-spouse fact to derive from; D_GA500_017 names it). ⚠ L8 LEFT
-the never-zeroed set (third line: L9 s182, L10 s241o) — the old
-contract test rewritten same pass (s225 rule; the gate caught it).
-Client-2761 pins tie to the dollar; the lane can re-stage 2761 with 2b
-restored and must NOT key RIE-TP-8 (the derive covers a single filer).*
+*⚠⚠ RESUME POINT — **s279 SHIPPED TWO VERIFIED DEPLOYS (4 commits).**
+**1040 BATCH-009 CLOSED** (`9b83991`, deploy `dep-da5m7jqd0e5s73bq1isg`
+LIVE; annexed; moved to Done): Form 8960 was eating passive K-1 income —
+the non-§1411 back-out used the nonpassive activity's GROSS box 1 while
+line 4a carries it net of its own §179/UPE; the overstated back-out hit
+the 4b clamp and flattened the bucket. Fix at the ONE shared function
+(compute/diagnostics/render/MeF together); filed-split rows now enter the
+back-out by filed classification. The entry lane re-ran the fixture SAME
+NIGHT: ties, committed, filed.
+**1040 BATCH-010 CLOSED** (`dcca02f`, deploy `dep-da5mhlfavr4c73f7s0f0`;
+annexed): the NON-iterative S-corp SEHI path (7206, no 8962) now transmits
+IRS7206 via the form's line-11 Box-5 route, mirroring the exact
+scorp_sehi pairings compute feeds Sch 1 L17 (`scorp_k1_sehi_forms`, new
+one-source generator). Farm/Medicare-fold stay the narrowed named boundary.
+**BATCH-296 (retired ledger) — zero OPEN items remain**: #50 BUILT
+(`cbe370f` — AL40 line 12 preparer override stands + chains,
+D_AL40_L12_OVERRIDE polices cap/part-year scope; $1 L17 residual named =
+the DOR tax-table midpoint vs continuous-bracket, the PRE-EXISTING stated
+boundary); #51 ALREADY BUILT (other_income_items route 8h, s241z); #52
+PARKED at the RS-spec gate — and **KEN RULED (via delvio-states): AL_40NR
+spec authoring is NEXT in the states lane**, ahead of MS/CO; app build
+follows the seeded spec (campaign open item 0; not tonight — full
+source-pull → Gate-1 process).
+**The duplicate-code guard fired on first run** (`7b8f01b`): D_RET_012 was
+declared twice; the s243b SS-worksheet 6b ENGINE INVARIANT had been
+silently dead since s242 (seeder last-writer-wins). Renumbered to
+D_RET_015 + revived; `seed_rules` run against the shared DB (012 =
+disability-MRA unchanged, 015 = invariant, both active;
+D_AL40_L12_OVERRIDE also seeded).*
 
-*⚠⚠ RESUME POINT — **s278 SHIPPED THREE VERIFIED DEPLOYS.**
-**1120-S BATCH-014 CLOSED** (`1634c4b`, deploy `dep-da5klprl550s738d5vu0`
-LIVE; annex appended; file moved to Done): #1 a bulk-sale member's
-business-use % business-adjusts its GROUP basis on all three arms
-(the 66.70% pickup — keyed cost_basis/amt_cost_basis are already
-business-adjusted and net of history: never gross, never multiplied
-twice; K15b 2,838 → −22,318 tied to the dollar BEFORE building); #2 §179
-cancels BEFORE the GA-600S depreciation pair is built in BOTH
-presentation modes (the election rides K11 and was never in the entity
-income base — component-net had manufactured 31,128 of GA income from a
-stale pre-conformity register election; S6_11 mode invariant is
-structural again). ⚠ Entry lane must re-stage packet 170 with
-`return_info.ga_depreciation_presentation: "aggregate_gross"` (its face
-is the gross pair) — said in the annex.
-**1065 BATCH-004 STANDS 9/10**: #5 (`5335871`, migs 0349+0350 — the
-lower-tier K-1 row family; leg 1 = the K11 COMPONENT REGISTRY, the s230
-duty discharged, the #6 keyed-K11 blank-stomp adjacent defect fixed, the
-mixed −4,512 tie pinned; §1231 → K10 with no fabricated 4797; new
-D_LT_NONDED seed line → K18c; K6b/K13b/K18b/K18c join the answer key)
-and #7 ledger-only v1 (`5decfa1`, migs 0351+0352 — Form 8990 Schedule A
-EBIE carryforward ledger, prior 57 → ending 57 persists independent of
-tax effect; nonzero current-year refuses by name, spec-first). All
-migrations + the seed applied to the shared DB pre-push; published
-schema regenerated post-deploy (lower_tier_k1s + form_8990_schedule_a
-advertised). Annexes appended to the batch file.*
+*▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
+BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
+annex). Queues otherwise clear (1120-S empty; 1040 empty — 009/010 in
+Done; legacy NZ #10 parked). Then per BUILD_ORDER. Awaiting from entry:
+packet-170 + investment-partnership re-stages; staging-guard fixture
+shapes. Awaiting from states: the AL_40NR spec (then the 40NR app build).*
 
-*▶ NEXT: **#4 is BATCH-004's only open item — BLOCKED on Codex's Box-2
-statement arithmetic** (question + re-ask in the annex). Queues swept
-this boot; nothing else posted. Then per BUILD_ORDER. Also queued: the
-GA six-re-stage dry-runs (KEN'S CALL); the staged-field-with-no-consumer
-tripwire design chip; the RS agenda additions (8990 spec re-authoring
-now has a live consumer; 4797 spec silent on business-use member basis).
-Awaiting from entry: the staging-guard fixture shapes; the packet-170 +
-investment-partnership re-stages on the new surfaces.*
-
-*⚠ s278 lesson worth the pointer: the PS5.1 regex-rewrite ban was
-violated once (mojibake in backentry_entity.py) — caught immediately by
-grepping the diff for `â€`, restored from HEAD, edits redone with the
-Edit tool. The ban is load-bearing; see the s278 memory file.*
-
-*⛔ KEN — parked with him (carried): (1) clients 4387 + 3199 W-2 box-3/5
-rounding-band acknowledgments; 3199 also needs 2020-2024 prior-year
-files for the §1231 lookback. (2) The 2665 Notice 2008-1 question.
-(3) The six-re-stage dry-run decision (GA ordering-bug residual class).
-(4) Carried: #8 GA-700 Sch 4 scope; #6 1065X/AAR; #68 optimizer "best";
-s274 PII items; the RS 8990 re-authoring gate.*
+*⛔ KEN — parked with him (carried + s279 additions): (1) clients
+4387/3199 W-2 rounding-band acks; 3199 prior-year files. (2) The 2665
+Notice 2008-1 question — s279 note: the entry lane's client-1657 packet is
+the CLEAN contrast case (four independent corroborations; box 1 > box 5 by
+exactly the premium; the D_W2_BOX3/5_VAR warnings firing IS the correct
+signature — their ABSENCE is the suspicious case). (3) The six-re-stage
+dry-run decision (S1-10 ordering-bug class) **+ s279: the 8960
+passive-K-1 retrospective class** (committed returns with a passive K-1 +
+MAGI over the §1411 threshold — same dry-run mechanism, flagged by the
+lane, not run). (4) **NEW: the state-face override-honor convention** —
+keyed COMPUTED lines on AL/SC/NC faces other than AL40-12 remain
+accepted-but-ignored (the GA line-18 class); extend per-line like GA, or
+blanket? (5) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer;
+s274 PII items; RS 8990 re-authoring gate.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -92,54 +83,54 @@ ListAgents + SendMessage — ⚠ the channel DROPPED a whole morning of
 messages both ways (s277): anything load-bearing goes in batch-file
 annexes too. GATE EXCEPTIONS stay human end-to-end IN the acting session.
 **Never relay tokens through the message channel.** ONE delvio-tax tree
-holder; ONE pytest/test_postgres holder (s278 held both). delvio-states:
-authoring VA_500 → AZ_120/AZ_120A in RS, gated, no prod writes, no
-test_postgres (two courtesy notes received s278; AZ bonus = 0% every
-vintage is on the board for any future AZ app build).
+holder; ONE pytest/test_postgres holder (s279 held both; states session
+authoring MO_1120 then AL_40NR in RS — gated, no prod writes, no
+test_postgres).
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s278)
+## ⚠ Known red / rotted — THE ONE LIST (post-s279)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` on the affected files = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔
   KEN s217).
-- **Client typecheck**: green (`npm run typecheck`).
+- **Client typecheck**: green (`npm run typecheck`). No client changes s279.
 
 ### ⚠ Test-run hazards (standing)
 - One shared `test_postgres` (RS suite included). Long runs DETACHED.
   Never pipe pytest through `Select-Object`; redirect to a file.
   `poetry run` only from `server\` (the Bash tool silently prints
   NOTHING for poetry one-liners — use the PowerShell tool).
-- ⚠⚠ PS5.1 encoding traps (s275, RE-PROVEN s278): regex-replace file
-  rewrites BANNED — one slipped through and mojibaked
-  backentry_entity.py (HEAD restore). Edit tool or `[IO.File]` BOM-less
-  UTF8; never `Set-Content`/`Get-Content -Raw` for UTF-8. After ANY
-  shell touch of a source file, grep the diff for `â€` markers.
+- ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED. Edit tool
+  or `[IO.File]` BOM-less UTF8; never `Set-Content`/`Get-Content -Raw`
+  for UTF-8. After ANY shell touch of a source file, grep the diff for
+  `â€` markers (s279: one Bash-heredoc append — checked clean).
 - Staging answers **201 even for an invalid payload** — the verdict is
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
-- (s268) 1,604 queries/run; + `credit_limit_worksheet_b` ×2/pass (s275);
-  + the Part III SDTW re-run per pass (s276); + `iterative_sehi_expected`
-  re-runs the Pub 974 loop at composition (s277) — all memoization
-  candidates if the s268 unit lands.
+- (s268) 1,604 queries/run + the memoization candidates (s275/276/277).
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
   nonpassive K-1 AGI gap · (s274) the shared-policy pair 8962 fixture ·
-  (s275) `.first()`-on-per-form-rules sweep chip (task_b1fd177f — MINE,
-  not the states session's).
+  (s275) `.first()`-on-per-form-rules sweep chip (also `_ctx_al40` /
+  the s279 `_l12_overridden` follow the same `.first()` pattern).
+- (s279, from delvio-states) the static two-writers guard generalization:
+  the diagnostic-code half SHIPPED (`test_diagnostics_code_uniqueness_s279`,
+  caught D_RET_012); the FormLine-seeder half (two seeders update_or_create
+  the same keyed row) is still unguarded.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried + s278 additions:
-Everything from s277 still stands (500 spec: line-18/20 override
-convention + line-26 derive + RIE dividend netting; SCHEDULE_K1_1065
-box-13 vocabulary; the 6251 D_6251_005 courtesy pass queued with states;
-1065 K-1 box-15 letters URGENT), plus s278: **the 8990 spec re-authoring
-gate now has a live consumer** (the #7 full unit waits on it — the
-ledger v1 is its input surface); **the 4797 spec is silent on
-business-use member basis** (BATCH-014 #1's convention — business
-portion of gross, whole-dollar, before historical reductions — should be
-seeded as a rule); SCHEDULE_K1_1065/1065 spec has no lower-tier K-1
-row-family vocabulary (the #5 build is ahead of it).
+## RS AGENDA — carried + s279 additions:
+Everything from s277/s278 stands (500 spec override/derive conventions;
+SCHEDULE_K1_1065 box-13 + box-15 letters; 6251 courtesy pass; 8990
+re-authoring gate with its live consumer; 4797 business-use member basis;
+lower-tier K-1 vocabulary), plus s279: **AL_FORM_40 needs (a) the line-12
+override convention + D_AL40_L12_OVERRIDE seeded upstream, (b) the R-AL-TAX
+DOR tax-table midpoint rule** (the continuous-bracket approximation now has
+a named $1 miss on a real return); **AL_40NR spec authoring is COMMITTED as
+the states lane's next unit (Ken ruling, campaign item 0)**; FORM_8960's
+spec is silent on the 4b activity-net attribution the s279 fix encodes
+(back-out = activity's line-5 contribution net of its own §179/UPE — should
+be a spec rule); FORM_7206 spec should name the S-corp line-11 MeF mapping.
