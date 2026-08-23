@@ -33,6 +33,16 @@ both published schemas regenerated post-deploy each time.*
 gap: the session channel dropped a whole morning BOTH ways — anything
 load-bearing now ALSO goes in batch-file annexes.*
 
+*⚠⚠ ▶ FIRST AT NEXT BOOT (Ken-directed at s277 close): **WORK THE TWO
+ENTITY QUEUES BEFORE ANYTHING ELSE.** (1) **`1120S\CC Changes\
+CC_CODE_CHANGES_1120S_BATCH-014.md`** — posted 2026-08-23 13:08, NEVER
+SWEPT (it landed after the s277 boot sweep; contents unread — full
+verify-first triage from scratch). (2) The open **1065 BATCH-004
+remainder** (7/10 done): #5 (lower-tier family; LEG 1 = the K11
+component-registry conversion per DEFERRAL_AUDIT), #7 ledger-only v1,
+and #4 if Codex has posted the Box-2 statement arithmetic answer in the
+annex. Then the rest of NEXT below.*
+
 *▶ NEXT (build queue): **#6 and #2 SHIPPED in the afternoon**
 (`a6749e6` PTP→K11 routing + D_K1_11, migs 0345+0346; `d35004e`
 Statement A per-activity rows, migs 0347+0348 — SEVENTEEN verified
