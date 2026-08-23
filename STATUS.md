@@ -10,7 +10,8 @@ After the deploy verifies: regenerate the published schema (deploy-time
 rule — closes the stale-`form_8829` + SSA-description drift the entry
 session found), then build **#78+#80 as ONE deploy** (GA-500 joint-split
 conserving splitter — six `(amt/2)` sites, largest-remainder at the
-aggregate, TP floor, odd dollar to spouse, West Emory the $1 fixture;
+aggregate, TP floor, odd dollar to spouse; the held $1-off packet is the
+fixture (its key is in the entry session's hold notes, NOT here);
 + line-5 filing-status derivation with the explicit key as override and
 the staging warning). Then #79 (§402(l) PSO — VERIFY statute/Pub 575
 first, incl. per-taxpayer-vs-per-plan), #75 (Sch A line-16 MeF statement,
