@@ -195,3 +195,15 @@ the states lane's next unit (Ken ruling, campaign item 0)**; FORM_8960's
 spec is silent on the 4b activity-net attribution the s279 fix encodes
 (back-out = activity's line-5 contribution net of its own §179/UPE — should
 be a spec rule); FORM_7206 spec should name the S-corp line-11 MeF mapping.
+
+**Seeded-and-exportable (s279 late, Ken's "seed all three"): RS prod 167
+forms — `MO_1120`, `MS_83105`, `CO_DR0112` export 200.** Exportable ≠
+cleared to build (Ken's scoping call; Dec 1 freeze governs). Two warnings
+that TRAVEL WITH those specs into any app build, verbatim from the states
+lane:
+- **MS_83105**: `MS_FRANCHISE_NET_FLOOR` is the ONE constant that changes
+  if the DOR answers its outstanding ticket for §27-13-5(1)(b) (the $25
+  statutory franchise minimum) instead of its own line-4 zero-floor
+  instruction — every Mississippi bank return moves by $25.
+- **CO_DR0112**: do NOT roll forward to TY2026 — four rules change at
+  once; it is a re-authoring event, not a rate bump.
