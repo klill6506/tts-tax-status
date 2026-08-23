@@ -22,9 +22,21 @@
 > Schedule A EBIE carryforward ledger persists independent of tax effect
 > (prior 57 → ending 57), column arithmetic validated, nonzero
 > current-year amounts refuse by name (spec-first). #4 stays blocked on
-> the lane's Box-2 statement arithmetic. ⚠ The s275 PS5.1 regex-rewrite
-> ban was violated once and caught immediately (mojibake in
-> backentry_entity.py; restored from HEAD, edits redone with the Edit
+> the lane's Box-2 statement arithmetic. **Then the 1040 lane posted
+> BATCH-008 (its new-series file) and both items shipped as a fourth
+> deploy (`9228c0e`)**: the sch1_fields non-amount lines (2b/19c
+> instrument dates, 19b SSN) stage with their own shapes AND commit
+> verbatim — the "verbatim write" the s241j comment promised never
+> existed, so a staged date or SSN had always reached the face as "0";
+> and the GA RIE derive feeds worksheet line 8 (alimony) from Schedule 1
+> line 2a on non-joint returns (the L9 no-guess resolution; joint stays
+> preparer-entered, D_GA500_017 names it). L8 thereby LEAVES the
+> never-zeroed set — the THIRD line to make that migration (L9 s182,
+> L10 s241o) — and the old contract test was rewritten in the same pass
+> (the gate caught it, 1 red of 944; 996 green after). The client-2761
+> decomposition pins to the dollar (57,206 / 72,496). ⚠ The s275 PS5.1
+> regex-rewrite ban was violated once and caught immediately (mojibake
+> in backentry_entity.py; restored from HEAD, edits redone with the Edit
 > tool — the ban is load-bearing).
 >
 > **2026-08-23 session 277 — THE LIVE-LOOP DAY: SEVENTEEN VERIFIED DEPLOYS

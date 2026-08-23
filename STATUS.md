@@ -1,7 +1,22 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-23 ~16:30 (s278 close — the two entity queues Ken
-directed at s277 close are CLEAR; three verified deploys).*
+*Last updated: 2026-08-23 ~17:30 (s278 — the two entity queues cleared,
+then the 1040 lane's fresh BATCH-008 worked to Done; four verified
+deploys).*
+
+*▶ s278 LATE ADDITION — **1040 BATCH-008 CLOSED** (`9228c0e`, both items
+one deploy, annexed, moved to Done; the lane's NEW-SERIES file — the
+lane confirmed BATCH-296 is the retired old-scheme file): (1)
+`sch1_fields` non-amount lines — 2b/19c instrument dates + 19b SSN —
+now stage with their own shapes AND commit VERBATIM (the commit writer
+had coerced all three to "0"; a staged date/SSN never reached the face);
+(2) the GA RIE derive feeds worksheet line 8 (alimony) from Schedule 1
+line 2a on NON-JOINT returns; joint-with-alimony stays preparer-entered
+(no per-spouse fact to derive from; D_GA500_017 names it). ⚠ L8 LEFT
+the never-zeroed set (third line: L9 s182, L10 s241o) — the old
+contract test rewritten same pass (s225 rule; the gate caught it).
+Client-2761 pins tie to the dollar; the lane can re-stage 2761 with 2b
+restored and must NOT key RIE-TP-8 (the derive covers a single filer).*
 
 *⚠⚠ RESUME POINT — **s278 SHIPPED THREE VERIFIED DEPLOYS.**
 **1120-S BATCH-014 CLOSED** (`1634c4b`, deploy `dep-da5klprl550s738d5vu0`
