@@ -1,14 +1,20 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-22 late night (s274, Saturday).*
+*Last updated: 2026-08-23 very early (s274 — Saturday night into Sunday).*
 
-*⚠⚠ RESUME POINT — **THE STANDING RED IS CLEARED** (Ken's directed step from
-the s273 close). Commit `0a82983` pushed on Ken's go; deploy verification
-was in flight at close — **CHECK IT LANDED LIVE before believing anything
-else** (dep-da54qseq1p3s73avn7n0; API key in `D:\dev\Passwords & Secrets\`).
-After the deploy verifies: regenerate the published schema (deploy-time
-rule — closes the stale-`form_8829` + SSA-description drift the entry
-session found), then build **#78+#80 as ONE deploy** (GA-500 joint-split
+*⚠⚠ RESUME POINT — **s274 SHIPPED THREE DEPLOYS, ALL VERIFIED LIVE**:
+① the standing-red clear (`0a82983` + docs `0588dad`); ② **1065
+BATCH-003** (`e3e88a4`, migs 0335+0336, dep-da5603k9v7es73eves20) —
+seven items BUILT (GA-700 Schedule 8 full face vocabulary incl. the
+S8_6→S8_7 renumber; pass-through GP; PartnerAllocation.amount + box-18
+categories; K15b-f + the k15f_credits composition + D_K1_15F; the 1065
+K17a AMT write + answer key; the PartnerK1CodedItem box-15/box-20
+coded-row family), one ALREADY-BUILT (#5 = locator.ein, batch-005), one
+RS-BLOCKED (#6 1065-X/AAR — no spec), one ⛔ KEN (#8, below). Annex
+appended, batch in Done, entity schema regenerated post-deploy
+(k15f_credits + partner fields advertised) — Codex re-passes the 1065
+Inbox against `e3e88a4`; ③ the PII scrub (below). **NEXT BUILD: #78+#80
+as ONE deploy** (GA-500 joint-split
 conserving splitter — six `(amt/2)` sites, largest-remainder at the
 aggregate, TP floor, odd dollar to spouse; the held $1-off packet is the
 fixture (its key is in the entry session's hold notes, NOT here);
@@ -17,13 +23,41 @@ the staging warning). Then #79 (§402(l) PSO — VERIFY statute/Pub 575
 first, incl. per-taxpayer-vs-per-plan), #75 (Sch A line-16 MeF statement,
 design in the s273 scratchpad), #76 (Credit Limit Worksheet B), #77
 (GA-500 line 19 — VERIFY vs IT-511), **#82 NEW** (source_defects cannot
-record an ATTACHED-form defect — [client]/Ulp 8829 fixtures, live
-demonstration in its addendum), the CTC missing-DOB staging warning, the
+record an ATTACHED-form defect — the two 8829 fixtures, clients 4175 and
+XXXX9987; live demonstration in its addendum), the CTC missing-DOB staging warning, the
 shell-lookup disambiguation (city), the cleanup-API unknown-key 400, and
 the **staging-guard family**: 1310 decedent ⇒ date-of-death required;
 asset `flow_to` with unresolvable `link_key` while a parent exists;
 `mortgage_deductible` teaching refusal on the standard-deduction branch
-(all cheap pre-commit refusals for facts diagnostics catch post-commit).*
+(all cheap pre-commit refusals for facts diagnostics catch post-commit),
+item 37/67 (D_6251_005 zero-TI exemption — now gates TWO packets), and
+the entry session's four-packet **EIC opt-out class** (their pending
+defect 2/10 — the line 27c election has no return-level field).*
+
+*⚠⚠ PII INCIDENT (s274, twice, both mine): client surnames written into
+mirror-bound files from sibling-session messages — first the $1-fixture
+packet name (caught, scrubbed, re-synced), then a SECOND round (the two
+8829 fixture names + four others across STATUS/DECISIONS/BUILD_ORDER)
+that the guard's 724-surname blocklist did NOT catch and which reached
+the public mirror before I found it on re-read. All scrubbed to client
+numbers and re-pushed; canonical files now grep clean. ⚠ FOR KEN: (a)
+the names remain in the public mirror's GIT HISTORY (two commits) — a
+history rewrite there is your call; (b) the sync guard's blocklist
+missed these surnames — hardening it (source the blocklist from the full
+1040 Inbox/Done rosters) is queued. STANDING RULE going forward: grep
+every mirror-bound file against the session's message names BEFORE
+sync, never rely on recall; the entry session now keys packets by
+client_number in messages, which removes the vector.*
+
+*⛔ KEN — new from BATCH-003: **#8 GA-700 Schedule 4 partner rows +
+nonresident 4% withholding** lifts the DELIBERATE v1 entity-level-only
+scope (premise partially stale — Schedule 4 RENDERS since QA Batch-001
+item 8 with address-derived residency; genuinely missing: the residency
+override field [DEFERRAL_AUDIT s126f], the header nonresident count,
+withholding, answer-key/closeout coverage, rows beyond five). Approve
+the scope and it becomes a named unit (verify O.C.G.A. §48-7-129 at
+build). Also **#6**: the 1065X/AAR spec must be authored in RS (and
+whether AAR is in season-one scope at all is yours).*
 
 *✅ s274 — THE STANDING-RED TRIAGE, complete (`0a82983`, no migrations):
 the sweep's 51 failures + 7 errors across 22 files → **all 22 files green
@@ -51,21 +85,21 @@ in the commit message; per-file citations are in the tests themselves.*
 
 *✅ s274 rulings (Ken, both live): **8829 tier 1 requires ITEMIZING** —
 engine right, filed wrong; confirmed DIRECTLY in the entry session (gate
-protocol held); Ulp filed `tie_with_exception` with the $424 across twelve
+protocol held); client XXXX9987 filed `tie_with_exception` with the $424 across twelve
 federal+GA lines (item 82's addendum records why twelve lines instead of
 the one 8829 line — the gap itself). DECISIONS.md has both entries.*
 
 *▶ ENTRY-LANE STATE (their reports, 2026-08-22 evening): **eleven filed
-today**, Inbox 386 / Done 534. Filed proofs live for items 65 (Terrell
-Dane), 30 (Hinely), 26 ([client] — its own fixture — and Ulp). Their
+today**, Inbox 386 / Done 534. Filed proofs live for items 65, 30
+(client 2538), and 26 (its own fixture, client 4175, plus XXXX9987). Their
 corrected backlog numbers: **132 genuinely unheld** (not 314 — 177 holds
 live only in `tmp/` notes invisible to an Inbox scan; a healthy share
 likely stale post-65/30/25). Item 65's true class is smaller than 66:
-a foreign tax credit on a zero-tax return is NOT a blocker (Frazar).
+a foreign tax credit on a zero-tax return is NOT a blocker (client 2195).
 AUTHORING_GUIDE de-rotted s274 (8829/8863/states; now defers to the
 generated SUPPORTED-SECTIONS.md).*
 
-*▶ OPEN FOR KEN: **Sims Julian (client, packet held)** — SOURCE RE-EXPORT
+*▶ OPEN FOR KEN: **client XXXX0303 (packet held)** — SOURCE RE-EXPORT
 request: the invoice itemizes "2 CLERGY WORKSHEETS" that never exported;
 §107 least-of-three needs used+FRV, only the designation is inferable.
 Also carried: item 37/67's D_6251_005 zero-taxable-income exemption
@@ -160,7 +194,7 @@ pre-existing, documented, and passes in isolation:
 - (s234) a materially-participating 1120-S K-1's $250k nonpassive ordinary
   income never reached Schedule 1 line 5 / AGI (repro in
   `test_8960_line4b_clamp.py`).
-- (s274, entry session) the Sims shared-policy pair (spouse-side 99%
+- (s274, entry session) the shared-policy pair XXXX0303/XXXX2827 (99%
   allocation) is a natural 8962 allocation regression fixture if wanted.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
