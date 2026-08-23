@@ -1,6 +1,32 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-23 session 278 — THE TWO ENTITY QUEUES CLEAR: 1120-S BATCH-014
+> CLOSED + 1065 BATCH-004 STANDS 9/10 ✅ (three verified deploys).**
+> BATCH-014 (`1634c4b`): a bulk-sale member's business-use % now
+> business-adjusts its group basis on ALL THREE arms (the 66.70% pickup:
+> the keyed cost_basis/amt_cost_basis are already business-adjusted and
+> net of history — never gross, never multiplied twice; K15b 2,838 →
+> −22,318 exactly), and §179 CANCELS BEFORE the GA-600S pair is built in
+> BOTH presentation modes (the election rides K11 and was never in the
+> entity income base — component-net had manufactured 31,128 of Georgia
+> income from a stale pre-conformity register election; the S6_11 mode
+> invariant is structural again). **1065 #5** (`5335871`, migs 0349+0350):
+> the general lower-tier K-1 row family (eleven signed nullable category
+> columns; §1231 joins the Part I netting with NO fabricated 4797;
+> nondeductible via the new D_LT_NONDED seed line; K6b/K13b/K18b/K18c
+> join the answer key) and its leg 1 — **K11 converts to the component
+> registry** (`k11_components`: routed + lower-tier PTP ordinary; the #6
+> blank-stomp adjacent defect fixed; the mixed −4,512 tie pinned).
+> **1065 #7 ledger-only v1** (`5decfa1`, migs 0351+0352): the Form 8990
+> Schedule A EBIE carryforward ledger persists independent of tax effect
+> (prior 57 → ending 57), column arithmetic validated, nonzero
+> current-year amounts refuse by name (spec-first). #4 stays blocked on
+> the lane's Box-2 statement arithmetic. ⚠ The s275 PS5.1 regex-rewrite
+> ban was violated once and caught immediately (mojibake in
+> backentry_entity.py; restored from HEAD, edits redone with the Edit
+> tool — the ban is load-bearing).
+>
 > **2026-08-23 session 277 — THE LIVE-LOOP DAY: SEVENTEEN VERIFIED DEPLOYS
 > WITH KEN PRESENT ✅⚠⚠.** Ken granted standing push authorization and ruled
 > live (MFJ itemizer $600 — verified on a real return to the dollar;
