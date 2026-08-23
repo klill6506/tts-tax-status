@@ -33,16 +33,19 @@ both published schemas regenerated post-deploy each time.*
 gap: the session channel dropped a whole morning BOTH ways — anything
 load-bearing now ALSO goes in batch-file annexes.*
 
-*▶ NEXT (build queue): 1065 BATCH-004 remaining — **#6** (PTP
-disposition → K11/box 11 ZZ routing; outside-in 550 → 272/6/272) then
-**#2** (Statement A — needs a per-activity ROW model), **#5**
-(lower-tier K-1 family, biggest), **#7** (Form 8990 — run the 404-STOP
-RS gate first). **#4 is BLOCKED on Codex**: the Box-2 statement's exact
-row-by-row arithmetic (question posted in the BATCH-004 annex — no
-payload path was given and sign conventions are not guessable).
-Awaiting from entry: the staging-guard fixture shapes (1310
-date-of-death; asset flow_to link_key; mortgage_deductible; CTC DOB) —
-real fixtures only.*
+*▶ NEXT (build queue): **#6 and #2 SHIPPED in the afternoon**
+(`a6749e6` PTP→K11 routing + D_K1_11, migs 0345+0346; `d35004e`
+Statement A per-activity rows, migs 0347+0348 — SEVENTEEN verified
+deploys on the day; BATCH-004 stands 7/10). Remaining: **#5** (the
+lower-tier K-1 family — its LEG 1 is the K11 component-registry
+conversion, DEFERRAL_AUDIT; fresh-session-sized), **#7** (ledger-only
+v1 queued; the FULL 8990 unit is spec-first — the RS spec is a
+draft-fraction, the s238 trap class), **#4 BLOCKED on Codex** (the
+Box-2 statement arithmetic — question in the BATCH-004 annex; sign
+conventions are not guessable). Also queued: the GA commit-ordering
+fix's residual class (six re-stage dry-runs — KEN'S CALL, flagged not
+run); the staged-field-with-no-consumer tripwire design chip. Awaiting
+from entry: the staging-guard fixture shapes (real fixtures only).*
 
 *⛔ KEN — parked with him: (1) clients 4387 + 3199 W-2 box-3/5
 rounding-band acknowledgments (re-export the W-2 faces or acknowledge

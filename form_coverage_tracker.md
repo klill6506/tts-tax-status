@@ -1,6 +1,33 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-23 session 277 — THE LIVE-LOOP DAY: SEVENTEEN VERIFIED DEPLOYS
+> WITH KEN PRESENT ✅⚠⚠.** Ken granted standing push authorization and ruled
+> live (MFJ itemizer $600 — verified on a real return to the dollar;
+> Path2College PER BENEFICIARY with no dependent requirement; the 2.564%
+> fixture note). **The 1065 K-1 statement architecture landed as one
+> pattern family** (BATCH-004 7/10): the AJ/AN excess-business-loss and
+> farming trios (mig 0340); K13e coded deductions with per-caption
+> box-13 statement rows, same-code ACCUMULATION, and per-return pro-rata
+> suppression (migs 0342+0343, D_K1_13E); PTP dispositions routing to
+> K11/box 11 with the composed line's s230 registry duty RECORDED for #5
+> (migs 0345+0346, D_K1_11); Statement A per-activity QBI rows with the
+> PTP/aggregated/SSTB flags (migs 0347+0348). **The GA day**: lines
+> 18/20/26 joined line 19's override-and-derive convention (the vanishing
+> other-state credit; estimates deriving line 26); the RIE US-obligation
+> netting extended to the DIVIDEND line (`us_government_income`, mig
+> 0344) — and the entry lane's two-arm probe caught it HALF-LANDED,
+> exposing an ORDERING bug (GA sync before ga500_fields; re-pull now
+> unconditional) that had silently starved the s233 interest netting on
+> every no-null import. **The SEHI class closed end-to-end**: the
+> composer omits IRS7206 in the iterative regime after PROVING line 17
+> against a re-derived Pub 974 result; when the S-corp K-1 boundary bit
+> two tied returns same-day, the fix persisted the pre-iterative base
+> (FORM_8962 SEHI-BASE) instead of mirroring the family. ⚠ Never relay a
+> credential through the session channel (refused by the peer, revoked at
+> the DB); ⚠ the channel dropped a whole morning both ways — annexes are
+> the durable channel. Entry lane: TWENTY packets to Done.
+>
 > **2026-08-23 session 276 — FORM 6251 PART III COMPUTES VIA THE SCHEDULE D
 > TAX WORKSHEET ✅ (BATCH-296 #37+#67, `2210c69`, no migrations).** The AMT
 > engine's last big red-defer class closes: `compute_6251_part_iii_sdtw`
