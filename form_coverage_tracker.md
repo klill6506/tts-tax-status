@@ -1,6 +1,23 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-23 session 276 — FORM 6251 PART III COMPUTES VIA THE SCHEDULE D
+> TAX WORKSHEET ✅ (BATCH-296 #37+#67, `2210c69`, no migrations).** The AMT
+> engine's last big red-defer class closes: `compute_6251_part_iii_sdtw`
+> transcribes the 2025 face lines 12-40 verbatim (both skip rules), consuming
+> the REGULAR-tax SDTW — which the gather REPRODUCES via the same pure
+> `compute_sdtw` and PROVES by tying its line 47 to the return's line 16
+> within $1 (mismatch = override/off-worksheet tax → the D_6251_005 defer
+> survives, correctly). v1 AMT basis == regular basis; the genuine
+> basis-difference facts (2k etc.) still error, D_6251_008 still warns to
+> verify. A zero taxable excess never defers on §1250/28% gain (the AMT is
+> arithmetically zero — the item-37 retiree shapes, $27-$144 of box-2b).
+> Unblocks EIGHT tied production returns held solely by D_6251_005. Four
+> injected defects each caught; 6251 band 49; FA 526. Same session:
+> shell-lookup city/state disambiguation + cleanup-API unknown-key 400
+> (`129daab`) and the `scha_other_itemized_type` dropdown on both Schedule A
+> screens (`44e9511`) — the s275 #75 deferred UI leg closes.
+>
 > **2026-08-21 session 272 — GA-500 RETIREMENT EXCLUSION: #11 CLOSED WITH NO
 > CODE, then the SOURCE-DEFECT EXCEPTION unit end to end ✅⚠⚠ (mig 0328).**
 > Ken reversed his own "S-corp income is unearned" ruling after the evidence

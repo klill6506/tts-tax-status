@@ -1,66 +1,55 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-23 early morning (s275 — the overnight shift; Ken
-authorized autonomous pushes at ~00:15).*
+*Last updated: 2026-08-23 ~04:00 (s276 — the overnight shift continues on
+Ken's standing authorization from ~00:15).*
 
-*⚠⚠ RESUME POINT — **s275 SHIPPED SEVEN QUEUE ITEMS ACROSS SIX VERIFIED
-DEPLOYS + ONE TOOLING CHANGE, overnight on Ken's standing authorization**:
-① **#78+#80** (`2e13d3c`, dep-da5716h5efls739gd6sg) — GA joint-split
-conservation + line-5 derivation; ② **#79** (`61e2a11`, mig 0337,
-dep-da57f9qd0e5s73bej5s0) — §402(l) PSO exclusion end-to-end (statute/
-Pub 575 verified; $3,000 per-taxpayer cap; 5b reduction, GA RIE L12 net,
-5c checkbox print+MeF, D_RET_014, both UI surfaces); ③ **#77**
-(`4a33288`, dep-da57lcad0e5s73bemj3g) — GA-500 line 19 eligible-itemizer
-credit derived for single/MFS/HOH full-year (O.C.G.A. §48-7-27.1 +
-IT-511 pp.9/18 verbatim; min($300, line 16)); **⛔ MFJ NOT DERIVED — KEN'S
-MORNING QUESTION** ("per taxpayer" reads $600 on a joint return, no
-primary source states it, no MFJ fixture; entry lane asked to post any
-MFJ itemizer's printed line 19); ④ **#76** (`6fceeb9`,
-dep-da57u9ht0dsc73c7ekb0) — Credit Limit Worksheet B COMPUTES (B1-B14
-verbatim from i1040s8; the i8839 footnote substitution; CLW-A line 4;
-adoption credits now displace CTC into refundable ACTC — the fixtures'
-3,400 signature reproduced; D_8812_009 quiet-where-computed, NAMED
-exclusion = engaged 5695 Part I); ⑤ **#82** (`a4eb22b`,
-dep-da583g0ae00c73b3mk60) — source_defects attached-form class
-(form:"attached" + attached_form/filed/computed; tie verdict untouched;
-notes join face-cascade authority groups; published schema regenerated);
-⑥ **#83** (runner only, no deploy) — import-lane.ps1 local validate now
-reads the generated schema per lane, all four regression shapes verified
-live; ⑦ **#75** (`9c25cc4`, migs 0338+0339, deploy pending verify at
-close) — Schedule A line 16 composes with OtherMiscDeductionsStmt
-(GAMBLING LOSSES auto-derived via the same §165(d) helper; new
-`scha_other_itemized_type` closed-enum field; named refusals replace the
-blanket one). Annexes for all are in BATCH-296; entry lane notified per
-deploy with re-stage asks (the client-4502 $1-split; the two #76
-fixtures; the two D_EFILE_001 gambling fixtures — clients 2003/3731).*
+*⚠⚠ RESUME POINT — **s276 SHIPPED THREE UNITS ACROSS THREE VERIFIED
+DEPLOYS**: ① **BATCH-296 #37+#67 as one unit** (`2210c69`,
+dep-da59rpjl550s7384a2k0) — Form 6251 Part III now COMPUTES via the
+Schedule D Tax Worksheet (2025 face lines 12-40 transcribed verbatim, both
+skip rules; the gather reproduces the regular SDTW via the same pure
+`compute_sdtw` and PROVES it by tying line 47 to the return's line 16
+within $1 — mismatch keeps the D_6251_005 defer). Zero taxable excess
+never defers on §1250/28% gain; basis-difference facts still error;
+D_6251_008 warns. **Unblocks the EIGHT tied returns held solely by
+D_6251_005** — entry lane asked to re-run cleanup (no re-stage) and post
+the clears. Four injected defects each caught; FA 526. ② **The two
+entry-lane channel asks** (`129daab`, dep-da5a1qad0e5s73bg2jug) —
+shell-lookup rows now carry city/state (1040 Taxpayer / entity lanes;
+same-name disambiguation), and the cleanup API 400s on any unknown
+top-level or packet key naming the key + index + allowed vocabulary
+(a typo'd `source_verified` used to drop silently). ③ **The s275 #75
+deferred UI leg** (`44e9511`, dep-da5a549t0dsc73c8mveg verified LIVE
+~03:37) —
+`scha_other_itemized_type` dropdown on BOTH Schedule A screens (legacy +
+Slate), enum shared via `client/src/renderer/lib/otherItemizedTypes.ts`;
+typecheck clean, vitest 6/6 injection-proven.*
 
-*▶ NEXT: **awaiting the entry session's hold shapes** for the
+*▶ NEXT: **still awaiting the entry session's hold shapes** for the
 staging-guard family (1310 date-of-death; asset `flow_to` unresolvable
 `link_key`; `mortgage_deductible` teaching refusal) + the CTC missing-DOB
-warning — asked by message, will not build refusals from one-line
-summaries. Also queued: shell-lookup disambiguation (city), cleanup-API
-unknown-key 400, item 37/67 (D_6251_005 zero-TI exemption, SEVEN tied
-returns), the EIC opt-out class (line 27c has no return-level field).
-**Deferred flagged: `scha_other_itemized_type` UI dropdown** (both client
-screens; import+API carry it).*
+warning — re-asked by message this session. **The "EIC opt-out class
+(line 27c)" one-liner was verified NOT literal** — `eic_opt_out` exists
+end-to-end (BATCH-005 #2, D_EIC_017, mig 0156); asked the entry session
+for the real shape before building anything. Then the remaining BATCH-296
+opens (many are entry-shape- or Ken-gated; see the batch file's annex
+ledger).*
 
-*⛔ KEN — MORNING QUESTIONS (new tonight): (1) **#77 MFJ**: is the GA
-eligible-itemizer credit $600 on a joint return where both spouses
-itemize ("$300.00 per taxpayer", §48-7-27.1)? Engine derives nothing for
-MFJ until you rule. (2) **#82's fixture ruling** still owed: is 2.564%
+*⛔ KEN — MORNING QUESTIONS (carried from s275, still open): (1) **#77
+MFJ**: is the GA eligible-itemizer credit $600 on a joint return where
+both spouses itemize ("$300.00 per taxpayer", §48-7-27.1)? Engine derives
+nothing for MFJ until you rule. (2) **#82's fixture ruling**: is 2.564%
 (i8829 39-year) right for the client-4175 permanent note? (3) Carried:
 #8 GA-700 Sch 4 scope; #6 1065X/AAR spec + season-one scope; #68
 optimizer "best"; the s274 PII items (mirror history rewrite; guard
 blocklist hardening).*
 
-*▶ s275 side effects: migrations 0337/0338/0339 applied to the shared DB
-(all additive with db_default — the 0338 CharField briefly lacked it,
-caught and fixed within a minute via 0339). Published batch-import
-schema regenerated post-#82-deploy (advertises the attached class + the
-r_1099s pso field; regenerate again after #75's deploy for
-scha_other_itemized_type). Runner backup pre-#83 in the s275 scratchpad.
-RS AGENDA additions: R-RET-5AB pso amendment; R-GA500-RIE rounding
-convention; line-5/line-19 derivations; the #77 MFJ answer when ruled.*
+*▶ s276 side effects: no migrations. The D_6251_005 seeded description
+narrows at deploy via seed_all/seed_rules (behavior is code-side and
+already live). RS note: the 6251 spec needed NO amendment — its
+R-6251-P3-CAPGAINS already sanctioned the SDTW reuse (the spec was ahead
+of the app); its D_6251_005 diagnostic description could take the
+narrowed wording in a courtesy pass (agenda'd, low priority).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -75,8 +64,8 @@ convention; line-5/line-19 derivations; the #77 MFJ answer when ruled.*
 Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 `delvio-tax` (srv-d6geloa4d50c73el2trg); demo = `tts-tax-demo`. ⚠ **A push
 is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
-`D:\dev\Passwords & Secrets\render-api-key.txt`). *(s275: every overnight
-deploy was API-verified live before its annex.)*
+`D:\dev\Passwords & Secrets\render-api-key.txt`). *(s276: all three
+deploys API-verified LIVE.)*
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist to
@@ -89,13 +78,14 @@ anything needing Ken directly (RS prod seeds, tax-treatment rulings)
 HOLDS for morning. GATE EXCEPTIONS stay human end-to-end. Coordination:
 ListAgents + SendMessage; ONE delvio-tax tree holder; ONE
 pytest/test_postgres holder; explicit-path staging; NO stash on the
-shared tree. *(s275 holds tree + test_postgres.)*
+shared tree. *(s276 holds tree + test_postgres.)*
 
-## ▶ LANE MAP (Ken-ruled 2026-08-22, s273; unchanged s275)
-- **Tax Return Entry (Claude)**: 1040s only. Owes s275: the re-stage
+## ▶ LANE MAP (Ken-ruled 2026-08-22, s273; unchanged s276)
+- **Tax Return Entry (Claude)**: 1040s only. Owes s275/s276: the re-stage
   proofs (#78 client 4502; the two #76 fixtures; #75 clients 2003/3731),
-  the staging-guard hold shapes, the PSO E-flag sweep count, any MFJ
-  itemizer's printed line 19.
+  **the cleanup re-run on the eight D_6251_005 holds (s276)**, the
+  staging-guard hold shapes, the PSO E-flag sweep count, any MFJ
+  itemizer's printed line 19, the real EIC-opt-out-class shape.
 - **Codex**: 1065 entry lane; re-passes the 1065 Inbox against `e3e88a4`.
 - **Delvio-states (Claude)**: idle overnight; LA seeded NOT cleared;
   state-spec priorities routed to Ken (AL 40NR / SC Sch NR / NC D-400).
@@ -104,15 +94,15 @@ shared tree. *(s275 holds tree + test_postgres.)*
 
 ---
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s275)
+## ⚠ Known red / rotted — THE ONE LIST (post-s276)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage; fails
   even per-file on a contaminated reuse-db; `--create-db` on the affected
   files = reset AND non-implication proof (s275).
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔
   KEN s217).
-- **Client typecheck**: green (`npm run typecheck`); s275's client change
-  (PSO field) typechecked + vitest 12/12.
+- **Client typecheck**: green (`npm run typecheck`); s276's client change
+  (Schedule A dropdown) typechecked + vitest 6/6.
 
 ### ⚠ Test-run hazards (standing)
 - One shared `test_postgres` (RS suite included). Long runs DETACHED.
@@ -129,8 +119,9 @@ shared tree. *(s275 holds tree + test_postgres.)*
 
 ## 🔎 Carried for triage — NOT claims
 - (s268) 1,604 queries/run across 957 rules; + s275 adds
-  `credit_limit_worksheet_b` running twice per pass (8839 limit + 8812) —
-  memoization candidate if the s268 unit lands.
+  `credit_limit_worksheet_b` running twice per pass (8839 limit + 8812);
+  + s276 adds the Part III gather re-running `compute_sdtw` per pass on
+  §1250/28% returns — all memoization candidates if the s268 unit lands.
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
   nonpassive K-1 AGI gap (repro in `test_8960_line4b_clamp.py`) ·
   (s274) the shared-policy pair 8962 fixture · (s275, states session)
@@ -141,11 +132,13 @@ shared tree. *(s275 holds tree + test_postgres.)*
   Inbox: 180 / 214 / pre-incorporation trailer · 170 (GA-600S §179
   HB 1199) · 17a / 17d.
 
-## RS AGENDA — carried + s275 additions:
+## RS AGENDA — carried + s276 addition:
 FA-1040-SCHF-04 re-export · AL_FORM_40NR no spec (#52) · FORM_2441 three
 amendments · Form 4136 no spec (#48) · collectibles_28 notes · SC1040
 pins 2,360 · NC D400 part-year dates · ten staged FA definitions · 8862
 re-author · SCHEDULE_H draft · GA QEE / 4547 / 8879_TA no spec · `500`
 spec silent on RIE feeds, DIS gate, joint-split rounding, line-5 and
-line-19 derivations (s275) · **R-RET-5AB lacks the §402(l) PSO fact
-(s275)** · 1065 K-1 box-15 letters (URGENT).
+line-19 derivations (s275) · R-RET-5AB lacks the §402(l) PSO fact (s275)
+· **6251 spec D_6251_005 description could take the narrowed
+irreproducible-worksheet wording (s276, courtesy)** · 1065 K-1 box-15
+letters (URGENT).
