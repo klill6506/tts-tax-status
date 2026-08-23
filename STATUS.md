@@ -2,8 +2,10 @@
 
 *Last updated: 2026-08-23 very early (s275 — Saturday night into Sunday).*
 
-*⚠⚠ RESUME POINT — **s275 BUILT BATCH-296 #78+#80 AS ONE UNIT, COMMITTED
-LOCALLY `2e13d3c`, DEPLOY PENDING KEN'S GO (ask standing: "push?")**.
+*⚠⚠ RESUME POINT — **s275 SHIPPED BATCH-296 #78+#80 AS ONE DEPLOY —
+pushed `2e13d3c`+`606f250`, deploy `dep-da5716h5efls739gd6sg` VERIFIED
+LIVE 2026-08-23 00:04 local; entry lane notified to re-stage the client
+4502 $1-off packet (+ a sweep of any other $1 joint-split holds)**.
 #78: `split_conserving()` in `compute_ga500.py` — whole-dollar conserving
 joint split (taxpayer floor, odd dollar/remainder-tie to SPOUSE, the filed
 TaxWise convention), applied at the aggregate of each RIE line's joint
@@ -20,9 +22,7 @@ documented seed_builtin_rules quintet (14/14 on fresh DB, not implicated)
 + ONE deliberate supersession: the old
 `test_joint_interest_splits_fifty_fifty` pin (232.50/232.50, odd cent to
 taxpayer) corrected to 232/233. Flow assertions green. NO migrations.
-Annex appended to BATCH-296 (`2e13d3c`, deploy-pending noted). **AFTER
-DEPLOY VERIFY**: entry lane re-stages the client 4502 $1-off packet
-(should tie clean); then NEXT BUILD = #79 (§402(l) PSO exclusion — VERIFY
+Annex appended to BATCH-296. **NEXT BUILD**: #79 (§402(l) PSO exclusion — VERIFY
 statute/Pub 575/1040 line-5 instructions FIRST, incl. per-taxpayer-vs-
 per-plan cap), #75 (Sch A line-16 MeF statement, design in the s273
 scratchpad), #76 (Credit Limit Worksheet B), #77 (GA-500 line 19 — VERIFY
