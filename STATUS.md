@@ -169,6 +169,17 @@ test_postgres).
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
+- (s279 late, entry lane ×2 in one evening) **cleanup `source_verified`
+  is ALL-OR-NOTHING per packet** — one open Ken-question warning blocks
+  acking the settled ones (clients 4545 + 2665 both held whole on it).
+  Per-rule acknowledgment is the ask; chip spawned (task in this
+  session). Related NEW ⛔ KEN: **client 4545's D_8606_BASIS_ONLY** — the
+  spouse's 8606 carries 6,000 basis forward whole (Part I blank) beside
+  an IRA-flagged 89,000 distribution taxed in full; §408(d) pro-rata
+  ordinarily applies — a filed-return-right question, the 2665 shape.
+  BATCH-011 live-verified by the lane same night: 4545 NO_TIE → TIE at
+  the predicted 46,473/47,751/6,917, committed, FILED (not cleanup-
+  eligible until the 8606 ruling).
 - (s268) 1,604 queries/run + the memoization candidates (s275/276/277).
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
   nonpassive K-1 AGI gap · (s274) the shared-policy pair 8962 fixture ·
