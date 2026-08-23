@@ -53,8 +53,35 @@ MAGI over the §1411 threshold — same dry-run mechanism, flagged by the
 lane, not run). (4) **NEW: the state-face override-honor convention** —
 keyed COMPUTED lines on AL/SC/NC faces other than AL40-12 remain
 accepted-but-ignored (the GA line-18 class); extend per-line like GA, or
-blanket? (5) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer;
-s274 PII items; RS 8990 re-authoring gate.*
+blanket? (5) **⚠ s279 LATE FIND — the #50 build conflicts with a MISSED
+s272 verdict**: the BATCH-296 mid-file triage had parked #50 "⛔ KEN — do
+not build" (AL booklet p.5 makes the L12 proration MANDATORY;
+recommendation = record the $41 as a source_defect instead), and no
+ruling ever landed. The build is inert without an explicit override and
+the statutory derive is unchanged, but the DECISION is now properly
+framed in the BATCH-296 s279 addendum: (a) face-faithful override +
+acked diagnostic, or (b) engine's figure + source_defect (no code; if
+(b), raise the diagnostic's in-cap arm to error severity). The lane is
+told to key NO AL-12 overrides until ruled. (6) **s279 NEW: the AL 40NR
+packet (client 2961) carries a SUSPECTED SOURCE DEFECT** — the states
+lane's booklet read says nonresident pensions belong in Column B (a
+plan-type rule, not geographic); the filed Schedule RS "OS"-exempted all
+three distributions (16,214, two IRA-flagged) from BOTH columns → AL%
+overstated (43.18% vs ≈30.65%), filed tax understated. Statute read
+pending on the states side; recorded in the packet's Hold note.
+(7) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer; s274 PII
+items; RS 8990 re-authoring gate.*
+
+*Post-close addendum: **BATCH-010 moved to Done** on the lane's verified
+three-packet re-run (1657 zero errors + eligible + PDF in Done; 4006
+clean; D_RET_015 quiet on all three — no engine-ordering finding).
+**BATCH-296 item 24 (the 1040 Schedule E rental asset ledger) confirmed
+NOT built** — `flow_to` has no 1040-rental value and compute_schedule_e
+reads no asset rows; it is the open remainder of the #23/#24/#53 single
+build (the Sch C + Sch F legs shipped) and a real feature unit for
+BUILD_ORDER. The lane's affected packet stays held on it; the retired
+ledger's annex footer corrected (older unmarked items are not all
+closed).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
