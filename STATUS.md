@@ -101,15 +101,23 @@ sign-off):**
 6. **CA = the top RESEARCH priority, not a build** — highest combined
    signal (8 DB + 2 held + the 100S entity packet) and NO spec exists;
    needs the full states-lane pipeline first.
-⚠ Caveats Ken should read with it: the tally is a FLOOR — the 146
-faceless packets' state needs are unknown (Ken re-exporting TONIGHT, 96
-of 140 installed, faces verified); the residence table (FL 35 · SC 24 ·
-NC 14 · TN 12…) counts MAILING ADDRESS, is blind to
-nonresident-obligation demand (client 2961 counts as GA there), and
-FL/TN/TX have no individual income tax (entity-only lanes, specs
-already live); the TaxWise FORMS-USAGE report (Ken's lane, outstanding)
-is the instrument that settles true demand. REBUILD the tally once the
-re-exported packets are readable.*
+⚠⚠ **RE-READ COMPLETE (s279 late) — THE INDIVIDUAL-SIDE DEMAND
+COLLAPSED ON INSPECTION** (`1040/tmp/STATE-DEMAND-REREAD-2026-08-23.md`;
+every packet verified two ways): of the 135 re-exported packets, **126
+are Georgia-only**; only 9 carry a non-GA 2025 state return, one packet
+each across 9 states. Of those: **3 are workable NOW on installed
+modules** (SC-NR / NC / AL resident — and the no-GA question is ANSWERED
+FROM CODE: `state_returns` with no `ga500_fields` works, the s262c
+fixture is exactly that shape, 14/14 re-proven fresh); **1 (UT resident,
+federal-only path + the s258 out_of_scope closeout) likely workable
+too**; **5 are stale policy holds** the s258 closeout supersedes.
+**Net individual-side build demand: AL Form 40NR (spec live) and
+essentially nothing else.** The multi-packet builds are all
+entity-side: 1065 AL (3), FL (2), and the CO entity-transport gap
+(2, not a build). The ranked 1-6 list above survives with #4/#5/#3 as
+the real work and #6 (CA research) driven by the DB closeout signal,
+not held packets. The TaxWise FORMS-USAGE report remains the
+final-say instrument.*
 
 *▶ s279 THIRD WAVE (Ken present) — **1120-S BATCH-015 CLOSED**
 (`dc27c17`, deploy `dep-da5ppau7bikc73btl600` LIVE; annexed; batch +
