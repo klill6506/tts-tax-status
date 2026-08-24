@@ -1,6 +1,32 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-24 session 286 — THE LACERTE PARITY QUEUE DRAINED (items
+> 1/3/4/5/6/9/10/11/12), render layer across the entity packet.**
+> **1065 face**: Lacerte header box (`header_block.py` white-out patch,
+> reusable per A1), continuation stamps on the form's own header line,
+> **Analysis of Net Income line 2 BUILT** — i1065 2025 p.60: LLC members
+> report on the LIMITED row (the filed 3444 face confirmed; the queue's
+> "general partners" reading was wrong); cells nest under
+> `Table_Line2[0].BodyRowA/B[0]` (bare-name mapping silently printed
+> nothing); split via `_allocate_line_exact` so Σ line 2 == line 1.
+> **K-1 (1065)**: box 20 code N now DERIVED (i1065 p.51 — by-carrying-line
+> components, EBIE/8990/transcription guards, by-line statement page;
+> 3444 pin 21,481/partner exact; R-K1-20N RS amendment queued) and
+> **Statement A prints as the i1065 grid** (`statement_a.py`; REIT/other-
+> deductions rows = named model boundary). **8825**: two-line property
+> address. **4562-family reports**: the dep schedule rebuilt to Ken A4 —
+> 18 columns with Cur/Prior §179 vs SDA as FOUR columns, bordered page,
+> ruled bands, underlined heads, per-rental-activity groups, derived
+> Salvage/Basis-Redn + Depr. Basis (exact vs the filed 3444 page) and the
+> ENGINE-sourced Rate column. **GA-700**: header gaps (Original-X, records
+> location, date began, accounting-method/nonresident abs_pos marks —
+> shared-name option boxes; K-1 counts; preparer signature line; box T =
+> stated no-source boundary) + blank-schedule-page skip (Lacerte's exact
+> 4 pages on the 3444 shape). **All packets**: fills float to the measured
+> Lacerte 10pt; "Delvio Tax" vendor tag every page. ~60 new tests; final
+> batch 3,038 green incl. flow assertions.
+>
 > **2026-08-24 session 285 — FORM 4562 RENDER LEG: ⚠⚠ THE FIELD MAP WAS OFF
 > BY ONE WIDGET FROM LINE 8 THROUGH LINE 23** (parity item 0; the map
 > skipped line 7's own widget f1_15, so §179 line 12 printed in the

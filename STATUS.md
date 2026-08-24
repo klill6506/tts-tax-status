@@ -1,75 +1,91 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-24 (s285 — parity queue items 0/7/8/13 built, item 2
-verified).*
+*Last updated: 2026-08-24 (s286 — the Lacerte parity queue is DRAINED).*
 
-*⚠⚠ RESUME POINT — **s285 WORKED THE LACERTE PARITY QUEUE** (deploy
-verification: check Render status if this file is stale). Items 0, 7, 8, 13
-built + items 2 and 7 answered; full readings + rulings in
-`LACERTE_PARITY_QUEUE.md` s285 annex (repo root).*
+*⚠⚠ RESUME POINT — **s286 BUILT EVERY REMAINING PARITY-QUEUE ITEM**
+(1 typography/header/stamp · 3 Analysis of Net Income · 4 8825 two-line
+address · 5 K-1 20N derived · 6 Statement A grid · 9 dep-schedule redesign
+· 10 GA-700 header gaps · 11 vendor tag · 12 blank-page skip). Full
+readings + rulings in `LACERTE_PARITY_QUEUE.md` s286 annex. Deploy
+verification: check Render status if this file is stale.*
 
-*① **THE 4562 FIELD MAP WAS OFF BY ONE WIDGET FROM LINE 8 THROUGH 23** —
-the map skipped line 7's widget (f1_15), so on EVERY 4562 the app ever
-printed: line 12 (§179) printed in line 11's box, bonus (14) in the
-carryover box (13), prior MACRS (17) on line 16 — the mislabeled cell Ken
-caught on the 3444 Lacerte compare — the listed total (21) on line 17, the
-grand total (22) on line 21. The compute was never wrong; the values landed
-one row early. Fixed; line 23 split to the 2025 face's 23a/23b; POSITION
-pins added (label-row anchoring, provably red under the old map, 41pt).
-Lesson generalized from the s284 7004 swap: scalar chains in field maps get
-coordinate pins — a name-existence check can never catch a shift, because
-every wrong name still exists.*
+*① **Typography**: fills float to 10pt (the MEASURED Lacerte fill —
+QuickTypeIICourierA 10.0 — box-geometry caps + shrink-to-fit). 1065
+header = the Lacerte one-box block (`header_block.py`, reusable toward
+the substitute-forms engine per A1; f1065-only patch registry).
+Continuation stamps ride the form's own header line ("Form 1065 (2025)
+NAME  EIN  Page 2"). "Delvio Tax" 6pt source tag bottom-center of every
+packet page.*
 
-*② **Item 0 ruled (i4562 2025 + i8825 Rev. Dec 2025)**: line 16 = ACRS/
-pre-MACRS only; continuing MACRS = line 17; AND a 4562 that exists only for
-Part V listed property leaves Parts I–IV EMPTY (rental depreciation is
-claimed on 8825 line 14 alone) — built as `print_parts_i_iv_suppressed`,
-narrow (no listed property ⇒ no gate; any §179/bonus/current-year/line-16
-trigger reopens). MeF per-activity IRS4562 deliberately not gated (line 17
-ties each activity's DepreciationAmt link). **Item 7**: the 3444 4562 IS
-required — the 8825 claims 4,358 auto/travel (the "vehicle deduction on a
-non-Schedule-C form" trigger); that is why Lacerte fills Part V Section A/B
-and leaves I–IV blank.*
+*② **Analysis of Net Income line 2 built** — and the queue's "general
+partners" parenthetical was WRONG: i1065 2025 p.60 verbatim, "Report all
+amounts for LLC members on the line for limited partners," and the filed
+3444 face agrees (58,873 on 2b/(ii)). Split = `_allocate_line_exact`
+(sums exactly, the instruction's own requirement); individuals
+active/passive via the §1402 proxy (REVIEW_QUEUE note). ⚠ The Analysis
+cells nest under `Table_Line2[0].BodyRowA/B[0]` — the first bare-name map
+printed NOTHING silently.*
 
-*③ **Item 8 built**: Part V line 26 carries cost / bus% as "60.00" (face
-pre-prints %) / basis-for-depr (cost × bus%) / period / "S/L-HY" / §179
-col; **24a/24b default Yes** when listed property exists (Ken A2;
-orientation coordinate-verified). Deferred (DEFERRAL_AUDIT): the keyed
-override input (D_4562_24A/24B seed pattern). **Item 13 fixed**: GA-700
-Sch 4 income base was 1065 page-1 line 23 ONLY — $0 on every rental
-partnership; now Schedule 8 line 12 less S8_5 GP (GP re-added per partner,
-IT-711 pp.11-13), fallback to the federal line when S8 never computed;
-3444 prints 29,437/partner. **Item 2 verified**: entry gap — 3444's
-B33_PR_* all empty; render leg fine (p4 widgets mapped). Entry lane must
-key the B33 block when the packet shows a PR.*
+*③ **K-1 box 20 code N now DERIVES** (i1065 p.51): components = page-1
+line 15 (+farm F21a/b) interest → "line 1", 8825 interest → "line 2",
+split by each carrying line's own convention; by-line statement page
+attaches. GUARDS return {} on transcribed 20/N, EBIE 13/K, 8990 ledger
+rows, or any BI* value — a §163(j)-limited return is never guessed.
+3444 pin: 42,962 at 50/50 → 21,481/partner, matching the filed
+statement. **RS AGENDA: R-K1-20N amendment queued** (spec routes the code
+but has no derivation rule). Statement A prints as the i1065 GRID
+(`statement_a.py`; REIT-dividends + other-deductions rows blank —
+DEFERRAL, no model fields).*
 
-*④ Evidence: 13 new tests in `test_parity_4562_lacerte.py` (gate render ×3,
-Part V columns, 24a/24b, derivation unit pins ×7) + 3 position-pin tests +
-the rental Sch 4 case in `test_1065_ga_package.py`; injection: position pin
-proven red under the old map. Spec gate: 4562 + ga700 RS exports fetched
-live (line semantics agree; no compute change — flow assertions skipped
-WITH REASON: render/field-map only). ⚠ RS AGENDA add: R-GA700-PARTNERS
-under-specifies the income base ("ordinary" — its worked example has only
-ordinary income); amendment queued.*
+*④ **Dep schedule redesigned to Ken A4**: 18 columns with Cur §179 / Cur
+SDA / Prior §179 / Prior SDA SPLIT (one better than Lacerte), bordered
+page, ruled bands, underlined heads, per-rental-activity groups, and the
+derived Salvage/Basis-Redn + Depr-Basis columns (exact against the filed
+3444 page: 350,000 / 832,239 / SUV 0) + the ENGINE-sourced Rate column
+(never back-divided). **GA-700**: header gaps filled (Original-X, records
+city/state, date began, accounting-method + nonresident abs_pos marks —
+shared-name option boxes can't ride a name fill; K-1 counts; preparer
+signature line; box T blank = stated no-source boundary; the accounting
+method reads the FEDERAL row — the state row's default was masking
+accrual) and blank schedule pages DROP (word-count diff vs template;
+face+signature hard-kept; 3444 prints Lacerte's exact 4 pages).*
 
-*▶ NEXT (fresh session): **CONTINUE `LACERTE_PARITY_QUEUE.md`** — remaining
-items: 1 (typography/darker/more-lines theme + 1065 header box + the
-continuation-header restyle — build toward substitute forms per Ken A1),
-3 (Analysis of Net Income, 1065 p6), 4 (8825 two-line address), 5 (K-1 20N
-§163(j)), 6 (Statement A restyle), 9 (dep schedule redesign, four-column
-179/SDA split per A4), 10 (GA-700 header/face gaps), 11 (vendor tag), 12
-(blank-page skip). ⚠ Ken may have appended more items — re-read the queue
-file first. Client 3444 is the comparison bed.*
+*⑤ Evidence: ~60 new tests across `test_parity_header_typography` /
+`test_1065_analysis_partner_type` / `test_parity_8825_two_line_address` /
+`test_parity_ga700_header` / `test_parity_k1_20n` /
+`test_depreciation_schedule_report` (s286 class) + amended
+behavior-pinning legacy tests (each with a written reason). Spec gate:
+1065_PAGE1 + SCHEDULE_K1_1065 RS exports fetched live; derivations cited
+to i1065 2025 pp.51/60 and the R018 basis identity. ⚠ SESSION LESSON:
+five phantom flow-assertion failures came from editing source DURING a
+detached pytest (inspect.getsource slices the new file with the old
+import's line numbers) — never edit `apps/` while a detached run is in
+flight.*
 
-*▶ AWAITING (carried): entry-lane token (Ken) → client-4569 restage + 40NR
-variant path; `GA_OCGA_48_7` ownership call (Ken) → GA-500 S3-9 seed; 1040
-BATCH-012 / BATCH-296 stay in `CC Changes` (built/held per s281/s282).*
+*▶ NEXT (fresh session): **the parity queue is empty — check
+`LACERTE_PARITY_QUEUE.md` for new Ken appends first** (he is entering
+more completed returns), else fall back to BUILD_ORDER. Client 3444
+remains the comparison bed; a fresh side-by-side print of the full 3444
+packet against the Lacerte PDF is the natural next verification.*
+
+*▶ AWAITING (carried): entry-lane token (Ken) → 40NR variant path (client
+4569 is now COMMITTED + FILED per the entry lane — restage cleared);
+`GA_OCGA_48_7` ownership call (Ken) → GA-500 S3-9 seed; 1040 BATCH-012 /
+BATCH-296 stay in `CC Changes` (built/held per s281/s282). **AL 40NR
+scenario-G (client 2961): peer-verified — the 2025 40NR booklet confirms
+gross taxable-to-a-resident pension enters Column B; open question is
+whether the TRS/ERS exempt-listing reduces the correction from 16,214 to
+3,181 (ratio ~39.97% vs the fixture's 30.65%) — Ken to rule; the RS
+Part-IV "taxable" vs booklet "taxable-to-a-resident" tension is flagged,
+not resolved. Jason Houston has no seeded 2025 1040 shell — entry lane
+stopped rather than bootstrap a client (Ken).**
 
 *⛔ KEN — outstanding (carried): entity second-state-face transport (#3);
-`OVERRIDE_HONORED_STATE_LINES` convention; client-2961 AL 40NR source
-defect; 146-packet re-export; NC/CA/SC linked-state reopens; #6 1065X/AAR;
-#68 optimizer; s274 PII narrowings; RS 8990 re-authoring gate; 6765 Sec G;
-client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex Box-2).*
+`OVERRIDE_HONORED_STATE_LINES` convention; client-2961 AL 40NR ruling
+(above); 146-packet re-export; NC/CA/SC linked-state reopens; #6 1065X/
+AAR; #68 optimizer; s274 PII narrowings; RS 8990 re-authoring gate; 6765
+Sec G; client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex Box-2);
+Analysis line-2 active/passive proxy (REVIEW_QUEUE).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -105,26 +121,31 @@ the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
 holder (s283: two runs collided — wait for the background batch). Peers
 stage; Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s285)
+## ⚠ Known red / rotted — THE ONE LIST (post-s286)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s281). No client changes s282-s285.
+- **Client typecheck**: green (s281). No client changes s282-s286.
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
+- 🔧 ⚠⚠ **NEVER edit `apps/` source while a detached pytest is in flight**
+  (s286): source-inspection flow assertions slice the NEW file with the
+  OLD import's line numbers — five phantom failures. New files/markdown/
+  scratchpad only during a run.
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
   `server\` (the Bash tool prints NOTHING for poetry one-liners — use the
   PowerShell tool). ⚠ `poetry run python -c "<multi-line>"` via the
-  PowerShell tool can bind wrong — script FILES, not inline `-c` (bit
-  again in s285).
+  PowerShell tool can bind wrong — script FILES, not inline `-c`.
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8; grep the DIFF for mojibake after any shell
   touch. ⚠ Embedded double-quote in a here-string arg to a NATIVE exe
   SPLITS the argument — long native args via a FILE (`git commit -F`).
+  ⚠ A long @files arg list overflows the command line (s286) — relative
+  paths, or chunk the run.
 - 🌐 ⚠⚠ `Measure-Object -Line` skips blank lines — `ReadAllLines().Count`.
 - 🌐 ⚠⚠ A bare HTTP 400 (no `error` body) = the body never parsed —
   suspect ENCODING (UTF8.GetBytes + charset).
@@ -133,16 +154,17 @@ stage; Ken decides.
 - 🔧 ⚠ pytest-randomly NOT installed (s281). Test order is not randomized.
 - 🌐 ⚠ (s283) **pymupdf `get_text()` does NOT reliably surface AcroForm
   widget VALUES** — a filled-forms coverage scan must also read
-  `page.widgets()` or it under-reports.
+  `page.widgets()`. ⚠ (s286) word bboxes span the FULL line height —
+  position pins judge by the word TOP, never the bbox bottom.
 
 ## 🔎 Carried for triage — NOT claims
 - (s285) Sch 4 nonresident arm still apportions the WHOLE widened base by
   the S7 ratio and adds S2_6×profit% — allocated-everywhere income (S2_2)
   is not backed out of the apportionable share. Zero on 3444 (S2_2=0);
   needs an IT-711 read when a return carries S2_2.
-- (s284) **GA-700 prints all 8 DOR pages; Lacerte prints 4** — parity
-  item 12 (queued). K-1 supplemental/Statement-A formatting parity
-  unreviewed (item 6).
+- (s284) K-1 supplemental/Statement-A formatting parity now BUILT (s286
+  item 6); packet-vs-Lacerte side-by-side of the full 3444 print still
+  unreviewed as a whole.
 - (s283) The stamp excludes 1040 packets (name+SSN privacy call — Ken).
 - (s282) `OVERRIDE_HONORED_STATE_LINES` hand-synced; third member ⇒ derive
   both sides from one declaration.
@@ -163,11 +185,13 @@ stage; Ken decides.
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried + s285 add:
-Everything from s277–s282 stands (AL_FORM_40NR amendments; GA-500 S3-9
+## RS AGENDA — carried + s286 add:
+Everything from s277–s285 stands (AL_FORM_40NR amendments; GA-500 S3-9
 seed BLOCKED on `GA_OCGA_48_7`; R-AL-TAX mechanism; D-36 reads for
-TN_FAE170/SC1120). **s285 ADD: R-GA700-PARTNERS income-base amendment**
-(base = Schedule 8 line 12 total less GP, not "ordinary" — the p.13
-worked example never exercised a rental partnership). s283–s285 touched no
-compute; spec-fetch gate satisfied live for 4562 + ga700 (line semantics
-agree; render/field-map changes only).
+TN_FAE170/SC1120; R-GA700-PARTNERS income-base amendment). **s286 ADD:
+R-K1-20N** — SCHEDULE_K1_1065 routes box 20 code N (R-K1-CODED) but
+carries NO derivation rule; the built derivation (i1065 2025 p.51:
+components by carrying line, EBIE/8990/transcription guards) needs spec
+authorship. s286 touched allocator code (20N) — flow assertions run green
+in the final batch; spec-fetch gate satisfied live for 1065_PAGE1 +
+SCHEDULE_K1_1065.
