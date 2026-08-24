@@ -32,7 +32,27 @@ flow gate. **The client-1801 unblock recipe is in the annex + sent to the
 lane**: `sch1_fields {"11":300, "21":0}` + attestation false + transcribed
 f8867_fields; browser entry stays forbidden until that batch commits.*
 
-*▶ NEXT (all remaining units are LARGE — fresh session): per Ken's
+*▶ POST-CLOSE (s280 late): **1040 BATCH-012 POSTED by the entry lane and
+TRIAGED same night** (annex in the batch file; client 4569). #1 CONFIRMED
+— no way to carry an EIC qualifying child who is NOT a claimed dependent
+(§32 four-part test has NO support test; Ken confirmed the filed facts);
+**the build = `claimed_as_dependent` flag (db_default true): EIC keeps
+(incl. Sch EIC render/MeF), CTC/ODC/page-1 grid/MeF DependentDetail
+exclude, state dep counts exclude; plus ODC must respect
+provided_over_half_own_support (§152(c)(1)(D)/(d)(1)(C) — adjacent
+defect) + an inconsistency diagnostic. THIS IS THE NEXT UNIT.** #3
+confirmed (blank tin_type silently kills CTC/EIC/ACTC — stage warning
+rides the same deploy). #2 DECOMPOSED TO THE DOLLAR, no new engine math
+defect: the AL band claim refuted by the 2025+2024 booklets (0–50,000 →
+$1,000 — fetched verbatim); the residual = the lane's `FS: hof`
+(lowercase) SILENTLY normalized to single (1,500 vs 3,000 exemption) +
+phantom dep-n=2 from the #1 gap; correctly keyed → 892 vs filed 893 =
+the named R-AL-TAX table-midpoint $1 boundary. ⚠ The silent-FS-fallback
+IS a real defect (open-enum class) — case-insensitive map + loud refusal,
+sibling audit on SC/NC/GA normalizers, queued WITH the #1 build.*
+
+*▶ NEXT (fresh session): **BATCH-012 #1+#3 (+ FS-normalizer loudness)
+first** — it releases client 4569. Then per Ken's
 priority ruling (1040+1065 first, states in demand-ranked gaps) the
 candidates are **BATCH-296 item 24** (1040 Schedule E rental asset ledger
 — the #23/#24/#53 remainder, a real feature unit), the **entity-lane
