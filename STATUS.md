@@ -1,101 +1,112 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-24 ~00:50 (s281 — 1040 BATCH-012 built, deployed and
-verified LIVE; the standing `test_topic7_compute_leg` red diagnosed and cleared).*
+*Last updated: 2026-08-24 (s281 — an overnight run: FIVE verified deploys, both
+sibling lanes managed and directed, four Ken questions staged).*
 
-*⚠⚠ RESUME POINT — **s281 SHIPPED TWO VERIFIED DEPLOYS.**
-**1040 BATCH-012 ALL THREE ITEMS CLOSED** (`2759c22`, deploy
-`dep-da5sd5eq1p3s73bh4ck0` LIVE; annex appended to the batch file; rules
-seeded AFTER live, 1,016 → 1,021 rows, `check_rule_paths` green).
-⭐ **The finding that reframed item 1: the Rule Studio spec had the answer
-all along.** `sch_8812` R001 AND R002 both list
-`dep_is_claimed_as_dependent` among their inputs; the app had deleted the
-input AND recorded a justification for it (the `Dependent` docstring
-asserted every row was claimed; `classify_dependent_odc`'s docstring said
-"iff they are claimed" for a condition the code never tested). Built:
-`Dependent.claimed_as_dependent` (default+db_default TRUE, migration 0354)
-honored in CTC/ODC, the page-1 grid, MeF DependentDetail + the
-F1040-111-02/IND-089-01 counts, 1040-X, 8862, the import allowlist and the
-serializer — while **Schedule EIC and the EIC computation keep the row
-unchanged** (§32(c)(3) has four tests and no support test).
-**`D_8812_015`** flags claimed-AND-self-supporting as the contradiction it is.
-⚠ **My s280 triage note was WRONG and is corrected in the annex**: R002
-deliberately omits `provided_over_half_own_support`, so the entry lane's
-dry-run finding "the field changes nothing" found the DESIGN, not a defect.
-**Item 2 (FS normalizer)**: new `apps/returns/state_filing_status.py`;
-case-insensitive + a loud `D_*_FS` ERROR on an unrecognized value, across
-AL/NC/SC/GA. ⚠ The sibling audit found a FOURTH case worse than the three
-named — **SC1040 had NO normalizer at all**, so an unrecognized status
-reached single-filer treatment BY OMISSION. **Item 3**: two stage WARNINGS
-(never errors) — a `dependents` row with no `tin_type`, and a `div_1099s`
-row with box 1a and no `qualified_dividends`. ⚠ The dividend guard's
-stand-down follows the aggregate VALVE: the taxpayer aggregate rescues the
-all-omitted shape and rescues NOTHING once any row carries box 1b, which
-makes the **mixed-payer shape the dangerous one** (named payer by payer).
-**Also shipped: `manage.py check_rule_paths`** — Ken's REVIEW_QUEUE
-recommendation after s267; resolves every seeded rule's dotted path against
-deployed code, exits 1 on a break (that failure has hit 3× and a preparer
-found it every time).*
+*⚠⚠ RESUME POINT — **s281 SHIPPED FIVE VERIFIED DEPLOYS** (`2759c22` ·
+`9003c95` · `c59d2cc` · `e9af114` · `7ebe61d`), each Render-API confirmed LIVE,
+never inferred from the push.*
 
-*▶ **SECOND DEPLOY** (`9003c95`): the standing red in
-`test_topic7_compute_leg.py` was **a fixture that could not SUCCEED**. First
-PROVED not mine (all three compute changes reverted → fails identically at
-HEAD, restored byte-for-byte — the s179 rule). Cause: that file's own
-module-scoped `seeded_forms` shadows conftest's `credit_forms` and never
-seeded `sch_8812`, so line 28 (ACTC) was empty on EVERY scenario — and the
-test asserts "the age-8 QC's ACTC stays," a value that could never have been
-nonzero. One seed call; 26 green. ⭐ **The mirror of the states lane's "a
-fixture that cannot fail is not a test" the same night.** ⚠ It nearly became
-a false major-defect report (single parent + 1 child + $15k wages → zero
-ACTC looks exactly like a refundable-credit defect; the engine was never
-involved).*
+*① **1040 BATCH-012 — ALL THREE ITEMS CLOSED AND LANE-CONFIRMED.** ⭐ The
+finding that reframed item 1: **the Rule Studio spec had the answer all
+along** — `sch_8812` R001 AND R002 both list `dep_is_claimed_as_dependent`, and
+the app had deleted the input while recording a justification for it in the
+model docstring. `Dependent.claimed_as_dependent` (default + db_default TRUE,
+mig 0354) now gates CTC/ODC, the page-1 grid, MeF DependentDetail + the
+F1040-111-02/IND-089-01 counts, 1040-X and 8862, while **Schedule EIC and the
+EIC computation keep the row** (§32(c)(3): four tests, no support test).
+`D_8812_015` flags claimed-AND-self-supporting. ⚠ My own s280 triage note was
+WRONG and is corrected in the annex — R002 deliberately omits
+`provided_over_half_own_support`. **Item 2**: new `state_filing_status.py`,
+case-insensitive + four `D_*_FS` ERRORs; the sibling audit found a FOURTH case
+worse than the three named — **SC1040 had NO normalizer at all**. **Item 3**:
+two stage WARNINGS (tin_type; the `qualified_dividends` omission — ⚠ its
+stand-down follows the aggregate VALVE, so the **mixed-payer** shape is the
+dangerous one). **Entry lane confirmed 4569 ties**: 33/34/35a −500 → filed
+5,068, two-child EIC intact, zero diagnostic misfires. Rules seeded AFTER live
+(1,016 → 1,021) per the s279 ordering rule.*
 
-*▶ NEXT UNIT — **BATCH-296 item 24** (1040 Schedule E rental depreciation
-assets). SCOUTED, not started: `DepreciationAsset` already exists on
-`TaxReturn` with a `rental_property` FK, `property_label`, `amt_cost_basis`
-and AMT prior/current — but **`FLOW_CHOICES` has no `schedule_e`** (only
-`8825` for the entity path, plus `schedule_c`/`schedule_f`), and the 1040
-`backentry.v1` allowlist/schema have no `depreciation_assets` section. So
-the build ≈ add the `schedule_e` flow + the 1040 import surface + per-property
-routing to Sch E line 18, reusing the existing AMT/§179 machinery.
-`flow_to` is `max_length=10` — "schedule_e" is exactly 10, it fits. Fixtures
-named in the item: clients 4125, 1814, 2583 and one further packet (client
-numbers only — this file mirrors PUBLIC).
-Then: entity-lane second-state-face transport (#3), AL Form 40NR (#4).*
+*② ⭐ **AL FORM 40 LINE 17 IS THE TAX TABLE, NOT THE BRACKET FORMULA** —
+R-AL-TAX was never a precision question and never a Ken gate. Line 17's
+instruction is mandatory: "You **must** figure your tax from the Tax Tables."
+All 1,001 published rows harvested to
+`tests/fixtures/al_form40_tax_table_2025.json`; each band's tax is the §40-18-5
+formula at the band MIDPOINT half-up (measured: **1,912 of 1,914 exact-half
+cases round up**; the two exceptions are the $50-wide floor rows, both
+columns). ⚠ **The bigger half: above $100,000 the booklet's worksheet bases on
+the LAST BAND's tax (4,958 / 4,918), so the engine was $2 HIGH on EVERY Alabama
+return over $100,000, permanently.** The client-2047 fixture that had recorded
+a known $1 miss now ties the filed 708/214 — independent confirmation nobody
+constructed. ⚠ My own test caught taxable income of exactly 100,000 falling in
+a gap between the last band and a worksheet headed "Over $100,000".*
 
-*▶ AWAITING: (1) entry lane — **re-staging client 4569** with
-`claimed_as_dependent: false` on the daughter's row (deploy confirmed to
-them; expect 33/34/35a −500 → filed 5,068, AL 892 vs filed 893 = the
-already-named R-AL-TAX boundary). **BATCH-012 stays in `CC Changes` until
-that lane-confirms** — deliberately not moved to Done on the deploy alone.
-(2) entry lane is hunting a **mixed-payer dividend packet** to exercise the
-warning arm nobody has seen fire.*
+*③ **BATCH-296 item 24 — TRIAGED, NOT BUILT: its Aug-19 addendum is STALE.**
+The 1040 `depreciation_assets` section, `"8825"` in `DEPRASSET_LINKED_FLOWS`,
+and the ungated rental branch of `aggregate_depreciation` all already exist
+(s272). The sibling e2e file covered the Schedule C and F links but **never the
+RENTAL one**, so it was neither proven built nor proven missing —
+`test_b296_item24_rental_asset_register.py` settles it, 5 green. **Remaining
+work is fixture verification with the real packets (entry lane), not a build.**
+⚠ Two corrections against myself in the writing: `property_type` is the IRS
+one-character code (staging refused my word by field and value — the refusal
+working), and "filed wins" means `_write_parent_depreciation` SKIPS a guarded
+parent, never COPIES into `depreciation`; the silent zero I feared is caught by
+`D_4562_RECON`.*
 
-*▶ ⛔ KEN — **NEW, states lane, staged and ready**: (a) **GA-500 Schedule 3
-line 9 — D-36 APPLIES, and Georgia published the proof itself.** IT-511
-works a FILLED example: col A 49,500, col C 39,093, exact ratio 78.975758%,
-booklet prints line 9 = **78.98%** and line 13 = **12,637**. Printed →
-16,000 × 0.7898 = 12,636.80 → 12,637 (MATCHES); full precision → 12,636.12
-→ 12,636 (misses by $1); line 14 closes it (39,093 − 12,637 = 26,456). ⚠
-**My counter-evidence is STRUCK**: client-3184 tying under full precision was
-NON-DISCRIMINATING — its two products are 267.86 vs 267.60 on a 12,000 base,
-nowhere near a straddle, so it never spoke to the question. `R-GA500-S3` is
-**silent** on precision (not wrong — incomplete) and S3-9 has no ratio
-fixture at all. Ask: amend to percentage-at-2-decimals citing the face + the
-worked example. **GA-500 S3-9 UNTOUCHED until Ken rules.** (b) **Gate-1: may
-discriminating scenarios be added to the seeded specs in §4.1/§4.2 of
-`delvio-states/research/fixture_discrimination_sweep.md`?** Recommend YES in
-one word for the whole section — it changes no rule text, no rate, no
-rounding, and cannot alter any return; it only makes the fixture capable of
-failing. Both are also in REVIEW_QUEUE.md.*
+*④ **GUARDS SHIPPED**: `manage.py check_rule_paths` (Ken's s267 REVIEW_QUEUE
+ask — resolves every seeded rule's dotted path against deployed code; that
+failure has hit 3× and a preparer found it every time); and **the
+FormLine-seeder half of the two-writers guard** (the s279 chip) — a duplicate
+`line_number` is a SILENT overwrite, not an error. ⚠ Both sweeps **report their
+own coverage** (61/70 seeders = 87%, the 9 gaps recorded BY NAME) and both had
+their **teeth proven by defect injection**, not by a green run.*
+
+*⑤ **The standing red in `test_topic7_compute_leg.py` is CLEARED** — it was **a
+fixture that could not SUCCEED**: its own `seeded_forms` never seeded
+`sch_8812`, so ACTC was empty on every scenario and the test asserted a value
+that could never have been nonzero. First PROVED not mine by reverting all
+three compute changes (fails identically at HEAD). ⚠ It nearly became a false
+major-defect report.*
+
+*▶ NEXT (fresh session): **⛔ BUILD_ORDER #3 (entity second-state-face
+transport) is STAGED FOR KEN, NOT STARTED** — it is a major architectural
+change (CLAUDE.md requires asking) and the recommendation + three options are
+in REVIEW_QUEUE. Then **AL Form 40NR** (#4) — ⚠ **do NOT inherit the spec's
+floor defect** (it computes $1 where Alabama prints $0 for taxable $0–$49;
+implement the Form 40 path, which is correct there, and flag the divergence).
+Otherwise: 1040/1065 batch items as the lanes post them.*
+
+*▶ AWAITING: (1) **the entry lane's production session has EXPIRED** — staging
+and commits blocked until Ken mints a token IN their session (they correctly
+refused to route one through the message channel; I did not offer). Nine
+returns closed tonight, every state face tying (GA / AL 40 / SC1040 incl. Sch
+NR / NC D-400; out-of-scope proven for UT, VA, NJ). They are using the blocked
+window to scan all 353 Inbox packets for **Schedule B Part II with 2+ dividend
+payers** — the structural filter for the mixed-payer arm nobody has seen fire.
+(2) **client 4569 should now tie OUTRIGHT** once restaged — the AL dollar is
+fixed. (3) BATCH-012 stays in `CC Changes` (lane-confirmed, packet not yet
+recommitted).*
+
+*▶ ⛔ KEN — **FOUR QUESTIONS, all staged in REVIEW_QUEUE + here, none
+actioned**: (a) **GA-500 Schedule 3 line 9 — D-36 APPLIES and Georgia published
+the proof itself** (IT-511's worked example: printed 78.98% → 12,637 matches;
+full precision misses by $1; line 14 closes it). ⚠ **My counter-evidence is
+STRUCK** — client-3184 was NON-DISCRIMINATING (267.86 vs 267.60 on a 12,000
+base). `R-GA500-S3` is SILENT on precision, not wrong. (b) **May discriminating
+scenarios be added to the seeded specs in §4.1/§4.2 of the
+fixture-discrimination sweep?** Recommend YES in one word for the section — it
+changes no rule text and cannot alter a return. (c) **`AL_FORM_40NR` computes
+$1 where Alabama prints $0** for taxable income $0–$49. (d) **The entity
+second-state-face transport** (architectural — see REVIEW_QUEUE for the three
+options and what I would want confirmed before building).*
 
 *⛔ KEN — carried unchanged: state-face override-honor convention; client-2961
 AL 40NR source-defect disposition; the 146-packet re-export (re-export ONE
-first); NC/CA/SC linked-state reopens (BATCH-015 #2-4); #8 GA-700 Sch 4; #6
-1065X/AAR; #68 optimizer; s274 PII items; RS 8990 re-authoring gate; Form
-6765 Section G (TY2026+); client-4545 D_8606_BASIS_ONLY; per-rule cleanup
-acknowledgment. **1065 BATCH-004 #4 still the only open batch item, BLOCKED
-on Codex's Box-2 statement arithmetic.**
+first); NC/CA/SC linked-state reopens; #8 GA-700 Sch 4; #6 1065X/AAR; #68
+optimizer; s274 PII items; RS 8990 re-authoring gate; Form 6765 Section G;
+client-4545 D_8606_BASIS_ONLY; per-rule cleanup acknowledgment. **1065
+BATCH-004 #4 still the only open batch item, BLOCKED on Codex's Box-2
+arithmetic.**
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
