@@ -228,7 +228,14 @@ and in session memory, which boots regardless of which repo is open) or 🔧
 - (s268) 1,604 queries/run + memoization candidates (s275/276/277).
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
   nonpassive K-1 AGI gap · (s274) shared-policy pair 8962 fixture ·
-  (s275) `.first()`-on-per-form-rules sweep chip.
+  (s275) `.first()`-on-per-form-rules sweep chip — ⚠ **NARROWED, NOT
+  CLOSED, by s281's seeder guard.** That guard proves no parsed seeder
+  declares one `line_number` in two sections of the same form, so the
+  SEEDER source of the ambiguity is currently nil and stays that way.
+  ⚠ It does NOT cover the other source — several instances of one form on
+  a return (two Schedule Cs, two rentals) — nor the 9 seeders outside the
+  guard's 87% reach. So the remaining audit is smaller and better defined,
+  not finished.
 - (s279) FormLine-seeder two-writers guard (diagnostic-code half shipped;
   seeder half unguarded).
 
