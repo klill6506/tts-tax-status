@@ -201,6 +201,16 @@ and in session memory, which boots regardless of which repo is open) or 🔧
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
+- (s281, from the entry lane's third out-of-scope case) **Candidate
+  diagnostic, DELIBERATELY NOT BUILT: warn when `out_of_scope_states` is
+  declared on a GA-resident return with no line 18 keyed.** Tempting — the
+  missed credit silently OVERSTATES Georgia tax — but an out-of-scope state
+  does not always produce a Georgia credit (the other state may levy no tax;
+  Georgia may not be the resident state), so it would misfire on legitimate
+  packets. Needs the discrimination question answered first (which shapes
+  genuinely carry a credit?). ⚠ The class is NOT blocked meanwhile: line 18
+  is keyable and its override WINS (the s277 fix); the rule is recorded at
+  the point of use in `payload_out_of_scope_states`' docstring.
 - ⚠ **(s281, raised by the 1040 entry lane) STAGE ALLOWLISTS `schd_fields`
   KEYS AND `ga500_fields` KEYS NOT AT ALL** — two adjacent blocks in the same
   function, one doing `if ln not in SCHD_DIRECT_LINES: _err(...)` and the
