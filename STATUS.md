@@ -64,6 +64,23 @@ chain reproduces with no override: QREs 53,704 → floor 26,852 binds →
 including the PRE-EXISTING form_2553 advertisement omission, fixed same
 stroke. Codex re-stages packet 227 per the annex.*
 
+*▶ KEN DIRECTIVE (s279 close, verbatim intent): **state APP builds are
+sequenced by DEMAND — "which states to build first based on the number
+of returns that it will permit to be finished."** Division of labor
+confirmed by Ken: states session writes rules, this session writes apps
+— fine as long as one owner per layer and no collisions (the existing
+protocol). ANALYSIS IN FLIGHT, first cut from the DB (returns that got
+far enough to name an out-of-scope state — a FLOOR, not the full
+picture): CA 8 · MO 4 · MN 3 · WV 3 · OK 2 · VA 2 · PA/NJ/SC/OH/AZ 1
+each (27 payloads). The BIGGER number is the hold-note tally over the
+360 held 1040 packets — requested from the entry lane (only-blocker vs
+one-of-several columns, per their 6-of-6 multi-blocker lesson); the
+states lane owes the authored-vs-remaining inventory (8 specs live of
+the 45-state campaign, mostly entity; individual apps live = GA +
+AL/NC/SC resident/PY; AL_FORM_40NR spec seeded tonight, app queued).
+NEXT SESSION: assemble the three sources into a ranked build order for
+Ken's sign-off before any state app work beyond 40NR.*
+
 *▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
 BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
 annex; Ken has the exact re-ask prompt). ALL queues now clear (1120-S,
