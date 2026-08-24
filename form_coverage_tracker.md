@@ -1,6 +1,36 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-25 session 287 — KEN'S LIVE-REVIEW DAY (five deploys, all
+> verified).** **Editor chrome**: form pane + diagnostics dock default
+> CLOSED, opened by the ClientHeader buttons / F6 — every return type.
+> **1065 Schedule B**: Q1/Q2a/Q2b AUTO-ANSWER (B1 from the name's own
+> designator else a non-default roster; 2a/2b from the same ≥50% analysis
+> that attaches B-1; B4/B11 derived-overridable recipe; R-B1/B2-AUTO
+> queued) + **D_B33_PR** (line 33 'No' with a blank PR designation = an
+> ERROR; the OPM block keyed from the filed designation). **Analysis line
+> 2**: an LLC-answered return routes EVERY partner to row 2b. **8825**:
+> the line-1 table REPAINTED to Lacerte proportions (wide address, narrow
+> day columns, both pages — f8825_layout.py). **4562**: ⚠ KEN RULING
+> REVERSES s285 item 0 — line 17 ALWAYS prints (gate retired to a
+> tombstone); Part V col (d) reconstructs GROSS cost (the R018 net-held
+> cost_basis printed an EMPTY cell on the live comparison SUV — the s285
+> fixture keyed gross and could not see it), (e) blank when fully
+> expensed, 28/29 print literal 0. **1120-S K-1**: item C "e-file"
+> (i1120s p.25 verbatim — the hardcoded Ogden was the paper answer), item
+> D = Σ shareholder shares, item F3 entity type (new field, §1361(b)
+> default individual). **1040**: signature-block phone + email
+> (Taxpayer.email, both cells mapped/filled/keyed); 1099-R box 16
+> suggests the federal gross (ghost convention extended on Ken's
+> direction); **the tips attestation defaults ELIGIBLE** (box-7 tips
+> deduct out of the box; migs 0355-0357). **Client numbering**: the
+> sequential assigner ignores the ≥90000 synthetic band (a parked test
+> client had handed real clients 99260/99261 — renumbered 4796/4797).
+> Screen-vs-print staleness root-caused (computed L24d heals on
+> open/print; the Forms tab now refetches after rendering). Punchlist
+> items 7/10/14/15/16/18 queued with design notes in
+> `KEN_PUNCHLIST_2026-08-25.md`.
+>
 > **2026-08-24 session 286 — THE LACERTE PARITY QUEUE DRAINED (items
 > 1/3/4/5/6/9/10/11/12), render layer across the entity packet.**
 > **1065 face**: Lacerte header box (`header_block.py` white-out patch,
