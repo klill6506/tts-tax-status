@@ -1,6 +1,28 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-24 session 283 — ENTITY-PACKET POLISH (Ken-directed): our
+> partnership packet compared page-by-page against a Lacerte-filed original
+> (client 3444; numbers tie) ✅ one deploy (`66d0d09`).** The preparer
+> plumbing unified (`preparer_sync.py` — the import lane set only the FK
+> while EVERY print surface reads the PreparerInfo snapshot; lane now
+> syncs, readers fall back); **name + EIN now print on every entity-packet
+> page** (Lacerte's convention; self-maintaining content-check stamp —
+> native faces never double-print; 1040 excluded pending Ken's SSN privacy
+> call); **the shared-name AcroForm defect fixed** (a field with widgets on
+> several pages — GA-700 NAME_COPY/FEIN_COPY pp.2-8 — printed only on the
+> LAST page; the filler now draws every widget. ⚠ the ga700 map's v1 note
+> had named this defect and was dismissed as wrong — it blamed the template
+> but was right about the filler); GA-700 p2 preparer block + 1065 p1
+> line I / discuss-Yes / full firm address mapped; the 1065 letter/invoice
+> speak partnership (8879-PE, GA-8453 P, partner K-1 paragraph, B-1 +
+> GEORGIA FORMS sections, client number, Lacerte boxed styling, and the
+> Amount-Due derivation beating a stored zero). 9 new tests (teeth by two
+> injections), 195 render/print regressions green. **Named gaps NOT built:
+> Form 8879-PE (entities have no e-file auth page at all), 7004 absent
+> from the packet assembly, 1065 preparer signature/date cells (no
+> AcroForm fields).**
+>
 > **2026-08-24 session 282 — AL FORM 40NR (Alabama nonresident individual) →
 > ✅ ALL 4 LEGS in one deploy (`d5fbea1`); the FIRST non-default state-registry
 > VARIANT.** Unblocked by Ken's morning "approve all three" (RS `b978ef7`
