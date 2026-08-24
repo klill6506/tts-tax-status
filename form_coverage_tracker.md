@@ -1,6 +1,26 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-24 session 284 — FORM 8879-PE (E-file Authorization for Form
+> 1065) → ✅ NEW FORM, built + in the packet (`96b4da8`); Ken ranked the
+> three s283 gaps for build.** Official Rev. Dec 2025 template (manifest +
+> SHA), 18-field AcroForm map, `render_8879pe` — Part I = 1065 lines 1c /
+> 3 / 23 / Sch K L2 / Sch K L3c (verified against the downloaded official
+> face), ERO block from the effective preparer snapshot; instructions page
+> skipped; joins the 1065 packet at step 1b + the invoice list. **Form
+> 7004**: ⚠ the s283 "never joins the packet" claim was FALSE — the gate
+> always existed; the compared packet's page was missing because
+> `extension_filed` was unset (DATA). Moved to step 1c (extension directly
+> behind the auth, the Lacerte order, exactly once) + the invoice under the
+> same gate. **REAL defect found while verifying: the 7004 header map's
+> f1_7/f1_8 were SWAPPED — the ZIP printed in the COUNTRY column on every
+> 7004 ever rendered** (fixed; position-pinned test provably red under the
+> old map). **1065 p1 preparer signature/date cells** now print via
+> abs_pos literals (no AcroForm fields exist there; IRS accepts a printed
+> signature). 8 new tests; 166 render/print regressions green. PII scope
+> refined (Ken, live): client BUSINESS names permitted in commit messages;
+> mirror stays strict.
+>
 > **2026-08-24 session 283 — ENTITY-PACKET POLISH (Ken-directed): our
 > partnership packet compared page-by-page against a Lacerte-filed original
 > (client 3444; numbers tie) ✅ one deploy (`66d0d09`).** The preparer
