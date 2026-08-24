@@ -1,6 +1,42 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-24 session 282 — AL FORM 40NR (Alabama nonresident individual) →
+> ✅ ALL 4 LEGS in one deploy (`d5fbea1`); the FIRST non-default state-registry
+> VARIANT.** Unblocked by Ken's morning "approve all three" (RS `b978ef7`
+> seeded the 40NR tax-table floor rows — $0-$49 prints $0, closing the staged
+> spec-defect question; spec re-exported + re-cached). **Compute** ✅
+> `compute_al40nr` (form_code `AL_40NR`): the two-column face (col B = what a
+> RESIDENT would include, r. 810-3-15-.21(2); col C = the exhaustive
+> r. 810-3-14-.05 list), the line-10 percentage (three branches, struck on
+> line 9, PRINTED two-decimal precision per D-36) prorating five figures;
+> retirement enters col B ONLY — structurally (ret-t/ret-s + the per-taxpayer
+> age-65 $6,000 RS exclusion; no input can reach col C); Part II's asymmetric
+> sums (adj-p2/pen-ew); Schedule A's three floors on their own columns with
+> proration ON the schedule (24c/29 unprorated); FIT built to the form (D-32
+> A1 two-multiplication Part IV; the regulation's fraction lives in the
+> divergence diagnostic); line 14 override-honored (the NRA valve); tax from
+> Form 40's shared published-table code (HOF in the SINGLE column).
+> **Input** ✅ `seed_al40nr` (5 sections / 78 lines) + the REGISTRY VARIANT
+> mechanism: `StateForm.is_default`, `form_codes_for()`, the lane's
+> `state_returns[].form = "AL_40NR"` (staged, committed, schema'd — a bare AL
+> row stays Form 40), create-state-return's optional `form`, 40NR federal
+> pull (fed-l22/fed-agi-jt/EIC/ACTC/AOC), `OVERRIDE_HONORED_STATE_LINES`
+> (AL40 "12" / AL_40NR "14" exempt from the does-not-survive warning).
+> **Render** ✅ coordinate overlay on the fresh ALDOR `25f40nrblk.pdf` (flat,
+> 0 widgets): the two-cell page-1 grid read off the template's own printed
+> in-grid marker digits; pct against the pre-printed %; header/FS/13a-b X.
+> **Diagnostics** ✅ all 15 spec rules + D_AL40NR_FS + D_AL40NR_L14_OVERRIDE
+> (17 total; two recorded spec→app adaptations flagged for the RS agenda).
+> **Flow assertions** ✅ 614-test regression green incl.
+> tests/test_flow_assertions.py. **55 new tests**: the 16 RS scenarios with
+> the filed reconstruction G (tax 174) and its retirement-corrected twin H
+> (343) — answer keys from the FILED FACE, not this code; lane end-to-end
+> commit tie (174/426); a render POSITION AUDIT (17 values each inside its
+> own cell + row band — a drift fails loudly); 11 diagnostics arms; teeth
+> proven by TWO defect injections (full-precision pct → 5 red; retirement
+> leaked to col C → H red), both reverted.
+>
 > **2026-08-23 session 278 — THE TWO ENTITY QUEUES CLEAR: 1120-S BATCH-014
 > CLOSED + 1065 BATCH-004 STANDS 9/10 ✅ (three verified deploys).**
 > BATCH-014 (`1634c4b`): a bulk-sale member's business-use % now
