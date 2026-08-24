@@ -226,7 +226,20 @@ and in session memory, which boots regardless of which repo is open) or 🔧
 - (s279 late) cleanup `source_verified` all-or-nothing per packet;
   client-4545 D_8606_BASIS_ONLY ⛔ KEN.
 - (s268) 1,604 queries/run + memoization candidates (s275/276/277).
-- (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
+- (s241) `Form8606`/`HSAAccount` duplicate owners — ⚠ **NARROWED s281 by a
+  read-only probe, and the two halves have DIFFERENT answers.** Live DB:
+  **zero duplicate (tax_return, owner) pairs** in either — 35 Form8606
+  rows, 62 HSAAccount rows, neither carrying a constraint.
+  🔴 **`HSAAccount` must NOT get the Form5329-style uniqueness
+  constraint — a taxpayer may legitimately hold MORE THAN ONE HSA and
+  Form 8889 aggregates them.** A constraint there would refuse a correct
+  return; treat that half as CLOSED, not pending.
+  `Form8606` (one per person per year) is a plausible candidate, but far
+  less urgent than Form5329 was: **both siblings ITERATE their rows, so a
+  duplicate double-counts VISIBLY rather than silently disappearing** —
+  which was the whole reason Form5329's dict-keyed-by-owner needed the
+  constraint. No action taken: a unique constraint on a shared
+  production table is Ken's call when the DB is already clean. · (s234) the $250k
   nonpassive K-1 AGI gap · (s274) shared-policy pair 8962 fixture ·
   (s275) `.first()`-on-per-form-rules sweep chip — ⚠ **NARROWED, NOT
   CLOSED, by s281's seeder guard.** That guard proves no parsed seeder
