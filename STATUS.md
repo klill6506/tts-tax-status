@@ -210,6 +210,24 @@ spec is silent on the 4b activity-net attribution the s279 fix encodes
 (back-out = activity's line-5 contribution net of its own §179/UPE — should
 be a spec rule); FORM_7206 spec should name the S-corp line-11 MeF mapping.
 
+**`AL_FORM_40NR` AUTHORED-AND-GATED (s279 late; harness 144/0;
+READY_TO_SEED=False — awaits Ken's seed gate).** Build-critical
+conventions the states lane proved off the filed client-2961 fixture,
+which the APP BUILD must encode when the spec seeds:
+- Alabama multiplies by the PRINTED two-decimal line-10 percentage
+  (43.18%), NOT full precision (43.17638%) — $1 differences compound
+  across all five prorated figures; the filed return proved it.
+- Schedule A floors round to WHOLE DOLLARS before subtraction (4% ×
+  39,693 = 1,588, not 1,587.72) — a cents-carrying implementation fails
+  the filed fixture.
+- Head of Family uses the SINGLE tax column while taking the MFJ-sized
+  $3,000 exemption — three different four-status groupings on one form.
+- Three Schedule A floors read TWO different columns (medical → col B;
+  casualty + job expenses → col C) — one-AGI encoding is silently wrong.
+- The corrected-position scenario quantifies the client-2961 suspected
+  defect: retirement in col B moves the tax 174 → 343 (still pending the
+  third distribution's plan type — needs the actual 1099-R, with Ken).
+
 **Seeded-and-exportable (s279 late, Ken's "seed all three"): RS prod 167
 forms — `MO_1120`, `MS_83105`, `CO_DR0112` export 200.** Exportable ≠
 cleared to build (Ken's scoping call; Dec 1 freeze governs). Two warnings
