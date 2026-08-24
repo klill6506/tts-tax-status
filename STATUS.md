@@ -201,6 +201,27 @@ and in session memory, which boots regardless of which repo is open) or 🔧
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
+- ⚠ **(s281, raised by the 1040 entry lane) STAGE ALLOWLISTS `schd_fields`
+  KEYS AND `ga500_fields` KEYS NOT AT ALL** — two adjacent blocks in the same
+  function, one doing `if ln not in SCHD_DIRECT_LINES: _err(...)` and the
+  other validating only that keys are non-empty strings. **Not a data-loss
+  risk**: `_apply_state_fields` refuses the whole commit atomically at 400 on
+  an unknown line ("unknown GA-500 line"), so a bad key dies loudly — at
+  COMMIT rather than at STAGE. Fail-fast would be better: a bad key should
+  die before a batch is staged. Low severity, real asymmetry. ⚠ The lane's
+  hypothesis that such a key lands SILENTLY is REFUTED — recorded because a
+  refuted hypothesis is worth as much as a confirmed one here.
+- ⚠ **(s281, POST-DEPLOY PROBE) ONE live return now shows a NEW ERROR that
+  was not there yesterday, and it is CORRECT — not a regression.**
+  `D_8812_015` was the one new rule not covered by the pre-deploy probe (the
+  four `D_*_FS` rules were, across 785 rows, zero firing). Probed after:
+  **1 of 345 live Dependent rows fires it** — a nephew born 2000 flagged
+  `provided_over_half_own_support` AND claimed as a dependent, which is
+  exactly the §152(c)(1)(D)/§152(d)(1)(C) contradiction the rule exists to
+  name. One of the two facts on that row is wrong and a preparer has to say
+  which. ⚠ **NO computed value moved**: `claimed_as_dependent` defaults TRUE,
+  so every classification is byte-identical to before — the diagnostic is the
+  only new thing. Recorded so the red is not mistaken for a deploy defect.
 - ⭐ (s281, BOTH lanes, independently) **A test/fixture/packet is evidence
   only about what it could have observed.** Four instances in one night:
   the SC spec's 0.60/1.00 scenarios (exact at either precision); the states
