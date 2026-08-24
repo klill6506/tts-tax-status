@@ -42,7 +42,18 @@ exclude, state dep counts exclude; plus ODC must respect
 provided_over_half_own_support (§152(c)(1)(D)/(d)(1)(C) — adjacent
 defect) + an inconsistency diagnostic. THIS IS THE NEXT UNIT.** #3
 confirmed (blank tin_type silently kills CTC/EIC/ACTC — stage warning
-rides the same deploy). #2 DECOMPOSED TO THE DOLLAR, no new engine math
+rides the same deploy) **and GREW A THIRD MEMBER, found live the same
+night: a `div_1099s` row with `ordinary_dividends` and NO
+`qualified_dividends` key silently taxes the qualified portion at
+ordinary rates** (the preferential worksheet subtracts only the LT gain);
+warning, never an error (zero qualified is legitimate), explicit-0
+remedy, `DIV_FIELDS` already carries the key. ⚠ It OVERSTATES tax — the
+direction nobody reports. ⚠ On that same packet the ENGINE WAS
+EXONERATED: `compute_sdtw` + `compute_tax_line_16` reproduce the filed
+worksheet line-for-line on real 2025 figures (21=187,021, 31=4,
+44=37,732, 47=37,736) and the single rate schedule matches statute —
+**no rounding defect there**; the early R-AL-TAX/item-71-class hypothesis
+was killed by RUNNING the subject. Packet ties and commits. #2 DECOMPOSED TO THE DOLLAR, no new engine math
 defect: the AL band claim refuted by the 2025+2024 booklets (0–50,000 →
 $1,000 — fetched verbatim); the residual = the lane's `FS: hof`
 (lowercase) SILENTLY normalized to single (1,500 vs 3,000 exemption) +
