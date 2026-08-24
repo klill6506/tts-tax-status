@@ -210,8 +210,15 @@ spec is silent on the 4b activity-net attribution the s279 fix encodes
 (back-out = activity's line-5 contribution net of its own §179/UPE — should
 be a spec rule); FORM_7206 spec should name the S-corp line-11 MeF mapping.
 
-**`AL_FORM_40NR` AUTHORED-AND-GATED (s279 late; harness 144/0;
-READY_TO_SEED=False — awaits Ken's seed gate).** Build-critical
+**`AL_FORM_40NR` SEEDED AND LIVE (s279 late — Ken's "seed it"; RS prod
+168 forms; exports 200; CACHED at `server/specs/al_form_40nr_spec.json`,
+12 rules / 14 lines / 15 spec tests). THE 40NR APP BUILD IS NOW
+UNBLOCKED and queued as a next-session form unit** — BATCH-296 #52
+flipped to "spec live, app build queued"; the existing D_AL40_40NR
+refusal becomes a REDIRECT when the route wires (never deleted — a
+refusal fails safe if routing regresses). The client-2961 packet stays
+in Hold on its SECOND reason (the filed-return defect question) either
+way. Build-critical
 conventions the states lane proved off the filed client-2961 fixture,
 which the APP BUILD must encode when the spec seeds:
 - Alabama multiplies by the PRINTED two-decimal line-10 percentage
