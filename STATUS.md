@@ -75,36 +75,39 @@ C-corp specs also authored-and-gated tonight). E-FILE UNITS QUEUED from
 tonight: IRS8801 composer; the 6765-behind-K13g e-file leg is already
 built (MeF K-1 code M).*
 
-*⛔ KEN — parked with him (carried + s279 additions): (1) clients
-4387/3199 W-2 rounding-band acks; 3199 prior-year files. (2) The 2665
-Notice 2008-1 question — s279 note: the entry lane's client-1657 packet is
-the CLEAN contrast case (four independent corroborations; box 1 > box 5 by
-exactly the premium; the D_W2_BOX3/5_VAR warnings firing IS the correct
-signature — their ABSENCE is the suspicious case). (3) The six-re-stage
-dry-run decision (S1-10 ordering-bug class) **+ s279: the 8960
-passive-K-1 retrospective class** (committed returns with a passive K-1 +
-MAGI over the §1411 threshold — same dry-run mechanism, flagged by the
-lane, not run). (4) **NEW: the state-face override-honor convention** —
-keyed COMPUTED lines on AL/SC/NC faces other than AL40-12 remain
-accepted-but-ignored (the GA line-18 class); extend per-line like GA, or
-blanket? (5) **⚠ s279 LATE FIND — the #50 build conflicts with a MISSED
-s272 verdict**: the BATCH-296 mid-file triage had parked #50 "⛔ KEN — do
-not build" (AL booklet p.5 makes the L12 proration MANDATORY;
-recommendation = record the $41 as a source_defect instead), and no
-ruling ever landed. The build is inert without an explicit override and
-the statutory derive is unchanged, but the DECISION is now properly
-framed in the BATCH-296 s279 addendum: (a) face-faithful override +
-acked diagnostic, or (b) engine's figure + source_defect (no code; if
-(b), raise the diagnostic's in-cap arm to error severity). The lane is
-told to key NO AL-12 overrides until ruled. (6) **s279 NEW: the AL 40NR
-packet (client 2961) carries a SUSPECTED SOURCE DEFECT** — the states
-lane's booklet read says nonresident pensions belong in Column B (a
-plan-type rule, not geographic); the filed Schedule RS "OS"-exempted all
-three distributions (16,214, two IRA-flagged) from BOTH columns → AL%
-overstated (43.18% vs ≈30.65%), filed tax understated. Statute read
-pending on the states side; recorded in the packet's Hold note.
-(7) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer; s274 PII
-items; RS 8990 re-authoring gate.*
+*✅ KEN RULING PASS (s279 close, plain-language Q&A — full record in
+DECISIONS.md): **(1) AL-12 = SOURCE DEFECT, never an override** (the
+#50-vs-s272 conflict resolved as (b); D_AL40_L12_OVERRIDE raised to
+ERROR in every arm, deployed; the lane keys no AL-12 overrides; client
+2047's packet closes with the $41 defect). **(2) Client 4545's 8606 =
+defect on the filed return — close to Done.** **(3) Client 2665's Notice
+2008-1 = defect (Ken checked) — close to Done.** **(4) 4387/3199
+rounding-band acks approved; NO 2020-2024 prior-year files** ("not going
+back 5 years") — the 3199 lookback closes without them, stated as such.
+**(5) The two retrospective dry-run sweeps (S1-10 + 8960 classes):
+SKIPPED for now** — not refused; re-raise on evidence. All five relayed
+to the entry lane for packet closure.*
+
+*⛔ KEN — still parked ("ask me again later"): (1) the state-face
+override-honor convention (keyed COMPUTED lines on AL/SC/NC faces beyond
+AL40-12 remain accepted-but-ignored — the GA line-18 class). (2) The AL
+40NR packet's (client 2961) suspected source defect — nonresident
+pensions belong in Column B per the booklet + the Admin Code reg
+(810-3-15-.21(2), read verbatim by the states lane); AL% overstated
+43.18% vs ≈30.65%, filed tax understated; one payer's plan type still
+needs the actual 1099-R; disposition/amendment call rides the AL_40NR
+Gate-1 walk in the states session. (3) **Client 1801 identified** (name
+with Ken + the lane; number-only here): the "leave it alone" instruction traces to BATCH-296 item
+62 (NEVER WORKED, unmarked-open in the retired ledger): his seeded shell
+carries browser residue — a doubled educator expense (engine AGI $300
+low) and preparer_due_diligence_attested=True that would OVERWRITE
+transcribed 8867 answers at commit. Entering him today would corrupt;
+the unblock is building item 62's asks (sch1_fields replaces
+shell-resident values; a stale-attestation cleanup path) — a real build
+unit, queued. (4) The 146-packet re-export (Ken handles tomorrow;
+re-export ONE first). (5) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68
+optimizer; s274 PII items; RS 8990 re-authoring gate; Form 6765 Section
+G (TY2026+).*
 
 *Post-close addendum: **BATCH-010 moved to Done** on the lane's verified
 three-packet re-run (1657 zero errors + eligible + PDF in Done; 4006
