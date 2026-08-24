@@ -207,8 +207,18 @@ and in session memory, which boots regardless of which repo is open) or 🔧
   missed credit silently OVERSTATES Georgia tax — but an out-of-scope state
   does not always produce a Georgia credit (the other state may levy no tax;
   Georgia may not be the resident state), so it would misfire on legitimate
-  packets. Needs the discrimination question answered first (which shapes
-  genuinely carry a credit?). ⚠ The class is NOT blocked meanwhile: line 18
+  packets. ⚠ **The discrimination question is now ANSWERED empirically at
+  n=3 (entry lane, same night): one out-of-scope packet carries 90 of
+  credit, one 28,072 (93% of the GA tax — the largest live instance of
+  the s277 accepted-but-ignored fix earning its keep), one legitimately
+  NOTHING.** So the split is not predictable from the fact of an
+  out-of-scope state, and the only discriminator that works on all three
+  is whether the OTHER state's return shows tax paid — a fact from a
+  return the app never prepares. The honest version is therefore a
+  PROMPT-shaped warning ("does the out-of-scope return show tax paid?"),
+  never an error that fires on presence/absence. Still not built; the
+  shape is now specified rather than open. ⚠ The class is NOT blocked
+  meanwhile: line 18
   is keyable and its override WINS (the s277 fix); the rule is recorded at
   the point of use in `payload_out_of_scope_states`' docstring.
 - ⚠ **(s281, raised by the 1040 entry lane) STAGE ALLOWLISTS `schd_fields`
