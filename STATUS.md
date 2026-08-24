@@ -1,68 +1,75 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-24 (s284 — the three Lacerte-comparison gaps, Ken-ranked
-and built).*
+*Last updated: 2026-08-24 (s285 — parity queue items 0/7/8/13 built, item 2
+verified).*
 
-*⚠⚠ RESUME POINT — **s284 SHIPPED THE THREE GAPS KEN RANKED** (`96b4da8`,
-deploy verification in flight at close — CHECK RENDER STATUS FIRST if this
-file is stale; earlier today `d5fbea1`/`3134bf7`/`66d0d09` all Render-API
-LIVE). Ken ruled live: build the s283 gaps; and **PII SCOPE REFINED — a
-client's BUSINESS name is permitted in COMMIT MESSAGES** (DECISIONS.md;
-personal names/SSNs/EINs/addresses still barred; the public mirror stays
-fully strict, sync guard unchanged).*
+*⚠⚠ RESUME POINT — **s285 WORKED THE LACERTE PARITY QUEUE** (deploy
+verification: check Render status if this file is stale). Items 0, 7, 8, 13
+built + items 2 and 7 answered; full readings + rulings in
+`LACERTE_PARITY_QUEUE.md` s285 annex (repo root).*
 
-*① **FORM 8879-PE BUILT** (official Rev. Dec 2025 template downloaded +
-manifested; 18-field map; `render_8879pe`). Part I = 1065 lines 1c / 3 / 23 /
-Sch K line 2 / Sch K line 3c — verified against the downloaded official face,
-the same five the Lacerte packet prints. ERO firm + authorize box from the
-effective preparer block. Joins the 1065 packet at step 1b (instructions page
-skipped) and the invoice's federal list. The partnership packet finally
-carries a federal e-file authorization page.*
+*① **THE 4562 FIELD MAP WAS OFF BY ONE WIDGET FROM LINE 8 THROUGH 23** —
+the map skipped line 7's widget (f1_15), so on EVERY 4562 the app ever
+printed: line 12 (§179) printed in line 11's box, bonus (14) in the
+carryover box (13), prior MACRS (17) on line 16 — the mislabeled cell Ken
+caught on the 3444 Lacerte compare — the listed total (21) on line 17, the
+grand total (22) on line 21. The compute was never wrong; the values landed
+one row early. Fixed; line 23 split to the 2025 face's 23a/23b; POSITION
+pins added (label-row anchoring, provably red under the old map, 41pt).
+Lesson generalized from the s284 7004 swap: scalar chains in field maps get
+coordinate pins — a name-existence check can never catch a shift, because
+every wrong name still exists.*
 
-*② **FORM 7004 — the claim was wrong, the data was the gap.** ⚠ Correction
-against s283's own record: the packet gate ALWAYS existed (assembly step 7);
-the compared packet lacked the page because `extension_filed` was never set
-by the entry. Moved to step 1c (extension rides directly behind the e-file
-auth — the Lacerte order, exactly once); invoice lists it under the same
-gate. **REAL pre-existing defect found while verifying: the 7004 header map
-had f1_7/f1_8 SWAPPED — the ZIP printed in the COUNTRY column on every 7004
-ever rendered** (f1_7 = Country x382-489, f1_8 = ZIP x489-576; fixed, pinned
-by a position test that is provably red under the old map).*
+*② **Item 0 ruled (i4562 2025 + i8825 Rev. Dec 2025)**: line 16 = ACRS/
+pre-MACRS only; continuing MACRS = line 17; AND a 4562 that exists only for
+Part V listed property leaves Parts I–IV EMPTY (rental depreciation is
+claimed on 8825 line 14 alone) — built as `print_parts_i_iv_suppressed`,
+narrow (no listed property ⇒ no gate; any §179/bonus/current-year/line-16
+trigger reopens). MeF per-activity IRS4562 deliberately not gated (line 17
+ties each activity's DepreciationAmt link). **Item 7**: the 3444 4562 IS
+required — the 8825 claims 4,358 auto/travel (the "vehicle deduction on a
+non-Schedule-C form" trigger); that is why Lacerte fills Part V Section A/B
+and leaves I–IV blank.*
 
-*③ **THE 1065 PREPARER SIGNATURE/DATE CELLS print** — the IRS template has
-no AcroForm fields there; abs_pos literals print the preparer name in the
-signature cell (IRS accepts a printed signature; Lacerte prints it) and the
-date when `signature_date` is set. Client 3444's packet now matches the
-Lacerte original page-for-page through the federal side; final packet PDF
-delivered to Ken in-chat.*
+*③ **Item 8 built**: Part V line 26 carries cost / bus% as "60.00" (face
+pre-prints %) / basis-for-depr (cost × bus%) / period / "S/L-HY" / §179
+col; **24a/24b default Yes** when listed property exists (Ken A2;
+orientation coordinate-verified). Deferred (DEFERRAL_AUDIT): the keyed
+override input (D_4562_24A/24B seed pattern). **Item 13 fixed**: GA-700
+Sch 4 income base was 1065 page-1 line 23 ONLY — $0 on every rental
+partnership; now Schedule 8 line 12 less S8_5 GP (GP re-added per partner,
+IT-711 pp.11-13), fallback to the federal line when S8 never computed;
+3444 prints 29,437/partner. **Item 2 verified**: entry gap — 3444's
+B33_PR_* all empty; render leg fine (p4 widgets mapped). Entry lane must
+key the B33 block when the packet shows a PR.*
 
-*④ **Evidence**: 8 new tests (8879-PE values incl. a negative; packet
-inclusion exactly-once + ordering; the ZIP-column position pin; the
-signature-cell band), 166 render/filler/print regressions green. DATA on
-client 3444: `extension_filed` set (transcribes the filed packet).*
+*④ Evidence: 13 new tests in `test_parity_4562_lacerte.py` (gate render ×3,
+Part V columns, 24a/24b, derivation unit pins ×7) + 3 position-pin tests +
+the rental Sch 4 case in `test_1065_ga_package.py`; injection: position pin
+proven red under the old map. Spec gate: 4562 + ga700 RS exports fetched
+live (line semantics agree; no compute change — flow assertions skipped
+WITH REASON: render/field-map only). ⚠ RS AGENDA add: R-GA700-PARTNERS
+under-specifies the income base ("ordinary" — its worked example has only
+ordinary income); amendment queued.*
 
-*▶ NEXT (fresh session): verify the `96b4da8` deploy reached LIVE (poller
-running at close). Then the carried queue: ⛔ #3 entity transport (Ken);
-batch items as posted. Residual Lacerte-parity nits, NOT ranked: our GA-700
-prints 8 pages vs Lacerte's 4 (we render the full DOR form; theirs omits
-blank schedule pages — a skip-blank-pages pass is a candidate); K-1
-supplemental/Statement-A formatting differences unreviewed.*
+*▶ NEXT (fresh session): **CONTINUE `LACERTE_PARITY_QUEUE.md`** — remaining
+items: 1 (typography/darker/more-lines theme + 1065 header box + the
+continuation-header restyle — build toward substitute forms per Ken A1),
+3 (Analysis of Net Income, 1065 p6), 4 (8825 two-line address), 5 (K-1 20N
+§163(j)), 6 (Statement A restyle), 9 (dep schedule redesign, four-column
+179/SDA split per A4), 10 (GA-700 header/face gaps), 11 (vendor tag), 12
+(blank-page skip). ⚠ Ken may have appended more items — re-read the queue
+file first. Client 3444 is the comparison bed.*
 
-*▶ AWAITING (carried): entry-lane token (Ken, in their session) →
-client-4569 restage + the 40NR packet through the variant path; the
-`GA_OCGA_48_7` authority-row ownership call (Ken) → unblocks the approved
-GA-500 S3-9 seed; 1040 BATCH-012 / BATCH-296 stay in `CC Changes`.*
+*▶ AWAITING (carried): entry-lane token (Ken) → client-4569 restage + 40NR
+variant path; `GA_OCGA_48_7` ownership call (Ken) → GA-500 S3-9 seed; 1040
+BATCH-012 / BATCH-296 stay in `CC Changes` (built/held per s281/s282).*
 
-*⛔ KEN — outstanding (carried): the entity second-state-face transport (#3,
-REVIEW_QUEUE); state-face override-honor convention
-(`OVERRIDE_HONORED_STATE_LINES`, 2 members); client-2961 AL 40NR
-source-defect disposition; the 146-packet re-export; NC/CA/SC linked-state
-reopens; #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer; s274 PII items
-(⚠ the mirror-history rewrite question — NARROWED by today's ruling: commit
-messages may carry business names, so only the mirror-reached PERSONAL-name
-instances remain); RS 8990 re-authoring gate; Form 6765 Section G;
-client-4545 D_8606_BASIS_ONLY; per-rule cleanup acknowledgment; **1065
-BATCH-004 #4 blocked on Codex's Box-2 arithmetic**.*
+*⛔ KEN — outstanding (carried): entity second-state-face transport (#3);
+`OVERRIDE_HONORED_STATE_LINES` convention; client-2961 AL 40NR source
+defect; 146-packet re-export; NC/CA/SC linked-state reopens; #6 1065X/AAR;
+#68 optimizer; s274 PII narrowings; RS 8990 re-authoring gate; 6765 Sec G;
+client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex Box-2).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -98,13 +105,13 @@ the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
 holder (s283: two runs collided — wait for the background batch). Peers
 stage; Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s284)
+## ⚠ Known red / rotted — THE ONE LIST (post-s285)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s281). No client changes s282-s284.
+- **Client typecheck**: green (s281). No client changes s282-s285.
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -112,7 +119,8 @@ stage; Ken decides.
   never pipe pytest through `Select-Object`; `poetry run` only from
   `server\` (the Bash tool prints NOTHING for poetry one-liners — use the
   PowerShell tool). ⚠ `poetry run python -c "<multi-line>"` via the
-  PowerShell tool can bind wrong — script FILES, not inline `-c`.
+  PowerShell tool can bind wrong — script FILES, not inline `-c` (bit
+  again in s285).
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8; grep the DIFF for mojibake after any shell
   touch. ⚠ Embedded double-quote in a here-string arg to a NATIVE exe
@@ -128,36 +136,38 @@ stage; Ken decides.
   `page.widgets()` or it under-reports.
 
 ## 🔎 Carried for triage — NOT claims
-- (s284) **GA-700 prints all 8 DOR pages; Lacerte prints 4** (blank
-  schedule pages omitted) — a skip-blank-pages pass is a candidate, not
-  ranked. K-1 supplemental/Statement-A formatting parity unreviewed.
-- (s284) ⚠ **The s283 "7004 never joins the packet" claim was FALSE** —
-  the gate existed; the page was missing because the DATA flag was unset.
-  Recorded because the correction is the lesson: a missing page names a
-  missing FORM only after the gate's INPUT is checked.
+- (s285) Sch 4 nonresident arm still apportions the WHOLE widened base by
+  the S7 ratio and adds S2_6×profit% — allocated-everywhere income (S2_2)
+  is not backed out of the apportionable share. Zero on 3444 (S2_2=0);
+  needs an IT-711 read when a return carries S2_2.
+- (s284) **GA-700 prints all 8 DOR pages; Lacerte prints 4** — parity
+  item 12 (queued). K-1 supplemental/Statement-A formatting parity
+  unreviewed (item 6).
 - (s283) The stamp excludes 1040 packets (name+SSN privacy call — Ken).
 - (s282) `OVERRIDE_HONORED_STATE_LINES` hand-synced; third member ⇒ derive
   both sides from one declaration.
 - (s281) Out-of-scope-state line-18 prompt-shaped diagnostic — specified,
   not built. · Stage allowlists `schd_fields` keys, `ga500_fields` not at
-  all. · `D_8812_015` fires on 1 live row — CORRECT. · ⭐ evidence is only
-  about what it could have observed; a sweep reports its own coverage.
+  all. · ⭐ evidence is only about what it could have observed; a sweep
+  reports its own coverage.
 - (s280) regression fixtures insensitive to their rule — Gate-1 approved,
   execution with the states lane.
 - (s279 late) cleanup `source_verified` all-or-nothing; client-4545 ⛔ KEN.
 - (s268) 1,604 queries/run + memoization candidates.
-- (s241/s281) `Form8606` unique-constraint candidate (DB clean; Ken's
-  call). 🔴 `HSAAccount` half CLOSED — multiple HSAs legitimate.
-- (s275/s281) `.first()`-on-per-form-rules sweep — narrowed (62/71 seeders
-  guarded); remainder: multi-instance forms + 9 named seeders.
+- (s241/s281) `Form8606` unique-constraint candidate · 🔴 `HSAAccount`
+  half CLOSED — multiple HSAs legitimate.
+- (s275/s281) `.first()`-on-per-form-rules sweep — narrowed; remainder:
+  multi-instance forms + 9 named seeders.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried:
-Everything from s277–s282 stands: the AL_FORM_40NR diagnostic-condition
-amendments; the GA-500 S3-9 seed BLOCKED on `GA_OCGA_48_7` ownership;
-R-AL-TAX mechanism amendment staged; D-36 reads for TN_FAE170 / SC1120 in
-progress on the states lane. s283/s284 touched no spec (render-only; the
-spec-fetch gate skipped WITH REASON: no computation or line-mapping change).
+## RS AGENDA — carried + s285 add:
+Everything from s277–s282 stands (AL_FORM_40NR amendments; GA-500 S3-9
+seed BLOCKED on `GA_OCGA_48_7`; R-AL-TAX mechanism; D-36 reads for
+TN_FAE170/SC1120). **s285 ADD: R-GA700-PARTNERS income-base amendment**
+(base = Schedule 8 line 12 total less GP, not "ordinary" — the p.13
+worked example never exercised a rental partnership). s283–s285 touched no
+compute; spec-fetch gate satisfied live for 4562 + ga700 (line semantics
+agree; render/field-map changes only).

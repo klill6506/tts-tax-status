@@ -1,6 +1,31 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-24 session 285 — FORM 4562 RENDER LEG: ⚠⚠ THE FIELD MAP WAS OFF
+> BY ONE WIDGET FROM LINE 8 THROUGH LINE 23** (parity item 0; the map
+> skipped line 7's own widget f1_15, so §179 line 12 printed in the
+> business-income-limit box, bonus 14 in the carryover box 13, prior-year
+> MACRS 17 on line 16 — the cell Ken caught on the 3444 Lacerte compare —
+> listed total 21 on line 17, grand total 22 on line 21; **every 4562 the
+> app ever printed**; the computed values were right, the rows wrong).
+> Fixed + line 23 split to the 2025 face's 23a/23b + POSITION-pin tests
+> (label-row anchored; provably red under the old map — the s284 7004
+> lesson generalized: a name-existence check can never catch a shift).
+> **Listed-only gate built** (item 0 ruling, i4562 2025 Who-Must-File +
+> i8825 Dec-2025 line 14): a 4562 existing only for Part V listed property
+> prints Parts I–IV EMPTY (`print_parts_i_iv_suppressed`; narrow — no
+> listed property ⇒ unchanged; MeF per-activity docs ungated by design).
+> **Part V completed** (item 8): cost / bus% "60.00" (face pre-prints %) /
+> basis-for-depr / period / "S/L-HY" / §179 col; **24a/24b default Yes**
+> (Ken A2; keyed override = DEFERRAL_AUDIT). **GA-700 Schedule 4** (item
+> 13): the per-partner income base was federal page-1 line 23 ONLY — $0 on
+> every rental partnership; now GA Sch 8 line 12 less S8_5 GP (re-added
+> per partner, IT-711 pp.11-13), federal-line fallback when S8 uncomputed;
+> RS agenda: R-GA700-PARTNERS base amendment. **1065 p4 B33 PR block**
+> (item 2): render leg verified mapped; 3444's emptiness is an ENTRY gap.
+> 16 new tests (position pins ×3, gate ×3, Part V ×2, derivation ×7,
+> rental Sch 4 ×1) + one injection.
+>
 > **2026-08-24 session 284 — FORM 8879-PE (E-file Authorization for Form
 > 1065) → ✅ NEW FORM, built + in the packet (`96b4da8`); Ken ranked the
 > three s283 gaps for build.** Official Rev. Dec 2025 template (manifest +
