@@ -69,17 +69,47 @@ sequenced by DEMAND — "which states to build first based on the number
 of returns that it will permit to be finished."** Division of labor
 confirmed by Ken: states session writes rules, this session writes apps
 — fine as long as one owner per layer and no collisions (the existing
-protocol). ANALYSIS IN FLIGHT, first cut from the DB (returns that got
-far enough to name an out-of-scope state — a FLOOR, not the full
-picture): CA 8 · MO 4 · MN 3 · WV 3 · OK 2 · VA 2 · PA/NJ/SC/OH/AZ 1
-each (27 payloads). The BIGGER number is the hold-note tally over the
-360 held 1040 packets — requested from the entry lane (only-blocker vs
-one-of-several columns, per their 6-of-6 multi-blocker lesson); the
-states lane owes the authored-vs-remaining inventory (8 specs live of
-the 45-state campaign, mostly entity; individual apps live = GA +
-AL/NC/SC resident/PY; AL_FORM_40NR spec seeded tonight, app queued).
-NEXT SESSION: assemble the three sources into a ranked build order for
-Ken's sign-off before any state app work beyond 40NR.*
+protocol). ANALYSIS ASSEMBLED SAME NIGHT from three sources (all
+attribution-preserved): the DB out-of-scope tally (CA 8 · MO 4 · MN/WV 3
+· OK/VA 2 · five singles), the entry lane's HAND-READ hold-note tally
+(`1040/tmp/STATE-DEMAND-TALLY-2026-08-23.md` — 17 packets; every note
+read, not keyword-matched), and the states lane's campaign inventory
+(**50 forms live / 15 jurisdictions; individual coverage only 4 states —
+GA + AL/NC/SC — and only AL has a nonresident form; NOTHING
+authored-but-gated; researched-not-authored = OR_20 + the MA trio whose
+walk is time-bound ~Dec 1**; ⚠ states-lane CORRECTION: OR_20 was walked
+at D-25 but NEVER authored — what seeded were Oregon's shared schedules;
+the STATE_MATRIX grid was right, the narrative wrong).
+
+**THE RANKED ORDER (released-returns per unit of work, for Ken's
+sign-off):**
+1. **Client-2047 AL part-year: ZERO build** — released by tonight's
+   ruling; workable now.
+2. **SC Schedule NR proration precision (BATCH-296 item 71): small
+   compute fix, not a build** — engine rounds to a whole percent (0.98
+   vs filed 97.77%), $2 off; releases 1 packet. THIS LANE, small.
+3. **⭐ ENTITY-LANE SECOND-STATE-FACE TRANSPORT** — the lane's key
+   finding: CO DR-0106 is ALREADY BUILT but unreachable (the entity
+   batch contract carries only federal + one GA face; no co106_fields,
+   no expected.co106, closeout gates GA-only). Releases both CO packets
+   AND is the gate EVERY future entity-state build passes. THIS LANE,
+   medium, highest leverage.
+4. **AL Form 40NR app build** — spec seeded tonight; 1 packet now,
+   likely more post-re-export; the NR pattern-setter.
+5. **AL partnership family on 1065 (PTE/BPT/composite)** — 3 packets,
+   genuinely absent; AL entity specs live; sequence AFTER #3.
+6. **CA = the top RESEARCH priority, not a build** — highest combined
+   signal (8 DB + 2 held + the 100S entity packet) and NO spec exists;
+   needs the full states-lane pipeline first.
+⚠ Caveats Ken should read with it: the tally is a FLOOR — the 146
+faceless packets' state needs are unknown (Ken re-exporting TONIGHT, 96
+of 140 installed, faces verified); the residence table (FL 35 · SC 24 ·
+NC 14 · TN 12…) counts MAILING ADDRESS, is blind to
+nonresident-obligation demand (client 2961 counts as GA there), and
+FL/TN/TX have no individual income tax (entity-only lanes, specs
+already live); the TaxWise FORMS-USAGE report (Ken's lane, outstanding)
+is the instrument that settles true demand. REBUILD the tally once the
+re-exported packets are readable.*
 
 *▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
 BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
