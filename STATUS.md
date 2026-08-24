@@ -111,6 +111,26 @@ already live); the TaxWise FORMS-USAGE report (Ken's lane, outstanding)
 is the instrument that settles true demand. REBUILD the tally once the
 re-exported packets are readable.*
 
+*▶ s279 THIRD WAVE (Ken present) — **1120-S BATCH-015 CLOSED**
+(`dc27c17`, deploy `dep-da5ppau7bikc73btl600` LIVE; annexed; batch +
+KEN_DECISION file moved to Done): **#1 the TY2025 small-S-corporation
+K-2/K-3 exception BUILT end to end** — authority fetched from irs.gov
+and verified; migration 0353 (the structured basis/notice/request trio
+on EntityBoundaryAssertion, db_default, applied pre-push); ONE shared
+predicate drives the K14a=false/K14b=true derive AND D_EB_K2K3 (clears
+when established, names the missing fact when partial — both negative
+arms pinned); new `entity_boundary` lane section (K2K3 subset only;
+small_s refuses on a 1065); K14a/K14b join the 1120-S answer key with
+**text-compare reconciliation for non-numeric pins** (a checkbox pin
+used to tie 0==0 vacuously); closeout forms_report carries the facts.
+Packets 202 + WHITEWIN (the last two 1120-S returns) are unblockable —
+re-stage per the annex. **#2/#3/#4 (NC/CA/SC linked-state reopens)
+annexed ⛔ source-required: Ken re-exports the state faces TOMORROW**
+(packets 101/187/ABE); CA additionally needs its RS spec (top research
+priority). KEN ALSO RULED: the 5 missing 1040 packets are NOT FINAL —
+disregarded, lane notified; priorities = finish 1040 + 1065 first,
+states in the demand-ranked gaps.*
+
 *▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
 BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
 annex; Ken has the exact re-ask prompt). ALL queues now clear (1120-S,
