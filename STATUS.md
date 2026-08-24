@@ -1,199 +1,70 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-23 ~late evening (s279 — two 1040-lane batches worked
-live during entry, the retired ledger's last three items resolved, and a
-seeder-collision guard that caught a silently dead diagnostic).*
+*Last updated: 2026-08-23 ~23:20 (s280 — two BATCH-296 items built, deployed,
+and confirmed; the SC spec amendment Ken-ruled and re-exported same evening).*
 
-*⚠⚠ RESUME POINT — **s279 SHIPPED TWO VERIFIED DEPLOYS (4 commits).**
-**1040 BATCH-009 CLOSED** (`9b83991`, deploy `dep-da5m7jqd0e5s73bq1isg`
-LIVE; annexed; moved to Done): Form 8960 was eating passive K-1 income —
-the non-§1411 back-out used the nonpassive activity's GROSS box 1 while
-line 4a carries it net of its own §179/UPE; the overstated back-out hit
-the 4b clamp and flattened the bucket. Fix at the ONE shared function
-(compute/diagnostics/render/MeF together); filed-split rows now enter the
-back-out by filed classification. The entry lane re-ran the fixture SAME
-NIGHT: ties, committed, filed.
-**1040 BATCH-010 CLOSED** (`dcca02f`, deploy `dep-da5mhlfavr4c73f7s0f0`;
-annexed): the NON-iterative S-corp SEHI path (7206, no 8962) now transmits
-IRS7206 via the form's line-11 Box-5 route, mirroring the exact
-scorp_sehi pairings compute feeds Sch 1 L17 (`scorp_k1_sehi_forms`, new
-one-source generator). Farm/Medicare-fold stay the narrowed named boundary.
-**BATCH-296 (retired ledger) — zero OPEN items remain**: #50 BUILT
-(`cbe370f` — AL40 line 12 preparer override stands + chains,
-D_AL40_L12_OVERRIDE polices cap/part-year scope; $1 L17 residual named =
-the DOR tax-table midpoint vs continuous-bracket, the PRE-EXISTING stated
-boundary); #51 ALREADY BUILT (other_income_items route 8h, s241z); #52
-PARKED at the RS-spec gate — and **KEN RULED (via delvio-states): AL_40NR
-spec authoring is NEXT in the states lane**, ahead of MS/CO; app build
-follows the seeded spec (campaign open item 0; not tonight — full
-source-pull → Gate-1 process).
-**The duplicate-code guard fired on first run** (`7b8f01b`): D_RET_012 was
-declared twice; the s243b SS-worksheet 6b ENGINE INVARIANT had been
-silently dead since s242 (seeder last-writer-wins). Renumbered to
-D_RET_015 + revived; `seed_rules` run against the shared DB (012 =
-disability-MRA unchanged, 015 = invariant, both active;
-D_AL40_L12_OVERRIDE also seeded).*
+*⚠⚠ RESUME POINT — **s280 SHIPPED TWO VERIFIED DEPLOYS.**
+**BATCH-296 item 71 CLOSED AND LANE-CONFIRMED** (`457d05c`, deploy
+`dep-da5qkhvavr4c73faqqg0` LIVE; annexed): SC Schedule NR line 45 carries
+the printed two-decimal PERCENT (4dp ratio) per SchNRInst_2025 lines 45+47
+— the whole-percent quantize was $2 of tax on every non-whole ratio. The
+filed face refutes BOTH the old rule and full precision (15,435 / 15,398
+vs the filed 15,399 — only 0.9777 reproduces it). The entry lane re-staged
+the client-3184 part-year GA+SC packet SAME EVENING: **full tie, federal +
+GA + SC, first attempt** (commit held only on the lane-wide
+preparer-of-record question below). **KEN RULED the RS amendment** (via
+delvio-states): `R-NR-PRORATION` now round-4 citing both authorities;
+cache re-exported (rides `9c700cb`); **D-36 adopted campaign-wide: where
+a state form prints a percentage, the PRINTED percentage is what
+multiplies — never the full-precision ratio.**
+**BATCH-296 item 62 CLOSED** (`9c700cb`, deploy `dep-da5r5q7avr4c73fb7ifg`
+LIVE; annexed): the client-1801 doubling TRACED by a read-only shell probe
+— browser residue on **SCH_1 line 21 = 300, OVERRIDDEN** (not line 11);
+payload 11:300 + shell 21:300 → line 26 = 600, AGI 300 low. Built: (1)
+`_warn_shell_direct_entry_residue` — every commit warns by name on nonzero
+direct-entry/OVERRIDDEN lines the payload doesn't re-key, four scopes
+(SCH_1 / SCH_3 / SCH_D / 1040-L36); deliberately warn-not-replace because
+correction batches are INCREMENTAL. (2) `preparer_due_diligence_attested`
+importable **CLEAR-ONLY** (false clears residue, true refuses at staging —
+the s237 off-switch rule); published schema regenerated with enum+teaching
+description. 77 backentry-commit tests green; 668 across adjacent suites +
+flow gate. **The client-1801 unblock recipe is in the annex + sent to the
+lane**: `sch1_fields {"11":300, "21":0}` + attestation false + transcribed
+f8867_fields; browser entry stays forbidden until that batch commits.*
 
-*▶ s279 SECOND HALF (post-close, Ken present) — TWO MORE BATCHES CLOSED,
-two more verified deploys:*
+*▶ NEXT (all remaining units are LARGE — fresh session): per Ken's
+priority ruling (1040+1065 first, states in demand-ranked gaps) the
+candidates are **BATCH-296 item 24** (1040 Schedule E rental asset ledger
+— the #23/#24/#53 remainder, a real feature unit), the **entity-lane
+second-state-face transport** (ranked #3 — CO DR-0106 built but
+unreachable; the gate every future entity-state build passes), and the
+**AL Form 40NR app build** (ranked #4 — spec live + cached, 12 rules / 14
+lines / 15 spec tests; encode the s279 build-critical conventions in
+STATUS_ARCHIVE + the RS agenda). **1065 BATCH-004 #4 still the only open
+batch item, BLOCKED on Codex's Box-2 statement arithmetic** (no addendum
+arrived tonight; Ken has the re-ask prompt).*
 
-*• **1040 BATCH-011 CLOSED** (`b217801` + generator `3033988`, deploy
-`dep-da5n7rnavr4c73f8dffg` LIVE; annexed; Done): NEW `sch3_fields` (v1 =
-line 6b, the Form 8801 allowed credit as filed — the sch1_fields shape;
-verified from code there was genuinely no Schedule 3 surface before
-concluding "no route," the 8960 lesson applied). The client-4545 149
-credit now reaches 1040 line 20; boundaries named: no 8801 form
-(exclusion items / carryforwards unmodeled, D_SCH3_003 = the honest
-attach warning) and **NO IRS8801 MeF builder — a 6b return ties/commits
-but cannot transmit** (a named future unit). The runner
-(`import-lane.ps1`) now SHOUTS on replayed=True stages (#2). Published
-1040 schema regenerated (the generator needed its own sch3_fields entry
-— the stricter-than-production class again).*
+*▶ AWAITING: (1) entry lane — client-1801 correction batch (recipe above);
+client-3184 commit (ties; held on preparer-of-record). (2) **⛔ KEN — the
+lane-wide preparer-of-record question** (entry lane raised it: recent
+packets print Ken's roster entry on 1040 page 2; one return, client
+3543, already FILED carrying the other roster entry off a mis-stated
+question — correction put to Ken; rule recorded: **read the paid-preparer
+block on 1040 PAGE 2, never the 8879**). (3) states lane — TN_FAE170 and
+SC1120 apportionment precision need their own instruction reads under
+D-36 (their side); **GA-500 S3-9 stays UNTOUCHED**: engine multiplies at
+full precision, and the client-3184 packet's GA side TIES under that —
+real evidence Georgia's printed convention may differ; needs IT-511 + the
+500 face read before anyone touches it (open, no owner assigned).*
 
-*• **1120-S FORM6765 REQUEST CLOSED** (`5d263d8`, deploy
-`dep-da5nhamq1p3s73bdo810` LIVE; annexed; Done — the last 1120-S queue
-item, per Ken): BOTH blocking claims in the request were STALE — the RS
-6765 spec EXISTS (200; cached, draft-trap-passed) and the FORM has been
-built since s230. The true gap was the entity lane: new `form_6765`
-OBJECT section (24 input facts; computed lines refuse toward the K13g
-pin; fixed_base_pct FRACTION guard — >0.16 refuses as the
-percent-as-fraction slip), K13g joins the answer key (the K15f-omission
-class), closeout gains declared/present/ENGAGED holds. The packet-227
-chain reproduces with no override: QREs 53,704 → floor 26,852 binds →
-×15.8% = 4,243 → K13g → K-1 code M. Entity schema regenerated —
-including the PRE-EXISTING form_2553 advertisement omission, fixed same
-stroke. Codex re-stages packet 227 per the annex.*
-
-*▶ KEN DIRECTIVE (s279 close, verbatim intent): **state APP builds are
-sequenced by DEMAND — "which states to build first based on the number
-of returns that it will permit to be finished."** Division of labor
-confirmed by Ken: states session writes rules, this session writes apps
-— fine as long as one owner per layer and no collisions (the existing
-protocol). ANALYSIS ASSEMBLED SAME NIGHT from three sources (all
-attribution-preserved): the DB out-of-scope tally (CA 8 · MO 4 · MN/WV 3
-· OK/VA 2 · five singles), the entry lane's HAND-READ hold-note tally
-(`1040/tmp/STATE-DEMAND-TALLY-2026-08-23.md` — 17 packets; every note
-read, not keyword-matched), and the states lane's campaign inventory
-(**50 forms live / 15 jurisdictions; individual coverage only 4 states —
-GA + AL/NC/SC — and only AL has a nonresident form; NOTHING
-authored-but-gated; researched-not-authored = OR_20 + the MA trio whose
-walk is time-bound ~Dec 1**; ⚠ states-lane CORRECTION: OR_20 was walked
-at D-25 but NEVER authored — what seeded were Oregon's shared schedules;
-the STATE_MATRIX grid was right, the narrative wrong).
-
-**THE RANKED ORDER (released-returns per unit of work, for Ken's
-sign-off):**
-1. **Client-2047 AL part-year: ZERO build** — released by tonight's
-   ruling; workable now.
-2. **SC Schedule NR proration precision (BATCH-296 item 71): small
-   compute fix, not a build** — engine rounds to a whole percent (0.98
-   vs filed 97.77%), $2 off; releases 1 packet. THIS LANE, small.
-3. **⭐ ENTITY-LANE SECOND-STATE-FACE TRANSPORT** — the lane's key
-   finding: CO DR-0106 is ALREADY BUILT but unreachable (the entity
-   batch contract carries only federal + one GA face; no co106_fields,
-   no expected.co106, closeout gates GA-only). Releases both CO packets
-   AND is the gate EVERY future entity-state build passes. THIS LANE,
-   medium, highest leverage.
-4. **AL Form 40NR app build** — spec seeded tonight; 1 packet now,
-   likely more post-re-export; the NR pattern-setter.
-5. **AL partnership family on 1065 (PTE/BPT/composite)** — 3 packets,
-   genuinely absent; AL entity specs live; sequence AFTER #3.
-6. **CA = the top RESEARCH priority, not a build** — highest combined
-   signal (8 DB + 2 held + the 100S entity packet) and NO spec exists;
-   needs the full states-lane pipeline first.
-⚠⚠ **RE-READ COMPLETE (s279 late) — THE INDIVIDUAL-SIDE DEMAND
-COLLAPSED ON INSPECTION** (`1040/tmp/STATE-DEMAND-REREAD-2026-08-23.md`;
-every packet verified two ways): of the 135 re-exported packets, **126
-are Georgia-only**; only 9 carry a non-GA 2025 state return, one packet
-each across 9 states. Of those: **3 are workable NOW on installed
-modules** (SC-NR / NC / AL resident — and the no-GA question is ANSWERED
-FROM CODE: `state_returns` with no `ga500_fields` works, the s262c
-fixture is exactly that shape, 14/14 re-proven fresh); **1 (UT resident,
-federal-only path + the s258 out_of_scope closeout) likely workable
-too**; **5 are stale policy holds** the s258 closeout supersedes.
-**Net individual-side build demand: AL Form 40NR (spec live) and
-essentially nothing else.** The multi-packet builds are all
-entity-side: 1065 AL (3), FL (2), and the CO entity-transport gap
-(2, not a build). The ranked 1-6 list above survives with #4/#5/#3 as
-the real work and #6 (CA research) driven by the DB closeout signal,
-not held packets. The TaxWise FORMS-USAGE report remains the
-final-say instrument.*
-
-*▶ s279 THIRD WAVE (Ken present) — **1120-S BATCH-015 CLOSED**
-(`dc27c17`, deploy `dep-da5ppau7bikc73btl600` LIVE; annexed; batch +
-KEN_DECISION file moved to Done): **#1 the TY2025 small-S-corporation
-K-2/K-3 exception BUILT end to end** — authority fetched from irs.gov
-and verified; migration 0353 (the structured basis/notice/request trio
-on EntityBoundaryAssertion, db_default, applied pre-push); ONE shared
-predicate drives the K14a=false/K14b=true derive AND D_EB_K2K3 (clears
-when established, names the missing fact when partial — both negative
-arms pinned); new `entity_boundary` lane section (K2K3 subset only;
-small_s refuses on a 1065); K14a/K14b join the 1120-S answer key with
-**text-compare reconciliation for non-numeric pins** (a checkbox pin
-used to tie 0==0 vacuously); closeout forms_report carries the facts.
-Packets 202 + WHITEWIN (the last two 1120-S returns) are unblockable —
-re-stage per the annex. **#2/#3/#4 (NC/CA/SC linked-state reopens)
-annexed ⛔ source-required: Ken re-exports the state faces TOMORROW**
-(packets 101/187/ABE); CA additionally needs its RS spec (top research
-priority). KEN ALSO RULED: the 5 missing 1040 packets are NOT FINAL —
-disregarded, lane notified; priorities = finish 1040 + 1065 first,
-states in the demand-ranked gaps.*
-
-*▶ NEXT: **1065 BATCH-004 #4 remains the only open batch item (9/10),
-BLOCKED on Codex's Box-2 statement arithmetic** (question in that batch's
-annex; Ken has the exact re-ask prompt). ALL queues now clear (1120-S,
-1040, legacy-parked). Then per BUILD_ORDER. Awaiting from entry:
-packet-170 + investment-partnership re-stages; packet-227 re-stage
-(form_6765); client-4545 re-dry-run (sch3_fields); staging-guard fixture
-shapes. Awaiting from states: the AL_40NR spec (Gate-1 with Ken; MS/CO
-C-corp specs also authored-and-gated tonight). E-FILE UNITS QUEUED from
-tonight: IRS8801 composer; the 6765-behind-K13g e-file leg is already
-built (MeF K-1 code M).*
-
-*✅ KEN RULING PASS (s279 close, plain-language Q&A — full record in
-DECISIONS.md): **(1) AL-12 = SOURCE DEFECT, never an override** (the
-#50-vs-s272 conflict resolved as (b); D_AL40_L12_OVERRIDE raised to
-ERROR in every arm, deployed; the lane keys no AL-12 overrides; client
-2047's packet closes with the $41 defect). **(2) Client 4545's 8606 =
-defect on the filed return — close to Done.** **(3) Client 2665's Notice
-2008-1 = defect (Ken checked) — close to Done.** **(4) 4387/3199
-rounding-band acks approved; NO 2020-2024 prior-year files** ("not going
-back 5 years") — the 3199 lookback closes without them, stated as such.
-**(5) The two retrospective dry-run sweeps (S1-10 + 8960 classes):
-SKIPPED for now** — not refused; re-raise on evidence. All five relayed
-to the entry lane for packet closure.*
-
-*⛔ KEN — still parked ("ask me again later"): (1) the state-face
-override-honor convention (keyed COMPUTED lines on AL/SC/NC faces beyond
-AL40-12 remain accepted-but-ignored — the GA line-18 class). (2) The AL
-40NR packet's (client 2961) suspected source defect — nonresident
-pensions belong in Column B per the booklet + the Admin Code reg
-(810-3-15-.21(2), read verbatim by the states lane); AL% overstated
-43.18% vs ≈30.65%, filed tax understated; one payer's plan type still
-needs the actual 1099-R; disposition/amendment call rides the AL_40NR
-Gate-1 walk in the states session. (3) **Client 1801 identified** (name
-with Ken + the lane; number-only here): the "leave it alone" instruction traces to BATCH-296 item
-62 (NEVER WORKED, unmarked-open in the retired ledger): his seeded shell
-carries browser residue — a doubled educator expense (engine AGI $300
-low) and preparer_due_diligence_attested=True that would OVERWRITE
-transcribed 8867 answers at commit. Entering him today would corrupt;
-the unblock is building item 62's asks (sch1_fields replaces
-shell-resident values; a stale-attestation cleanup path) — a real build
-unit, queued. (4) The 146-packet re-export (Ken handles tomorrow;
-re-export ONE first). (5) Carried: #8 GA-700 Sch 4; #6 1065X/AAR; #68
-optimizer; s274 PII items; RS 8990 re-authoring gate; Form 6765 Section
-G (TY2026+).*
-
-*Post-close addendum: **BATCH-010 moved to Done** on the lane's verified
-three-packet re-run (1657 zero errors + eligible + PDF in Done; 4006
-clean; D_RET_015 quiet on all three — no engine-ordering finding).
-**BATCH-296 item 24 (the 1040 Schedule E rental asset ledger) confirmed
-NOT built** — `flow_to` has no 1040-rental value and compute_schedule_e
-reads no asset rows; it is the open remainder of the #23/#24/#53 single
-build (the Sch C + Sch F legs shipped) and a real feature unit for
-BUILD_ORDER. The lane's affected packet stays held on it; the retired
-ledger's annex footer corrected (older unmarked items are not all
-closed).*
+*⛔ KEN — carried unchanged from s279: state-face override-honor
+convention; client-2961 AL 40NR source-defect disposition (rides the
+40NR Gate-1); the 146-packet re-export (re-export ONE first); NC/CA/SC
+linked-state reopens (BATCH-015 #2-4, source-required — Ken re-exports
+the state faces); #8 GA-700 Sch 4; #6 1065X/AAR; #68 optimizer; s274 PII
+items; RS 8990 re-authoring gate; Form 6765 Section G (TY2026+);
+client-4545 D_8606_BASIS_ONLY question; per-rule cleanup acknowledgment
+(chip open).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -220,19 +91,19 @@ find defects. State the finding and move on.
 **The build session MANAGES the sibling Claude sessions.** Coordination:
 ListAgents + SendMessage — ⚠ the channel DROPPED a whole morning of
 messages both ways (s277): anything load-bearing goes in batch-file
-annexes too. GATE EXCEPTIONS stay human end-to-end IN the acting session.
-**Never relay tokens through the message channel.** ONE delvio-tax tree
-holder; ONE pytest/test_postgres holder (s279 held both; states session
-authoring MO_1120 then AL_40NR in RS — gated, no prod writes, no
-test_postgres).
+annexes too (s280 held to it: both annexes carry the full record). GATE
+EXCEPTIONS stay human end-to-end IN the acting session. **Never relay
+tokens through the message channel.** ONE delvio-tax tree holder; ONE
+pytest/test_postgres holder (s280 held both; states session was RS-side
+only).
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s279)
+## ⚠ Known red / rotted — THE ONE LIST (post-s280)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` on the affected files = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔
   KEN s217).
-- **Client typecheck**: green (`npm run typecheck`). No client changes s279.
+- **Client typecheck**: green (`npm run typecheck`). No client changes s280.
 
 ### ⚠ Test-run hazards (standing)
 - One shared `test_postgres` (RS suite included). Long runs DETACHED.
@@ -242,82 +113,39 @@ test_postgres).
 - ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED. Edit tool
   or `[IO.File]` BOM-less UTF8; never `Set-Content`/`Get-Content -Raw`
   for UTF-8. After ANY shell touch of a source file, grep the diff for
-  `â€` markers (s279: one Bash-heredoc append — checked clean).
+  `â€` markers (s280: all appends + one line-surgery move checked clean).
+- ⚠⚠ **`Measure-Object -Line` DOES NOT COUNT BLANK LINES** — never use it
+  to find a file's end (s280: it said 2232 for a 2579-line file; the Edit
+  anchored on a false tail and SPLIT a test class — pytest caught it,
+  py_compile did not). Use `[IO.File]::ReadAllLines(...).Count`.
 - Staging answers **201 even for an invalid payload** — the verdict is
   `row["status"]`; return CRUD routes carry the trailing slash.
 
 ## 🔎 Carried for triage — NOT claims
-- (s279 late, entry lane ×2 in one evening) **cleanup `source_verified`
-  is ALL-OR-NOTHING per packet** — one open Ken-question warning blocks
-  acking the settled ones (clients 4545 + 2665 both held whole on it).
-  Per-rule acknowledgment is the ask; chip spawned (task in this
-  session). Related NEW ⛔ KEN: **client 4545's D_8606_BASIS_ONLY** — the
-  spouse's 8606 carries 6,000 basis forward whole (Part I blank) beside
-  an IRA-flagged 89,000 distribution taxed in full; §408(d) pro-rata
-  ordinarily applies — a filed-return-right question, the 2665 shape.
-  BATCH-011 live-verified by the lane same night: 4545 NO_TIE → TIE at
-  the predicted 46,473/47,751/6,917, committed, FILED (not cleanup-
-  eligible until the 8606 ruling).
-- (s268) 1,604 queries/run + the memoization candidates (s275/276/277).
+- (s280, states lane) **"A fixture that cannot fail is not a test"** —
+  the SC spec's two scenarios (0.60 / 1.00) were exact at EITHER
+  precision and could never catch the precision defect. Sweep candidate:
+  regression fixtures whose inputs are insensitive to the rule they
+  nominally cover.
+- (s279 late) cleanup `source_verified` all-or-nothing per packet —
+  per-rule acknowledgment chip open; client-4545 D_8606_BASIS_ONLY ⛔ KEN.
+- (s268) 1,604 queries/run + memoization candidates (s275/276/277).
 - (s241) `Form8606`/`HSAAccount` duplicate owners · (s234) the $250k
-  nonpassive K-1 AGI gap · (s274) the shared-policy pair 8962 fixture ·
-  (s275) `.first()`-on-per-form-rules sweep chip (also `_ctx_al40` /
-  the s279 `_l12_overridden` follow the same `.first()` pattern).
-- (s279, from delvio-states) the static two-writers guard generalization:
-  the diagnostic-code half SHIPPED (`test_diagnostics_code_uniqueness_s279`,
-  caught D_RET_012); the FormLine-seeder half (two seeders update_or_create
-  the same keyed row) is still unguarded.
+  nonpassive K-1 AGI gap · (s274) shared-policy pair 8962 fixture ·
+  (s275) `.first()`-on-per-form-rules sweep chip.
+- (s279) FormLine-seeder two-writers guard (diagnostic-code half shipped;
+  seeder half unguarded).
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried + s279 additions:
-Everything from s277/s278 stands (500 spec override/derive conventions;
-SCHEDULE_K1_1065 box-13 + box-15 letters; 6251 courtesy pass; 8990
-re-authoring gate with its live consumer; 4797 business-use member basis;
-lower-tier K-1 vocabulary), plus s279: **AL_FORM_40 needs (a) the line-12
-override convention + D_AL40_L12_OVERRIDE seeded upstream, (b) the R-AL-TAX
-DOR tax-table midpoint rule** (the continuous-bracket approximation now has
-a named $1 miss on a real return); **AL_40NR spec authoring is COMMITTED as
-the states lane's next unit (Ken ruling, campaign item 0)**; FORM_8960's
-spec is silent on the 4b activity-net attribution the s279 fix encodes
-(back-out = activity's line-5 contribution net of its own §179/UPE — should
-be a spec rule); FORM_7206 spec should name the S-corp line-11 MeF mapping.
-
-**`AL_FORM_40NR` SEEDED AND LIVE (s279 late — Ken's "seed it"; RS prod
-168 forms; exports 200; CACHED at `server/specs/al_form_40nr_spec.json`,
-12 rules / 14 lines / 15 spec tests). THE 40NR APP BUILD IS NOW
-UNBLOCKED and queued as a next-session form unit** — BATCH-296 #52
-flipped to "spec live, app build queued"; the existing D_AL40_40NR
-refusal becomes a REDIRECT when the route wires (never deleted — a
-refusal fails safe if routing regresses). The client-2961 packet stays
-in Hold on its SECOND reason (the filed-return defect question) either
-way. Build-critical
-conventions the states lane proved off the filed client-2961 fixture,
-which the APP BUILD must encode when the spec seeds:
-- Alabama multiplies by the PRINTED two-decimal line-10 percentage
-  (43.18%), NOT full precision (43.17638%) — $1 differences compound
-  across all five prorated figures; the filed return proved it.
-- Schedule A floors round to WHOLE DOLLARS before subtraction (4% ×
-  39,693 = 1,588, not 1,587.72) — a cents-carrying implementation fails
-  the filed fixture.
-- Head of Family uses the SINGLE tax column while taking the MFJ-sized
-  $3,000 exemption — three different four-status groupings on one form.
-- Three Schedule A floors read TWO different columns (medical → col B;
-  casualty + job expenses → col C) — one-AGI encoding is silently wrong.
-- The corrected-position scenario quantifies the client-2961 suspected
-  defect: retirement in col B moves the tax 174 → 343 (still pending the
-  third distribution's plan type — needs the actual 1099-R, with Ken).
-
-**Seeded-and-exportable (s279 late, Ken's "seed all three"): RS prod 167
-forms — `MO_1120`, `MS_83105`, `CO_DR0112` export 200.** Exportable ≠
-cleared to build (Ken's scoping call; Dec 1 freeze governs). Two warnings
-that TRAVEL WITH those specs into any app build, verbatim from the states
-lane:
-- **MS_83105**: `MS_FRANCHISE_NET_FLOOR` is the ONE constant that changes
-  if the DOR answers its outstanding ticket for §27-13-5(1)(b) (the $25
-  statutory franchise minimum) instead of its own line-4 zero-floor
-  instruction — every Mississippi bank return moves by $25.
-- **CO_DR0112**: do NOT roll forward to TY2026 — four rules change at
-  once; it is a re-authoring event, not a rate bump.
+## RS AGENDA — carried + s280 changes:
+Everything from s277/s278/s279 stands EXCEPT: ~~FORM_8960 4b attribution~~
+(carried), **SC_SCHEDULE_NR R-NR-PRORATION ✅ AMENDED AND RULED (s280,
+D-36)** — round-4, citing SchNRInst_2025 line 45 + the face's line 47;
+cache re-exported at `9c700cb`. NEW: D-36 instruction-reads for TN_FAE170
+R-TN-SCHN + SC1120 R-SC1120-APPORT (states lane holds); GA-500 S3-9
+precision question (see AWAITING — evidence cuts BOTH ways, untouched).
+AL_FORM_40NR build conventions (printed-percent ×, whole-dollar floors,
+HOF column, two-column floors) recorded in s279's STATUS_ARCHIVE entry.
