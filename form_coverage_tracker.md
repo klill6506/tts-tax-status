@@ -1,6 +1,34 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-25 session 288 — THE PUNCHLIST QUEUE DRAINED (items 7/14/15/16
+> shipped, 10 half; three verified deploys).** **Form 8880** (item 16): line 1
+> now COMPOSES its three statutory components — the 2025 face names
+> "Traditional and Roth IRA contributions, and ABLE account contributions by
+> the designated beneficiary" — from `ira_trad_contrib_*` + the per-owner Roth
+> tracker + new `f8880_*_able`; the stored `f8880_*_ira` became the OVERRIDE
+> (nonzero wins, zero derives — line 2's own recipe on the same form, which is
+> why no stored return moves). The Roth box is a second SURFACE on the existing
+> `RothIRABasis.current_year_contributions`, not a new field (one path per
+> fact — it already becomes next year's basis). Mig 0358; ⚠ D_8880_002 rewired
+> to the compute helper or it would have gone SILENT on exactly the returns the
+> new entry point creates. RS: `R-8880-LINE1-COMPOSE` queued (the live spec
+> also omits ABLE from line 1 entirely). **Form 7203 — 1040 side** (item 14):
+> K-1 box 16 codes A/B now key beside code C and reach **Part I line 3k**; the
+> shared engine had computed 3k = K16a + K16b all along while the 1040 side
+> supplied neither, so ending stock basis ran LOW and §1366(d) disallowed real
+> losses (§1367(a)(1)(A)). Mig 0359. Codes C/D were already live and were NOT
+> duplicated; code E stays unmodeled. ⚠⚠ **OPEN, ⛔ KEN**: Part I **3g/3h route
+> by an OLD face layout** — LT gain prints on the "Net section 1231 gain" row
+> and **K9 (§1231) is loaded by both callers and read by NOTHING**, so §1231
+> gain increases basis by zero; overstates tax, every S-corp shareholder
+> (REVIEW_QUEUE). **Schedule 1** (item 15): split into Pt I / Pt II nav pages.
+> **Dependents** (item 10, half): CTC/ODC columns dropped — they were read-only
+> echoes of the classifier, nothing computed changed; the EIC default-eligible
+> and AOTC-picker halves are designed, not built. **UI-wide** (item 7): a
+> `priorYear` overlay (`.slate-field.is-pyfact`) marks ~30 prior-year input
+> surfaces muted-but-editable.
+>
 > **2026-08-25 session 287 — KEN'S LIVE-REVIEW DAY (five deploys, all
 > verified).** **Editor chrome**: form pane + diagnostics dock default
 > CLOSED, opened by the ClientHeader buttons / F6 — every return type.
