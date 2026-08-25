@@ -1,91 +1,57 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-25 (s290 — five units: the Lacerte 1040 preindexer
-rebuilt + 79 packet indexes landed (entry-lane hold LIFTED), the QBI
-carryforward sign refusal, front-desk plan ① COMPLETE (Check In screen +
-FRONT_DESK lockout), K-1 16A → 1040 line 2a, the 8995 line-1 table from a
-shared population. Three deploys Render-verified LIVE; two commits HELD
-locally on one named blocker.)*
+*Last updated: 2026-08-25 (s291 — two units: ⓪ the DG-4 unblock (the s290
+push hold LIFTED — RS amendment + spec re-export + the two held commits
+LIVE) and the BATCH-296 NIIT disposition-flag build. Both deploys
+Render-verified LIVE.)*
 
-*⚠⚠ RESUME POINT — **two commits sit LOCAL-ONLY on main, push HELD on one
-blocker**: `0be704c` (D_1040_008 retired — inactive stub + kept entry, the
-s266 way, Ken-ruled) and `a47de3a` (the 8995 line-1 table; both after the
-LIVE `ad0dedc`). The blocker: `test_dg_scenario[DG-4]` is RED BY DESIGN until RS
-1040_SPINE scenario DG-4 drops (Ken ruled the retirement + DG-4 drop as ONE
-amendment). **The RS tree is the states lane's and is MID-WORK (uncommitted
-`load_al_40nr.py`)** — asked twice (no reply); the amendment is theirs, or
-next session takes it if their tree is clean by then. After the RS
-amendment: re-export the cached `server/specs/1040_spine_spec.json`, run
-`pytest tests/test_1040_spine_diagnostics.py`, then push (takes both held
-commits + the 8995 unit live in one deploy — verify via Render API).*
+*⚠⚠ RESUME POINT — **the queue is drained and no push is held.** The next
+spine item is **① the TaxWise extractor build** (approved plan ② phase B,
+2-3 sessions — START IN A FRESH SESSION; then the 50-return pilot on
+John's book). Nothing is blocked on RS or the states lane.*
 
-*s290 SHIPPED AND LIVE (all Render-API-confirmed):
-**① `5429760` / dep-da6vjo0ae00c73cfurgg** — the Lacerte 1040 preindexer
-(the entry lane's 3-defect item, verify-first confirmed): wrapped
-forms-needed continuation lines (a wrapped line was DROPPING the whole
-Georgia section), full 1040-family + GA-individual FACE_PATTERNS curated
-from real corpus heads (2 rounds; "Form8889" prints with NO space; curated
-patterns now try before greedy fallback literals; satisfied-not-absent for
-sibling-pattern tokens), 1040 identity (name-above-SSN) + name-stamp
-supplements. 79 indexes landed at `1040\Lacerte Inbox\PageIndex\`; the
-entry lane's Lacerte sub-queue hold LIFTED (messaged + annexed). ⚠ The
-remaining unmapped tokens are OUT-OF-STATE faces genuinely absent from the
-exports — two NC packets and two SC packets are affected (INSTALLED
-states, so those exports may be incomplete for entry; packet names in the
-BATCH-296 annex). PLUS the QBI
-carryforward SIGN REFUSAL (taxpayer.qbi_loss_carryforward_prior /
-qbi_reit_ptp_carryforward_prior keyed >0 refuse by name — the s289-late
-[client] guard candidate; Form 172 precedent). ⚠ The read-only population
-probe found TWO FILED returns carrying the positive slip, zero current-tax
-impact only by the line-11/12 cap (s220 cancels-by-luck), pools destroyed —
-flagged to the entry lane for re-key (BATCH-296 annex has the return ids).
-**② `9a4ef7c` / dep-da6vqo7lk1mc73aubaf0** — front-desk plan ① COMPLETE:
-`FrontDeskLockoutMiddleware` (default-deny API allowlist at ONE chokepoint,
-injection-proven, built BEFORE any desk login per the deferral) +
-`CheckInScreen` (Ken's one-flow ruling: search-first, New-Client only after
-a search ran, separate first/last composing "LAST, FIRST", 409-candidates →
-confirm_new; FRONT_DESK logins route to it standalone; staff at /check-in).
-Verified live against the dev pair. Client suite 146 files / 1,764 green.
-Still open (DEFERRAL_AUDIT): the preparer-side temporary-queue VIEW; the
-stage-two full-SSN duplicate diagnostic.
-**③ `ad0dedc` / dep-da6vv4tg1s2s73bqqt00** — K-1 box 16A rides 1040 line 2a
-(Ken ruling): `k1_tax_exempt_interest_total` (7203-keyed) joins
-compute_intdiv's 2a the way k1_interest_total joins 2b; i1040 2a text
-verified from the 2025 PDF; §86 provisional / 8962 MAGI / MeF move through
-the composed FFV (all readers audited). Boundaries: 16B basis-only
-(negative-control pinned); 1065 box 18A has no recipient field. Mig 0361
-help_text-only.*
+*s291 SHIPPED AND LIVE (both Render-API-confirmed):
+**① `78b4e60` / dep-da70jq49v7es73evgn70 — the DG-4 unblock.** The RS tree
+came CLEAN (states lane committed `f583fbc`), so this session took the
+paired amendment per Ken's ruling: RS `2845b28` drops 1040_SPINE scenario
+DG-4 via the explicit-retirement pattern (D008_RETIRE_SCENARIO_PREFIXES;
+the D_1040_008 FormDiagnostic entry KEPT with retirement notes — the s266
+spirit), seeded against the RS DB (32→31 scenarios, integrity clean),
+cached `server/specs/1040_spine_spec.json` re-exported (only test-level
+delta = DG-4 gone), trip-wire retitled `test_spec_has_all_4_dg_scenarios`.
+112 spine tests green. The push took ALL FOUR held s290 commits live
+(D_1040_008 retirement `0be704c`, the 8995 line-1 table `a47de3a`, both
+close commits). Post-deploy verified: the live D_1040_008 DiagnosticRule
+row is `is_active=False` (the build reseed deactivated it as designed).
+**② `e5e6d64` / dep-da70pegae00c73chbcmg — the BATCH-296 NIIT disposition
+flag** (client 4167, the awaited NIIT decomposition): the entry lane's
+probe held exactly — `dispositions[].net_investment_income_tax` was stored
+and consumed by NOTHING. Now `non_1411_disposition_section_1231` sums each
+flagged (`"no"`) is_4797 row's §1231/capital component (short-term → 0;
+part3 → l24 − ordinary recapture; part1 → whole l24) and joins the #18 K-1
+feed in ONE combined 8960 line-5b auto back-out under the single
+§1.1411-4(d)(2) clamp. Authority: 2025 i8960 Line 5b; §1411(c)(2)(A); the
+participation determination stays the preparer's. Per-row kwargs extracted
+to `_property_kwargs` — one derivation shared with the 4797 aggregate.
+7 tests + injection proof; 579 green (flow assertions + all 8960 suites);
+127 green (all 4797 suites). Boundary (DEFERRAL_AUDIT): 6252/8824-linked
+flows don't consult the flag — a flagged installment sale is a NEW item.*
 
-*s290 HELD LOCALLY (deploy with the DG-4 unblock): **④ D_1040_008 retired**
-(stub + kept inactive entry; override-shape tests now pin it silent).
-**⑤ the Form 8995 line-1 business table** (punchlist 18 = client 2970,
-diagnosis REFINED: print/MeF already itemized Sch C + K-1 — the dead face
-was the SCREEN (FFV rows Sch-C-only) and farms/QBI-rentals were itemized
-NOWHERE — the s287 screen≠print class). One shared population
-(`f8995_line1_sources`: Sch C → cash farms → QBI rentals → K-1 §199A) now
-feeds compute FFVs + render name/TIN + MeF group; face caps at 5 with an
-all-rows overflow STATEMENT page; the XSD group is unbounded so MeF
-transmits every row. 5 tests + injection; 573 + 143 green incl. flow
-assertions + MeF scenarios. Client 2970's screen heals on next open
-(recompute chokepoint).*
+*▶ NEXT: **① the TaxWise extractor build** (fresh session). Then
+Ken-directed: EIC derive unit (probe-first) · AOTC picker. Then defects by
+cost: the [client] −487 residual + S1-13 double-landing observation (hold
+b926; instrumented rolled-back dry-run) · item 84 (§469(i) $25,000
+allowance) · the two Houston items (4952 line 4e/4f derivation overstates
+the deduction; capital_transactions.owner IGNORED in the POSITIVE-line-7
+GA RIE split — both probed byte-identical, annexed in BATCH-296) · #60 ·
+#43-medium · #70 · #16.*
 
-*▶ NEXT: **⓪ the DG-4 unblock** (above — then push + one deploy + Render
-verify). **① the TaxWise extractor build** (approved plan ② phase B, 2-3
-sessions — START IN A FRESH SESSION; then the 50-return pilot on John's
-book). Then Ken-directed: EIC derive unit (probe-first) · AOTC picker.
-Then defects by cost: the [client] −487 residual + S1-13 double-landing
-observation (hold b926; instrumented rolled-back dry-run) · item 84
-(§469(i) $25,000 allowance) · the two NEW Houston items (4952 line 4e/4f
-derivation overstates the deduction — net capital gain IS 14,036 under
-§1222(11), engine derives 12,613; and capital_transactions.owner IGNORED in
-the POSITIVE-line-7 GA RIE split — both probed byte-identical, annexed in
-BATCH-296) · #60 · #43-medium · #70 · #16.*
-
-*Entry lane: Lacerte sub-queue UNBLOCKED (79 indexes current; regenerate
-newer arrivals with the script — Ken kept exporting all session, 57→79).
-Two filed returns to re-key the QBI cf sign on (annex). The QBI sign
-refusal is LIVE — positive re-stages refuse by name. ⚠ The 16A→2a routing
-can move §86 taxable SS on staged returns carrying S-corp K-1 tax-exempt
+*Entry lane: **[client] (client 4167) can re-stage NOW** — the flag is
+honored live; keying stays `net_investment_income_tax: "no"` (annexed in
+BATCH-296 with the boundary notes). Lacerte sub-queue remains UNBLOCKED
+(79 indexes; regenerate newer arrivals with the script). Two filed returns
+still to re-key on the QBI cf sign (s290 annex). ⚠ The 16A→2a routing can
+move §86 taxable SS on staged returns carrying S-corp K-1 tax-exempt
 interest.*
 
 *⛔ KEN remaining: #21, #48 (RS 404), #56, #63, #69, #10 — the tail tier.
@@ -93,8 +59,8 @@ Carried: entity second-state-face transport (#3); `OVERRIDE_HONORED_STATE_
 LINES`; 146-packet re-export; NC/CA/SC linked-state reopens; #6 1065X/AAR;
 #68 optimizer; s274 PII narrowings; RS 8990 re-authoring gate; 6765 Sec G;
 client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex Box-2); Analysis
-line-2 active/passive proxy. ▶ AWAITING: client-4167 NIIT decomposition
-(entry lane).*
+line-2 active/passive proxy; the unfloored 8960 line5 §1211(b) question
+(s272 note, re-flagged s291).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -112,12 +78,11 @@ Render auto-deploys from `main`: prod (prep.delviotax.com) = service
 is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
 `D:\dev\Passwords & Secrets\render-api-key.txt`). **Standing push
 authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
-hold only for a named reason.** ⚠ Right now main is 2 commits ahead of
-origin with a NAMED hold (the DG-4 amendment — see the resume point).
-⚠⚠ **ORDERING (s279/s282): push → deploy LIVE → seed → verify — and the
-deploy ITSELF seeds (`build.sh seed_all` auto-discovers `seed_*` at BUILD
-time). Manual post-deploy seed = the idempotent VERIFY; `check_rule_paths`
-is one command.**
+hold only for a named reason.** Main is in sync with origin; no held
+commits. ⚠⚠ **ORDERING (s279/s282): push → deploy LIVE → seed → verify —
+and the deploy ITSELF seeds (`build.sh seed_all` auto-discovers `seed_*`
+at BUILD time). Manual post-deploy seed = the idempotent VERIFY;
+`check_rule_paths` is one command.**
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -128,22 +93,20 @@ to find defects. State the finding and move on.
 SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
 load-bearing goes in batch-file annexes too. **Never relay tokens through
 the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
-holder — coordinate EXPLICITLY before every run (asked twice s290, no reply
-either time; proceeded after the hold window on small runs). ⚠ The RS tree
-is the STATES lane's and was mid-work (uncommitted file) all s290 — the
-DG-4 amendment waits on them. Peers stage; Ken decides.
+holder — coordinate EXPLICITLY before every run. s291 claimed the RS tree
+by message after it came clean (per the s290 ruling), committed `2845b28`,
+and RELEASED it — the RS tree is the states lane's again. Peers stage;
+Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s290)
-- **`test_dg_scenario[DG-4]` — RED BY DESIGN** until the RS amendment lands
-  (the D_1040_008 retirement's paired half; see the resume point). This is
-  the push blocker, not a defect.
+## ⚠ Known red / rotted — THE ONE LIST (post-s291)
+- ~~`test_dg_scenario[DG-4]`~~ **CLEARED s291** — the RS amendment landed;
+  the spine suite is fully green (112).
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s290 — CheckInScreen included; vitest 146
-  files / 1,764 green).
+- **Client typecheck**: green (s290; no client changes s291).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -188,7 +151,7 @@ DG-4 amendment waits on them. Peers stage; Ken decides.
   1065 box 18 a/b/c have none on the recipient side (16A now ROUTES — 18A
   still cannot be keyed, s290 boundary).
 - (s288) `ctc_override` / `odc_override` + `Dependent.compute_qualifies_*`
-  are now DEAD everywhere once the 008 retirement deploys — removal
+  are DEAD everywhere now the 008 retirement is deployed — removal
   candidate for a cleanup pass (Ken's call; they still hold keyed data).
 - (s287) The 8825 line-1 repaint covers the LINE-1 table only. ·
   The suggested-field convention covers W-2 3/5 + 1099-R box 16 —
@@ -210,15 +173,16 @@ DG-4 amendment waits on them. Peers stage; Ken decides.
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried + s290 adds:
-Everything from s277–s289 stands (R-K1-20N; R-GA700-PARTNERS; AL_FORM_40NR
+## RS AGENDA — carried + s291 adds:
+Everything from s277–s290 stands (R-K1-20N; R-GA700-PARTNERS; AL_FORM_40NR
 amendments; R-AL-TAX; R-B1/B2-AUTO; the 4562 line-17 reversal;
 R-8880-LINE1-COMPOSE; FORM_7203 Part I line-3 sub-map; R-K1-179-BASIS;
-R-GA500-RIE loss-allocation clause). **s290 adds: (a) 1040_SPINE — DROP
-scenario DG-4** (Ken-ruled with the D_1040_008 retirement; THE ACTIVE
-BLOCKER — see resume point). **(b) SCHEDULE_K1 box 16 A/B routing** — 16A →
-1040 line 2a is now LIVE in compute (Ken-ruled); the spec should record it
-(the k1_interest/2b addend precedent). **(c) R-8995-QBI** — the line-1
-population now spans Sch C + cash farms + QBI rentals + K-1 §199A entities
-with a 5-row face cap + overflow statement; the spec models Sch C rows
-only (the rentals divergence was already flagged; widen the rule).
+R-GA500-RIE loss-allocation clause; SCHEDULE_K1 box 16 A/B routing;
+R-8995-QBI line-1 population widening). ~~1040_SPINE DROP scenario DG-4~~
+**DONE s291 (`2845b28`)**. **s291 adds: (a) FORM_8960 R-8960-INCOME** —
+the 5b description should record BOTH auto back-out feeds (the #18 K-1
+§1231 feed and the s291 flagged-disposition feed) the way the formula
+records the 2b/3b/line-7 auto-pulls. **(b)** the unfloored line5 §1211(b)
+question (s272) is still open for Ken — §1.1411-4(d)(2) arguably floors
+the whole net-gain category, a behavior change for every capital-loss
+return.
