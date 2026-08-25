@@ -27,27 +27,36 @@ capital-gain distributions × the −3,000 loss = −17.27). **Rider:** GA-500
 S3-9 quantizes to 4dp before multiplying L12 (RS `500` R-GA500-S3, live in
 RS prod today; T8b scenario pins 1/7 → 0.1429 → L13 1,715).*
 
-*▶ NEXT in the BATCH-296 lane (updated at close, s289 late): **① the
-[client] residual** — #57 is CONFIRMED by the item-59 return (tied,
-committed, Done) but **[client] did NOT tie**: RIE-SP-17 6,027 vs filed
-6,514 (−487; the pre-fix figure was 5,014, so the #57 −1,500 is gone and
-a smaller second defect was UNMASKED), plus the entry lane's observation
-that S1-13 computed 90,050 vs 84,023 — a delta of exactly the derived
-SP-17, which smells like the spouse exclusion landing twice in the GA
-Schedule 1 composition (observation, not diagnosis; hold b926, addendum
-under the #57 annex). Triage with the instrumented rolled-back dry-run.
-**② item 84** (NEW, posted s289 by the entry lane): the §469(i) $25,000
-rental-loss special allowance never applies on the named return shape —
-`active_participation` flip changes NOTHING (their probe); my unverified
-read: the loss never REACHES the 8582 bucket. Batches
-9e7c7eff-f556-49ac-a9d4-1970a56bb551 (real) /
-5af50f2c-38ef-4e5a-8b92-1c594addf3f2 (probe). **③** then #60 (Sch 2 line
-13 source trio), #43's medium leg, #70, #16. ⛔ KEN: **item 85** (GA RIE
-line 10 — does 1099-MISC box-3/8z other income belong in the exclusion
-base? My read: r. 560-7-4-.02 says the §108(f)(5)-excluded 114,155 CANNOT
-be in it — engine right, filed worksheet wrong; zero face impact either
-way; two small residuals recorded in the item), #18, #21, #28, #48, #56,
-#63, #69, #10. The file STAYS in the queue.*
+*⚠⚠ s289 LATE — KEN RAN THE DECISION QUEUE LIVE: ELEVEN RULINGS (full
+ledger at the top of `REVIEW_QUEUE.md`). The directed-build list is now
+the lane's spine. ▶ NEXT (Ken-directed first, then defects by cost):
+**① K-1 box 16A → 1040 line 2a** (Ken: YES — verify i1040 2a text, then
+the k1 addend into compute_intdiv; moves §86 taxable SS). **② retire
+D_1040_008 + drop RS DG-4** (one amendment). **③ Form 8995 line-1
+business table** (punchlist 18 = LOMAX #2970, DIAGNOSED: QBI computes,
+the 1i–1v name/TIN/QBI table is never populated — fill from the QBI
+sources, 5-row cap + overflow statement, check the MeF group). **④ the
+[client] residual** — #57 CONFIRMED by the item-59 return (tied, filed)
+but [client] still NO_TIE: SP-17 6,027 vs 6,514 (−487; pre-fix was 5,014,
+so #57's −1,500 is gone and a second defect UNMASKED) + the S1-13 delta
+of exactly the derived SP-17 (double-landing observation; hold b926).
+**⑤ item 84** (§469(i) $25,000 allowance never applies —
+active_participation flip changes nothing; batches 9e7c7eff-f556-49ac-
+a9d4-1970a56bb551 / 5af50f2c-38ef-4e5a-8b92-1c594addf3f2). **⑥ the two
+NEW Houston items** (posted to BATCH-296 by the entry lane): 4952 line
+4e/4f — engine treats net capital gain as investment income without the
+election (deducts 5,206 vs filed 3,783; scha_investment_interest not
+consulted), and capital_transactions.owner IGNORED in the POSITIVE-line-7
+GA RIE split (the positive-side mirror of #57 — owner flip byte-identical,
+probed; also the div aggregates carry no owner → per-row attribution
+needed on joint GA returns, docstring ask). **⑦ EIC derive unit**
+(probe-first, Ken-ruled) and **⑧ AOTC picker**. Then #60, #43-medium,
+#70, #16. ⛔ KEN remaining: #21, #48 (RS 404), #56, #63, #69, #10 — the
+tail tier, none urgent. CLOSED by ruling: #18 (Roy $486 stands), #28
+(advise, no amending), item 85 (engine right), 2961 (as filed 43.18% —
+the AL 40NR scenario-G/H AWAITING item is RESOLVED; scenario re-base on
+the RS agenda), Houston (shell seeded onto EXISTING client 2576, return
+a4166a10), 4167 (decompose first — with the entry lane).*
 
 *Entry lane (same-day): released ~60 stale holds off my annex answers;
 BATCH-012 Ellington committed/filed via the `form:"attached"` source-defect
@@ -69,10 +78,11 @@ touched lanes incl. flow assertions each deploy; published back-entry
 schema regenerated (advertises 24z/24z_type/sm_* inputs); `check_rule_paths`
 clean post-#13; client typecheck untouched (no client changes).*
 
-*▶ AWAITING (carried): AL 40NR scenario-G TRS/ERS exempt-listing ruling
-(Ken); client-4167 NIIT ruling; client-2961 AL Column B; Houston Jason 1040
-shell (Ken); the four s288 REVIEW_QUEUE decisions (K-1 16A→2a routing ②,
-punchlist-10 EIC/AOTC ③, D_1040_008 ④, punchlist 18's return name).*
+*▶ AWAITING: client-4167 NIIT decomposition (entry lane produces the
+line-by-line 8960, then Ken rules). Everything else formerly here is
+RESOLVED by the s289-late ruling run — ledger at the top of
+REVIEW_QUEUE.md. Ken also REPRINTED the ~140 faceless returns; the entry
+lane re-screens that inbox class.*
 
 *⛔ KEN — outstanding (carried): entity second-state-face transport (#3);
 `OVERRIDE_HONORED_STATE_LINES`; 146-packet re-export; NC/CA/SC linked-state
