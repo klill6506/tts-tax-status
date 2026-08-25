@@ -1,9 +1,39 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-25 (s289 — four BATCH-296 items closed and deployed:
-#13, #72, #73, #57; plus the GA-500 S3-9 quantize).*
+*Last updated: 2026-08-25 (s289 full day — four BATCH-296 items + GA-500
+quantize deployed; eleven Ken rulings; four EIN client-pair merges; the
+import-at-scale PLAN approved; front-desk temporary-client SERVER side
+live).*
 
-*⚠⚠ RESUME POINT — **nothing is mid-build.** s289 shipped THREE verified
+*⚠⚠ THE APPROVED PLAN (Ken, 2026-08-25 —
+`C:\Users\Ken\.claude\plans\1-i-assume-the-calm-shannon.md` is the full
+text): **① Front-desk temporary clients** — SERVER SIDE SHIPPED s289
+(commit `251d0f9` LIVE, migs clients.0012 + firms.0006 applied): FRONT_DESK
+role; `desk-search` (name OR last-4, both identity stores); `desk-create`
+(409-with-candidates until confirm_new; is_temporary + desk_ssn_last4);
+`temporary` queue; PRIMARY-identity capture auto-clears the flag in
+`identity.upsert_identity`. ⚠ REMAINING: the React desk screen, and the
+FRONT_DESK endpoint-lockout decision (UI-only today — DEFERRAL_AUDIT s289;
+build the lockout BEFORE any desk login is issued). **② The 1,700-return
+import**: bulk path DOES NOT EXIST — build the TaxWise packet→payload
+extractor (per-form extractors + summary-page `expected`; refuse-don't-
+guess), pipeline extract→validate→stage→dryrun→TIE→**AUTO-COMMIT +
+MARK-FILED (Ken-approved)**; NO_TIE → per-preparer exception inboxes;
+pilot = 50 of John's book; QA trimmed to the tie record for pipeline
+returns (Ken-approved). **③ Ken's side**: export the 282 Lacerte 1040s
+(⚠ the two existing Lacerte-prepared packets were NOT exports — no print
+setting is established; complete-return print preferred, the pre-indexer
+handles bloat) + the 15+2 faceless TaxWise re-exports. Lacerte 282 go
+through the CAREFUL QA lane, never the pipeline.*
+
+*Also s289: the four same-EIN duplicate client pairs MERGED (Ken-ruled;
+zero EIN dupes remain; snapshot in D:\tax-test-data; ⚠ four client numbers
+died — cross-lane refs corrected additively by the entry lane). The SSN
+sweep found NO true SSN duplicates (5 hits = 3 separate-filing couples);
+2,528 of 3,793 clients carry NO identity number yet — the fuzzy-name
+backstop matters until returns are keyed.*
+
+*⚠⚠ RESUME POINT — **nothing is mid-build.** s289 shipped FOUR verified
 deploys (`12d736f`, `4cbf5bd`, `18a1a87` — all Render-API-confirmed live):
 **① #13** — Form 7203 §1366(d) basis cap now limits K-1 §179 (41c+41d →
 Schedule E col (j), print/MeF/MAGI, and the 8960 line-4b back-out) and
@@ -29,7 +59,10 @@ RS prod today; T8b scenario pins 1/7 → 0.1429 → L13 1,715).*
 
 *⚠⚠ s289 LATE — KEN RAN THE DECISION QUEUE LIVE: ELEVEN RULINGS (full
 ledger at the top of `REVIEW_QUEUE.md`). The directed-build list is now
-the lane's spine. ▶ NEXT (Ken-directed first, then defects by cost):
+the lane's spine. ▶ NEXT (plan work first, then Ken-directed, then defects
+by cost): **⓪a the desk UI screen + FRONT_DESK lockout** (plan ①'s
+remaining half) and **⓪b the extractor build** (plan ② phase B — 2-3
+sessions, then the 50-return pilot on John's book).
 **① K-1 box 16A → 1040 line 2a** (Ken: YES — verify i1040 2a text, then
 the k1 addend into compute_intdiv; moves §86 taxable SS). **② retire
 D_1040_008 + drop RS DG-4** (one amendment). **③ Form 8995 line-1
