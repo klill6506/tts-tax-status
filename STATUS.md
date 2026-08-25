@@ -3,6 +3,28 @@
 *Last updated: 2026-08-25 (s288 — the punchlist queue drains: items 7, 14, 15,
 16 shipped; 10 half-shipped; four questions staged for Ken).*
 
+*⚠⚠ BATCH-296 (1040 CC queue) — SWEPT AND PARTLY WORKED (s288 late).
+**The ledger was stale in BOTH directions.** 83 items; ~42 already had annexes;
+of the ~39 that looked open, **18 verified ALREADY BUILT or Ken-withdrawn** and
+are now recorded in the annex so nobody re-treads them (#66 — an adoption credit
+"filing blocker" — shipped in s272 and just never got one). **BUILT:** #5, a
+`KeyError` CRASH in `compute_form_172` write-back (the engine creates a
+current-year NOL pool itself, so any return that generated an NOL crashed on its
+NEXT compute) + its twin, the diagnostic condemning that same generated row;
+#54, the §6654(e)(2) zero-prior-year-liability waiver (mig 0360) — the engine
+had been charging a penalty the statute forbids outright. **⛔ #28 REFUTED ON
+TAX LAW** — an S-corp shareholder cannot take a "UPE" row on Schedule E
+(partners only), and the misc-itemized fallback is suspended permanently
+(⚠ the 2025 amendment moved it from §67(g) to §67(h) and REMOVED the sunset);
+the filed returns carry a preparer error. **⚠ A red gate found:**
+`test_batch296_s267.py`'s exact-set assertion went red when AL 40NR landed in
+s282 and was on no known-red list — fixed.
+**▶ NEXT in this lane (sized in the annex):** #13 first — §179/charity from an
+S-corp K-1 deduct at full elected value with NO §1366(d) cap when box 1 is
+positive, which UNDERSTATES tax and so will never be reported; then the small
+ones, #73 (Sch 1 24z lane) and #72 (Simplified Method inputs). The file STAYS in
+the queue — items remain open.*
+
 *⚠⚠ RESUME POINT — **nothing is mid-build.** ① of the four staged decisions is
 now BUILT on Ken's go: **Form 7203 Part I 3g/3h/3i re-routed to the rendered
 face** — `3g = K7 + K8a` (net capital gains), `3h = K9` (§1231), `3i = K10`, so
