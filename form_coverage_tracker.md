@@ -1,6 +1,36 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-25 session 289 — BATCH-296 #13/#72/#73/#57 (three verified
+> deploys: `12d736f`/`4cbf5bd`/`18a1a87`).** **Form 7203 — 1040 side**
+> (#13): the §1366(d) basis cap now LIMITS the K-1's §179 and charitable
+> deductions — Part III 41c+41d feed Schedule E col (j) (totals + render +
+> MeF + MAGI + the Form 8960 line-4b back-out) via new
+> `k1_section_179_allowed`, and 42c+42d cap `k1_charitable_totals`
+> pro-rata by §170(b) bucket; the shared `k1_7203_result()` is the one
+> access point so no consumer can disagree. The allowed columns had been
+> computed and consumed by NOTHING (understates tax). New warning
+> `D_K1_7203_DEDUCTION_LIMITED`; ⚠ no §179/charitable carryover keying
+> fields exist for next year (DEFERRAL_AUDIT; 1065 partners remain a
+> stated boundary). Acceptance return TIED in production first attempt
+> and is FILED. RS: `R-K1-179-BASIS` queued. **1099-R / Simplified
+> Method** (#72): the seven worksheet INPUTS now import
+> (`sm_annuity_start_date` engages; outputs refuse by name with a
+> teaching error). ⚠ Worksheet line-1 base is BOX 1 GROSS per Pub 575 — a
+> source that recovered against box 2a shows a named residual (Ken
+> question when it appears). **Schedule 1** (#73): line 24z + its
+> list-type literal join `sch1_fields` (verbatim text write, the 19b/19c
+> convention; stage warning on amount-without-literal) — the
+> 8z-reports/24z-backs-out §108(f)(5) pattern is now authorable.
+> **GA-500** (#57 + rider): a NEGATIVE 1040 line 7 allocates the RIE
+> capital loss by LOSS ownership (loss rows + owner-tagged carryovers),
+> never by gain weights — ⭐ this was ALSO item 59's $17 (the spouse's
+> half-weight of joint capital-gain distributions × the −3,000 loss;
+> proved by an instrumented rolled-back dry-run of the staged return,
+> which TIED at 4,860). S3-9 now quantizes to 4dp per the newly-live
+> R-GA500-S3 (the printed 2-decimal percentage multiplies L12). RS:
+> R-GA500-RIE loss-allocation clause queued.
+>
 > **2026-08-25 session 288 — THE PUNCHLIST QUEUE DRAINED (items 7/14/15/16
 > shipped, 10 half; three verified deploys).** **Form 8880** (item 16): line 1
 > now COMPOSES its three statutory components — the 2025 face names

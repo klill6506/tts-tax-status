@@ -1,101 +1,70 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-25 (s288 — the punchlist queue drains: items 7, 14, 15,
-16 shipped; 10 half-shipped; four questions staged for Ken).*
+*Last updated: 2026-08-25 (s289 — four BATCH-296 items closed and deployed:
+#13, #72, #73, #57; plus the GA-500 S3-9 quantize).*
 
-*⚠⚠ BATCH-296 (1040 CC queue) — SWEPT AND PARTLY WORKED (s288 late).
-**The ledger was stale in BOTH directions.** 83 items; ~42 already had annexes;
-of the ~39 that looked open, **18 verified ALREADY BUILT or Ken-withdrawn** and
-are now recorded in the annex so nobody re-treads them (#66 — an adoption credit
-"filing blocker" — shipped in s272 and just never got one). **BUILT:** #5, a
-`KeyError` CRASH in `compute_form_172` write-back (the engine creates a
-current-year NOL pool itself, so any return that generated an NOL crashed on its
-NEXT compute) + its twin, the diagnostic condemning that same generated row;
-#54, the §6654(e)(2) zero-prior-year-liability waiver (mig 0360) — the engine
-had been charging a penalty the statute forbids outright. **⛔ #28 REFUTED ON
-TAX LAW** — an S-corp shareholder cannot take a "UPE" row on Schedule E
-(partners only), and the misc-itemized fallback is suspended permanently
-(⚠ the 2025 amendment moved it from §67(g) to §67(h) and REMOVED the sunset);
-the filed returns carry a preparer error. **⚠ A red gate found:**
-`test_batch296_s267.py`'s exact-set assertion went red when AL 40NR landed in
-s282 and was on no known-red list — fixed.
-**▶ NEXT in this lane (sized in the annex):** #13 first — §179/charity from an
-S-corp K-1 deduct at full elected value with NO §1366(d) cap when box 1 is
-positive, which UNDERSTATES tax and so will never be reported; then the small
-ones, #73 (Sch 1 24z lane) and #72 (Simplified Method inputs). The file STAYS in
-the queue — items remain open.*
+*⚠⚠ RESUME POINT — **nothing is mid-build.** s289 shipped THREE verified
+deploys (`12d736f`, `4cbf5bd`, `18a1a87` — all Render-API-confirmed live):
+**① #13** — Form 7203 §1366(d) basis cap now limits K-1 §179 (41c+41d →
+Schedule E col (j), print/MeF/MAGI, and the 8960 line-4b back-out) and
+charitable (42c+42d, pro-rata by §170(b) bucket → Schedule A) via the shared
+`k1_7203_result()` access point; new warning `D_K1_7203_DEDUCTION_LIMITED`
+(seeded, verified); no carryover keying fields exist yet (DEFERRAL_AUDIT).
+**The Overstreet acceptance TIED first attempt in production and is FILED**
+(entry lane, return 5fd7bc12). **② #72** — the seven Simplified Method
+INPUTS admitted to `r_1099s` (start date = engage switch); sm_* outputs
+refuse by name. ⚠ Worksheet base is BOX 1 GROSS (Pub 575 line 1) — the
+Gregory packet may show a 554 = box1−box2a residual; if so it goes to Ken
+as a CSA-1099-R base ruling, not a re-key. **③ #73** — Sch 1 line 24z +
+24z_type join the lane (19a/b/c precedent; literal writes VERBATIM; stage
+warning on amount-without-literal). **④ #57** — a NEGATIVE 1040 line 7 now
+allocates the GA-RIE capital loss by LOSS ownership (loss rows + tagged
+carryovers), never by gain weights; joint-loss 50/50 (#78) survives.
+⭐ #57 WAS ALSO item 59's $17: an instrumented rolled-back dry-run of the
+staged item-59 return tied at 4,860 exactly — the "taxpayer interest leaks"
+theory was a numeric coincidence (the spouse's half-weight of joint
+capital-gain distributions × the −3,000 loss = −17.27). **Rider:** GA-500
+S3-9 quantizes to 4dp before multiplying L12 (RS `500` R-GA500-S3, live in
+RS prod today; T8b scenario pins 1/7 → 0.1429 → L13 1,715).*
 
-*⚠⚠ RESUME POINT — **nothing is mid-build.** ① of the four staged decisions is
-now BUILT on Ken's go: **Form 7203 Part I 3g/3h/3i re-routed to the rendered
-face** — `3g = K7 + K8a` (net capital gains), `3h = K9` (§1231), `3i = K10`, so
-§1231 gain increases stock basis instead of vanishing. The mapping came from
-this engine's OWN Part III (`_PART_III_K_MAP` already paired 38 = K7+K8a,
-39 = K9, 40 = K10 — Part III had been migrated to the current face and Part I
-never was), corroborated by a positional read of `f7203.pdf` (Rev. Dec 2022).
-⚠ The i7203 prose fetched from irs.gov CONTRADICTED its own form face and was
-not used. Two existing tests had recorded the old row and were corrected (their
-real subject, K9 ≠ K8a on the loss side, was already right).
-**THREE decisions remain for Ken in `REVIEW_QUEUE.md`:** ② should K-1 box 16
-code A also land on 1040 line 2a (it feeds §86 provisional income, so it can
-move tax); ③ punchlist item 10's EIC default-eligible + AOTC picker halves;
-④ retire `D_1040_008`? Also open: punchlist **18** needs Ken to name the return
-where the 8995 looked dead.*
+*▶ NEXT in the BATCH-296 lane (per the s288 ranking, updated): **#60**
+(Sch 2 line 13 documented-source trio — clone the sch2_l14 build), **#43's
+medium leg** (subtract `passive_8582_allowed` in the positive-passive
+branch; 12,270 AGI overstatement), **#70** (Form 4361 → Sch C ministerial,
+medium-large), #16 (FTC c/f by source year). Still ⛔ KEN: #18 (ruling
+only), #21, #28 (raise the preparer error with 3 clients?), #48 (RS 404),
+#56, #63, #69, #10. The file STAYS in the queue.*
 
-*① Item 7 — PY-fact ink. A `priorYear` OVERLAY on FieldStateInput
-(`.slate-field.is-pyfact`, muted, still editable), deliberately NOT a sixth
-field state: the five states describe PROVENANCE, PY-ness is what a field
-MEANS. ⚠ Distinct from `is-pyimported` (a snapshot value not yet shadowed,
-which switches off when you type); this one is permanent. Applied across the
-whole inventory — Schedule L BOY + M-2 beginnings, partner J/K1/L beginnings,
-shareholder Shares BOY, 7203 lines 1/16/21, prior/bonus/AMT/§179 depreciation,
-and ~20 1040 carryover surfaces. One shared predicate
-(`slate/priorYearField.ts`); 30 tests pin the NEGATIVES ("priority_code" must
-not gray). State/local tax PAYMENTS excluded on purpose — a prior-year balance
-paid this year is a CURRENT-year §164 payment.*
+*Entry lane (same-day): released ~60 stale holds off my annex answers;
+BATCH-012 Ellington committed/filed via the `form:"attached"` source-defect
+arm; Overstreet committed/FILED; [client] + [client] retests requested
+post-#57. The 37-packet "filed 2210 penalty, no worksheet" class: ruled
+usable via the `t2210_penalty_source_*` trio, but DRY-RUN FIRST (±$5 line-38
+tolerance + the new §6654(e)(2) waiver may tie bare). Token: Ken minted via
+the new `server\scripts\mint_entry_token.py` (dev account, 15-min TTL).*
 
-*② Item 15 — Schedule 1 split into "Pt I — Add'l Income" / "Pt II —
-Adjustments". `sch_1` keeps its id (stored last-tab state + the D_SCH1_ route
-stay valid); D_SCH1_005 gets an exact key to Part II, the alimony family
-straddles both parts and stays on the default.*
+*States lane (same-day, RS repo): authority-ownership assessment + guard
+widening (A1) + invalid source_type re-seed (A2, Ken-approved) all landed;
+delvio-tax verified NOT coupled to RS `source_type` (ours is ScheduleK1's
+entity kind). ⚠ RS `seed_all` now REFUSES on enum-ratchet growth — Ken's
+call to raise, never a baseline bump in passing.*
 
-*③ Item 16 — the Roth entry point. ⭐ The Roth box is NOT a new field: it writes
-`RothIRABasis.current_year_contributions`, which already existed per owner and
-already becomes next year's basis at proforma (one path per fact). Form 8880
-line 1 now SUMS its three statutory components — the 2025 face names
-traditional + Roth + **ABLE** — and the old combined box became the line-1
-OVERRIDE (nonzero wins, zero derives: line 2's own recipe on that form), which
-is what makes it safe on live data. Migration 0358. ⚠ D_8880_002 was rewired to
-the compute helper in the same pass — reading the raw field, it would have gone
-SILENT on exactly the returns the new box creates.*
+*⑥ Gates: every new assertion defect-injected (10 injections across the
+four items — 10/10 caught red); 815+79+543+713+629 green across the
+touched lanes incl. flow assertions each deploy; published back-entry
+schema regenerated (advertises 24z/24z_type/sm_* inputs); `check_rule_paths`
+clean post-#13; client typecheck untouched (no client changes).*
 
-*④ Item 14 — K-1 box 16 A/B → Form 7203 line 3k (migration 0359). Not an
-unwired input: the shared engine has computed 3k = K16a + K16b all along and
-the 1040 side never supplied them, so ending basis ran LOW and §1366(d)
-disallowed real losses (§1367(a)(1)(A)). Codes C/D were already live and were
-NOT duplicated; E stays unmodeled. A stale field-map caption ("3k = §1374(b)(2)
-built-in gain") sent me to the template, which is how finding ① surfaced.*
-
-*⑤ Item 10 — CTC/ODC columns dropped from both dependent grids (they were
-read-only echoes of the classifier; nothing computed changed). The EIC and AOTC
-halves are designed in REVIEW_QUEUE, not built: EIC default-eligible reverses
-the EIC spec's own DoD and moves credits on stored returns, and the all-people
-student picker AOTC needs does not exist yet.*
-
-*⑥ Gates: 1,525 client tests + typecheck green; server green on every touched
-lane (562 for the 8880 unit, 611 for 7203/K-1, 346 for the 1040 spine, 169
-back-entry); 526 flow assertions green. Migrations 0358/0359 applied to the
-shared DB; published back-entry schema regenerated. Every new visual/behavioral
-assertion was DEFECT-INJECTED and confirmed to fail before restore.*
-
-*▶ AWAITING (carried): AL 40NR scenario-G TRS/ERS exempt-listing ruling (Ken);
-entry-lane token → 40NR variant path; `GA_OCGA_48_7` (GA-500 S3-9 seed); 1040
-BATCH-012/296 held; Jason Houston 1040 shell (Ken).*
+*▶ AWAITING (carried): AL 40NR scenario-G TRS/ERS exempt-listing ruling
+(Ken); client-4167 NIIT ruling; client-2961 AL Column B; Houston Jason 1040
+shell (Ken); the four s288 REVIEW_QUEUE decisions (K-1 16A→2a routing ②,
+punchlist-10 EIC/AOTC ③, D_1040_008 ④, punchlist 18's return name).*
 
 *⛔ KEN — outstanding (carried): entity second-state-face transport (#3);
 `OVERRIDE_HONORED_STATE_LINES`; 146-packet re-export; NC/CA/SC linked-state
-reopens; #6 1065X/AAR; #68 optimizer; s274 PII narrowings; RS 8990 re-authoring
-gate; 6765 Sec G; client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex
-Box-2); Analysis line-2 active/passive proxy.*
+reopens; #6 1065X/AAR; #68 optimizer; s274 PII narrowings; RS 8990
+re-authoring gate; 6765 Sec G; client-4545 D_8606_BASIS_ONLY; 1065
+BATCH-004 #4 (Codex Box-2); Analysis line-2 active/passive proxy.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -128,15 +97,17 @@ to find defects. State the finding and move on.
 SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
 load-bearing goes in batch-file annexes too. **Never relay tokens through
 the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
-holder. Peers stage; Ken decides.
+holder — **s289: coordinate EXPLICITLY before every run; one collision
+happened anyway (states' two-file run vs my idle connection — harmless, but
+the ask-first reflex is now bilateral).** Peers stage; Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s288)
+## ⚠ Known red / rotted — THE ONE LIST (post-s289)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s288, run after every client tranche).
+- **Client typecheck**: green (s288; no client changes s289).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -151,7 +122,7 @@ holder. Peers stage; Ken decides.
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8. ⚠ Embedded double-quote in a here-string
   arg to a NATIVE exe SPLITS the argument — use `git commit -F -` with a
-  bash heredoc (used all session, s288).
+  bash heredoc (used all session, s288/s289).
 - 🌐 ⚠⚠ `Measure-Object -Line` skips blank lines — `ReadAllLines().Count`.
 - 🌐 ⚠⚠ A bare HTTP 400 (no `error` body) = the body never parsed.
 - 🌐 Staging answers 201 even for an invalid payload — the verdict is
@@ -161,19 +132,25 @@ holder. Peers stage; Ken decides.
   bboxes span the FULL line height (s286); a field map guessed from SHORT
   widget names silently no-ops (s287).
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase, not the text**
-  (s288). Two fetches of the same box-16 instruction returned different
-  "verbatim" quotes. A STRING-COUNT question ("how many times does '2a'
-  occur — reply ZERO OCCURRENCES if none") is checkable; a
-  "quote it exactly" prompt is not. Local templates beat both.
+  (s288). A STRING-COUNT question is checkable; "quote it exactly" is not.
+  Local templates beat both.
+- 🔧 ⭐ **An instrumented ROLLED-BACK dry-run reproduces a staged return's
+  production behavior locally** (s289): `transaction.atomic()` +
+  `commit_staged_return` + read the FFVs + raise — the same operation the
+  entry lane's prod dry-runs perform; nothing lands. ⚠ Scripts touching
+  client-named returns live in SCRATCHPAD, never the repo (PII).
 
 ## 🔎 Carried for triage — NOT claims
-- (s288) `IndividualForm7203` still has no home for box 16 code E
-  (shareholder-loan repayment); 1065 box 18 a/b/c have none on the
-  recipient side at all (`K1Basis704dWorksheet` carries only distributions).
+- (s289) `IndividualForm7203` has no §179/charitable carryover keying
+  fields — D_K1_7203_DEDUCTION_LIMITED warns; DEFERRAL_AUDIT has the build
+  trigger. · The 7203/K-1 §179 cap does NOT extend to 1065 partners
+  (stated boundary — §704(d) worksheet caps only the asserted Sch-E loss).
+- (s288) `IndividualForm7203` still has no home for box 16 code E;
+  1065 box 18 a/b/c have none on the recipient side.
 - (s288) `ctc_override` / `odc_override` + `Dependent.compute_qualifies_*`
   are dead to compute — only `D_1040_008` still reads them.
-- (s287) The 8825 line-1 repaint covers the LINE-1 table only.
-- (s287) The suggested-field convention now covers W-2 3/5 + 1099-R box 16 —
+- (s287) The 8825 line-1 repaint covers the LINE-1 table only. ·
+  The suggested-field convention covers W-2 3/5 + 1099-R box 16 —
   CLAUDE.md's W-2-only note is stale.
 - (s285) Sch 4 nonresident arm still apportions the whole widened base.
 - (s283) The stamp excludes 1040 packets (name+SSN privacy — Ken).
@@ -184,23 +161,25 @@ holder. Peers stage; Ken decides.
 - (s241/s281) `Form8606` unique-constraint candidate · 🔴 `HSAAccount`
   half CLOSED.
 - (s275/s281) `.first()`-on-per-form-rules sweep remainder.
+- (s289) K-1 capital gains reach Schedule D but not the L9 gain/loss
+  WEIGHTS (capital_transactions + div 2a only) — a K-1-gains-only MFJ
+  return falls to the carryover/50-50 fallback; pre-existing, noted.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
-## RS AGENDA — carried + s288 adds:
-Everything from s277–s287 stands (R-K1-20N; R-GA700-PARTNERS income base;
-AL_FORM_40NR amendments; GA-500 S3-9 blocked on `GA_OCGA_48_7`; R-AL-TAX
-mechanism; D-36 reads; R-B1-AUTO / R-B2-AUTO; the 4562 line-17 reversal).
-**s288 ADDS: (a) `R-8880-LINE1-COMPOSE`** — line 1 derives from traditional +
-Roth + ABLE with the stored field as override; the live spec also omits ABLE
-from line 1 entirely, which the face names. **(b) FORM_7203 Part I line 3** —
-the spec (key `7203`, NOT `FORM_7203`) constrains only the line-4 total via an
-aggregate `income_items` and never decomposes 3a–3m, which is how the sub-line
-routing drifted unnoticed; the s288 fix (3g = K7+K8a, 3h = K9, 3i = K10) needs
-the sub-line map written into R001's inputs so the spec can police it.
-**(c) `SCHEDULE_K1` box 16 A/B** — the recipient spec has 31 facts and no
-box-16 fact; the issuer spec has all five codes. **(d) 1040_SPINE DG-4** —
-the scenario expects `D_1040_008`, which is unreachable except via the dead
-overrides. Spec-fetch gate satisfied live for FORM_8880; flow assertions green.
+## RS AGENDA — carried + s289 adds:
+Everything from s277–s288 stands (R-K1-20N; R-GA700-PARTNERS income base;
+AL_FORM_40NR amendments; R-AL-TAX mechanism; R-B1-AUTO / R-B2-AUTO; the
+4562 line-17 reversal; R-8880-LINE1-COMPOSE; FORM_7203 Part I line-3
+sub-map; SCHEDULE_K1 box 16 A/B; 1040_SPINE DG-4). **s289 RESOLVES one:
+GA-500 S3-9 now implements the live R-GA500-S3 (4dp ratio) — off the
+agenda. s289 ADDS: (a) `R-K1-179-BASIS`** — the SCHEDULE_K1 recipient
+spec routes §179 to Schedule E col (j) with no §1366(d) interception and
+no charitable cap either; the 7203 spec's R004 carries the allocation but
+nothing ties the two specs' flows together, which is how the consumers
+drifted unwired. **(b) R-GA500-RIE loss-allocation clause** — the spec
+says "jointly-owned income splits 50/50" but is silent on how a NEGATIVE
+netted line 7 allocates; the s289 rule (by loss ownership incl. tagged
+carryovers) should be written into the spec so it can police it.

@@ -1,7 +1,7 @@
 ---
 type: project-status
 project: delvio-rule-studio
-last_updated: 2026-08-23
+last_updated: 2026-08-25
 ---
 
 # STATUS — delvio-rule-studio (renamed from sherpa-tax-rule-studio 2026-08-05; GitHub + local folder renamed, Render service name unchanged — see render.yaml note)
@@ -11,6 +11,187 @@ last_updated: 2026-08-23
 ---
 
 ## Current state
+
+### ✅ 2026-08-25 — A2: ENUM LABELS CORRECTED AND RE-SEEDED, ratchet moved to the seed pre-flight (D-41)
+
+✅ **FULL RS SUITE GREEN — 243 passed, 0 failed** (final run 2026-08-25, once delvio-tax released
+`test_postgres`). This morning it was **233 passed, 1 failed**. The standing red from 2026-08-23 is
+gone and the count rose by 9: the 8 new `test_authority_guard.py` tests (D-40 — the guard had none
+at all) plus `test_enum_ratchet_can_fail` (D-41). ⭐ **Every net-new test proves an instrument can
+FAIL** — the property whose absence let that red sit unnoticed through four seed gates.
+
+Ken: *"1. correct and reseed 2. yes"*. **Prod out-of-enum 218 → 211; `state_instructions` and
+`state_guidance` are now ZERO in production.**
+
+⚠⚠ **The red was SEVEN rows, not the five the failing assertion named.** The test asserts *new
+values* before *growth*, so it **never reached** `official_instructions` 60→61 and `federal_form`
+29→30. Diffing the whole inventory against the baseline commit found them. **A test that stops at
+the first category of failure hides the rest.**
+
+| loader | code | field | was | now |
+|---|---|---|---|---|
+| `load_al_40nr.py` | `AL_2025_BOOKLET_40NR` | `source_type` | `state_instructions` | `state_instruction` |
+| `load_al_40nr.py` | `AL_2026_WH_TAX_TABLES` | `source_type` | `state_instructions` | `state_instruction` |
+| `load_al_40nr.py` | `AL_40NR_IRS_2025_HANDOFF` | `source_type` | `federal_form` | `official_form` |
+| `load_md_500.py` | `MD_2025_CORP_BOOK` | `source_type` | `official_instructions` | `state_instruction` |
+| `load_md_500.py` | `MD_AR_43` | `source_type` | `state_guidance` | `state_instruction` |
+| `load_md_500.py` | `MD_AR_43` | `source_rank` | `secondary_official` | `implementation_official` |
+| `load_ms_83105.py` | `MS_2025_BOOKLET_83_100` | `source_type` | `state_instructions` | `state_instruction` |
+| `load_or_20.py` | `OR_2025_FORM_OR20_INSTR` | `source_type` | `state_instructions` | `state_instruction` |
+
+⭐ **`MD_AR_43` was the one needing judgement, and PRECEDENT settled it, not preference.** The
+library already types departmental sub-regulatory guidance as `state_instruction` —
+`CO_GIL_22_003` (a General Information Letter, the closest analogue to an Administrative Release),
+`AZ_2025_PUB_713`, `CO_CORP_TAX_GUIDE_2026`, `GA_HB149_PTET_FAQ`. 🔴 **NOT `state_regulation`:**
+Maryland's regulations are COMAR and an AR is sub-regulatory — typing it as a regulation would
+**overstate its authority, the same error D-39 corrected on `GA_OCGA_48_7`, in reverse.**
+
+⚠⚠ **PROVED, NOT CLAIMED — `scratchpad/validate_enum_reseed.py`.** Re-running a loader rewrites
+**every** row it declares, so all **40 sources in scope (23 declared + 17 referenced-only)** were
+snapshotted field by field before and after:
+✅ all 8 approved changes landed · ✅ **0 unintended content differences** across all 40 ·
+✅ **0 referenced-only rows written** — `updated_at` did not move on any of the 17 ·
+✅ prod steady at **169 forms / 690 authority rows** · ✅ all four export **200** with non-null
+`state_conformity`, counts matching the loaders · ✅ per-loader two-writers pre-flight clean on all
+four before seeding.
+
+### ✅ The enum ratchet now runs in the seed pre-flight — `_enum_guard.py`
+
+Invoked by **`seed_all`** and by **`check_authority_owners --loader X --strict`**.
+⚠⚠ **Why it moved: it lived only in pytest, went red 2026-08-23, and FOUR SEED GATES PASSED THROUGH
+IT** — seeding does not run pytest.
+
+- ⭐ **ONE baseline.** `tests/test_state_conformity.py` **delegates** to it instead of carrying a
+  second copy that could drift.
+- ⚠ Sees **all three writer populations**, not `load_*.py` alone — the same blindness D-40 fixed in
+  the two-writers guard, in a third instrument. *Both scopes agree today at 108 `statute`; agreeing
+  today is not a reason to stay narrow.*
+- Baseline **tightened** to the post-fix debt (233 + 5); it reports shrinkage so it gets tightened
+  again. **A ratchet never tightened stops being one.**
+- ⭐ **`test_enum_ratchet_can_fail` added** — proves it FIRES on a synthetic invalid value. *A
+  fixture that cannot fail is not a test*, and that absence is precisely what let a two-day red pass.
+- 🔴 Raising the baseline to make a seed pass is named in the error as **Ken's call, not a workaround.**
+
+⭐ **A ±1 I nearly waved through, reconciled:** my `statute` counts read 109 in one place and 108 in
+another. The pre-A1 scanner was counting **the guard's own `selftest()` fixture** as a real
+declaration. A1's hygiene fix removed it — independent confirmation the fix worked.
+
+⚠ **Deliberately left: the other 5 invalid `source_rank` values** (`primary_authority` ×4,
+`primary_statute` ×1) in loaders not otherwise being edited. They are in the baseline and cannot
+grow; correcting them is a content change needing its own seed approval, **not smuggled in under
+this one.** ⚠ **No tax figure moved** — all of this is provenance metadata.
+
+---
+
+
+### ⚠⚠ 2026-08-25 — THE TWO-WRITERS GUARD'S SCOPE IS FIXED (campaign A1, Ken's direct go)
+
+**It was seeing 19 of 46 disagreeing authority rows — 41%.** It scanned
+`specs/management/commands/` only; **three directories write `AuthoritySource` rows**:
+
+| population | modules | declaring | codes |
+|---|---|---|---|
+| `specs/management/commands/` | 132 | 118 | 621 |
+| `sources/management/commands/` (`load_1120s_family.py`) | 16 | 1 | 7 |
+| `sources/federal_data/` (seeded by `load_all_federal`) | 7 | 6 | 98 |
+| **merged** | **155** | **125** | **690** — exactly prod's row count |
+
+⭐ **It was the same defect one generation later.** The ad-hoc guard this one replaced could not see
+`_state_conformity_tier1.py`; the fix widened the FILE PATTERN and kept the DIRECTORY, and the
+population it still could not see was four times larger than the one that motivated it.
+
+**What changed in `_authority_guard.py`:**
+- Three readers. ⚠ `sources/federal_data/` is read by **IMPORT, not `ast`** — its rows are built by
+  helper calls (`_irc(...)`), so no literal-dict scan can see them. A deliberate, scoped exception
+  to the "no execution" rule, recorded in the file; those modules are pure data and import without
+  Django. The alternative — pattern-matching the helper call — is the prose-matching method this
+  campaign has discarded three times.
+- Writer labels are **population-qualified** (`specs/load_x.py`), so two modules sharing a basename
+  across directories can never be conflated.
+- 🔴 **`guard()` now REFUSES when a population goes dark**, instead of reporting clean. And
+  `selftest()` asserts every population is actually read — **the property the old selftest could
+  not check**, because a synthetic fixture proves the MATCHING works and says nothing about SCOPE.
+- `ACKNOWLEDGED` regenerated from the widened scan (23 → **53**; 46 disagreeing + 7 identical) via
+  the new `check_authority_owners --regenerate-acknowledged`. **Generated, never typed.**
+  ⚠ **The list grew because the SCOPE was fixed, not because anything got worse.**
+- ⚠ **Six of the previous 23 writer sets were incomplete**, including **`IRC_704`, filed as
+  *"identical today"* while its unseen third writer disagreed on six fields.**
+- 🔴 Fixed in `check_authority_owners.py`: `new` was computed as `c not in ACKNOWLEDGED` — **by code,
+  not by writer set** — so its summary could print "0 NEW" while `guard()` refused. Now both use
+  `is_acknowledged()`.
+- Hygiene: the guard no longer scans **its own selftest fixtures**. Pre-A1, `ZZ_SYNTHETIC_CODE` and
+  `ZZ_SOLE_WRITER` were counted as real declarations of the guard module.
+
+⭐ **Proved, not asserted — `scratchpad/validate_authority_guard_a1.py`, 20 checks, 20 pass / 0 fail.**
+Each check shows the new behaviour DIFFERS from the old: 621 → 690 codes, **19 → 46** disagreeing,
+no regression (all 19 retained), the guard raises and names the row, a joining module is refused,
+and — ⭐ **with `federal_data` pointed at a missing directory the guard REFUSES where the pre-A1 one
+would have passed.** Check 3 rediscovered **`IRC_704`** as the benign-that-isn't *without being told*.
+⚠ Nothing is pinned to a collision COUNT; that would go red the moment Ken resolves one.
+
+✅ Verified end to end: `check_authority_owners` (all four flags), **`seed_all --dry-run` clean, 0
+MISSING**. **No loader content edited, no `READY_TO_SEED` flipped, nothing seeded.**
+✅ **RS pytest RUN once delvio-tax-89 released `test_postgres`: 233 passed, 1 failed.**
+
+✅ **`tests/test_authority_guard.py` ADDED — the guard had NO test at all before A1.** Eight tests,
+no DB, pinned to the MECHANISM (never to a collision count): the selftest passes, every population
+yields declarations, the `federal_data` import reader still works, **the guard refuses when a
+population goes dark**, no unacknowledged collision exists on disk, an acknowledgement is of a
+*writer set* not a code, no `ZZ_` fixture is scanned, and **no ACKNOWLEDGED entry is stale** — the
+list is a worklist and entries are meant to leave it (D-39 removed one). ⭐ **Each was
+mutation-probed to prove it CAN fail**; the suite is clean again afterwards.
+
+## ✅ CLOSED 2026-08-25 (D-41) — the standing red below is FIXED; kept for the record
+
+⚠⚠ **Pre-existing and NOT caused by A1 — proved, not assumed:** that test's only input is
+`load_*.py`, and A1 touched no loader (`368223e` = the guard, the check command, `seed_all`, a
+harness, this file). Its input is byte-identical before and after.
+
+`tests/test_state_conformity.py::test_no_new_invalid_source_types` is a **ratchet over every
+`load_*.py`**: the invalid-`source_type` debt may shrink, never grow. Baseline frozen 2026-08-16.
+
+| value | baseline | on disk | in prod | |
+|---|---|---|---|---|
+| `state_instructions` | — | **4** | **4** | 🔴 new |
+| `state_guidance` | — | **1** | **1** | 🔴 new |
+| `official_instructions` | 60 | **61** | 57 | ⚠ grew |
+| `federal_form` | 29 | **30** | 29 | ⚠ grew |
+| `statute` | 109 | 108 | 91 | ✅ shrank — D-39, showing up exactly as a ratchet should |
+| **total** | **234** | **240** | **218** | |
+
+🔴 **The four loaders that broke it are this campaign's own, all authored 2026-08-23** —
+`load_al_40nr.py` (×2) · `load_md_500.py` · `load_ms_83105.py` · `load_or_20.py` — **and all four
+were seeded to prod afterwards. Four seed gates passed with this test red.**
+
+⚠ `load_ga700.py:297` carries a comment saying `state_guidance` is not a valid choice. Someone found
+it there and the same value went into `load_md_500.py` later. *A fix recorded in one file is not a
+guard.*
+
+⚠ The test asserts *new values* before *growth*, so it fails on the two new ones and **never reaches**
+the `federal_form`/`official_instructions` growth. And it globs `load_*.py` only, so it cannot see
+`_1120s_sources.py` or `_state_conformity_tier1.py` — **the same pattern blindness A1 just fixed in
+the guard, in a third instrument.**
+
+🔴 **NOT FIXED, deliberately.** `state_instructions` → `state_instruction` is one character, but these
+rows are **seeded**, so it is a content change needing a re-seed — Ken's gate. And `state_guidance`
+(`MD_AR_43`, a Maryland Administrative Release) has **no obvious correct enum member**; guessing one
+is what the Authoritative-Source Rule forbids. **Staged for Ken; it belongs with A2.**
+
+⚠⚠ **AND THE WIDENED GUARD IMMEDIATELY SHOWED SOMETHING: `seed_all` today would silently CHANGE 11
+authority rows.** Prod is **not reproducible from the loaders** — simulating overlay semantics in
+seed_all's phase order gives 42 rows untouched and **11 changed**, several of them moving a *valid*
+enum value to an *invalid* one (`IRC_172` `code_section` → `statute`; `SC_ACT63_2025_CONFORMITY`
+`state_statute` → `statute`). ⚠ **Not a tax-figure defect** — provenance metadata only. Recorded, not
+acted on: delvio-states `research/authority_ownership_assessment.md` §8.
+
+⚠ **Still true and NOT fixed by A1:** the guard runs on `seed_all` and `check_authority_owners`, **not
+on an individual `manage.py load_xx`.** The one-loader pre-flight stays explicit:
+`check_authority_owners --loader load_xx.py --strict`. And the underlying damage is worse than
+last-writer-wins — omitted keys keep the previous writer's value, so prod holds **chimeras**
+(4 confirmed) that re-seeding the rightful owner will not repair.
+
+---
+
 
 ✅ **`OR_20` SEEDED 2026-08-23. PROD 168 → 169. WAVE 5's C-CORP LANE IS CLOSED — for real this
 time.** All seven returns are live: `MD_500` · `VA_500` · `AZ_120` (+`AZ_120A`) · `MO_1120` ·
