@@ -20,11 +20,19 @@ extractor (per-form extractors + summary-page `expected`; refuse-don't-
 guess), pipeline extract→validate→stage→dryrun→TIE→**AUTO-COMMIT +
 MARK-FILED (Ken-approved)**; NO_TIE → per-preparer exception inboxes;
 pilot = 50 of John's book; QA trimmed to the tie record for pipeline
-returns (Ken-approved). **③ Ken's side**: export the 282 Lacerte 1040s
-(⚠ the two existing Lacerte-prepared packets were NOT exports — no print
-setting is established; complete-return print preferred, the pre-indexer
-handles bloat) + the 15+2 faceless TaxWise re-exports. Lacerte 282 go
-through the CAREFUL QA lane, never the pipeline.*
+returns (Ken-approved). **③ Ken's side**: ✅ FIRST 22 LACERTE PACKETS LANDED
+(`D:\tax-test-data\1040\Lacerte Inbox`, entity-style "Partial Return for
+<CODE>" print — the page pre-indexer applies; entry lane notified; careful
+QA lane, never the pipeline; ~260 more to come). Faceless TaxWise
+re-exports: Ken reprinted ~140 (the full-sweep 144 list —
+`RE-EXPORT-BUCKET-2026-08-23-FULL-SWEEP.md`; the "15" was its alphabetical
+tail). ⚠ NEW RISK Ken raised: some TaxWise exports may be returns NOT yet
+IRS-ACCEPTED — the tie check cannot detect that; offered him a
+packet-name CSV to cross-check against TaxWise's acceptance report.
+**UX ruling (Ken)**: Carissa gets ONE *Check In Client* flow — search
+first, New Client button only exists after a search ran; last-4 required
+at create with the silent candidate check. Matches the shipped endpoints;
+UI build next.*
 
 *Also s289: the four same-EIN duplicate client pairs MERGED (Ken-ruled;
 zero EIN dupes remain; snapshot in D:\tax-test-data; ⚠ four client numbers
