@@ -3,15 +3,21 @@
 *Last updated: 2026-08-25 (s288 — the punchlist queue drains: items 7, 14, 15,
 16 shipped; 10 half-shipped; four questions staged for Ken).*
 
-*⚠⚠ RESUME POINT — **nothing is mid-build. The next move is Ken's.**
-`REVIEW_QUEUE.md` holds FOUR staged decisions, each with evidence, a design and
-a recommendation: ① Form 7203 Part I 3g/3h route by an old face layout and
-§1231 gain increases basis by NOTHING (every S-corp shareholder, overstates
-tax); ② should K-1 box 16 code A also land on 1040 line 2a (it feeds §86
-provisional income, so it can move tax); ③ punchlist item 10's EIC
-default-eligible + AOTC picker halves; ④ retire `D_1040_008`? Also still open:
-punchlist **18** needs Ken to name the return where the 8995 looked dead.
-Head `813da73`; three deploys today, all Render-verified.*
+*⚠⚠ RESUME POINT — **nothing is mid-build.** ① of the four staged decisions is
+now BUILT on Ken's go: **Form 7203 Part I 3g/3h/3i re-routed to the rendered
+face** — `3g = K7 + K8a` (net capital gains), `3h = K9` (§1231), `3i = K10`, so
+§1231 gain increases stock basis instead of vanishing. The mapping came from
+this engine's OWN Part III (`_PART_III_K_MAP` already paired 38 = K7+K8a,
+39 = K9, 40 = K10 — Part III had been migrated to the current face and Part I
+never was), corroborated by a positional read of `f7203.pdf` (Rev. Dec 2022).
+⚠ The i7203 prose fetched from irs.gov CONTRADICTED its own form face and was
+not used. Two existing tests had recorded the old row and were corrected (their
+real subject, K9 ≠ K8a on the loss side, was already right).
+**THREE decisions remain for Ken in `REVIEW_QUEUE.md`:** ② should K-1 box 16
+code A also land on 1040 line 2a (it feeds §86 provisional income, so it can
+move tax); ③ punchlist item 10's EIC default-eligible + AOTC picker halves;
+④ retire `D_1040_008`? Also open: punchlist **18** needs Ken to name the return
+where the 8995 looked dead.*
 
 *① Item 7 — PY-fact ink. A `priorYear` OVERLAY on FieldStateInput
 (`.slate-field.is-pyfact`, muted, still editable), deliberately NOT a sixth
@@ -167,8 +173,11 @@ AL_FORM_40NR amendments; GA-500 S3-9 blocked on `GA_OCGA_48_7`; R-AL-TAX
 mechanism; D-36 reads; R-B1-AUTO / R-B2-AUTO; the 4562 line-17 reversal).
 **s288 ADDS: (a) `R-8880-LINE1-COMPOSE`** — line 1 derives from traditional +
 Roth + ABLE with the stored field as override; the live spec also omits ABLE
-from line 1 entirely, which the face names. **(b) FORM_7203 3g/3h/K9** — the
-routing finding above; the spec must say whether 3g takes ST+LT combined.
+from line 1 entirely, which the face names. **(b) FORM_7203 Part I line 3** —
+the spec (key `7203`, NOT `FORM_7203`) constrains only the line-4 total via an
+aggregate `income_items` and never decomposes 3a–3m, which is how the sub-line
+routing drifted unnoticed; the s288 fix (3g = K7+K8a, 3h = K9, 3i = K10) needs
+the sub-line map written into R001's inputs so the spec can police it.
 **(c) `SCHEDULE_K1` box 16 A/B** — the recipient spec has 31 facts and no
 box-16 fact; the issuer spec has all five codes. **(d) 1040_SPINE DG-4** —
 the scenario expects `D_1040_008`, which is unreachable except via the dead
