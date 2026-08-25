@@ -27,13 +27,27 @@ capital-gain distributions × the −3,000 loss = −17.27). **Rider:** GA-500
 S3-9 quantizes to 4dp before multiplying L12 (RS `500` R-GA500-S3, live in
 RS prod today; T8b scenario pins 1/7 → 0.1429 → L13 1,715).*
 
-*▶ NEXT in the BATCH-296 lane (per the s288 ranking, updated): **#60**
-(Sch 2 line 13 documented-source trio — clone the sch2_l14 build), **#43's
-medium leg** (subtract `passive_8582_allowed` in the positive-passive
-branch; 12,270 AGI overstatement), **#70** (Form 4361 → Sch C ministerial,
-medium-large), #16 (FTC c/f by source year). Still ⛔ KEN: #18 (ruling
-only), #21, #28 (raise the preparer error with 3 clients?), #48 (RS 404),
-#56, #63, #69, #10. The file STAYS in the queue.*
+*▶ NEXT in the BATCH-296 lane (updated at close, s289 late): **① the
+[client] residual** — #57 is CONFIRMED by the item-59 return (tied,
+committed, Done) but **[client] did NOT tie**: RIE-SP-17 6,027 vs filed
+6,514 (−487; the pre-fix figure was 5,014, so the #57 −1,500 is gone and
+a smaller second defect was UNMASKED), plus the entry lane's observation
+that S1-13 computed 90,050 vs 84,023 — a delta of exactly the derived
+SP-17, which smells like the spouse exclusion landing twice in the GA
+Schedule 1 composition (observation, not diagnosis; hold b926, addendum
+under the #57 annex). Triage with the instrumented rolled-back dry-run.
+**② item 84** (NEW, posted s289 by the entry lane): the §469(i) $25,000
+rental-loss special allowance never applies on the named return shape —
+`active_participation` flip changes NOTHING (their probe); my unverified
+read: the loss never REACHES the 8582 bucket. Batches
+9e7c7eff-f556-49ac-a9d4-1970a56bb551 (real) /
+5af50f2c-38ef-4e5a-8b92-1c594addf3f2 (probe). **③** then #60 (Sch 2 line
+13 source trio), #43's medium leg, #70, #16. ⛔ KEN: **item 85** (GA RIE
+line 10 — does 1099-MISC box-3/8z other income belong in the exclusion
+base? My read: r. 560-7-4-.02 says the §108(f)(5)-excluded 114,155 CANNOT
+be in it — engine right, filed worksheet wrong; zero face impact either
+way; two small residuals recorded in the item), #18, #21, #28, #48, #56,
+#63, #69, #10. The file STAYS in the queue.*
 
 *Entry lane (same-day): released ~60 stale holds off my annex answers;
 BATCH-012 Ellington committed/filed via the `form:"attached"` source-defect
