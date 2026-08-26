@@ -1,11 +1,32 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-26 (s295 — extractor session 3: Schedule A unit +
-dependents unit (grid/Sch EIC/8867) + GA Sch 1 additions + Form 1310
-registry. Commit `c8f4ac1`, deploy `dep-da76i38u01pc73bp61a0` (verify
-LIVE at next boot if this line is not updated). Full-Inbox r8: **8
-emitted / 259 refused all-named; rolled-back tie probe 8/8 TIE**. 79
-extractor tests green.)*
+*Last updated: 2026-08-26 (s295 + s295b — same session, two units. s295:
+extractor session 3 (Schedule A + dependents/8867 + GA Sch 1 additions +
+Form 1310 registry; r8 8/8 TIE; 79 extractor tests; `c8f4ac1` LIVE).
+s295b: the two FLEMINGJ batch items posted mid-close were worked —
+**8z→Schedule-SE routing BUILT** (`5454443` + `eeef546`, deploy status:
+see the deploy block below), item B closed by verify-first with NO code
+(the #78 conserving split already rules it — Lacerte's per-row half-up
+INVENTS the dollar; annexed). 637 green incl. flow assertions;
+injection-proven; published schema regenerated with `subject_to_se`.)*
+
+*s295b build shape (cold-start facts): `OtherIncomeItem.subject_to_se`
+(8z-only, staging-validated, migration 0362) → the owner's Schedule SE
+row is auto-created (clergy/K-1 precedent) and line 2 gains the amount;
+Sch 2 L4 / Sch 1 L15 / 8959 base / QBI non-SE weights ride; GA RIE **L2
+EARNED** (r. 560-7-4-.02's own SE-subject clause — distinct from Ken's
+box-3-UNEARNED ruling, which covered rows with no SE assertion; generic
+8z still feeds NO RIE line). **Found in passing + fixed: Schedule SE
+line 2 had FOUR assembly sites and the renderer + diagnostics were
+missing the clergy/K-1 addends** (a clergy- or K-1-only SE face was
+silently never printed; renderer also lacked the farm-optional kwargs)
+— all four sites now consume `se_line2_addends_by_owner`; MeF's drift
+check is the tripwire. Named boundaries in DEFERRAL_AUDIT (EIC WS-B
+default + 7206 line 5 exclude the new income; preparer overrides are
+the escape). **Entry-lane unblock recipe is in the BATCH-296 annex** —
+re-stage FLEMINGJ with the flag AFTER the deploy is LIVE, batch_key
+bumped; expected federal 159,603/128,103/18,366/29,010 and the RIE
+delta closes to item B's −1.*
 
 *⚠⚠ RESUME POINT — **extractor session 4** (`scripts/taxwise1040/`).
 s295 shipped: ① `sch_a.py` (67/67 corpus faces parse clean; scha_*
@@ -88,8 +109,14 @@ hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time). Manual post-deploy seed = the
 idempotent VERIFY; `check_rule_paths` is one command.**
-- s295 deploy: `c8f4ac1` → `dep-da76i38u01pc73bp61a0` (extractor scripts
-  + tests only — no server code changed).
+- s295 deploy: `c8f4ac1` → `dep-da76i38u01pc73bp61a0` LIVE (extractor
+  scripts + tests only); the s295 close docs (`60bb59b`/`9ff155d`)
+  cascaded LIVE behind it.
+- s295b deploy: `5454443` + `eeef546` → `dep-da773a6gekts73br8r2g`
+  **LIVE, API-confirmed 2026-08-26**; post-deploy verify: the
+  `subject_to_se` column exists in prod (read-only probe, 0 flagged
+  rows as expected). The entry lane's FLEMINGJ re-stage is UNBLOCKED —
+  recipe in the BATCH-296 annex.
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any session that touches
   lane vocabulary, allowlists, or a state seeder MUST regenerate the
@@ -206,4 +233,12 @@ description; the unfloored line5 §1211(b) question; the 1040X
 derived-input amendment + queued `x_is_superseding_derived` app
 follow-up). **s295: nothing newly queued — the dependents unit consumed
 the R-DEP-03 amendment as shipped (col-7 = derived output; verbatim
-tin_type/citizenship choices; no dep_ssn_valid boolean).**
+tin_type/citizenship choices; no dep_ssn_valid boolean). s295b QUEUES
+ONE: `SCHEDULE_SE` R-SE-L2's formula names Sch C 31 + K-1 14A only —
+amend to add (a) clergy net ministerial earnings (predates tonight;
+spec already behind the app) and (b) the new SE-subject other-income
+addend (fact e.g. `se_other_income_l2`; authority = the 2025 Sch SE
+line-2 face "See instructions for other income to report" + i1040sse;
+§1402(c)(1) fee-basis carve-out is the FLEMINGJ example). Both peers'
+sessions ENDED before this could be relayed live — it lives here and
+in DEFERRAL_AUDIT only.**
