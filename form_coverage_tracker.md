@@ -3596,7 +3596,7 @@
 > 4 ratifications)** (app `3dfb977`+`0961407`; RS `5e6ffa3`+`37f565d`, new
 > loader `load_4562_destination_rounding.py`; mig 0217 + seed_rules BOTH
 > DBs; deploy verified live `index-BZjYNARY.js` vs 0-hit baseline). **The
-> [client] silent miss fixed:** the 1040 Flow To dropdown offered the
+> QA-farm-client silent miss fixed:** the 1040 Flow To dropdown offered the
 > ENTITY farm arm (`sched_f`), whose write targets "F14" — a line that
 > does not exist on a 1040 — and `_set_field_value` swallowed the miss;
 > the module displayed "$4,069 → Schedule F" while Schedule F line 14
@@ -3609,14 +3609,14 @@
 > R017, Ken-ratified house convention):** the engine's public boundary now
 > returns WHOLE-DOLLAR reported amounts (penny internals in
 > `_calculate_asset_depreciation_exact`); destination totals sum rounded
-> per-asset amounts (TaxWise parity: [client] = 4,068, not
+> per-asset amounts (TaxWise parity: the QA farm client = 4,068, not
 > ROUND(4,069.03) = 4,069). **New diagnostics:** D_4562_DEST (unroutable
 > asset; effect-scaled error/warning) + D_4562_RECON (module vs
 > destination mismatch = blocking — the permanent guard against the
 > silent-skip class). **Mig 0217** (Ken-ratified policy, audited
 > before+after BOTH DBs): prod 50 `sched_f` → `schedule_f` ALL auto-linked
 > (every return single-farm) · 1 `page1` → `schedule_c` linked · 1 blank
-> $0 asset left red; demo 0 rows. **[client] PROD recompute exact:** Sch F
+> $0 asset left red; demo 0 rows. **QA farm client PROD recompute exact:** Sch F
 > 14 = 4,068 · farm loss 6,642 · AGI 20,729 (the QA expected column). Live
 > demo probe green (auto-link → 143 whole → line 14 → delete clears; demo
 > restored). Gates: NEW `test_4562_leg1_dest_rounding.py` **7** · engine
