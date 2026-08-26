@@ -1,5 +1,26 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐ s297b (same day, Ken live in-session): FOUR rulings landed via the
+question card — ① the int/div valve APPROVED with Ken's own label
+("INTEREST"/"DIVIDENDS", not the recommended wording) and BUILT SAME
+SESSION (`b284936`, deploy `dep-da7ghbtbedkc73b495b0` LIVE): payer-less
+face 2a/2b/3b amounts emit as consolidated rows; its tie probe then
+found TWO more missing-page gates, both built — the no-Schedule-A
+itemized-12e gate (face vs the derivable standard deduction, constants
+per compute_1040.SPINE R-STD-01/03) and the GA S1-10 US-obligation
+derivation (RIE worksheet row deltas → treasury/us-gov row tags + a
+keyed ga500_fields S1-10, which is what ARMS the engine's netting cut;
+before the fix S1-13 tied by COINCIDENCE while both components were
+wrong). **r14 census: 18 emitted / 249 refused; ALL 18 tie-verified
+rolled-back.** ② R-5329-11 approved → states lane seeded (RS
+`c04b86f`) → our spec cache RE-PULLED (39 facts, waiver clause
+verified). ③ the PII history rewrite APPROVED — execution waits for a
+supervised sitting with Ken (REVIEW_QUEUE: SCHEDULED). ④ Ken supplies
+the dependent birth years (correction: they're the ENTRY lane's Lacerte
+packets, not TaxWise) + confirmed "shell" question answered. The auth
+mint was ALSO done at Ken's direction (s112 recipe, dev account, token
+via file handoff — never the channel); entry lane unblocked.*
+
 *Last updated: 2026-08-26 (s297 — extractor session 4, unit ① + the tie
 probe's finding built same-session. ① **Schedule 1 face parser +
 line-8/10 component routing** (`401ec6e`): both pages parse positionally
@@ -30,8 +51,9 @@ lesson, third time). int/div face classes: 2b 14 touched/4 solo, 3b 9/3
 are identified by name in the r10/r11 run logs under PipelineOut (PII
 stays there, never here).*
 
-*▶ NEXT — extractor session 5: ① **f8949 summary rows →
-`capital_transactions`** (9 solo, top measured class; pairs with sch_d).
+*▶ NEXT — extractor session 5 (re-measure the census FIRST — the valve
++ gates moved it): ① **f8949 summary rows → `capital_transactions`**
+(9 solo at r11, top measured class; pairs with sch_d).
 ② the f8995 4-solo REIT shape (likely cheap: 199A REIT dividends ride a
 documented aggregate — verify vocabulary before building; marking the
 page ignore-when-derivable needs the QBI decomposition guard). ③ probe

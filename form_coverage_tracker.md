@@ -1,6 +1,27 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 297b — the payer-less int/div valve (Ken ruling,
+> built same session) + two more missing-page gates (`b284936`, one
+> deploy).** Ken ruled the s295 int/div question live: face-only 2a/2b/3b
+> amounts import as ONE consolidated row per line, payer "INTEREST" /
+> "DIVIDENDS" (his wording). Valve shipped: single/HOH direct; MFJ via the
+> allocation worksheet's whole-column rule; mixed splits + joint
+> tax-exempt refuse. The valve's tie probe found two more silent shapes,
+> both built: an ITEMIZED face 12e with NO Schedule A page (gate: 12e must
+> equal the derivable standard deduction — compute_1040.SPINE R-STD-01/03
+> constants — outside the claimed-dependent worksheet) and a filed GA
+> S1-10 US-obligation subtraction the valve rows couldn't know (the GA
+> parsers now return S1 subtractions + the RIE worksheet's own
+> interest/dividend rows; the emitter derives the US-gov split from the
+> packet's OWN RIE deltas, tags the rows, AND keys ga500_fields S1-10 —
+> the keyed line is what arms the engine's netting cut. ⚠ Before the fix
+> S1-13 tied by COINCIDENCE: the missing subtraction exactly offset the
+> over-included exclusion). **r14: 18 emitted / 249 refused, ALL 18
+> tie-verified rolled back** (was 9/258 at s296 close). 108 extractor
+> tests. R-5329-11 seeded by the states lane on Ken's direct word; our
+> spec cache re-pulled and verified (39 facts).
+>
 > **2026-08-26 session 297 — extractor Schedule 1 unit + the 1040 p2
 > tax-block face gates (`401ec6e`, one deploy).** **Extractor (Sch 1)**:
 > both Schedule 1 pages parse positionally — ⚠ TaxWise RE-TYPESETS the
