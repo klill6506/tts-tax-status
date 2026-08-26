@@ -1,6 +1,27 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 297 — extractor Schedule 1 unit + the 1040 p2
+> tax-block face gates (`401ec6e`, one deploy).** **Extractor (Sch 1)**:
+> both Schedule 1 pages parse positionally — ⚠ TaxWise RE-TYPESETS the
+> schedule (packet 8-series markers x~358-368 vs the blank template's
+> ~394; packet geometry is the only pin). Feeds: line 1 → the #30
+> `sr_filed_taxable_refund` valve; 11/20/21, 19a+19b+19c, 24z+24z_type →
+> `sch1_fields`; 8h/8v/8z → `other_income_items` (non-joint only; 8z
+> carries the printed literal); 8b is a CONSISTENCY check against the
+> extracted W-2G rows. Every other nonzero component refuses by letter/
+> name. **p2 tax-block gates (the missing-page-credit finding)**: the r10 tie probe
+> caught a filed $263 Schedule 3 credit (line 20, de-minimis-FTC shape)
+> whose page TaxWise never printed — emitted as a silent no_tie. The
+> face is the guard: p2 now captures 17-21/23/25c/26/27a-31/32 with
+> refusal-grade sum identities, and nonzero 17/20/23/25c/26/29/30/31
+> refuse by name (19/27a/28 stay engine-derived — an existing emit's CTC 500
+> ties). r11: 11 emitted / 256 refused (was 9/258); emitted-set tie
+> 11/11 (rolled back; payloads byte-identical to the probed r10 set).
+> Census re-rank: f8995 touches 128 (4 solo, REIT-shape), f8949 = top
+> solo class (9), 13b collapsed to 1 solo. 107 extractor tests. No
+> vocabulary change — published schema untouched by design.
+>
 > **2026-08-26 session 296 — extractor Schedule D unit + Form 5329 RC
 > waiver (`0b79525` + `0908f73`, one deploy).** **Extractor (Sch D)**: the
 > two-page Schedule D face parses positionally (grid values on each row's
