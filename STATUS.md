@@ -224,7 +224,13 @@ staged for Ken with the states lane's research doc). ✅ R-GA500-RIE's
 vendor clause is now IMPLEMENTED (s298) — spec and engine tell one story.
 NEW (s299): **R-DEP-03's formula should spell out the §152(e) release
 branch** — the spec lists `dep_released_by_form_8332` as an input but the
-formula text never states the residency waiver (claiming side) or the
-exclusion (releasing side); the engine now implements both, so the
-formula should say them (the vendor-clause one-story pattern). States
-lane's Gate-1 governs the amendment.
+formula text never states the mechanics; the engine implements both
+sides. The states lane VERIFIED and staged it for Ken as **S-11** (their
+finding sharpens it: R-DEP-03 read literally is INVERTED on both sides
+of a release — spec/engine divergence, engine correct; use the
+instructions' "treated as" language, and note the four-condition scope +
+the notes' dropped dependent-care-benefits exclusion) and as **S-12**
+(SCH_8812 R002 still consumes the RETIRED key `dep_qualifies_ctc` where
+R-DEP-03 now emits `dep_ctc_qualifying` — the D-43 rename updated the
+producer, left the consumer; spec-only, compute_8812 correct). Both are
+Gate-1 — Ken's call; worth ruling together (same dependent chain).
