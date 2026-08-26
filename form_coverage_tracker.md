@@ -1,8 +1,13 @@
 
 # Form Coverage Tracker — tts-tax-app
 
-> **2026-08-26 session 294 — BATCH-296 tail pair (`ce04ad1`, one verified
-> deploy).** **Back-entry commit (all state forms)**: every ATTACHED
+> **2026-08-26 session 294 — BATCH-296 tail pair (`ce04ad1` + s294b
+> `2ce1dfa`, two verified deploys).** *(s294b: `_apply_state_fields` now
+> judges "unknown line" against the form's FormLine set and BACKFILLS the
+> FFV row a pre-seeder-amendment return lacks — the entry lane's live
+> re-key refusal was the class's first bite; published import schema
+> regenerated, and the local-generator-never-runs-on-deploy trap is a
+> named STATUS close-out step.)* **Back-entry commit (all state forms)**: every ATTACHED
 > registry-state face (SC1040/AL40/AL_40NR/NC_D400) now echoes its
 > control lines into `state_faces` whether or not the payload supplied
 > it — the GA-500 symmetry — so an omitting correction batch reconciles

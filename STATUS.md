@@ -3,7 +3,14 @@
 *Last updated: 2026-08-26 (s294 — BATCH-296 tail pair shipped: the
 state-face echo asymmetry fixed + the ret-exempt suppression claim
 REFUTED with per-person record flags built. Commit `ce04ad1`, deploy
-`dep-da74u6hsrm7s73bdht60` LIVE, API-confirmed, seed verified.)*
+`dep-da74u6hsrm7s73bdht60` LIVE, API-confirmed, seed verified. s294b
+followup same night: the entry lane's re-key REFUSED — `_apply_state_fields`
+judged "unknown line" against the RETURN's own FFV rows (bulk-created at
+return creation), so any state return predating a seeder amendment
+refused the new line at commit while staging accepted it. Fixed: the
+guard validates against the form's FormLine set and BACKFILLS the missing
+FFV row. Commit `2ce1dfa`, deploy `dep-da754be7bikc73fgk6r0` LIVE,
+API-confirmed. 567 green.)*
 
 *⚠⚠ RESUME POINT — **extractor session 3** (`scripts/taxwise1040/`),
 unchanged from s293: classifier → census → positional parsers (Main
@@ -91,9 +98,17 @@ hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time). Manual post-deploy seed = the
 idempotent VERIFY; `check_rule_paths` is one command.**
-- s294 deploy: `ce04ad1` → `dep-da74u6hsrm7s73bdht60` **LIVE,
-  API-confirmed 2026-08-26**; post-deploy verify: all three ret-exempt*
-  lines present in the prod DB (read-only probe).
+- s294 deploys: `ce04ad1` → `dep-da74u6hsrm7s73bdht60` and (s294b)
+  `2ce1dfa` → `dep-da754be7bikc73fgk6r0`, both **LIVE, API-confirmed
+  2026-08-26**; post-deploy verify: all three ret-exempt* lines present
+  in the prod DB (read-only probe).
+- ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
+  are LOCAL generators the deploy NEVER runs** — any session that touches
+  lane vocabulary, allowlists, or a state seeder MUST regenerate the
+  published schema as a close-out step (bit in s294: the entry lane's
+  local validator couldn't see the new lines because the schema predated
+  the deploy — a generator nobody runs is the s289b
+  sweep-that-checked-nothing family).
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -212,4 +227,13 @@ R-8995-QBI line-1 population widening; FORM_8960 R-8960-INCOME 5b
 description; the unfloored line5 §1211(b) question). **s294: the states
 lane's AL_FORM_40NR per-taxpayer retirement amendment is SEEDED in RS
 prod (33 facts / 17 tests incl. AL40NR-H2) and the app's cached spec +
-vocabulary now mirror it — nothing newly queued from this side.**
+vocabulary now mirror it — nothing newly queued from this side. Late
+s294: the states lane's Ken-directed 1040X derived-input amendment is
+seeded (RS `c0dd903`: `x_baseline_captured` REMOVED — system state, the
+app's resolver already proves the baseline; `x_is_superseding` → derived
+via new `x_extension_filed` + `R-1040X-SUPERSED`); cached
+`1040x_spec.json` re-exported (11 facts / 13 rules), neither removed key
+was read by app code. ⚠ QUEUED app follow-up: if/when the amendment lane
+models superseding returns, implement `x_is_superseding_derived` per the
+spec's shape — preparer supplies only the extension fact, the engine
+derives against the due date.**
