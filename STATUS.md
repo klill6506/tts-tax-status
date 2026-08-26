@@ -1,5 +1,45 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐ s297e (Ken's focus day, continued): ① FOUR MORE RULINGS via question
+card, recorded verbatim in DECISIONS ("FOUR RULINGS s297e"): per-vendor
+GA RIE split (+ Ken to the states lane directly: "Write it into
+R-GA500-RIE" — seeded, RS `79dc8d5`; our 500 spec cache RE-PULLED with
+the vendor clause) · Form 8332 flag BUILD · SE rulebook pair (seeded by
+the states lane on his direct word) · EIN lookup = FUZZY auto-fill
+(guardrail: two different EINs both matching never resolves by score).
+② **THE QBI-REFLOW ITEM LEG 1 SHIPPED + LIVE** (`f0b8ec42`, deploy
+`dep-da7kqv942hec73ckf8lg`): the sehi_changed branch re-runs the whole
+AGI-dependent class (8995/Sch A/SS wks/13b/dep-std, NOL-branch order,
+one-shot); discriminating regression test; 526 flow + 146 targeted
+green; annex in BATCH-296; the lane re-runs client 2137 (expect the
+§5.03-shaped residual — LEG 2, the Rev Proc 2014-41 §5.03 verification,
+is deliberately NOT built yet). ③ KEN'S ORGANIZERS (214 printed):
+TP DOB 214/214, spouse 129, dependent DOBs 128/128 rows, K-1 EINs 95
+clients; 10 of the 41 blocked kid-packets unblock; the remaining ask =
+51 DEPENDENTS across 31 clients, list for Ken at `1040/Lacerte Inbox/
+DEPENDENT-DOB-ASK-2026-08-26.md` (birth YEAR suffices; 3 clients'
+2025-added dependents can NEVER come from a reprint); ⚠ NO W-2/1099-R
+payer EINs exist in the organizer FORMAT — the ruled fuzzy lookup
+against `employers_employer` (4,403 rows, all EINs) is the route.*
+
+*▶ NEXT (build queue, in order): ① **per-vendor GA RIE split** — design
+pinned: (i) new `TaxReturn` import-vendor marker (set at commit from
+source.entry_method; db_default per the s190 lesson; SCHEMA REGEN
+required; coordinate the Lacerte lane's entry_method string + a
+backfill for already-committed Lacerte returns), (ii) the RIE bucket
+builder splits each JOINT row at accumulation time for lacerte
+(largest-remainder per row, round-up to TAXPAYER) instead of the
+line-aggregate split; spec = R-GA500-RIE's exact clause (cached);
+verify on client 1792 via the lane. ② the EIN fuzzy-lookup feature +
+correction pass. ③ the 8332 flag. ④ QBI item leg 2 (Rev Proc 2014-41
+§5.03 in the iterative — verify against the Rev Proc itself). ⑤ the
+f8949 extractor unit (re-measure census first). ⑥ the §469(g) PTP
+release + Form 8990 1040-surface items (specs in BATCH-296). ⚠ Also
+staged by the states lane for ME: check_ga500_integrity.py's 4
+Schedule 3 scenario failures = the gate computes full-precision
+proration vs the D-36 printed-percentage convention (pre-existing,
+proved at HEAD; not in pytest so never covered) — fix the gate to D-36.*
+
 *⭐⭐⭐ s297d (Ken supervising live): **THE PII HISTORY REWRITE IS
 EXECUTED — both repos.** Private (delvio-tax): the 23 s292 PII literals
 purged from every text blob, 15 historical-only surnames scrubbed
