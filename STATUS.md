@@ -1,5 +1,35 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐⭐⭐ s297d (Ken supervising live): **THE PII HISTORY REWRITE IS
+EXECUTED — both repos.** Private (delvio-tax): the 23 s292 PII literals
+purged from every text blob, 15 historical-only surnames scrubbed
+(blobs), 13 surname tokens scrubbed from all commit messages; tip tree
+byte-identical, one emptied scrub commit pruned; **EVERY COMMIT SHA
+CHANGED — never resolve a pre-2026-08-26 delvio-tax SHA from memory;
+the old→new maps are `docs/history/rewrite-2026-08-26-commit-map.txt`
+(+ the tts-tax-status one beside it)**. Public (tts-tax-status): tip
+scrubbed (BUILD_ORDER 14 mentions, tracker, rule-studio session_log at
+its source) and history rewritten (21 distinctive surnames,
+case-insensitive) — zero residuals, tree-identical, force-pushed. The
+mirror guard now catches **Capitalized** surnames (how the mixed-case
+mentions evaded it) with the collision/IRS-published allowlists extended
+(Bailey = the NC Bailey-settlement line; Adams/Taylor/Finley = IRS
+worked examples) — and its first strengthened run caught + scrubbed two
+more live leaks (a tracker client, a rule-studio QA client).
+Pre-rewrite backup mirrors: `D:\tax-test-data\repo-backups\` (full old
+history, intentionally retained — destroying them later is Ken's
+separate call). Residuals recorded in REVIEW_QUEUE (two local-only
+branches; GitHub server-side unreachable objects; tier-3 = the ~40
+surnames in private code comments/tests DEFERRED to its own session).
+Deploys verified live: delvio-tax + rule-studio. Peer settlements same
+sitting: the SE clergy predicate VERIFIED sound (affirmative
+`is_minister` gating — the RS hole doesn't map to the app; two-minister
+mixed-4361 = documented v1 follow-up); the Lacerte lane's p504 check
+CONFIRMED (item B's non-conserving premise was a misread of the line-4
+$5,000 constant — both vendors conserve; the staged Ken question is now
+only granularity + tie direction); §469(g) PTP release = NEW batch item
+(no K-1 disposition flag exists); Form 8990 1040-lane = NEW batch item.*
+
 *⭐⭐ s297c (same day, entry-lane escalation): **the lane's ONLY repair
 path (merge=replace_documents) 500'd in production and is FIXED + LIVE**
 (`da12fc3`, deploy `dep-da7gv1tg1s2s73fqjdv0` — one cache-cleared build
