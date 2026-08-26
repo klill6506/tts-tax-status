@@ -1,202 +1,82 @@
 # TTS Tax App — STATUS (current state only)
 
-*⭐ s297e (Ken's focus day, continued): ① FOUR MORE RULINGS via question
-card, recorded verbatim in DECISIONS ("FOUR RULINGS s297e"): per-vendor
-GA RIE split (+ Ken to the states lane directly: "Write it into
-R-GA500-RIE" — seeded, RS `79dc8d5`; our 500 spec cache RE-PULLED with
-the vendor clause) · Form 8332 flag BUILD · SE rulebook pair (seeded by
-the states lane on his direct word) · EIN lookup = FUZZY auto-fill
-(guardrail: two different EINs both matching never resolves by score).
-② **THE QBI-REFLOW ITEM LEG 1 SHIPPED + LIVE** (`f0b8ec42`, deploy
-`dep-da7kqv942hec73ckf8lg`): the sehi_changed branch re-runs the whole
-AGI-dependent class (8995/Sch A/SS wks/13b/dep-std, NOL-branch order,
-one-shot); discriminating regression test; 526 flow + 146 targeted
-green; annex in BATCH-296; the lane re-runs client 2137 (expect the
-§5.03-shaped residual — LEG 2, the Rev Proc 2014-41 §5.03 verification,
-is deliberately NOT built yet). ③ KEN'S ORGANIZERS (214 printed):
-TP DOB 214/214, spouse 129, dependent DOBs 128/128 rows, K-1 EINs 95
-clients; 10 of the 41 blocked kid-packets unblock; the remaining ask =
-51 DEPENDENTS across 31 clients, list for Ken at `1040/Lacerte Inbox/
-DEPENDENT-DOB-ASK-2026-08-26.md` (birth YEAR suffices; 3 clients'
-2025-added dependents can NEVER come from a reprint); ⚠ NO W-2/1099-R
-payer EINs exist in the organizer FORMAT — the ruled fuzzy lookup
-against `employers_employer` (4,403 rows, all EINs) is the route.*
+*⭐ s298 (2026-08-26 evening): **BUILD-QUEUE ITEMS ① AND ② SHIPPED, LIVE,
+AND VERIFIED — three deploys.** ① **Per-vendor GA RIE split** (`a79f638a`,
+deploy `dep-da7m63cs728c73br7tog`): `TaxReturn.import_vendor` (mig 0364,
+db_default) set at back-entry commit — explicit `source.vendor` (closed
+enum) > the Lacerte pdf_filename regex (`^(Partial Return for|Organizer
+Forms-)`, the lane's 743/743 census) > blank; ⚠ the pinned
+"from source.entry_method" design was REFUTED by the lane's census
+('transcribed-from-pdf' on BOTH vendors — never re-derive it). Bucket
+builder: lacerte splits each joint SOURCE ROW (largest-remainder, odd
+dollar to TAXPAYER) via `split_conserving(tie_to=...)`; default keeps the
+#78 line-aggregate fold. Backfill marked the committed Lacerte returns.
+**Verified BOTH legs, two witnesses each**: client 2143 rolled-back probe
+(joint interest 2,764→2,765 TP) + the lane's 1792 isolating dry-run
+(NO_TIE −1/+1 → clean TIE; honest payload's residual now symmetric
+97/96 = exactly the open §469(g) 193). 1792's ±1 GA exception RETIRED.
+② **EIN backwards lookup** (`6c35e83f` + guard `a346139f`, deploys
+`dep-da7mhcflk1mc7388bs80` / `dep-da7mlv9srm7s73bbregg`): shared matcher
+(exact + ≥0.90 fuzzy; two-EINs-above-threshold refusal), commit-time fill
+for W-2/1099-R (opt-out `ein_autofill:false`), `ein_source='employer_db'`
+provenance (mig 0365) + D_EIN_DB_FILL review warning + serializer
+clear-on-manual-edit, `fill_missing_eins` correction command (NOT a
+seed_*). ⭐⭐ TWO GUARDRAILS grew inside the ruling's ambiguity clause:
+(a) truncation-suspect names (Lacerte cuts at ~35 chars mid-word; ≥33 raw
+or dangling single-letter token) fill on EXACT only — lane corpus intel;
+(b) the SUBSTITUTION guard — the first dry run proposed "TEACHERS
+RETIREMENT SYSTEM OF **GA**" ← the DB's "...OF **LA**" at 0.97 (sole
+in-DB candidate, guardrail-blind): same-entity variants are
+insert/delete-only, a character substitution = a different entity; any
+'replace' opcode disqualifies. Guard deployed BEFORE the pass wrote.
+**Correction pass RUN on prod**: 7 fills / 944 imported returns; 21
+named-but-blank rows stay blank (truncation, as the lane predicted — the
+D_EFILE_001 backlog does NOT clear on names alone). Gates all green
+(20+20 new tests · 526 flow · 190 backentry+vendor · 46 W-2/ret serializer
+· 77 RIE). Published schema regenerated TWICE (source.vendor enum +
+ein_autofill); lane re-pulls before staging L021.*
 
-*▶ NEXT (build queue, in order): ① **per-vendor GA RIE split** — design
-pinned: (i) new `TaxReturn` import-vendor marker (set at commit from
-source.entry_method; db_default per the s190 lesson; SCHEMA REGEN
-required; coordinate the Lacerte lane's entry_method string + a
-backfill for already-committed Lacerte returns), (ii) the RIE bucket
-builder splits each JOINT row at accumulation time for lacerte
-(largest-remainder per row, round-up to TAXPAYER) instead of the
-line-aggregate split; spec = R-GA500-RIE's exact clause (cached);
-verify on client 1792 via the lane. ② the EIN fuzzy-lookup feature +
-correction pass. ③ the 8332 flag. ④ QBI item leg 2 (Rev Proc 2014-41
-§5.03 in the iterative — verify against the Rev Proc itself). ⑤ the
-f8949 extractor unit (re-measure census first). ⑥ the §469(g) PTP
-release + Form 8990 1040-surface items (specs in BATCH-296). ⚠ Also
-staged by the states lane for ME: check_ga500_integrity.py's 4
-Schedule 3 scenario failures = the gate computes full-precision
-proration vs the D-36 printed-percentage convention (pre-existing,
-proved at HEAD; not in pytest so never covered) — fix the gate to D-36.*
+*▶ NEXT (build queue, in order): ③ **the Form 8332 released-dependent
+flag** (Ken s297e ruling 2 "Build it": per-dependent release — CTC/ODC
+excluded on the releasing return, EIC/HOH retained per §152(e),
+diagnostics demand the form; RS fact `dep_released_by_form_8332` is the
+spec hook). ④ QBI item leg 2 (Rev Proc 2014-41 §5.03 in the iterative —
+verify against the Rev Proc itself; the entry lane's 2137 re-run already
+confirmed the residual is exactly §5.03-shaped). ⑤ the f8949 extractor
+unit (re-measure the census first — s295/6/7: solo counts are upper
+bounds). ⑥ §469(g) PTP release + Form 8990 1040-surface (specs in
+BATCH-296; §469(g) now the ONLY thing holding 1792). ⛔ NEW for Ken
+(REVIEW_QUEUE s298): the truncated-name PREFIX-MATCH tier + the lane's
+organizer-name enrichment (coverage vs wrong-fill risk — the lane's ~21
+held rows are the price of exact-only).*
 
-*⭐⭐⭐ s297d (Ken supervising live): **THE PII HISTORY REWRITE IS
-EXECUTED — both repos.** Private (delvio-tax): the 23 s292 PII literals
-purged from every text blob, 15 historical-only surnames scrubbed
-(blobs), 13 surname tokens scrubbed from all commit messages; tip tree
-byte-identical, one emptied scrub commit pruned; **EVERY COMMIT SHA
-CHANGED — never resolve a pre-2026-08-26 delvio-tax SHA from memory;
-the old→new maps are `docs/history/rewrite-2026-08-26-commit-map.txt`
-(+ the tts-tax-status one beside it)**. Public (tts-tax-status): tip
-scrubbed (BUILD_ORDER 14 mentions, tracker, rule-studio session_log at
-its source) and history rewritten (21 distinctive surnames,
-case-insensitive) — zero residuals, tree-identical, force-pushed. The
-mirror guard now catches **Capitalized** surnames (how the mixed-case
-mentions evaded it) with the collision/IRS-published allowlists extended
-(Bailey = the NC Bailey-settlement line; Adams/Taylor/Finley = IRS
-worked examples) — and its first strengthened run caught + scrubbed two
-more live leaks (a tracker client, a rule-studio QA client).
-Pre-rewrite backup mirrors: `D:\tax-test-data\repo-backups\` (full old
-history, intentionally retained — destroying them later is Ken's
-separate call). Residuals recorded in REVIEW_QUEUE (two local-only
-branches; GitHub server-side unreachable objects; tier-3 = the ~40
-surnames in private code comments/tests DEFERRED to its own session).
-Deploys verified live: delvio-tax + rule-studio. Peer settlements same
-sitting: the SE clergy predicate VERIFIED sound (affirmative
-`is_minister` gating — the RS hole doesn't map to the app; two-minister
-mixed-4361 = documented v1 follow-up); the Lacerte lane's p504 check
-CONFIRMED (item B's non-conserving premise was a misread of the line-4
-$5,000 constant — both vendors conserve; the staged Ken question is now
-only granularity + tie direction); §469(g) PTP release = NEW batch item
-(no K-1 disposition flag exists); Form 8990 1040-lane = NEW batch item.*
+*Peer state (s298 session): the STATES lane fixed check_ga500_integrity
+themselves (RS `10f1146` — D-36 quantize, all 21 GA500 scenarios pass,
+gate now pinned in pytest; DEQUEUED from our list). ⚠⚠ Their sweep of all
+47 `check_*_integrity.py` gates: **35 pass, 12 FAIL** (`1040x`, `1065_se`,
+`4562_recon`, `6252`, `k1_basis_704d`, `schedule_a`, `schedule_e_8582`,
+`schedule_f`, `simplified_method`, `spine`, `topic8`, `topic9`) — NONE
+were in pytest; staged for Ken as their S-10 with the re-diagnose-first
+caution; take them a few at a time, each fix adding its gate to their
+`tests/test_integrity_gates.py`. The ENTRY lane: L021+ will stage
+`source.vendor`; ⚠ their annexed finding — a COMMITTED return cannot be
+re-verified by plain stage+dryrun (HTTP 409, needs merge=replace) — the
+in-place rolled-back recompute is the verification route for the 18
+committed Lacerte returns. 2143's stored face still carries pre-clause
+figures (refresh = deliberate lane/Ken act, never housekeeping).*
 
-*⭐⭐ s297c (same day, entry-lane escalation): **the lane's ONLY repair
-path (merge=replace_documents) 500'd in production and is FIXED + LIVE**
-(`da12fc3`, deploy `dep-da7gv1tg1s2s73fqjdv0` — one cache-cleared build
-retry for a corrupted Render venv cache, s284 remedy). Root cause from
-the server log at the lane's correlation id: an explicit JSON null on an
-optional ROW field (their L015 date_sold "Various"→null correction,
-adopting the 8949 convention) passed staging CLEAN and then INSERTed
-NULL into a NOT-NULL-blank-via-"" CharField — `_cleaned_value`'s
-docstring FALSELY claimed staging gated where null is allowed, and the
-same class hit interest payer_name on 08-20 (prod log). Fix:
-`_row_fields()` — on all 14 row-create sites an explicit null now means
-what omitting the key means; the taxpayer scalar path deliberately
-untouched (null-keeps-the-derive). Regression = the L015 shape; 78
-backentry-commit tests green. ⚠ Also settled from IRS8949.xsd (v5.4 =
-v6.3): 8949 column (c) permits ONLY BANKRUPT/WORTHLESS codes or blank —
-"VARIOUS" is acquired-side only; the composer's asymmetry is the IRS's
-own. Lane adopting blank-date_sold for summary rows; a printed
-BANKRUPT/WORTHLESS would be a named CC item (composer gap, observed not
-built). Entry lane's D_EFILE_001-family finding: W-2 EIN + 1099-R EIN +
-8949 date-sold — "no W-2/1099-R" is necessary-but-not-sufficient for
-Done; their first Lacerte packet reached Done today.*
-
-*⭐ s297b (same day, Ken live in-session): FOUR rulings landed via the
-question card — ① the int/div valve APPROVED with Ken's own label
-("INTEREST"/"DIVIDENDS", not the recommended wording) and BUILT SAME
-SESSION (`b284936`, deploy `dep-da7ghbtbedkc73b495b0` LIVE): payer-less
-face 2a/2b/3b amounts emit as consolidated rows; its tie probe then
-found TWO more missing-page gates, both built — the no-Schedule-A
-itemized-12e gate (face vs the derivable standard deduction, constants
-per compute_1040.SPINE R-STD-01/03) and the GA S1-10 US-obligation
-derivation (RIE worksheet row deltas → treasury/us-gov row tags + a
-keyed ga500_fields S1-10, which is what ARMS the engine's netting cut;
-before the fix S1-13 tied by COINCIDENCE while both components were
-wrong). **r14 census: 18 emitted / 249 refused; ALL 18 tie-verified
-rolled-back.** ② R-5329-11 approved → states lane seeded (RS
-`c04b86f`) → our spec cache RE-PULLED (39 facts, waiver clause
-verified). ③ the PII history rewrite APPROVED — execution waits for a
-supervised sitting with Ken (REVIEW_QUEUE: SCHEDULED). ④ Ken supplies
-the dependent birth years (correction: they're the ENTRY lane's Lacerte
-packets, not TaxWise) + confirmed "shell" question answered. The auth
-mint was ALSO done at Ken's direction (s112 recipe, dev account, token
-via file handoff — never the channel); entry lane unblocked.*
-
-*Last updated: 2026-08-26 (s297 — extractor session 4, unit ① + the tie
-probe's finding built same-session. ① **Schedule 1 face parser +
-line-8/10 component routing** (`401ec6e`): both pages parse positionally
-(⚠ TaxWise RE-TYPESETS Schedule 1 — packet marker geometry, never the
-blank template's); feeds line 1 → the #30 `sr_filed_taxable_refund`
-valve, 11/20/21 + 19a/19b/19c + 24z/24z_type → `sch1_fields`, 8h/8v/8z →
-`other_income_items`; 8b = consistency vs extracted W-2Gs; every other
-component refuses by letter/name. ② **the p2 TAX-BLOCK face gates** —
-the r10 tie probe caught one packet tying AGI/TI but no_tie +263: the
-filed face took a $263 Schedule 3 credit (line 20, de-minimis-FTC
-shape) and TaxWise printed NO Schedule 3 page. Same class as another
-packet's missing sch1_p2 behind a filed line 10. The face is the
-guard (s293 principle): p2 now captures 17-21/23/25c/26/27a-31/32 with
-refusal-grade identities; nonzero 17/20/23/25c/26/29/30/31 refuse by
-name; 19/27a/28 stay engine-derived (an existing emit's CTC ties). **r11
-census: 11 emitted / 256 refused** (was 9/258); emitted-set tie 11/11
-(rolled back — payloads byte-identical to the probed set). 107 extractor
-tests green. No vocabulary change → published schema deliberately
-untouched.*
-
-*⚠⚠ s297 measured re-rank (post-build census, the only current one):
-**f8995 touches 128 packets (4 solo — the no-business REIT-dividend QBI
-shape)** > sch_e 71 > sch_c 60 = asset_detail 60 > **f8949 59 touched, 9
-SOLO — the top measured solo builder** > k1_detail 44 > f8889 30 > 7203
-29. The s296 "13b deduction 9-solo" collapsed to 1 solo (upper-bound
-lesson, third time). int/div face classes: 2b 14 touched/4 solo, 3b 9/3
-— still Ken-gated (REVIEW_QUEUE s295, narrowed). The s297 finder packets
-are identified by name in the r10/r11 run logs under PipelineOut (PII
-stays there, never here).*
-
-*▶ NEXT — extractor session 5 (re-measure the census FIRST — the valve
-+ gates moved it): ① **f8949 summary rows → `capital_transactions`**
-(9 solo at r11, top measured class; pairs with sch_d). ⚠ Summary-row
-convention settled s297b/c from IRS8949.xsd (2025v5.4 = v6.3) + the
-entry lane's proven recipe: column (b) may carry
-VARIOUS/INHERITED/INH-2010; column (c) permits ONLY BANKRUPT/WORTHLESS
-or blank. An aggregated broker row emits {date_acquired: "VARIOUS",
-date_sold: blank/null, **is_summary: true** (else D_8949_005 ERROR
-demands both dates), statement_attached ONLY if the packet prints the
-broker statement — D_8949_004 info is the designed honest prompt, never
-a gate to clear}. ⚠ The extractor must NOT predict e-file eligibility
-(the lane was wrong about D_EFILE_001 three times in one day) — the
-cleanup run is the oracle; extraction refuses on fidelity grounds only.
-② the f8995 4-solo REIT shape (likely cheap: 199A REIT dividends ride a
-documented aggregate — verify vocabulary before building; marking the
-page ignore-when-derivable needs the QBI decomposition guard). ③ probe
-whether `ctc_ext_carryover_wks` (11 touched) is derivable → role ignore.
-⛔ Ken: the narrowed int/div payer-less classes. THEN the 50-of-John's
-pilot (11 tie-verified emits already banked, batches r11-001/002 in
-PipelineOut). Then defects by cost: item-59 −487 residual + S1-13
-double-landing (hold b926) · item 84 (§469(i)) · #60 · #43-medium · #70
-· #16.*
-
-*Entry lane (peer, confirmed in-session s297): still BLOCKED on Ken's
-auth mint; THREE payloads queued — L012 (re-keyed subject_to_se), L013
-(5329 waiver; schema re-pull ALREADY done, row passes validation), L014
-(first itemizer + 2210). ⚠ Their line-37 open question was SETTLED
-s297: R-REF-03 (compute.py "37") already includes the line-38 penalty
-per the 2025 i1040 verbatim — Lacerte's printed 1,863 will tie; their
-annex updated to CLOSED with citation. Item B (joint-interest $1) is
-CLOSED BY RULING (tie_with_exception), not by code. Two of their packets
-sit with Ken (one has no seeded shell; one needs a dependent birth year
-that 41 packets share) — named in their BATCH-296 annex, not here.*
-
-*States lane (peer, confirmed in-session s297): R-5329-11 **verified
-against all three authorities** (their durable doc: delvio-states
-`research/f5329_part9_waiver_verification.md`, commit `613264c`) —
-staged for Ken, NOT authored (Gate-1 is his). ⚠ Their finding: i5329
-p.10's line-54a sentence is STALE (describes a shortfall; the face
-computes tax) — the shipped s296 app matches the face+XSD, no app
-change. R-SE-L2 verification not started; the 1065_SE consistency check
-queued behind it.*
-
-*⛔ KEN remaining: **the s295 int/div ruling (narrowed)** · the auth mint
-(blocks the entry lane) · the entry lane's shell + birth-year packets
-(their annex) · #21,
-#48 (RS 404), #56, #63, #69, #10 — the tail tier. Carried: entity
-second-state-face transport (#3); `OVERRIDE_HONORED_STATE_LINES`;
-146-packet re-export; NC/CA/SC linked-state reopens; #6 1065X/AAR; #68
-optimizer; s274 PII narrowings; RS 8990 re-authoring gate; 6765 Sec G;
-client-4545 D_8606_BASIS_ONLY; 1065 BATCH-004 #4 (Codex Box-2);
-Analysis line-2 active/passive proxy; the unfloored 8960 line5 §1211(b)
-question; the s292 PII-history scrub question; dep_released_by_form_8332
-build (REVIEW_QUEUE).*
+*⛔ KEN remaining: **the s298 REVIEW_QUEUE additions above** · the s295
+int/div ruling (narrowed) · the entry lane's shell + birth-year packets ·
+the 51-dependent DOB ask (`1040/Lacerte Inbox/DEPENDENT-DOB-ASK-
+2026-08-26.md`) · #21, #48 (RS 404), #56, #63, #69, #10 — the tail tier.
+Carried: entity second-state-face transport (#3);
+`OVERRIDE_HONORED_STATE_LINES`; 146-packet re-export; NC/CA/SC
+linked-state reopens; #6 1065X/AAR; #68 optimizer; s274 PII narrowings;
+RS 8990 re-authoring gate; 6765 Sec G; client-4545 D_8606_BASIS_ONLY;
+1065 BATCH-004 #4; Analysis line-2 active/passive proxy; the unfloored
+8960 line5 §1211(b) question; tier-3 PII scrub (private code comments)
+deferred to its own session; dep_released_by_form_8332 is now queue item
+③, not just a REVIEW_QUEUE row.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -204,10 +84,6 @@ build (REVIEW_QUEUE).*
   `REVIEW_QUEUE.md`; per-form → `form_coverage_tracker.md`; learnings → `MEMORY.md` / `.claude` auto-memory.
 - **Boot planners live in `tts-tax-status`**: `BUILD_ORDER.md` / `SEASON_PLAN.md` / `PRODUCT_MAP.md`.
 - **PII rule**: this file mirrors PUBLIC — no client names, no packet codenames, no SSNs/EFINs.
-  (The 2026-08-24 refinement covers COMMIT MESSAGES only — and even there BUSINESS names
-  only; personal surnames are not permitted. ⚠ s296's and s297's pushed commit messages
-  and two parser docstrings carry packet surnames — recorded in REVIEW_QUEUE with the
-  s292 history-scrub question.)
 
 ---
 
@@ -220,14 +96,15 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- s297 deploy: `401ec6e` → `dep-da7fq86gekts73c3uc60` **LIVE,
-  API-confirmed 2026-08-26** (extractor scripts + tests only; no server
-  code, no migration, no seeder; the same-day scrub commit follows it).
+- s298 deploys (all API-confirmed LIVE 2026-08-26): `a79f638a` →
+  `dep-da7m63cs728c73br7tog` (RIE vendor split, mig 0364 + backfill) ·
+  `6c35e83f` → `dep-da7mhcflk1mc7388bs80` (EIN unit, mig 0365,
+  D_EIN_DB_FILL seeded) · `a346139f` → `dep-da7mlv9srm7s73bbregg`
+  (substitution guard).
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
-  are LOCAL generators the deploy NEVER runs** — any session that touches
-  lane vocabulary, allowlists, or a state seeder MUST regenerate the
-  published schema as a close-out step. (s297 touched NONE — schema
-  unchanged by design.)
+  are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
+  state-seeder change MUST regenerate the published schema at close.
+  (s298 regenerated twice; current as of `a346139f`.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -238,18 +115,21 @@ to find defects. State the finding and move on.
 SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
 load-bearing goes in batch-file annexes too. **Never relay tokens through
 the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
-holder — coordinate EXPLICITLY before every run. s297 coordinated at boot:
-both peers confirmed tree + test_postgres mine; the entry lane's queue
-state + the line-37 settlement recorded in their annex. Peers stage; Ken
-decides.
+holder — coordinate EXPLICITLY before every run. s298 coordinated at boot:
+both peers confirmed tree + test_postgres mine; all load-bearing exchanges
+(entry_method refutation, truncation intel, 1792 verification, 409
+finding) are annexed in BATCH-296. Peers stage; Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s297)
+## ⚠ Known red / rotted — THE ONE LIST (post-s298)
+- ⚠⚠ **12 of 47 RS `check_*_integrity.py` gates FAIL** (states lane sweep
+  2026-08-26; list above) — none in pytest until their `10f1146` started
+  the pin; staged for Ken (their S-10). Re-diagnose before inheriting.
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s296; s297 touched no client code).
+- **Client typecheck**: green (s296; s297/s298 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -258,18 +138,25 @@ decides.
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
   `server\`. ⚠ `poetry run python -c "<multi-line>"` binds wrong —
-  script FILES, not inline `-c`. ⚠ `python -m taxwise1040` does NOT
+  script FILES, not inline `-c`; a script run by absolute path needs
+  `sys.path.insert(0, server)` (s298). ⚠ `python -m taxwise1040` does NOT
   resolve from `server\` — run the package's `__main__.py` BY PATH (s297).
+- 🔧 ⚠ **`BaseModelSerializer` partial updates save ONLY the patched
+  columns** (s298) — a serializer-side derived write must be injected into
+  `validated_data`, never `setattr` on the instance (it silently no-ops).
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8. ⚠ Embedded double-quote in a here-string
   arg to a NATIVE exe SPLITS the argument. ⚠ `$1` in an unquoted PS arg
   EXPANDS to empty. ⚠ PS `Sort-Object -Unique` on a one-element pipeline
   UNWRAPS to scalar (s296). ⚠ This machine's Git Bash lacks `cat` on PATH
-  (s297) — heredoc-append via `cat >>` silently no-ops; use the Edit tool.
+  (s297) — but `python - <<EOF` heredocs work; use them for file appends.
 - 🌐 ⚠⚠ `Measure-Object -Line` skips blank lines — `ReadAllLines().Count`.
 - 🌐 ⚠⚠ A bare HTTP 400 (no `error` body) = the body never parsed.
 - 🌐 Staging answers 201 even for an invalid payload — the verdict is
-  `row["status"]`; return CRUD routes carry the trailing slash.
+  `row["status"]`; return CRUD routes carry the trailing slash. ⚠ A
+  COMMITTED return refuses plain stage+dryrun with HTTP 409 (s298 —
+  dry-run is a full commit in a rollback; verification route = the
+  in-place rolled-back recompute, s289 pattern).
 - 🔧 ⚠ pytest-randomly NOT installed (s281).
 - 🌐 ⚠ pymupdf: `get_text()` misses AcroForm widget VALUES (s283); word
   bboxes span the FULL line height (s286); synthetic `insert_text` PDFs may
@@ -280,46 +167,41 @@ decides.
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase, not the text**
   (s288). Download the PDF and extract the section. Local templates beat both.
 - 🔧 ⭐ **An instrumented ROLLED-BACK dry-run reproduces production behavior
-  locally** (s289; s292-s297 ran whole tie probes this way). ⚠ Scripts
-  touching client-named returns live in SCRATCHPAD or tax-test-data, never
-  the repo (PII). ⚠ `Firm.objects.first()` is the DEV firm — probe with
+  locally** (s289; s292-s298 ran probes this way). ⚠ Scripts touching
+  client-named returns live in SCRATCHPAD or tax-test-data, never the repo
+  (PII). ⚠ `Firm.objects.first()` is the DEV firm — probe with
   `Firm.objects.get(name="The Tax Shelter")`. ⚠ Pooler statement timeouts
   kill the connection — ping + retry loop.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295/s296/s297
-  — THREE consecutive sessions): depth-probe AND check uncovered pages
-  before building a unit; a page can be MISSING behind a filed face line
-  (a missing sch1_p2, a missing Schedule 3) — the FACE is the guard, and the
-  emitted-set tie probe is what finds the silent-no_tie class.
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295/s296/s297).
+  The FACE is the guard; the emitted-set tie probe finds silent-no_tie.
+- 🔧 ⭐ **DRY-RUN THE CORRECTION PASS AND READ EVERY ROW before --commit**
+  (s298): the first EIN dry run proposed a wrong-entity fill (GA←LA, 0.97)
+  that no automated guardrail could see; reading 8 lines caught it.
 
 ## 🔎 Carried for triage — NOT claims
-- (s297) The X mark printed at (474.7, y≈389) in the 1040 p2 EIC row
-  region on a no-EIC packet — some line-27 checkbox; unidentified,
-  currently ignored by the parser; identify when an EIC face divergence
-  ever appears.
-- (s297) `est_payments_wks` (27 touched) and `f8863` (6) now ALSO gate at
-  the face (26/29) — when their page-parsers are built, the face gates
-  become consistency checks like 8b.
-- (s296) The 22 sch_d GEOMETRY-error packets from the calibration sweep
-  refuse loudly by design — diagnose when one is otherwise free.
+- (s298) 21 named-but-blank W-2/1099-R rows on imported returns have no
+  unambiguous EIN match (mostly Lacerte truncations) — held on
+  D_EFILE_001 by design; movement waits on Ken's prefix-tier /
+  organizer-enrichment call (REVIEW_QUEUE).
+- (s297) The X mark at (474.7, y≈389) in the 1040 p2 EIC row region —
+  unidentified, parser-ignored; identify on an EIC face divergence.
+- (s297) `est_payments_wks` (27) and `f8863` (6) gate at the face (26/29)
+  — when their page-parsers land, the face gates become consistency checks.
+- (s296) The 22 sch_d GEOMETRY-error packets refuse loudly by design.
 - (s295) The Inbox holds 7 auxiliary PDFs that refuse as "not a TaxWise
-  1040 packet" — correct; consider a sub-folder so the census denominator
-  is returns-only.
-- (s295) `_summary_lines` GA500_SUMMARY_LINES lacks S1-6 — GA Sch 1
-  additions tie only indirectly.
-- (s290) The GA RIE interest row does NOT include K-1 16A tax-exempt
-  interest — stated boundary. · The rendered 8995 TIN prints UNFORMATTED
-  digits — cosmetic.
-- (s289) `IndividualForm7203` has no §179/charitable carryover keying
-  fields — D_K1_7203_DEDUCTION_LIMITED warns. · The 7203/K-1 §179 cap does
-  NOT extend to 1065 partners.
-- (s288) `IndividualForm7203` still has no home for box 16 code E;
-  1065 box 18 a/b/c have none on the recipient side.
-- (s288) `ctc_override` / `odc_override` + `Dependent.compute_qualifies_*`
-  are DEAD — removal candidate (Ken's call).
-- (s287) The 8825 line-1 repaint covers the LINE-1 table only. ·
-  The suggested-field convention covers W-2 3/5 + 1099-R box 16 —
-  CLAUDE.md's W-2-only note is stale.
+  1040 packet" — correct; a sub-folder would clean the census denominator.
+- (s295) `_summary_lines` GA500_SUMMARY_LINES lacks S1-6.
+- (s290) The GA RIE interest row excludes K-1 16A tax-exempt interest —
+  stated boundary. · The rendered 8995 TIN prints unformatted — cosmetic.
+- (s289) `IndividualForm7203`: no §179/charitable carryover keying
+  (D_K1_7203_DEDUCTION_LIMITED warns); the §179 cap doesn't extend to 1065.
+- (s288) `IndividualForm7203` has no home for box 16 code E; 1065 box 18
+  a/b/c none recipient-side. · `ctc_override`/`odc_override` +
+  `Dependent.compute_qualifies_*` are DEAD — removal candidate (Ken).
+- (s287) The 8825 line-1 repaint covers the LINE-1 table only. · The
+  suggested-field convention covers W-2 3/5 + 1099-R box 16 — CLAUDE.md's
+  W-2-only note is stale.
 - (s285) Sch 4 nonresident arm still apportions the whole widened base.
 - (s283) The stamp excludes 1040 packets (name+SSN privacy — Ken).
 - (s282) `OVERRIDE_HONORED_STATE_LINES` hand-synced.
@@ -330,9 +212,11 @@ decides.
   half CLOSED.
 - (s275/s281) `.first()`-on-per-form-rules sweep remainder.
 - (s289) K-1 capital gains reach Schedule D but not the L9 gain/loss
-  WEIGHTS — pre-existing, noted.
-- (s294) A state face left in place by an omitting correction batch is
-  NOT recomputed against that batch's federal changes — visible via the
+  WEIGHTS — pre-existing. ⚠ NOTE s298: the L9 path also keeps the #78
+  aggregate convention under BOTH vendors (stated boundary in the vendor
+  annex) — a Lacerte column-level L9 divergence is a NEW item.
+- (s294) A state face left by an omitting correction batch is NOT
+  recomputed against that batch's federal changes — visible via the
   live-face reconciliation + the named warning.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
@@ -340,14 +224,13 @@ decides.
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
 ## RS AGENDA — carried:
-Everything from s277–s296 stands (R-K1-20N; R-GA700-PARTNERS; AL_FORM_40NR
+Everything from s277–s297 stands (R-K1-20N; R-GA700-PARTNERS; AL_FORM_40NR
 amendments; R-AL-TAX; R-B1/B2-AUTO; the 4562 line-17 reversal;
 R-8880-LINE1-COMPOSE; FORM_7203 Part I line-3 sub-map; R-K1-179-BASIS;
-R-GA500-RIE loss-allocation clause; SCHEDULE_K1 box 16 A/B routing;
-R-8995-QBI line-1 population widening; FORM_8960 R-8960-INCOME 5b
-description; the unfloored line5 §1211(b) question; the 1040X
-derived-input amendment + queued `x_is_superseding_derived` app
-follow-up; R-SE-L2 clergy + SE-subject-other-income addends — with the
-states lane, verification NOT started; **R-5329-11 waiver clause —
-VERIFIED by the states lane s297 (their research doc is the citable
-record), staged for Ken**).
+SCHEDULE_K1 box 16 A/B routing; R-8995-QBI line-1 population widening;
+FORM_8960 R-8960-INCOME 5b description; the unfloored line5 §1211(b)
+question; the 1040X derived-input amendment + queued
+`x_is_superseding_derived` app follow-up; R-SE-L2 clergy +
+SE-subject-other-income addends — verification NOT started; R-5329-11
+staged for Ken with the states lane's research doc). ✅ R-GA500-RIE's
+vendor clause is now IMPLEMENTED (s298) — spec and engine tell one story.
