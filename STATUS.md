@@ -1,54 +1,39 @@
 # TTS Tax App — STATUS (current state only)
 
-*⭐ s298 (2026-08-26 evening): **BUILD-QUEUE ITEMS ① AND ② SHIPPED, LIVE,
-AND VERIFIED — three deploys.** ① **Per-vendor GA RIE split** (`a79f638a`,
-deploy `dep-da7m63cs728c73br7tog`): `TaxReturn.import_vendor` (mig 0364,
-db_default) set at back-entry commit — explicit `source.vendor` (closed
-enum) > the Lacerte pdf_filename regex (`^(Partial Return for|Organizer
-Forms-)`, the lane's 743/743 census) > blank; ⚠ the pinned
-"from source.entry_method" design was REFUTED by the lane's census
-('transcribed-from-pdf' on BOTH vendors — never re-derive it). Bucket
-builder: lacerte splits each joint SOURCE ROW (largest-remainder, odd
-dollar to TAXPAYER) via `split_conserving(tie_to=...)`; default keeps the
-#78 line-aggregate fold. Backfill marked the committed Lacerte returns.
-**Verified BOTH legs, two witnesses each**: client 2143 rolled-back probe
-(joint interest 2,764→2,765 TP) + the lane's 1792 isolating dry-run
-(NO_TIE −1/+1 → clean TIE; honest payload's residual now symmetric
-97/96 = exactly the open §469(g) 193). 1792's ±1 GA exception RETIRED.
-② **EIN backwards lookup** (`6c35e83f` + guard `a346139f`, deploys
-`dep-da7mhcflk1mc7388bs80` / `dep-da7mlv9srm7s73bbregg`): shared matcher
-(exact + ≥0.90 fuzzy; two-EINs-above-threshold refusal), commit-time fill
-for W-2/1099-R (opt-out `ein_autofill:false`), `ein_source='employer_db'`
-provenance (mig 0365) + D_EIN_DB_FILL review warning + serializer
-clear-on-manual-edit, `fill_missing_eins` correction command (NOT a
-seed_*). ⭐⭐ TWO GUARDRAILS grew inside the ruling's ambiguity clause:
-(a) truncation-suspect names (Lacerte cuts at ~35 chars mid-word; ≥33 raw
-or dangling single-letter token) fill on EXACT only — lane corpus intel;
-(b) the SUBSTITUTION guard — the first dry run proposed "TEACHERS
-RETIREMENT SYSTEM OF **GA**" ← the DB's "...OF **LA**" at 0.97 (sole
-in-DB candidate, guardrail-blind): same-entity variants are
-insert/delete-only, a character substitution = a different entity; any
-'replace' opcode disqualifies. Guard deployed BEFORE the pass wrote.
-**Correction pass RUN on prod**: 7 fills / 944 imported returns; 21
-named-but-blank rows stay blank (truncation, as the lane predicted — the
-D_EFILE_001 backlog does NOT clear on names alone). Gates all green
-(20+20 new tests · 526 flow · 190 backentry+vendor · 46 W-2/ret serializer
-· 77 RIE). Published schema regenerated TWICE (source.vendor enum +
-ein_autofill); lane re-pulls before staging L021.*
+*⭐ s299 (2026-08-26 night): **BUILD-QUEUE ITEM ③ SHIPPED — the Form 8332
+released-dependent flag** (`5d1d683e`, deploy `dep-da7nhgajobas739gb800`;
+Ken s297e ruling 2 "Build it"). `Dependent.released_by_form_8332` (spine
+fact `dep_released_by_form_8332`, mig 0366, db_default) — one keyed FACT,
+the SIDE read from `claimed_as_dependent`: **released + claimed = the
+noncustodial CLAIMING return** (CTC residency term satisfied per §152(e)
+in `classify_dependent_ctc` + the credit_gates mirror; EIC/HOH/§21 barred
+— D_EIC_QC_CONFLICT `form_8332_release` key, D_1040_022, D_2441_008;
+D_1040_019 demands the signed form; **e-file extract REFUSES by name** —
+no PDF-attachment input surface, paper-with-copy is the route);
+**released + NOT claimed = the custodial RELEASING return** (s281
+non-claimed machinery — no CTC/ODC, EIC/HOH/§21 retained; D_1040_020
+errors the months>6+claimed contradiction, D_1040_021 warns the inert
+row). Prints: 1040 grid (5)(a) + 8862 line 14 answer Yes via the
+divorced-parents exception (i8862 Rev. 12-2025 verbatim). Authority
+verified verbatim (i1040 2025 "Children of divorced or separated
+parents", Form 8332 Rev. 12-2025, §152(e)/§32(c)(3)/§2(b)/§21(e)(5) —
+LII not needed, the instructions state all four consequences). Backentry
+key allowlisted; published schema REGENERATED; both dependents screens
+gain an "8332" checkbox (fact, never a credit election). Gates: 22 new
+tests (both directions per rule) · flow assertions · 766 across
+credit_gates/EIC-QC/spine/2441/8862 · 258 backentry+MeF · 18 header
+render · typecheck clean · vitest 91. Annexed in BATCH-296; the entry
+lane re-pulls the schema before its next staging.*
 
-*▶ NEXT (build queue, in order): ③ **the Form 8332 released-dependent
-flag** (Ken s297e ruling 2 "Build it": per-dependent release — CTC/ODC
-excluded on the releasing return, EIC/HOH retained per §152(e),
-diagnostics demand the form; RS fact `dep_released_by_form_8332` is the
-spec hook). ④ QBI item leg 2 (Rev Proc 2014-41 §5.03 in the iterative —
-verify against the Rev Proc itself; the entry lane's 2137 re-run already
-confirmed the residual is exactly §5.03-shaped). ⑤ the f8949 extractor
-unit (re-measure the census first — s295/6/7: solo counts are upper
-bounds). ⑥ §469(g) PTP release + Form 8990 1040-surface (specs in
-BATCH-296; §469(g) now the ONLY thing holding 1792). ⛔ NEW for Ken
-(REVIEW_QUEUE s298): the truncated-name PREFIX-MATCH tier + the lane's
-organizer-name enrichment (coverage vs wrong-fill risk — the lane's ~21
-held rows are the price of exact-only).*
+*▶ NEXT (build queue, in order): ④ QBI item leg 2 (Rev Proc 2014-41 §5.03
+in the iterative — verify against the Rev Proc itself; the entry lane's
+2137 re-run already confirmed the residual is exactly §5.03-shaped).
+⑤ the f8949 extractor unit (re-measure the census first — s295/6/7: solo
+counts are upper bounds). ⑥ §469(g) PTP release + Form 8990 1040-surface
+(specs in BATCH-296; §469(g) now the ONLY thing holding 1792). ⛔ Carried
+for Ken (REVIEW_QUEUE s298): the truncated-name PREFIX-MATCH tier + the
+lane's organizer-name enrichment (coverage vs wrong-fill risk — the
+lane's ~21 held rows are the price of exact-only).*
 
 *Peer state (s298 session): the STATES lane fixed check_ga500_integrity
 themselves (RS `10f1146` — D-36 quantize, all 21 GA500 scenarios pass,
@@ -75,8 +60,8 @@ linked-state reopens; #6 1065X/AAR; #68 optimizer; s274 PII narrowings;
 RS 8990 re-authoring gate; 6765 Sec G; client-4545 D_8606_BASIS_ONLY;
 1065 BATCH-004 #4; Analysis line-2 active/passive proxy; the unfloored
 8960 line5 §1211(b) question; tier-3 PII scrub (private code comments)
-deferred to its own session; dep_released_by_form_8332 is now queue item
-③, not just a REVIEW_QUEUE row.*
+deferred to its own session. ✅ dep_released_by_form_8332 BUILT s299
+(queue item ③ closed) — its REVIEW_QUEUE seed can be marked built.*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -96,6 +81,9 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
+- s299 deploy: `5d1d683e` → `dep-da7nhgajobas739gb800` (8332 unit, mig
+  0366 + five new rule rows seeded at build) — **API-confirmed LIVE
+  2026-08-26**.
 - s298 deploys (all API-confirmed LIVE 2026-08-26): `a79f638a` →
   `dep-da7m63cs728c73br7tog` (RIE vendor split, mig 0364 + backfill) ·
   `6c35e83f` → `dep-da7mhcflk1mc7388bs80` (EIN unit, mig 0365,
@@ -234,3 +222,9 @@ question; the 1040X derived-input amendment + queued
 SE-subject-other-income addends — verification NOT started; R-5329-11
 staged for Ken with the states lane's research doc). ✅ R-GA500-RIE's
 vendor clause is now IMPLEMENTED (s298) — spec and engine tell one story.
+NEW (s299): **R-DEP-03's formula should spell out the §152(e) release
+branch** — the spec lists `dep_released_by_form_8332` as an input but the
+formula text never states the residency waiver (claiming side) or the
+exclusion (releasing side); the engine now implements both, so the
+formula should say them (the vendor-clause one-story pattern). States
+lane's Gate-1 governs the amendment.

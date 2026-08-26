@@ -1,6 +1,19 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 299 — the Form 8332 released-dependent flag
+> (`5d1d683e`, one deploy, mig 0366).** No new form — Form 8332 itself is
+> never rendered (it is the custodial parent's signed release, an
+> attachment). The unit closes the §152(e) split on the 1040 SPINE:
+> `Dependent.released_by_form_8332`, side keyed by `claimed_as_dependent`
+> — claiming (noncustodial) return gets CTC via the release residency
+> waiver (classifier + credit_gates + 1040 grid (5)(a) + 8862 line 14
+> prints), EIC/HOH/§21 stay custodial (D_EIC_QC_CONFLICT release key,
+> D_1040_022, D_2441_008), D_1040_019 demands the physical form, and the
+> e-file extract refuses a claiming return by name (no PDF-attachment
+> surface yet). Full input→compute→render→assertion chain: backentry key
+> + regenerated schema, serializer, both dependents screens, 22 tests.
+>
 > **2026-08-26 session 297b — the payer-less int/div valve (Ken ruling,
 > built same session) + two more missing-page gates (`b284936`, one
 > deploy).** Ken ruled the s295 int/div question live: face-only 2a/2b/3b
