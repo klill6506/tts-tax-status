@@ -53,7 +53,13 @@ stays there, never here).*
 
 *▶ NEXT — extractor session 5 (re-measure the census FIRST — the valve
 + gates moved it): ① **f8949 summary rows → `capital_transactions`**
-(9 solo at r11, top measured class; pairs with sch_d).
+(9 solo at r11, top measured class; pairs with sch_d). ⚠ Date
+convention settled s297b from IRS8949.xsd (2025v5.4 = v6.3): column (b)
+may carry the code VARIOUS/INHERITED/INH-2010; column (c) permits ONLY
+BANKRUPT/WORTHLESS or blank — a printed "Various" date-sold on an
+aggregated broker row emits as date_acquired "VARIOUS" + date_sold
+BLANK (the Exception-2 summary-row convention; relayed to the entry
+lane, who are adopting it lane-wide + correcting their L015).
 ② the f8995 4-solo REIT shape (likely cheap: 199A REIT dividends ride a
 documented aggregate — verify vocabulary before building; marking the
 page ignore-when-derivable needs the QBI decomposition guard). ③ probe
