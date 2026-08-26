@@ -1,6 +1,34 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 296 — extractor Schedule D unit + Form 5329 RC
+> waiver (`0b79525` + `0908f73`, one deploy).** **Extractor (Sch D)**: the
+> two-page Schedule D face parses positionally (grid values on each row's
+> LAST wrapped template line; totals on the right marker band; row-level
+> parens negation); feeds carryovers → `schd_st/lt_carryover_prior`, line
+> 13 → `div_capgain_dist_agg`, 1a/8a → `schd_fields`, QOF →
+> `schd_qof_disposal`; refuses by name on 8949 rows / 4-5-11-12 feeds /
+> 18-19 worksheets / every printed-sum identity. Face 3a now rides
+> `div_qualified_agg` (documented compute_intdiv fallback) and a
+> no-Schedule-D positive 7a rides the i1040 line-7 distributions-only
+> exception. ⚠ Method: the r8 "sch_d solo=4" upper bound measured to ZERO
+> actual yield (depth probe corpus-wide: only 13 packets have no deeper
+> refusal); real unit yield = ONE new valve-only packet emits + ties (r9: 9 emitted / 258
+> refused, tie probe 9/9, rolled back). Suffix-bearing surnames (JR/SR/
+> II/III/IV) now shell-match on the base token; a father/son pair stays
+> ambiguous. **Form 5329 Part IX (the BATCH-296 missed-RMD-waiver item)**: the RC
+> reasonable-cause waiver exists end-to-end — model (mig 0363), compute
+> (54a/54b tax the un-waived remainder; i5329 p.10 + IRS5329.xsd's
+> shortfall-not-tax attribute), staging (three named refusals), D_5329_
+> 007/008/009, print (explicit -0-, "RC (amount)" dotted-line overlay
+> anchored to template widget rects, explanation statement page), MeF
+> (54a/54b emit at value 0 as the attribute carrier + WaiveTaxOnExcess-
+> AccumQRPStmt in the statements block), both screens. The overstate-only
+> gap class produces NO tie failure — found only by reading the source
+> form. 19+11 new tests; flow assertions 526 green; client vitest
+> 1767/1767; published schema regenerated. RS: R-5329-11 waiver amendment
+> queued (spec is draft AND behind the app).
+>
 > **2026-08-26 session 294 — BATCH-296 tail pair (`ce04ad1` + s294b
 > `2ce1dfa`, two verified deploys).** *(s294b: `_apply_state_fields` now
 > judges "unknown line" against the form's FormLine set and BACKFILLS the
