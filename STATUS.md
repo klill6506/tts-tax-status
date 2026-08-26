@@ -1,5 +1,27 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐⭐ s297c (same day, entry-lane escalation): **the lane's ONLY repair
+path (merge=replace_documents) 500'd in production and is FIXED + LIVE**
+(`da12fc3`, deploy `dep-da7gv1tg1s2s73fqjdv0` — one cache-cleared build
+retry for a corrupted Render venv cache, s284 remedy). Root cause from
+the server log at the lane's correlation id: an explicit JSON null on an
+optional ROW field (their L015 date_sold "Various"→null correction,
+adopting the 8949 convention) passed staging CLEAN and then INSERTed
+NULL into a NOT-NULL-blank-via-"" CharField — `_cleaned_value`'s
+docstring FALSELY claimed staging gated where null is allowed, and the
+same class hit interest payer_name on 08-20 (prod log). Fix:
+`_row_fields()` — on all 14 row-create sites an explicit null now means
+what omitting the key means; the taxpayer scalar path deliberately
+untouched (null-keeps-the-derive). Regression = the L015 shape; 78
+backentry-commit tests green. ⚠ Also settled from IRS8949.xsd (v5.4 =
+v6.3): 8949 column (c) permits ONLY BANKRUPT/WORTHLESS codes or blank —
+"VARIOUS" is acquired-side only; the composer's asymmetry is the IRS's
+own. Lane adopting blank-date_sold for summary rows; a printed
+BANKRUPT/WORTHLESS would be a named CC item (composer gap, observed not
+built). Entry lane's D_EFILE_001-family finding: W-2 EIN + 1099-R EIN +
+8949 date-sold — "no W-2/1099-R" is necessary-but-not-sufficient for
+Done; their first Lacerte packet reached Done today.*
+
 *⭐ s297b (same day, Ken live in-session): FOUR rulings landed via the
 question card — ① the int/div valve APPROVED with Ken's own label
 ("INTEREST"/"DIVIDENDS", not the recommended wording) and BUILT SAME
