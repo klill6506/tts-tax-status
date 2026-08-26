@@ -1,43 +1,52 @@
 # TTS Tax App — STATUS (current state only)
 
-*Last updated: 2026-08-26 (s293 — extractor session 2: the p1 income-
-DECOMPOSITION GATE is built and the emitted set now ties 6/6 to the
-dollar. Every refusal across the 267-packet Inbox is NAMED.)*
+*Last updated: 2026-08-26 (s294 — BATCH-296 tail pair shipped: the
+state-face echo asymmetry fixed + the ret-exempt suppression claim
+REFUTED with per-person record flags built. Commit `ce04ad1`, deploy
+`dep-da74u6hsrm7s73bdht60` LIVE, API-confirmed, seed verified.)*
 
-*⚠⚠ RESUME POINT — **extractor session 3** (`scripts/taxwise1040/`).
-State of the pipeline: classifier → census → positional parsers (Main
+*⚠⚠ RESUME POINT — **extractor session 3** (`scripts/taxwise1040/`),
+unchanged from s293: classifier → census → positional parsers (Main
 Info · 1040 face p1 income block 1a-11a + p2 incl. 13a/13b/14 and the
 12a/12b/12c checkbox cluster · W-2/1099-R/W-2G detail reports · income
-worksheet USW10401 (per-owner SSA/RRB/medicare/WH) · Schedule B face
-(per-payer rows + Part III boxes) · TP/SP allocation worksheet USWRNR$1
-(attribution only) · GA-500 + Sch 1 + RIE wks) → emitter with the
-DECOMPOSITION GATE: every nonzero face income/deduction line must be
-explained by extracted documents or the packet refuses by name; the
-coverage gate also treats a dash-RULER report page as value-bearing
-(detail reports print comma-less integers — the s292 farm packet proved
-the currency-token test blind). Full-Inbox r5: **6 emitted / 261 refused
-all-named / 267 scanned; rolled-back tie probe 6/6 TIE** (s292 was 2 of
-16 with 12 silent NO_TIEs). 57 extractor tests green.*
+worksheet USW10401 · Schedule B face · TP/SP allocation worksheet
+USWRNR$1 (attribution only) · GA-500 + Sch 1 + RIE wks) → emitter with
+the DECOMPOSITION GATE. Full-Inbox r5: **6 emitted / 261 refused
+all-named / 267 scanned; tie probe 6/6 TIE**. 57 extractor tests green.
+The s293 facts-worth-knowing-cold block is in STATUS_ARCHIVE (s293
+entry) — read it before extractor work.*
 
-*s293 facts worth knowing cold: the two s292 "over-computations" were
-FAITHFUL extractions — TaxWise packets do NOT always print every source
-page (a −23,068 farm loss existed only as face line 8), so the face
-decomposition is the guard, never page presence. The alloc worksheet's
-mixed TP/SP split can hide a 50/50 JOINT payer (subset-sum proved it) —
-whole-column categories attribute, mixed refuses. The income worksheet
-prints taxable SSA on ONE of THREE bracket rows (MFS / 50% / 85%). Face
-13b (Schedule 1-A) passes through only when a filer is 65+ (engine
-derives the senior deduction; a 12,000 MFJ case tied); tips/OT/car-loan
-inputs refuse. A blindness X refuses to the agent lane (one real case in
-the corpus). MFS Sch-B rows default to the filer.*
+*s294 (this session, batch-loop detour before the extractor): the two
+BATCH-296 tail items are RESOLVED, annexed, deployed:*
+- *`state_returns` × `merge=replace_documents`: NOTHING ever deleted an
+  omitted state return — the "40NR zeroing" was `reconcile_expected`
+  comparing state expectations against ZEROS because `state_faces` only
+  echoed payload-supplied states. Now EVERY attached registry-state face
+  echoes live (GA-500 already did) and the replace pass warns by name
+  (`state_returns[FORM] left in place`). A correction batch no longer
+  re-supplies `state_returns` verbatim; an omitted face reconciles
+  against live values. NOT recomputed — refresh-from-federal stays the
+  explicit gesture.*
+- *`ret-exempt` "suppresses ret-t": REFUTED — compute_al40nr never reads
+  any ret-exempt flag; ret-t/ret-s carry only what is taxable to an AL
+  RESIDENT. The reporting session's probe moved TWO variables in one
+  edit and it RETRACTED (durable copy in the BATCH-296 annex; the
+  states lane's STATUS corrected, D-45 addendum). Built the surviving
+  half: per-person `ret-exempt-t`/`ret-exempt-s` seeded + staged +
+  documented; D_AL40NR_RETIREMENT_PLAN_TYPE names WHO; legacy
+  `ret-exempt` honored as the single-filer shorthand. Mirrors the states
+  lane's same-evening RS per-taxpayer amendment (cached
+  `al_form_40nr_spec.json` re-exported: 33 facts / 17 spec tests).*
+- *Gates: 11 new tests (`test_batch296_tail_s294.py`), injection-proven
+  (6 red under 5 injected defects); 685 green in combination incl. flow
+  assertions; the 2 combined-run s258 fails = the KNOWN quintet leakage
+  (isolated 8/8 green — non-implication proven).*
 
-*▶ NEXT — session-3 worklist by measured r5 yield: ③ dependents (p1
-grid + 8867/Sch EIC; the presence gate already refuses them by name) ·
-the USSTB int/div detail parsers (carry per-payer TSJ — also the exit
-from the mixed-split refusal; zero solo yield, needed for the Sch
-D-family combos) · the ~4-packet sub-threshold int/div class with NO
-pages (needs a face-sourced-rows convention — payer unknown; likely a
-Ken question) · then page-coverage units by blocked-count: f8995 128 ·
+*▶ NEXT — session-3 worklist by measured r5 yield (unchanged): ③
+dependents (p1 grid + 8867/Sch EIC) · the USSTB int/div detail parsers
+(per-payer TSJ — also the exit from the mixed-split refusal) · the
+~4-packet sub-threshold int/div class with NO pages (likely a Ken
+question) · then page-coverage units by blocked-count: f8995 128 ·
 sch_d/8949 83/59 · sch_e 71 · sch_c 60 · asset_detail 60 · sch_a 45 ·
 k1_detail 44 · f8889 30 · est_payments_wks 27. THEN the 50-of-John's
 pilot (101 JOHN packets in the Inbox). Then Ken-directed: EIC derive
@@ -45,16 +54,13 @@ pilot (101 JOHN packets in the Inbox). Then Ken-directed: EIC derive
 + S1-13 double-landing (hold b926) · item 84 (§469(i)) · the two
 4952/GA-RIE-owner items · #60 · #43-medium · #70 · #16.*
 
-*Entry lane: b47268a6 CLOSED (NIIT flag tied, no keying change; filed).
-Lane is on the Lacerte sub-queue. Two NEW BATCH-296 items incoming from
-them: `state_returns` silently dropped by `merge=replace_documents`
-(dry-run caught an AL40NR zeroing — either preserve like the income
-sections or warn by name) and AL `ret-exempt` all-or-nothing (cannot
-express a mixed exempt/non-exempt MFJ). ⚠ Lacerte prints defeat
-`tools/face.py` (all dashes) — the lane wrote `lacerte_face.py`; Lacerte
-exports carry NO DOBs and NO payer EINs (D_EFILE_001 will hit); DOB list
-tool columns are SPOUSE-FIRST. PipelineOut r2-r5 + shells-index.json are
-PII working files of THIS unit.*
+*Entry lane: on the Lacerte sub-queue. After the s294 deploy is LIVE it
+will re-key the AL-40NR client's plan-type basis as `ret-exempt-s: true`
+(economics unchanged, tax ties at 174). Its two BATCH-296 tail items are
+closed by this session's annex. ⚠ Lacerte prints defeat `tools/face.py`
+(the lane wrote `lacerte_face.py`); Lacerte exports carry NO DOBs / NO
+payer EINs; DOB list tool columns are SPOUSE-FIRST. PipelineOut r2-r5 +
+shells-index.json are PII working files.*
 
 *⛔ KEN remaining: #21, #48 (RS 404), #56, #63, #69, #10 — the tail
 tier. Carried: entity second-state-face transport (#3);
@@ -85,6 +91,9 @@ hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time). Manual post-deploy seed = the
 idempotent VERIFY; `check_rule_paths` is one command.**
+- s294 deploy: `ce04ad1` → `dep-da74u6hsrm7s73bdht60` **LIVE,
+  API-confirmed 2026-08-26**; post-deploy verify: all three ret-exempt*
+  lines present in the prod DB (read-only probe).
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -95,19 +104,23 @@ to find defects. State the finding and move on.
 SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
 load-bearing goes in batch-file annexes too. **Never relay tokens through
 the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
-holder — coordinate EXPLICITLY before every run. s293 coordinated cleanly:
-states lane held the RS tree (A3 authority-ownership in flight,
-export-byte-identical; RS suite now 243, `check_authority_owners --strict`
-is the per-loader pre-flight); entry lane on the Lacerte sub-queue.
+holder — coordinate EXPLICITLY before every run. s294 coordinated live: the
+states lane was MID-RUN when this session claimed test_postgres (collision
+= 8 contention errors on their side, no defect either side) — the claim
+message crossed their run; ask-then-wait beats claim-then-run. The
+peer-contradiction protocol worked end to end: states lane flagged two
+sessions' opposing claims instead of silently taking the newer one; the
+original claimant re-checked its own payload file and retracted.
 Peers stage; Ken decides.
 
-## ⚠ Known red / rotted — THE ONE LIST (post-s293)
+## ⚠ Known red / rotted — THE ONE LIST (post-s294)
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
-  `--create-db` = reset AND non-implication proof.
+  `--create-db` = reset AND non-implication proof. (Bit again in s294's
+  combined gate run — 2 s258 cleanup fails, isolated 8/8 green.)
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s290; no client changes s291-s293).
+- **Client typecheck**: green (s290; no client changes s291-s294).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -118,7 +131,7 @@ Peers stage; Ken decides.
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
   `server\`. ⚠ `poetry run python -c "<multi-line>"` binds wrong —
-  script FILES, not inline `-c` (bit AGAIN in s293 — one-liners only).
+  script FILES, not inline `-c` (one-liners only).
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8. ⚠ Embedded double-quote in a here-string
   arg to a NATIVE exe SPLITS the argument — use `git commit -F -` with a
@@ -143,6 +156,13 @@ Peers stage; Ken decides.
   ⚠ `Firm.objects.first()` is the DEV firm — probe with
   `Firm.objects.get(name="The Tax Shelter")`. ⚠ Pooler statement timeouts
   kill the connection and the reconnect can flake DNS — ping + retry loop.
+- 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294, the
+  ret-exempt retraction): the reported suppression compared arms differing
+  in ret-t AND the flag, and the no-move arm had its own legitimate cause
+  (the $6,000 age-65 exclusion zeroing a 3,181 carry). "Probed, not
+  inferred" on a two-variable experiment is MORE credible and LESS
+  reliable than an inference — isolate the variable or don't write
+  "probed".
 
 ## 🔎 Carried for triage — NOT claims
 - (s293) The r5 refusal census is the session-3 worklist source
@@ -174,6 +194,10 @@ Peers stage; Ken decides.
 - (s275/s281) `.first()`-on-per-form-rules sweep remainder.
 - (s289) K-1 capital gains reach Schedule D but not the L9 gain/loss
   WEIGHTS — pre-existing, noted.
+- (s294) A state face left in place by an omitting correction batch is
+  NOT recomputed against that batch's federal changes — visible via the
+  live-face reconciliation + the named warning, but if a stale-face
+  pattern shows up in the lane, an auto-refresh question goes to Ken.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
@@ -185,6 +209,7 @@ amendments; R-AL-TAX; R-B1/B2-AUTO; the 4562 line-17 reversal;
 R-8880-LINE1-COMPOSE; FORM_7203 Part I line-3 sub-map; R-K1-179-BASIS;
 R-GA500-RIE loss-allocation clause; SCHEDULE_K1 box 16 A/B routing;
 R-8995-QBI line-1 population widening; FORM_8960 R-8960-INCOME 5b
-description; the unfloored line5 §1211(b) question). **s293: nothing new
-queued from this side; the states lane's A3 delta is declaration-ownership
-only (export byte-identical).**
+description; the unfloored line5 §1211(b) question). **s294: the states
+lane's AL_FORM_40NR per-taxpayer retirement amendment is SEEDED in RS
+prod (33 facts / 17 tests incl. AL40NR-H2) and the app's cached spec +
+vocabulary now mirror it — nothing newly queued from this side.**

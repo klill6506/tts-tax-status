@@ -1,6 +1,26 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 294 — BATCH-296 tail pair (`ce04ad1`, one verified
+> deploy).** **Back-entry commit (all state forms)**: every ATTACHED
+> registry-state face (SC1040/AL40/AL_40NR/NC_D400) now echoes its
+> control lines into `state_faces` whether or not the payload supplied
+> it — the GA-500 symmetry — so an omitting correction batch reconciles
+> against LIVE values instead of zeros (the "40NR zeroing" report was
+> that comparison; no data was ever at risk), and the replace pass warns
+> by name (`state_returns[FORM] left in place`; not recomputed —
+> refresh-from-federal stays the explicit gesture). **AL Form 40NR**:
+> per-person plan-type record flags `ret-exempt-t`/`ret-exempt-s` seeded
+> (income-detail section, now 80 lines) + staged + schema'd;
+> D_AL40NR_RETIREMENT_PLAN_TYPE names WHO claims the exemption; legacy
+> `ret-exempt` honored as the single-filer shorthand. ⚠ The reported
+> "ret-exempt suppresses ret-t" was REFUTED (compute never reads the
+> flag; the reporting session retracted its two-variable probe) and the
+> inertness is PINNED as a regression test. Cached AL_FORM_40NR spec
+> re-exported (33 facts / 17 spec tests — the states lane's per-taxpayer
+> amendment). 11 new tests, injection-proven (6 red under 5 injected
+> defects); 685 green combined incl. flow assertions.
+>
 > **2026-08-25 session 289 — BATCH-296 #13/#72/#73/#57 (three verified
 > deploys: `12d736f`/`4cbf5bd`/`18a1a87`).** **Form 7203 — 1040 side**
 > (#13): the §1366(d) basis cap now LIMITS the K-1's §179 and charitable
