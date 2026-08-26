@@ -75,13 +75,17 @@ stays there, never here).*
 
 *▶ NEXT — extractor session 5 (re-measure the census FIRST — the valve
 + gates moved it): ① **f8949 summary rows → `capital_transactions`**
-(9 solo at r11, top measured class; pairs with sch_d). ⚠ Date
-convention settled s297b from IRS8949.xsd (2025v5.4 = v6.3): column (b)
-may carry the code VARIOUS/INHERITED/INH-2010; column (c) permits ONLY
-BANKRUPT/WORTHLESS or blank — a printed "Various" date-sold on an
-aggregated broker row emits as date_acquired "VARIOUS" + date_sold
-BLANK (the Exception-2 summary-row convention; relayed to the entry
-lane, who are adopting it lane-wide + correcting their L015).
+(9 solo at r11, top measured class; pairs with sch_d). ⚠ Summary-row
+convention settled s297b/c from IRS8949.xsd (2025v5.4 = v6.3) + the
+entry lane's proven recipe: column (b) may carry
+VARIOUS/INHERITED/INH-2010; column (c) permits ONLY BANKRUPT/WORTHLESS
+or blank. An aggregated broker row emits {date_acquired: "VARIOUS",
+date_sold: blank/null, **is_summary: true** (else D_8949_005 ERROR
+demands both dates), statement_attached ONLY if the packet prints the
+broker statement — D_8949_004 info is the designed honest prompt, never
+a gate to clear}. ⚠ The extractor must NOT predict e-file eligibility
+(the lane was wrong about D_EFILE_001 three times in one day) — the
+cleanup run is the oracle; extraction refuses on fidelity grounds only.
 ② the f8995 4-solo REIT shape (likely cheap: 199A REIT dividends ride a
 documented aggregate — verify vocabulary before building; marking the
 page ignore-when-derivable needs the QBI decomposition guard). ③ probe
