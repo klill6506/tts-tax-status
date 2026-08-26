@@ -453,7 +453,7 @@
 > item's own acceptance was unreachable without the second. (1)
 > `f2441_dcb_qualified_expenses` — **NULLABLE**, so NULL keeps the derive from
 > the dependent rows while an asserted **0** stays a real assertion (nothing
-> incurred → every benefit dollar taxable, the s243b Tucker shape); wired into
+> incurred → every benefit dollar taxable, the s243b fixture shape); wired into
 > `_gather_2441_inputs`, the one chokepoint both consumers read. (2) **⚠⚠ LINE
 > 3 DOUBLE-REDUCED.** It computed `max(0, min(col_d, cap) − excluded)`, but
 > column (d) is **already net** — both the line-2(d) and line-30 instructions
