@@ -157,6 +157,29 @@ new keys, no model change. Gates: 614 (all 1116 suites + 526 flow assertions) +
 680 e-file/MeF. RS amendment staged with the states lane (spec, `R-1116-SUMMARY`,
 `FA-1040-1116-07`, and the two new diagnostics).*
 
+*⭐⭐ **s306d — THE CREDIT ORDERING IS CONFIRMED, AND THE TIE THAT "PROVED" IT WAS
+HIDING A REAL $1** (`86db00c0`, deploy `dep-da8cs2m417fc73d99e5g`, LIVE). The
+entry lane committed the general-category return TIE and then refused to let
+that stand as proof — their reasoning exact: **if the ODC had wrongly stayed at
+500, the FTC would simply be limited to the remainder, line 21 would still total
+the tax, and 22/24 would still be zero — the return would TIE WITH BOTH CREDITS
+WRONG.** Reading the committed return's stored lines settles the ordering: **19 =
+70, not 500**; 20 = 9,892; 21 = 9,962; 22/24 = 0; the credit on **line 28
+(general)**, zero on 27. ⚠ **But the filed return shows 9,893 / 69 to our 9,892 /
+70 — identical total, which is exactly why it tied.** MEASURED cause: line 19's
+§904 ratio was quantized to FOUR decimals (`L17 75,997 / L18 76,530 =
+0.9930354…`; 4dp → 9,892, 5dp → 9,893, **exact → 9,893**). **i1116 rounds this
+ratio to "at least four places" — FOUR IS A MINIMUM and we emitted the least
+accurate value permitted.** FIVE is the ceiling, not a preference: MeF
+`RatioType` is `fractionDigits=5`/`totalDigits=6`. Prod census BEFORE the change
+(s302 rule): **8 full-path returns, 7 unchanged, 1 moves by exactly $1 — into
+agreement with the filed return.** ⚠ Line 3f deliberately LEFT at four (its
+→3g→7 blast radius unmeasured, no divergence reported). Gates 614 + 620 MeF.
+⭐ **The keeper: a TIE is not evidence when two errors can offset.** Ask what the
+green result was CAPABLE of catching — the same class as the vacuous SE fixture
+and the s303 timestamp. It was caught only because the lane refused to bank an
+unverified claim, and because the stored lines were readable after commit.*
+
 *⚠ **s306c, against myself — I broke my own standing rule.** A PS5.1
 `Get-Content | Set-Content -Encoding UTF8` rewrite of a test file double-encoded
 it (every em-dash mangled, BOM added) — the exact rewrite the hazard list BANS.
