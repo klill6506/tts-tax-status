@@ -1,6 +1,28 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 300 — the Rev Proc 2014-41 §5.03 limit inside the
+> Form 8962 SEHI↔PTC iterative (`5f890ef5`, one deploy, no migration).**
+> No new form — a compute amendment to the existing FORM_8962 unit
+> (BATCH-296 QBI-item leg 2, build queue item ④). The §162(l) deduction
+> for specified premiums is now ceilinged at the LESSER of earned income
+> (limb A, already in the cap) and (premiums not paid through APTC) + the
+> §1.36B-4T(a)(3)(iii) limitation (limb B — was absent entirely), applied
+> at Step 1 and every Step-3/5 pass; Step-6 convergence aligned verbatim
+> (both deduction AND PTC < $1). Authority verified from rp-14-41.pdf
+> itself. The MeF read-side bridge shares the pure function. LEG-2
+> VERDICT: on the reporting fixture the limit reproduces the packet's
+> worksheet (971 / tentative 5,363) exactly but never binds — the 19
+> residual is Lacerte's §5.02 alternative method vs our §5.01 iterative
+> (Ken decision 2), both Rev-Proc-sanctioned; pinned both ways in test.
+> 11 new tests (3 injection-proven red); seed-leg EXPECTED_LINES fixed in
+> passing (stale since s277). Gates: flow + 8962 suites 583 · seed 13 ·
+> MeF/backentry/W-2 272. **s300b addendum (`87f4f329`, second deploy):
+> D_8962_NOCONVERGE (error)** — the iterative reports convergence and a
+> Step-6 non-converging return errors by name instead of silently keeping
+> the 25th iterate (fallback stays with the S-14 method ruling); proven
+> on a constructed 300%-FPL-boundary two-cycle; 683 green.
+>
 > **2026-08-26 session 299 — the Form 8332 released-dependent flag
 > (`5d1d683e`, one deploy, mig 0366).** No new form — Form 8332 itself is
 > never rendered (it is the custodial parent's signed release, an

@@ -1,56 +1,79 @@
 # TTS Tax App — STATUS (current state only)
 
-*⭐ s299 (2026-08-26 night): **BUILD-QUEUE ITEM ③ SHIPPED — the Form 8332
-released-dependent flag** (`5d1d683e`, deploy `dep-da7nhgajobas739gb800`;
-Ken s297e ruling 2 "Build it"). `Dependent.released_by_form_8332` (spine
-fact `dep_released_by_form_8332`, mig 0366, db_default) — one keyed FACT,
-the SIDE read from `claimed_as_dependent`: **released + claimed = the
-noncustodial CLAIMING return** (CTC residency term satisfied per §152(e)
-in `classify_dependent_ctc` + the credit_gates mirror; EIC/HOH/§21 barred
-— D_EIC_QC_CONFLICT `form_8332_release` key, D_1040_022, D_2441_008;
-D_1040_019 demands the signed form; **e-file extract REFUSES by name** —
-no PDF-attachment input surface, paper-with-copy is the route);
-**released + NOT claimed = the custodial RELEASING return** (s281
-non-claimed machinery — no CTC/ODC, EIC/HOH/§21 retained; D_1040_020
-errors the months>6+claimed contradiction, D_1040_021 warns the inert
-row). Prints: 1040 grid (5)(a) + 8862 line 14 answer Yes via the
-divorced-parents exception (i8862 Rev. 12-2025 verbatim). Authority
-verified verbatim (i1040 2025 "Children of divorced or separated
-parents", Form 8332 Rev. 12-2025, §152(e)/§32(c)(3)/§2(b)/§21(e)(5) —
-LII not needed, the instructions state all four consequences). Backentry
-key allowlisted; published schema REGENERATED; both dependents screens
-gain an "8332" checkbox (fact, never a credit election). Gates: 22 new
-tests (both directions per rule) · flow assertions · 766 across
-credit_gates/EIC-QC/spine/2441/8862 · 258 backentry+MeF · 18 header
-render · typecheck clean · vitest 91. Annexed in BATCH-296; the entry
-lane re-pulls the schema before its next staging.*
+*⭐ s300 (2026-08-26 night): **BUILD-QUEUE ITEM ④ SHIPPED — the Rev Proc
+2014-41 §5.03 limit inside the SEHI↔PTC iterative** (`5f890ef5`, deploy
+`dep-da7o66mk1f9s73cf81bg`; BATCH-296 QBI-item leg 2). Verified verbatim
+from rp-14-41.pdf (downloaded + extracted): §5.03(2) caps the §162(l)
+deduction at the LESSER of (A) earned income (already in the iterative's
+cap) and **(B) (specified premiums − APTC) + the §1.36B-4T(a)(3)(iii)
+limitation on additional tax — which was ABSENT from the loop entirely**.
+New `sehi_503_limit()` (lowest-tier-first test; test household deducts
+unpaid premiums + candidate limitation + non-specified §162(l); None when
+APTC=0 or no tier — the limb provably collapses into premiums−PTC);
+ceiling applied at Step 1 AND every Step-3/5 pass; Step-6 convergence
+aligned verbatim (BOTH deduction and PTC must move < $1; was
+deduction-only ≤ $1). MeF read-side bridge shares the pure function.
+**LEG-2 VERDICT: on client 2137 the limit reproduces the packet's Pub 974
+worksheet exactly (line 5=375, line 6=971, tentative PTC 5,363) but NEVER
+BINDS** — the 19 residual is Lacerte's §5.02 ALTERNATIVE method (624) vs
+our §5.01 ITERATIVE (643, Ken decision 2 / R-8962-SEHI), both sanctioned
+by Rev Proc §3; bounded vendor-method divergence, pinned both ways in
+`test_8962_sehi_503_limit.py`. The entry lane's AGI-closes prediction
+REFUTED and told. In passing: the 8962 seed-leg test red since s277
+(EXPECTED_LINES 42 vs seeder 43 SEHI-BASE) fixed. Gates: 11 new tests (3
+injection-proven red) · flow + 8962 suites 583 · seed 13 ·
+MeF/backentry/W-2 272 — all green. No migration, no client code, no
+schema change. Annexed in BATCH-296. **s300b same session
+(`87f4f329`, second deploy): D_8962_NOCONVERGE (error)** — the states
+lane's separation argument (fallback waits on S-14; VISIBILITY is
+method-independent) + the s240 fix-the-silence precedent:
+`sehi_ptc_iterative` now returns a converged flag, the read side gains
+`iterative_sehi_converged`, and a return whose iterative exhausts 25
+iterations with a Step-6 delta ≥ $1 errors by name instead of silently
+keeping the last iterate. Proven on a constructed 300%-FPL-boundary
+two-cycle; injection-proven; 683 green.*
 
-*▶ NEXT (build queue, in order): ④ QBI item leg 2 (Rev Proc 2014-41 §5.03
-in the iterative — verify against the Rev Proc itself; the entry lane's
-2137 re-run already confirmed the residual is exactly §5.03-shaped).
-⑤ the f8949 extractor unit (re-measure the census first — s295/6/7: solo
-counts are upper bounds). ⑥ §469(g) PTP release + Form 8990 1040-surface
-(specs in BATCH-296; §469(g) now the ONLY thing holding 1792). ⛔ Carried
-for Ken (REVIEW_QUEUE s298): the truncated-name PREFIX-MATCH tier + the
-lane's organizer-name enrichment (coverage vs wrong-fill risk — the
-lane's ~21 held rows are the price of exact-only).*
+*▶ NEXT (build queue, in order): ⑤ the f8949 extractor unit (RE-MEASURE
+the census first — s295/6/7: solo counts are upper bounds). ⑥ §469(g)
+PTP release + Form 8990 1040-surface (specs in BATCH-296; §469(g) now the
+ONLY thing holding 1792). ⛔ Carried for Ken (REVIEW_QUEUE): the s298
+truncated-name PREFIX-MATCH tier + organizer-name enrichment; NEW s300
+FYI — the §5.02 alternative-method Lacerte-parity option (one-line ruling
+if ever wanted; decision 2's iterative stands, no recommendation).*
 
-*Peer state (s298 session): the STATES lane fixed check_ga500_integrity
-themselves (RS `10f1146` — D-36 quantize, all 21 GA500 scenarios pass,
-gate now pinned in pytest; DEQUEUED from our list). ⚠⚠ Their sweep of all
-47 `check_*_integrity.py` gates: **35 pass, 12 FAIL** (`1040x`, `1065_se`,
-`4562_recon`, `6252`, `k1_basis_704d`, `schedule_a`, `schedule_e_8582`,
-`schedule_f`, `simplified_method`, `spine`, `topic8`, `topic9`) — NONE
-were in pytest; staged for Ken as their S-10 with the re-diagnose-first
-caution; take them a few at a time, each fix adding its gate to their
-`tests/test_integrity_gates.py`. The ENTRY lane: L021+ will stage
-`source.vendor`; ⚠ their annexed finding — a COMMITTED return cannot be
-re-verified by plain stage+dryrun (HTTP 409, needs merge=replace) — the
-in-place rolled-back recompute is the verification route for the 18
-committed Lacerte returns. 2143's stored face still carries pre-clause
-figures (refresh = deliberate lane/Ken act, never housekeeping).*
+*Peer state (s300 session): both peers confirmed tree + test_postgres
+mine at boot (delvio-states-aa checked the live roster first — the s299
+lesson landed). STATES lane: amended R-SE-L2 (clergy addend — spec now
+describes the engine; NO engine change; the 8z SE-subject addend stays
+deliberately un-bundled per Ken — do not "fix"); their
+declared-input-absent-from-formula audit is RETRACTED (fires on 921/1407
+— do not build; the working cut is fact-key-resolution → 64 dangling,
+needs hands). R-8962-SEHI §5.03 amendment RELAYED, verified by
+them against rp-14-41.pdf independently, and staged as **S-14**
+(`b0fe36d`) — they ESCALATED the method choice to the headline question
+(§5.01 iterative vs Lacerte's §5.02 = a knowing $19-class divergence
+from filed returns: keep / follow vendor / electable — plus the
+non-convergence fallback the Rev Proc prescribes and our loop lacks, and
+the entry lane's no-fault-disposition question; three facets, one Ken
+ruling — see REVIEW_QUEUE s300 + DEFERRAL_AUDIT s300). ENTRY lane: mid-run on the 41
+DOB-unblocked packets (2 committed+filed at boot); L021+ stages
+`source.vendor`; ⚠ their new findings — a committed return re-verifies
+via stage+dryrun IF `-Merge replace_documents` is passed to the DRY-RUN
+too (confirmed client 2049; tax_return_id PRESERVED, markfiled then
+skips); part-year GA works (residency part_year + S3-5/6/7 A/C columns);
+`gen_backentry_schema.py` writes DIRECTLY into their tree (Import
+Templates) — a failed regen leaves them stale silently; D_6251_008 fires
+on qualified-dividends-only (no Sch D) — observation, not defect. The 47
+integrity-gate sweep (12 FAIL) stays staged for Ken as their S-10.*
 
-*⛔ KEN remaining: **the s298 REVIEW_QUEUE additions above** · the s295
+*⛔ KEN remaining: **PROVENANCE NOTE on s300b (states lane recorded it in
+S-14, agreeing it belongs in front of you): D_8962_NOCONVERGE shipped
+WITHOUT an individual ruling, on the standing s240 fix-the-silence
+precedent** (an error diagnostic naming a condition true under every
+S-14 outcome; no tax-law choice beyond severity). If the precedent
+covers it, this line is provenance only; if not, downgrade/retire it in
+the S-14 ruling (is_active=False + kept stub per s266). ·
+**the s298 REVIEW_QUEUE additions above** · the s295
 int/div ruling (narrowed) · the entry lane's shell + birth-year packets ·
 the 51-dependent DOB ask (`1040/Lacerte Inbox/DEPENDENT-DOB-ASK-
 2026-08-26.md`) · #21, #48 (RS 404), #56, #63, #69, #10 — the tail tier.
@@ -81,6 +104,10 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
+- s300 deploys: `5f890ef5` → `dep-da7o66mk1f9s73cf81bg` (§5.03 iterative
+  limit, no migration, no seeds) — **API-confirmed LIVE 2026-08-26**;
+  `87f4f329` (s300b, D_8962_NOCONVERGE — rule row seeded at build) →
+  `dep-da7ocvbncjis73bp22sg` — **API-confirmed LIVE 2026-08-26**.
 - s299 deploy: `5d1d683e` → `dep-da7nhgajobas739gb800` (8332 unit, mig
   0366 + five new rule rows seeded at build) — **API-confirmed LIVE
   2026-08-26**.
@@ -234,3 +261,14 @@ the notes' dropped dependent-care-benefits exclusion) and as **S-12**
 R-DEP-03 now emits `dep_ctc_qualifying` — the D-43 rename updated the
 producer, left the consumer; spec-only, compute_8812 correct). Both are
 Gate-1 — Ken's call; worth ruling together (same dependent chain).
+NEW (s300): **R-8962-SEHI → states-lane S-14** (`b0fe36d`, staged +
+independently verified against rp-14-41.pdf): the formula is wrong on
+two counts (deduction-only ≤$1 vs the Rev Proc's both-deltas <$1 —
+engine FIXED s300, spec not), missing the §5.03 limbs (engine implements
+s300), missing the non-convergence §5.02-fallback branch (NEITHER
+implements — live boundary, DEFERRAL_AUDIT s300), `outputs: []` while
+feeding Sch 1 line 17; authority row add Rev Proc 2014-41 §§5.01/5.03.
+HEADLINE facet: the §5.01-vs-§5.02 method choice (Lacerte files §5.02 —
+a knowing $19-class divergence from filed returns: keep / follow vendor
+/ electable) + the entry lane's no-fault disposition question
+(REVIEW_QUEUE s300) — one Ken ruling, three facets.
