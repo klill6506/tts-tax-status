@@ -184,9 +184,23 @@ minutes later (the s302 "second fixture" correction) — build only against
 what a batch file or your own probe shows.
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
-- ⚠⚠ **12 of 47 RS `check_*_integrity.py` gates FAIL** (states lane sweep
-  2026-08-26) — staged for Ken (their S-10). Re-diagnose before inheriting.
-  ⚠ 8582-PTP1 among them ("no independent recompute mapped").
+- ~~12 of 47 RS `check_*_integrity.py` gates FAIL~~ — **THE 12 WAS WRONG AND
+  S-10 IS CLOSED** (states lane, 2026-08-27, correcting their own s302
+  number). Their triage: **3 were never failing** (two pass every check then
+  die printing a non-ASCII success line to a cp1252 console; one exits
+  `ImproperlyConfigured` importing a loader without configuring Django) and
+  **2 were their own defects from hours earlier**. True pre-existing count
+  **7**, of which **10 of 12 are resolved and 10 gates are now pinned in
+  `tests/test_integrity_gates.py`**; RS suite **254 passed / 0 failed**.
+  ⚠⚠ **The sweep that produced the 12 read EXIT CODES without reading
+  OUTPUT** — the same one-signal-generalised error class as s303's own
+  timestamp misreads. ⭐ Their lesson: **a red gate does not merely fail to
+  catch new defects, it CAMOUFLAGES them** — two fresh defects hid inside
+  pre-existing redness, in gates nothing runs. ⚠ S-10a survives separately:
+  `R-1040X-SUPERSED` has no authority link, and "superseding" appears ZERO
+  times in the 2025 i1040x (they pulled and committed it as evidence), which
+  also casts doubt on the sibling rule's existing citation. S-10c
+  (`D_8582_PTP`'s unwritten recompute) also stands.
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof. (s302: the two s258
   fails appeared again in the sweep and PASSED in isolation — unchanged.)
@@ -261,6 +275,47 @@ what a batch file or your own probe shows.
   to it.
 
 ## 🔎 Carried for triage — NOT claims
+- (s303) **The simplified home-office 300 sq ft cap is applied PER SCHEDULE C,
+  but Rev. Proc. 2013-13 §4.08(6) caps ONE TAXPAYER'S AGGREGATE across all
+  qualified business uses of the SAME home** ("A taxpayer who has more than
+  one qualified business use of the same home for a taxable year is limited
+  to a maximum of 300 square feet ... must allocate the square footage among
+  the qualified business uses"). `compute_schedule_c` caps `biz.home_office_
+  sqft` per business, and BOTH diagnostics (D_SC_004 / D_SC_005) iterate per
+  business — so one proprietor with two home-based Schedule Cs could claim
+  600 sq ft, overstating by up to $1,500. **Prod census: ZERO returns hit it
+  today** (17 simplified home offices, no proprietor with two). Latent,
+  overstating, unfiled work. ⚠ The sibling rule is the OPPOSITE and the
+  engine is RIGHT about it: §4.08(5) lets spouses sharing a home EACH use up
+  to 300 sq ft of *different portions* — so the entry lane's 300+250=550
+  packet is correct as filed, and a naive per-return aggregate check would
+  wrongly flag it. Group by `proprietor`, never by return.
+  ⚠⚠ **THE THRESHOLD IS AGGREGATE > 300, NOT "TWO ROWS" — do NOT ship an
+  unconditional refusal.** I proposed refusing on "same proprietor, two
+  simplified rows" (reasoning from §4.08(7), *"may use the safe harbor method
+  for only one home for that taxable year"*). **The entry lane refuted it from
+  the FIRST SENTENCE of §4.08(6), which I had already printed and read past:**
+  *"A taxpayer who has more than one qualified business use of the same home
+  for a taxable year and who elects the safe harbor method **must use the safe
+  harbor method for each qualified business use of the home**."* Two elected
+  rows in the same home are **MANDATORY**, not a defect — a refusal there
+  would push the enterer to un-elect one, which is exactly what (6) forbids.
+  The three cases for one proprietor with two simplified offices:
+  **same home + aggregate ≤ 300 = LEGITIMATE AND COMPELLED** · same home +
+  aggregate > 300 = defect under (6) · different homes = defect under (7).
+  So: **aggregate > 300 per proprietor → refusable** (the missing home id then
+  changes only which clause the message cites); **aggregate ≤ 300 → WARNING
+  ONLY**, because compelled-same-home is indistinguishable from a (7) breach
+  without a home identifier. `proprietor` + aggregate sqft is the key;
+  `proprietor` alone is not.
+- (s303) **§4.08(4) monthly averaging is unrepresentable in our data** — a
+  business starting, ending or resizing mid-year must use *"the average of the
+  monthly allowable square footage"*, no more than 300 in any one month, and a
+  month counts only with *"15 or more days of a qualified business use"* (the
+  Rev. Proc.'s own example: 400 sq ft from July 20 → average 125, not 300).
+  `schedule_cs` keys ONE `home_office_sqft` with no in-service date, so a
+  mid-year start silently claims the full-year amount. Same gap as the missing
+  home identifier — size them together.
 - (s302d, entry lane) **D_EFILE_001 cannot distinguish "EIN not keyed"
   from "EIN not obtainable."** Most packets satisfy it from the GA-500
   income-statement grid, but a payer that withheld no Georgia tax never
