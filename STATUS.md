@@ -1,5 +1,38 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐ s305 (2026-08-27, Ken live, third feature of the sitting): **the
+8-state return lifecycle + its automation** — Ken's status rethink ("Draft
+and Filed are both gray dots … I would like the statuses to work
+automatically"). ReturnStatus gains `paid` / `accepted` / `rejected`;
+`draft` KEEPS its stored value and DISPLAYS as "Not Started" (label-only,
+zero migration risk); every dot/pill now visually distinct (not-started =
+empty ring · filed = solid gray "with the IRS" · accepted = deep green ·
+paid = violet; two new Slate DotKinds). AUTO transitions built: first
+keyed field value flips draft→in_progress (update_fields chokepoint);
+the payment-status poll flips approved→paid when Ledger reports the
+invoice settled, + `manage.py sweep_paid_returns` for payments made while
+nobody watched the QR panel. **THE EXPOSURE KEN NAMED — "clients pay and
+we forget to file" — is a standing red clickable "Paid, NOT filed — N"
+cell in the RM season bar** (season-totals `paid_not_filed`; verified
+rendering live on demo). The unpaid-file warning: marking filed with an
+open Ledger invoice 409s naming the balance, `confirm_unpaid_file` is the
+proceed button (Ken: warn, never hard-block); stands down for `is_comp` /
+`is_bank_product` / already-paid / Ledger-unreachable. New designations on
+the Return Info card: `service_type` (in_person/remote — Ken's two
+processes; the future auto-file e-sign gate), `is_comp`, `is_bank_product`;
+`last_printed_at` stamped by every render-pdf = the Printed BADGE (Ken
+ruled badge, not status) shown as a ClientHeader stamp. Migration 0368
+(applied dev+demo — ⚠ the running demo server needed a RESTART, it runs
+--noreload). The auto-file/ack design (paid+printed+approved+e-signed →
+transmit; acks→accepted/rejected; acks forward to client, rejects to
+preparer) is WRITTEN, not built — docs/season_status_automation_design.md,
+blocked on MeF transmission + the schema-trees Ken decision. Gates: 14 new
+lifecycle tests; 120 adjacent server; typecheck; slate tests re-pinned
+(Filed=neutral now); vitest full. ⚠ FOUND IN PASSING: s278's
+`1065_D_LT_NONDED` seeded line was never re-pinned in the three count
+tests (409→410, red since 08-23 in no routine run — the s268/s281 class
+again); re-pinned with attribution.*
+
 *⭐ s304/s304b (2026-08-27, Ken live, two features on his direct ask):
 **① non-filing client types + the SSN/EIN duplicate gate** (`0a31ab6b`,
 deploy `dep-da84nm6q1p3s739n2jig`, API-verified LIVE): EntityType gains
