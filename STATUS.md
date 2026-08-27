@@ -93,8 +93,19 @@ GA S1-10 derive design (attribution-only today BY DESIGN — an
 auto-derive needs an off-switch decision, s237 class) · the D_SCHD_006
 QOF-answer import surface (schd_fields lacks it; warning-level).*
 
+*⭐ POST-DEPLOY CONFIRMATION (entry lane, same night): **all four units
+verified in production by an independent lane.** 1792 committed FILED on
+the §469(g)+8990 deploy (full clean tie); 1412 re-ran on s302d → TIE, SE
+tax 1,337 Medicare-only with the whole predicted cascade landing; 2638
+re-ran on s302b → TIE, the four dated rows landing 12,000 with no scalar;
+D_EFILE_004 confirmed on three real packets (1521 / 2638 / 1412 all
+cleanup-clear, held 0 — the schema-tree issue no longer holds anything;
+before tonight one packet had cleared cleanup, now four).*
+
 *Peer state (s302): I held tree + test_postgres all session (both peers
-confirmed at boot). ENTRY lane: 1723 committed on the s301b e8960
+confirmed at boot); RELEASED at close — the states lane wants one RS
+suite run to confirm 245 → 254 after pinning ten integrity gates, and
+owns that tree. ENTRY lane: 1723 committed on the s301b e8960
 surface; **1792 committed FILED (full tie)** on this session's deploy;
 2638 HELD awaiting their re-run of fixture batch a0ffa7a8 against
 s302b (told: no py_overpayment_applied scalar); six wrong-preparer
@@ -247,6 +258,23 @@ what a batch file or your own probe shows.
   to it.
 
 ## 🔎 Carried for triage — NOT claims
+- (s302d, entry lane) **D_EFILE_001 cannot distinguish "EIN not keyed"
+  from "EIN not obtainable."** Most packets satisfy it from the GA-500
+  income-statement grid, but a payer that withheld no Georgia tax never
+  appears there — a third-party sick-pay payer on one packet has no EIN
+  anywhere in the source. That packet is held on a gap the preparer
+  cannot close from the documents. If the shape recurs, the refusal
+  should split (and the s298 21-blank-row class is the same question
+  from the other side, still on Ken's prefix-tier call).
+- (s302, states lane S-10c) **`D_8582_PTP` remains unverified** — one of
+  seven keys `check_schedule_e_8582_integrity` reports as "no independent
+  recompute mapped". s302's §469(g) build is validated only by its own
+  i8582 PDF reading, which is why that reading was done. ⚠⚠ Their wider
+  finding: `check_topic8`-style gates compare a rule's DECLARED inputs
+  against the facts and never compare the FORMULA against the
+  declaration — so `inputs: []` is vacuously valid and **the emptier a
+  rule's declaration, the safer it looks** (exactly how R-SE-L8D-L9's
+  missing L8a input survived; found by a $5,717 error, not by a gate).
 - (s302) `div_1099s.us_government_income` is attribution-only BY DESIGN
   (splits a keyed ga500_fields S1-10 by owner; derives nothing) — the
   entry-lane note asks whether it should auto-derive S1-10; needs an
