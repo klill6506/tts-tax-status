@@ -1,5 +1,39 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐ s304/s304b (2026-08-27, Ken live, two features on his direct ask):
+**① non-filing client types + the SSN/EIN duplicate gate** (`0a31ab6b`,
+deploy `dep-da84nm6q1p3s739n2jig`, API-verified LIVE): EntityType gains
+`tax_exempt` (990) and `accounting` (no return) — mig clients/0013; return
+creation REFUSES BY NAME at `build_federal_return` (NON_FILING_ENTITY_TYPES;
+990s are Ken's "some day, not today"); every UI surface labels both and the
+four Start-Return sites show the reason instead of a 400ing button. Optional
+SSN/EIN on + New Client feed a STRONG duplicate gate ahead of the name gate
+(SSN by firm-wide HMAC lookup — never decryption; EIN vs Entity.ein
+formatted-or-bare); a match 409s naming the existing client + WHICH key
+("matched SSN (primary)"), force-able (spouse-becomes-own-client). SSN →
+`identity.upsert_identity` (the one writer); EIN → the primary entity.
+Verified LIVE on demo end-to-end (created via the form; a different-name
+same-SSN second client refused naming the first; the accounting client's
+tax-year row shows the note). 16 new tests + 94 adjacent + vitest 1770.
+**② s304b — alternate-row shading, the Lacerte look** (uncommitted at s304's
+deploy; ships with this block): per-user server-synced `row_shading`
+(on/off) + `row_shading_color` (#rrggbb) on UserPreferences (migs
+accounts/0006+0007, db_default per s190); a "Row shading" section in the
+Color-palette panel (On/Off + native color input + theme-default reset);
+`applyRowShadingFromStorage()` runs after EVERY theme application (the
+preset owns the same inline `--zebra` slot); tables opt in via
+`zebra-user` (RM, ClientReturns, ClientFolders, FolderDetail; the
+always-on `zebra-table` surfaces respond to off/color too; the Slate RM
+rule excludes :hover/.is-selected so row states stay visible). Verified
+live on demo: theme-tint stripe / custom #ccffcc / off, all three states.
+⚠⚠ TWO CSS LANDMINES for the record: **an author `@layer components`
+block is DROPPED by this Tailwind v4 build** (rule verified absent from
+the served CSS), and **zero-specificity `:where()` selectors lose to
+nested utilities** — use plain specificity, the `.zebra-table` shape.
+⚠ The driven Browser pane returns STALE computed styles after live
+toggles (fresh loads correct) — verify style changes on a fresh load, not
+mid-session. Gates: 16/16 user-preferences, typecheck, vitest 1770.*
+
 *⭐ s303 (2026-08-27): **the estimated-payments staging warning catches up
 to s302b** (`5d0c33c5` + `692d899d`, deploy `dep-da8377cs728c73cubirg`,
 API-verified LIVE). A miss of my own from s302b: that deploy made 1040
