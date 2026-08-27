@@ -121,6 +121,18 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
+- **s306 deploy — API-CONFIRMED LIVE 2026-08-27: `64c4dc15` →
+  `dep-da8ap4ia6suc73bdidtg`** (finished 21:35Z), the currently live deploy. It
+  carries all three s306 pushes: `1ae86753` (the D_8889_EXCESS widening + the
+  4547 casing normalisation + the schema descriptions — its own deploy
+  `dep-da8aocpt0dsc73bvgfu0` BUILT and went update_in_progress before being
+  superseded, which is the normal deactivation), then `e1754760` and `64c4dc15`
+  (markdown only). **No migration, no seeder, no schema-vocabulary change** — the
+  published back-entry schema WAS regenerated, but only field `description`s
+  moved, so no allowlist or enum shifted. ⚠ The diagnostic rule's name/description
+  reach prod because `seed_builtin_rules` is `update_or_create` and the deploy
+  seeds at BUILD time; severity is unchanged (`warning`), so no rule row changes
+  behaviour beyond the widened condition.
 - s303 deploys, BOTH API-confirmed LIVE 2026-08-27: `54c187ba` (head of
   `5d0c33c5` + the scratch-file removal) → `dep-da8377cs728c73cubirg` =
   the staging-predicate fix itself; then `0d7673c9` (carrying `692d899d`,
