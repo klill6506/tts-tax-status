@@ -81,6 +81,49 @@ answer wrong (that return charged the full excise and ties). The other two are
 That asymmetry is the argument for allowing a documented-absence designation on
 the 5329 hold *before* the EIN ones.*
 
+*🔴 **s306b (same session, LIVE REGRESSION found while Ken was blocked by it):
+the Add W-2 button had been 400ing on EVERY return.** Reported through the entry
+lane as "adding a W-2 throws a 404 / the route is missing". It was neither.
+**s287 (Ken item 11, "no placeholder name") changed the button to POST
+`{employer_name: "", wages: "0.00", federal_tax_withheld: "0.00"}`; nothing
+relaxed the server, where `W2Income.employer_name` was `CharField(max_length=255)`
+with no `blank=True`** — so DRF answered `400 {"employer_name":["This field may
+not be blank."]}` to the exact payload the UI sends, for everyone, on every
+return. **Fix: `blank=True, default=""` + mig 0370** (`ec00bcb3`). A nameless row
+is a legitimate INTERMEDIATE state (add the row, then type the name) and cannot
+reach a filed return — the MeF extract already refuses a W-2 with no employer
+name BY NAME and the diagnostics already render it "employer not named", so
+completeness stays at those gates rather than a create-time 400 that blocks data
+entry outright. 5 new tests + 84 adjacent (W-2 / EIN-autofill / e-file extract).
+**Deploy `dep-da8b65tbedkc73agspg0` (prep) + the demo twin, BOTH API-confirmed
+LIVE on `ec00bcb3`. VERIFIED FUNCTIONALLY, not just deployed:** a POST of the
+exact UI payload to the real route returned **201** with `employer_name=''`,
+followed by a 204 cleanup DELETE. ⚠ That live POST was run against **DEMO, not
+prep** — proving it needs a real write and every prep return is a live client
+record (one mid-edit by another session). Demo serves the same commit and the fix
+is a model-level constraint in code, so demo passing proves prep; prep is
+API-confirmed live on that commit and its deploy runs `migrate --noinput`.*
+
+*⚠⚠ **s306b's METHOD LESSON — A PROBE AND A SYMPTOM LOOK IDENTICAL IN A REQUEST
+LOG.** The escalation named a 404, pointed at two of the day's deploys, and
+offered a list of 404s as corroboration. **Every one of those 404s was the
+reporting lane's OWN URL-guessing** — `/api/v1/w2s/`, `/api/v1/income/w2s/` etc.
+carry a `WindowsPowerShell` user-agent, and `/api/tax-returns/...` simply lacks
+the `/v1/`. The app generates exactly ONE 404 (`GET .../prior-year/`, benign, and
+it fires 6 seconds before the failing POST, which is why the two got conflated).
+**The real failure was a 400, and two of the three predate both deploys**, so
+neither caused it. ⭐ What identified it was the RESPONSE SIZE: the body is 50
+bytes, and enumerating every serializer field × every standard DRF message showed
+only one 50-byte single-field error that the UI could provoke. ⭐ Second keeper:
+**`OPTIONS` on that endpoint advertises twenty TAX-RETURN fields and no
+`employer_name`**, which reads exactly like "the wrong serializer is bound" — it
+is a DRF artifact (`TaxReturnViewSet.get_serializer_class()` returns the LIST
+serializer for every action but `retrieve`, and metadata is built from it), so
+**OPTIONS on any `@action` of that viewset describes a tax return.** It means
+nothing; it is pinned in the test docstring so the next person does not lose the
+same hour. The end-to-end test drives the real route with the real payload —
+proof by behaviour, not by reading.*
+
 *▶ NEXT: **item ⑦ (general-category Form 1116) is sized but STILL NOT ORDERED** —
 multi-session and it changes a model (OneToOne→FK + all three registries +
 `SINGLETON_SECTIONS`), so it wants Ken's word before it starts. Then extractor
