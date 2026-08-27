@@ -1,6 +1,59 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-26 session 302 — the §469(g) PTP release + the Form 8990 1040
+> ledger surface (`9999f2c6`, deploy LIVE, mig 0367); then the line-26
+> estimated-payments source (`a9f97025`) and D_EFILE_004 (`f882e494`),
+> both LIVE.** No new RENDERED form: all three are input/compute/
+> diagnostic amendments to existing units.
+> **FORM_8582 / §469(k) — the disposition-year branch closes.** ScheduleK1
+> gains the complete-disposition trio (mirroring the RentalProperty trio);
+> `_persist_ptp_limitation` allows current + prior-unallowed losses IN
+> FULL when it qualifies, and the released loss reaches Schedule E p2's
+> passive-allowed column (where the filed packets print it). Authority:
+> 2025 i8582 "Special Instructions for PTPs" rule 4, read from the PDF —
+> which matters, because the RS `R-8582-PTP` text OMITS the
+> unrelated-person requirement (states lane correction staged as S-15) and
+> the integrity gate has no independent recompute for that rule. Legs:
+> input (trio + both K-1 screens) · compute (release branch) · staging
+> (refuses the trio wherever the §469(k) branch never reads it, incl. the
+> omitted-material_participation case) · diagnostics (D_K1_PTP_469G both
+> messages; D_K1_PTP_LOSS narrowed + its stale text corrected) · verified
+> end-to-end on a filed packet's staged payload rolled back (TIE all 24
+> reconciliation lines, both GA RIE columns exact). Unmodeled and named:
+> rule 2's nonpassive/passive REPORTING split, the "From PTP" annotation,
+> the QBI vintage of a released prior loss.
+> **FORM 8990 — the Schedule A EBIE ledger becomes 1040-importable**
+> (previously 1065-only, BATCH-004 #7). One model, one allowlist, one
+> validator across both lanes. Ledger-only v1 stands — but the v1
+> zero-guard was CORRECTED against the app's Rev. 12-2025 FORMULAS
+> encoding: only the flowing columns (f)/(g)/(h) reach Part I (lines
+> 14/24/3), so a nonzero col (c) current-year EBIE now stages on both
+> lanes (the guard had over-included it — the batch item's own fixture
+> would have refused). No Schedule A → Part I wiring; the RS 8990 draft
+> re-authoring gate untouched.
+> **1040 line 26 — the payments source.** Dated
+> `federal_estimated_payments` rows now DRIVE line 26 under
+> compute_2210's own precedence (rows when any creditable exist, else the
+> legacy scalars), closing a silent understatement of taxpayer payments;
+> prod census showed zero existing returns move. D_2210_DATED re-scoped to
+> the stale-scalar residual. RS R-PAY-04 amendment staged as S-16.
+> **E-file readiness** gains D_EFILE_004: a missing MeF schema tree is an
+> environment limitation (warning, "unmeasured here"), not a D_EFILE_002
+> internal fault.
+> **SCHEDULE_SE — line 8a gains its source (s302d, `ffedba4d`).** The
+> social security wage base was never consumed: line 8a could only be
+> preparer-keyed, so a W-2 at the base did not stop the full 15.3% from
+> applying to self-employment income ($5,717 overstated on the reporting
+> packet). One shared helper now derives Σ(W-2 boxes 3+7) per proprietor
+> — keyed value overrides — across all four consuming legs (compute /
+> print / MeF / diagnostics). Authority: the 2025 Schedule SE face.
+> Census: 187 SE rows, 36 derive, zero SE-tax changes. RS S-17 staged
+> (the rule consumes L8a and declares no inputs). 10 tests; 659 green.
+> Gates: 13 + 9 + 7 + 3 new tests; 54 · 542 · 568 · 573 · 15 green;
+> typecheck + Slate K-1 vitest 8/8. Published back-entry schema +
+> SUPPORTED-SECTIONS.md regenerated (the new 8990 section).
+
 > **2026-08-26 session 300 — the Rev Proc 2014-41 §5.03 limit inside the
 > Form 8962 SEHI↔PTC iterative (`5f890ef5`, one deploy, no migration).**
 > No new form — a compute amendment to the existing FORM_8962 unit
