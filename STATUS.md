@@ -103,9 +103,11 @@ cleanup-clear, held 0 — the schema-tree issue no longer holds anything;
 before tonight one packet had cleared cleanup, now four).*
 
 *Peer state (s302): I held tree + test_postgres all session (both peers
-confirmed at boot); RELEASED at close — the states lane wants one RS
-suite run to confirm 245 → 254 after pinning ten integrity gates, and
-owns that tree. ENTRY lane: 1723 committed on the s301b e8960
+confirmed at boot); RELEASED at close and the states lane then ran the RS
+suite themselves on their own tree: **254 passed / 0 failed** (245 → 254
+as their ten pinned integrity gates entered the suite); prod re-counted
+at **169 forms / 690 authority rows / 4,663 facts**. Nothing outstanding
+between the lanes. ENTRY lane: 1723 committed on the s301b e8960
 surface; **1792 committed FILED (full tie)** on this session's deploy;
 2638 HELD awaiting their re-run of fixture batch a0ffa7a8 against
 s302b (told: no py_overpayment_applied scalar); six wrong-preparer
