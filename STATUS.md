@@ -33,6 +33,49 @@ lifecycle tests; 120 adjacent server; typecheck; slate tests re-pinned
 tests (409→410, red since 08-23 in no routine run — the s268/s281 class
 again); re-pinned with attribution.*
 
+*⭐ s305c/d/e (same sitting, three more deploys, ALL API-verified LIVE):
+**c** (`5a6d478d`) — the Color-palette panel extracted to
+`components/PalettePicker.tsx` and mounted in the SLATE RM header (Ken:
+"don't see it" — the RM had no paintbrush; one implementation, two
+triggers). **d** (`ae49f137`) — status visuals per Ken live: Approved
+LIGHT green (`success-soft`), Accepted dark green, Filed TEAL (not gray;
+new `--teal-*` tokens), Rejected listed before Accepted everywhere; the
+legacy RM's stray orange Approved unified. **e** (`abaa343e`, mig 0369
+dev+demo+prod) — **the UNPAID stage** (Ken's ruling: add Unpaid, KEEP
+Paid so the forget-to-file alarm keeps its trigger): orange dot between
+Approved and Paid; AUTO advances — invoice DELIVERED (ledgerlink.deliver)
+flips approved→unpaid, never backwards; poll + sweep advance
+approved/unpaid→paid; sweep also moves billed-but-open approved→unpaid;
+the unpaid-file 409 fires from unpaid. Pipeline: Not Started → In
+Progress → In Review → Approved → Unpaid → Paid → Filed → Rejected →
+Accepted. 20/20 lifecycle tests; vitest 1770; typecheck. **E-SIGNATURE
+DIRECTION DECIDED (discussion, nothing built — Ken: everything is Jan
+2027):** DocuSign-for-everyone, KBA for remote signers only — verified
+compliant against Pub 1345 (fetched + read: the in-person/remote line is
+PHYSICAL PRESENCE AT SIGNING; in-person needs ID inspection only, waived
+for multi-year clients; handwritten-returned 8879 is never "remote").
+THE ONE RULE: a no-KBA envelope is never signed outside the ERO's
+presence (host/in-person signing mode in office; absent spouse = KBA or
+the paper fallback). Full direction + timeline (vendor comparison w/ live
+pricing ~Oct/Nov Wednesday · pick ~Nov · integrate ~Dec) in
+docs/season_status_automation_design.md. ⚠ s305c note: two Render build
+failures today were TRANSIENT (~50s, pre-npm; retry succeeded both
+times) — retry once before diagnosing.*
+
+*s305b addendum (same sitting): **entry lane UNBLOCKED and running** —
+Ken authorized in their session; they minted their own prep token and
+were back in before the one Ken minted here was ever used. **29 packets
+now filed** (1855 + 2352 tied/committed/filed same day; 1855 held only
+on D_EFILE_001). ⚠⚠ **CREDENTIAL-HANDLING RULE, learned the hard way and
+now standing: NEVER write a token to a file — `mint_magic_link.py`'s own
+docstring forbids it and I did it anyway** (the file was deleted verified
+unread; the token was single-use/15-min-TTL so exposure was bounded, but
+the artifact would have outlived the TTL — how stale credentials reach
+backups). **The standing pattern is the entry lane's mint-and-redeem in
+ONE process**: `$t = & <python> mint_magic_link.py --prod-db;
+$env:DELVIO_MAGIC_TOKEN = $t; <lane action>` — process-local variable,
+nothing on disk, no session ever displays the raw value.*
+
 *⭐ s304/s304b (2026-08-27, Ken live, two features on his direct ask):
 **① non-filing client types + the SSN/EIN duplicate gate** (`0a31ab6b`,
 deploy `dep-da84nm6q1p3s739n2jig`, API-verified LIVE): EntityType gains
