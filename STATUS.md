@@ -124,7 +124,55 @@ nothing; it is pinned in the test docstring so the next person does not lose the
 same hour. The end-to-end test drives the real route with the real payload —
 proof by behaviour, not by reading.*
 
-*▶ NEXT: **item ⑦ (general-category Form 1116) is sized but STILL NOT ORDERED** —
+*⭐ **s306c (same session, Ken's direct go): THE GENERAL-CATEGORY FORM 1116 IS
+BUILT** (`6930e093`, deploy `dep-da8c5hv10e5c73bobam0`, API-confirmed LIVE and
+PROD-VERIFIED — line 28 seeded with its right label, `general` defers on
+nothing, `951a` still refuses, the mixed guard fires). ⭐⭐ **Sized as a
+multi-session storage-model change; it was ONE session, and re-reading the
+engine before writing is what found that**: the §904 limitation (Parts I+III) is
+**category-AGNOSTIC** — the same computation applied separately per basket — so
+general needed NO new arithmetic. Authority verbatim from the downloaded 2025
+i1116 + the IRS face: *"a separate Form 1116 for each category of income"*, and
+Part IV gives each basket its own line (**27 passive · 28 GENERAL**). Shipped:
+the gate narrowed to {passive, general} (`non_passive_category` renamed
+`unsupported_category`); the credit on ITS OWN Part IV line (was hard-coded 27,
+so a general credit would have printed on the passive line); line 28 seeded +
+both lines persisted; the print widget pinned **POSITIONALLY** against the
+caption, never inferred from the field-name sequence (s285). ⚠⚠ **THE REAL TRAP:
+the foreign-tax SOURCE.** `_foreign_tax_total` added the 1099-INT/DIV aggregate
+to EVERY Form 1116 — that aggregate is **passive-basket tax by definition**
+(payee-statement income), so a general form would have absorbed it and inflated
+the general basket, a §904(d) violation producing a **plausible wrong number
+rather than a failure**. A general form now takes only its keyed
+`additional_foreign_tax`. ⚠⚠ **AND THE MeF HALF, the same class as a detector
+that cannot fire:** the builder hard-coded `ForeignIncPassiveCategoryInd`, so a
+general credit would have **TRANSMITTED UNDER THE PASSIVE INDICATOR** — a silent
+wrong filing. Indicator + Part IV element now category-driven, verified against
+`IRS1116.xsd` directly. **THE SAFETY PROPERTY** (what makes single-category
+support safe without the one-row-per-category model change): two shapes the
+singleton cannot hold refuse BY NAME — `D_1116_010` (a general form beside 1099
+foreign tax = a genuine two-basket return) and `D_1116_011` (§904(j) is
+passive-only by statute). ⚠ The `form_1116s` back-entry shape is UNCHANGED — no
+new keys, no model change. Gates: 614 (all 1116 suites + 526 flow assertions) +
+680 e-file/MeF. RS amendment staged with the states lane (spec, `R-1116-SUMMARY`,
+`FA-1040-1116-07`, and the two new diagnostics).*
+
+*⚠ **s306c, against myself — I broke my own standing rule.** A PS5.1
+`Get-Content | Set-Content -Encoding UTF8` rewrite of a test file double-encoded
+it (every em-dash mangled, BOM added) — the exact rewrite the hazard list BANS.
+Caught only because a following Edit would not match; repaired by reversing the
+cp1252→UTF-8 round trip, and the whole working diff was scanned for mojibake and
+BOM before commit. **The rule exists because the damage is invisible in a
+terminal and survives into the commit.***
+
+*🔎 Carried, NOT built: **multi-category (general AND passive on ONE return)**
+remains the larger unit — the `Form1116` OneToOne→FK change + all three
+registries + `SINGLETON_SECTIONS`, a real Part IV across baskets, multi-face
+render, multi-document MeF, per-category §904(c) carryover. At least 10 clients
+in the Lacerte set file that way; they refuse by name today.*
+
+*▶ NEXT: **item ⑦'s SINGLE-CATEGORY half is DONE (s306c); the MULTI-CATEGORY half
+is not started and not ordered** —
 multi-session and it changes a model (OneToOne→FK + all three registries +
 `SINGLETON_SECTIONS`), so it wants Ken's word before it starts. Then extractor
 follow-ons by the **RE-MEASURED (r17) residual, which is NOT the ranking s303
