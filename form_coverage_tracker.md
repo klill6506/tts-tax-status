@@ -2518,6 +2518,23 @@
 > that ties the two together. `D_8889_ARCHER` (an 8th diagnostic) names **Form
 > 8853, which is still not built**, rather than letting silence imply zero.
 >
+> *⚠⚠ SUPERSEDED IN PART (s306) — `D_8889_EXCESS` WAS WATCHING THE WRONG SIDE OF
+> THE ACCOUNT.* It no longer calls `hsa_deduction` positionally at all; it reads
+> `owner_lines` through the new `excess_contributions()` helper, so the drift this
+> note warned about is now structurally impossible. The reason for the rewrite was
+> larger: its condition (`line 2 > line 13`) tested only the TAXPAYER's own
+> excess. Per i8889 the EMPLOYER's excess is a separate quantity against a
+> separate comparand — *"the excess, if any, of your employer's contributions over
+> your limitation on **line 8**"* — and i5329 line 47 is the SUM of the two. An
+> employer-only over-contribution leaves lines 2, 12 and 13 all at ZERO, so the old
+> condition could never fire on it. **Prod census: 6 returns carry an HSA excess,
+> ALL SIX employer-only — it had fired on none of them, ever.** The s221 lesson
+> quoted above applies exactly: the omission erred FOR the taxpayer (a missing 6%
+> excise), which is never the safe direction. Stays a WARNING by design (commit
+> gates on error-severity findings, and a timely-withdrawn excess is legitimately
+> zero); line 47 is still preparer-keyed because `hsa_curr_excess` is `default=0`
+> non-nullable and so cannot express "checked, it is zero".
+>
 > *⚠ NO MOVEMENT CLASS.* The column defaults to 0 and `hsa_deduction`'s new
 > parameter defaults to 0, so every existing return and every existing caller
 > computes exactly as before.
