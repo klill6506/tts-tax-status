@@ -146,11 +146,13 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- s303 deploy: `54c187ba` (head of `5d0c33c5` + the scratch-file removal) →
-  `dep-da8377cs728c73cubirg` — **API-confirmed LIVE 2026-08-27**. No
-  migration, no seeder, no schema regen (the change is a staging predicate
-  + docstrings; no vocabulary or allowlist moved). `692d899d` (the
-  empty-array test) is test-only and rides the next deploy.
+- s303 deploys, BOTH API-confirmed LIVE 2026-08-27: `54c187ba` (head of
+  `5d0c33c5` + the scratch-file removal) → `dep-da8377cs728c73cubirg` =
+  the staging-predicate fix itself; then `0d7673c9` (carrying `692d899d`,
+  the empty-array test, + the session-close docs) →
+  `dep-da83q215efls7394k1vg`, **the currently live deploy**. No migration,
+  no seeder, no schema regeneration in either (the change is a staging
+  predicate + docstrings; no vocabulary or allowlist moved).
 - s302 deploys: `9999f2c6` → `dep-da7q5rek1f9s73chfqe0` (⑥, mig 0367 +
   D_K1_PTP_469G seed) — **API-confirmed LIVE**; `a9f97025` →
   `dep-da7qalvlk1mc738cgd60` (s302b line 26, no migration) —
