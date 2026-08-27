@@ -1,242 +1,107 @@
 # TTS Tax App — STATUS (current state only)
 
-*⭐ s305 (2026-08-27, Ken live, third feature of the sitting): **the
-8-state return lifecycle + its automation** — Ken's status rethink ("Draft
-and Filed are both gray dots … I would like the statuses to work
-automatically"). ReturnStatus gains `paid` / `accepted` / `rejected`;
-`draft` KEEPS its stored value and DISPLAYS as "Not Started" (label-only,
-zero migration risk); every dot/pill now visually distinct (not-started =
-empty ring · filed = solid gray "with the IRS" · accepted = deep green ·
-paid = violet; two new Slate DotKinds). AUTO transitions built: first
-keyed field value flips draft→in_progress (update_fields chokepoint);
-the payment-status poll flips approved→paid when Ledger reports the
-invoice settled, + `manage.py sweep_paid_returns` for payments made while
-nobody watched the QR panel. **THE EXPOSURE KEN NAMED — "clients pay and
-we forget to file" — is a standing red clickable "Paid, NOT filed — N"
-cell in the RM season bar** (season-totals `paid_not_filed`; verified
-rendering live on demo). The unpaid-file warning: marking filed with an
-open Ledger invoice 409s naming the balance, `confirm_unpaid_file` is the
-proceed button (Ken: warn, never hard-block); stands down for `is_comp` /
-`is_bank_product` / already-paid / Ledger-unreachable. New designations on
-the Return Info card: `service_type` (in_person/remote — Ken's two
-processes; the future auto-file e-sign gate), `is_comp`, `is_bank_product`;
-`last_printed_at` stamped by every render-pdf = the Printed BADGE (Ken
-ruled badge, not status) shown as a ClientHeader stamp. Migration 0368
-(applied dev+demo — ⚠ the running demo server needed a RESTART, it runs
---noreload). The auto-file/ack design (paid+printed+approved+e-signed →
-transmit; acks→accepted/rejected; acks forward to client, rejects to
-preparer) is WRITTEN, not built — docs/season_status_automation_design.md,
-blocked on MeF transmission + the schema-trees Ken decision. Gates: 14 new
-lifecycle tests; 120 adjacent server; typecheck; slate tests re-pinned
-(Filed=neutral now); vitest full. ⚠ FOUND IN PASSING: s278's
-`1065_D_LT_NONDED` seeded line was never re-pinned in the three count
-tests (409→410, red since 08-23 in no routine run — the s268/s281 class
-again); re-pinned with attribution.*
+*⭐ s306 (2026-08-27, build lane): **the HSA excess detector could not see an
+employer-only over-contribution** — three BATCH-296 entry-lane items in one
+pass. The headline is that `D_8889_EXCESS` **already existed and already ran**:
+its condition was `line 2 (own contributions) > line 13 (the deduction)`, the
+taxpayer's own excess and nothing else. Per **i8889** the employer's excess is a
+different quantity against a different comparand — *"the excess, if any, of your
+employer's contributions over your limitation on **line 8**"* — and **i5329 line
+47** is the SUM of the two, *"Also include on line 47 any excess contributions
+your employer made."* When the over-contribution is entirely the employer's,
+lines 2, 12 and 13 are ALL zero, so the old condition was **structurally
+incapable of firing**. Both quotes verified verbatim from the downloaded 2025
+instruction PDFs (the states lane independently pulled both and confirmed them).
+**Prod census: 70 HSA rows, 6 carry an excess, ALL 6 employer-only, old
+condition fires on ZERO.** 3 keyed and agreeing (429 · 1,000 · 2,700 — three
+independent witnesses for the formula), 3 blank at 1,000 each. ⚠ **The $180 of
+missing excise is an UPPER BOUND, not a measured loss** — the excise does not
+apply to a timely-withdrawn excess and the return does not record withdrawal.
+Shipped: `excess_contributions()` in `compute_8889.py` (reads `owner_lines`, so
+diagnostic and compute cannot drift) + the rule rewritten to name the total, its
+composition, the missing excise, where to key it, and the i8889 *"report it as
+Other income if it was not in W-2 wages"* consequence. **Two deliberate calls,
+both evidence-based rather than taste: it stays a WARNING** (back-entry commit
+gates on ZERO error-severity findings and errors are not acknowledgeable —
+`backentry.py` Gate 4 — so an error would hard-block returns whose excess was
+properly withdrawn, against Ken's "warn, never hard-block"), and **line 47 is NOT
+auto-derived** because `Form5329.hsa_curr_excess` is `default=0` **non-nullable**,
+so a keyed zero is indistinguishable from an unkeyed field and there is no
+off-switch for the withdrawal case (s237 class). Silent when line 47 already
+states the derived amount. Verified read-only over every prod HSA return: fires
+on exactly the 3 blank, silent on the 3 keyed.*
 
-*⭐ s305c/d/e (same sitting, three more deploys, ALL API-verified LIVE):
-**c** (`5a6d478d`) — the Color-palette panel extracted to
-`components/PalettePicker.tsx` and mounted in the SLATE RM header (Ken:
-"don't see it" — the RM had no paintbrush; one implementation, two
-triggers). **d** (`ae49f137`) — status visuals per Ken live: Approved
-LIGHT green (`success-soft`), Accepted dark green, Filed TEAL (not gray;
-new `--teal-*` tokens), Rejected listed before Accepted everywhere; the
-legacy RM's stray orange Approved unified. **e** (`abaa343e`, mig 0369
-dev+demo+prod) — **the UNPAID stage** (Ken's ruling: add Unpaid, KEEP
-Paid so the forget-to-file alarm keeps its trigger): orange dot between
-Approved and Paid; AUTO advances — invoice DELIVERED (ledgerlink.deliver)
-flips approved→unpaid, never backwards; poll + sweep advance
-approved/unpaid→paid; sweep also moves billed-but-open approved→unpaid;
-the unpaid-file 409 fires from unpaid. Pipeline: Not Started → In
-Progress → In Review → Approved → Unpaid → Paid → Filed → Rejected →
-Accepted. 20/20 lifecycle tests; vitest 1770; typecheck. **E-SIGNATURE
-DIRECTION DECIDED (discussion, nothing built — Ken: everything is Jan
-2027):** DocuSign-for-everyone, KBA for remote signers only — verified
-compliant against Pub 1345 (fetched + read: the in-person/remote line is
-PHYSICAL PRESENCE AT SIGNING; in-person needs ID inspection only, waived
-for multi-year clients; handwritten-returned 8879 is never "remote").
-THE ONE RULE: a no-KBA envelope is never signed outside the ERO's
-presence (host/in-person signing mode in office; absent spouse = KBA or
-the paper fallback). Full direction + timeline (vendor comparison w/ live
-pricing ~Oct/Nov Wednesday · pick ~Nov · integrate ~Dec) in
-docs/season_status_automation_design.md. ⚠ s305c note: two Render build
-failures today were TRANSIENT (~50s, pre-npm; retry succeeded both
-times) — retry once before diagnosing.*
+*s306 items ② and ③: **the two opposite sign conventions** now carry
+descriptions that each name the other —
+`int_1099s[].accrued_interest_adjustment` is a POSITIVE MAGNITUDE the engine
+subtracts (keying it negative overstates by exactly 2×; the entry lane's tell,
+*"a delta that is exactly 2× an input means an inverted sign, not a missing
+figure"*, is recorded in the field itself), while
+`taxpayer.qbi_loss_carryforward_prior` carries its own sign;
+`form_5329s.hsa_curr_excess` gained one too. **③ the 4547 enum casing was FIXED,
+not documented** — staging upper-cases `form_4547s[].children[].relationship` in
+place (the MeF `ChildRelationshipCd` enum is UPPERCASE while
+`dependents[].relationship` on the SAME payload is lowercase), so `"son"` is
+accepted and `"cousin"` still refuses. Narrow by design: normalising every enum
+generically would change behaviour for lowercase sections. Published back-entry
+schema regenerated.*
 
-*s305b addendum (same sitting): **entry lane UNBLOCKED and running** —
-Ken authorized in their session; they minted their own prep token and
-were back in before the one Ken minted here was ever used. **29 packets
-now filed** (1855 + 2352 tied/committed/filed same day; 1855 held only
-on D_EFILE_001). ⚠⚠ **CREDENTIAL-HANDLING RULE, learned the hard way and
-now standing: NEVER write a token to a file — `mint_magic_link.py`'s own
-docstring forbids it and I did it anyway** (the file was deleted verified
-unread; the token was single-use/15-min-TTL so exposure was bounded, but
-the artifact would have outlived the TTL — how stale credentials reach
-backups). **The standing pattern is the entry lane's mint-and-redeem in
-ONE process**: `$t = & <python> mint_magic_link.py --prod-db;
-$env:DELVIO_MAGIC_TOKEN = $t; <lane action>` — process-local variable,
-nothing on disk, no session ever displays the raw value.*
+*⚠⚠ **s306's OWN LESSON — A COUNT TAKEN AGAINST A LIVE CORPUS IS A TIMESTAMP,
+NOT A FACT.** My census read 68 rows / 5 excess / 2 keyed; a verification run 40
+minutes later read 70 / 6 / 3 — same query, same firm. **Both wrong moves were
+available**: quote whichever run I happened to have first, or treat the
+difference as a defect and go hunting. Reconciling at ONE grain before quoting
+either is what turned an apparent contradiction into a stronger item. The cause
+is now MEASURED, not inferred, because the entry lane held the other half of the
+evidence and supplied it on request: both new rows are theirs and both are NEW
+RETURNS rather than rows changing state — one with 5,825 employer contributions
+against a 9,550 limit (**no excess**, which is why rows moved 68→70 while excess
+moved only 5→6) and one with 8,979 against 8,550 (**the 429**). The
+decomposition is exact. ⭐ Splitting MEASURED from INFERRED *before* handing the
+number on is the S-18 discipline applied before it cost anything.*
 
-*⭐ s304/s304b (2026-08-27, Ken live, two features on his direct ask):
-**① non-filing client types + the SSN/EIN duplicate gate** (`0a31ab6b`,
-deploy `dep-da84nm6q1p3s739n2jig`, API-verified LIVE): EntityType gains
-`tax_exempt` (990) and `accounting` (no return) — mig clients/0013; return
-creation REFUSES BY NAME at `build_federal_return` (NON_FILING_ENTITY_TYPES;
-990s are Ken's "some day, not today"); every UI surface labels both and the
-four Start-Return sites show the reason instead of a 400ing button. Optional
-SSN/EIN on + New Client feed a STRONG duplicate gate ahead of the name gate
-(SSN by firm-wide HMAC lookup — never decryption; EIN vs Entity.ein
-formatted-or-bare); a match 409s naming the existing client + WHICH key
-("matched SSN (primary)"), force-able (spouse-becomes-own-client). SSN →
-`identity.upsert_identity` (the one writer); EIN → the primary entity.
-Verified LIVE on demo end-to-end (created via the form; a different-name
-same-SSN second client refused naming the first; the accounting client's
-tax-year row shows the note). 16 new tests + 94 adjacent + vitest 1770.
-**② s304b — alternate-row shading, the Lacerte look** (uncommitted at s304's
-deploy; ships with this block): per-user server-synced `row_shading`
-(on/off) + `row_shading_color` (#rrggbb) on UserPreferences (migs
-accounts/0006+0007, db_default per s190); a "Row shading" section in the
-Color-palette panel (On/Off + native color input + theme-default reset);
-`applyRowShadingFromStorage()` runs after EVERY theme application (the
-preset owns the same inline `--zebra` slot); tables opt in via
-`zebra-user` (RM, ClientReturns, ClientFolders, FolderDetail; the
-always-on `zebra-table` surfaces respond to off/color too; the Slate RM
-rule excludes :hover/.is-selected so row states stay visible). Verified
-live on demo: theme-tint stripe / custom #ccffcc / off, all three states.
-⚠⚠ TWO CSS LANDMINES for the record: **an author `@layer components`
-block is DROPPED by this Tailwind v4 build** (rule verified absent from
-the served CSS), and **zero-specificity `:where()` selectors lose to
-nested utilities** — use plain specificity, the `.zebra-table` shape.
-⚠ The driven Browser pane returns STALE computed styles after live
-toggles (fresh loads correct) — verify style changes on a fresh load, not
-mid-session. Gates: 16/16 user-preferences, typecheck, vitest 1770.*
+*⛔ **KEN — NEW: S-19** (states lane, staged): `R-8889-EXCEPTIONS` states the
+same narrow `line 2 > line 13` condition the code had, and its diagnostic
+message still says the 6% excise is *"not computed here"* — stale, since Form
+5329 Part VII computes it from line 47. Spec and engine should tell one story.
+⚠ The states lane checked and DISSOLVED a third suspected defect in the same
+rule (i5329 names line 12 where the spec compares line 13, but `line 13 = min(
+line 2, line 12)` makes those arithmetically equivalent) — recorded so a false
+finding cannot be used to argue the true one down.*
 
-*⭐ s303 (2026-08-27): **the estimated-payments staging warning catches up
-to s302b** (`5d0c33c5` + `692d899d`, deploy `dep-da8377cs728c73cubirg`,
-API-verified LIVE). A miss of my own from s302b: that deploy made 1040
-line 26 follow the creditable dated rows and re-scoped the POST-COMMIT
-diagnostic `D_2210_DATED` to match, but left its PRE-COMMIT twin
-`backentry._warn_dated_vs_flat_payments` on the old contract — docstring
-and all. It then fired on exactly the payload shape s302b made canonical
-(dated rows, no flat buckets) and its text instructed the enterer to send
-BOTH representations "in agreement", which is now the wrong payload. The
-entry lane caught it on two packets that tie on every line, penalty
-included. Staging now mirrors `d_2210_dated`'s predicate exactly: warn
-only when creditable rows exist AND a nonzero legacy flat total DISAGREES.
-Three shapes that warned incorrectly now stage silent — rows-only
-(canonical), a NON-creditable `extension` row beside flat buckets (the old
-guard gated on "any rows", not "any CREDITABLE rows"), and an EMPTY rows
-array beside buckets (a real payload shape, previously untested). Stale
-docstrings corrected (`FederalEstimatedPaymentSerializer`,
-`line_status_1040.md` line 26). Gates: 5 new/flipped staging tests; 172
-backentry staging+commit, 111 across 2210/estpay, 526 flow assertions.*
+*🔎 **The "not keyed vs not obtainable" class reaches its THIRD instance**
+(entry lane, s306): `D_5329_003` holds a packet because the 12/31 HSA account
+value is blank — and that value lives on the year-end HSA statement, which a
+Lacerte partial-return print does not carry, so the hold cannot be cleared by
+further reading. ⭐ It is the cleanest instance of the class because **the
+direction of error is known and one-way: `hsa_value` can only ever REDUCE the
+tax**, so a guess could silently under-report while its absence cannot make the
+answer wrong (that return charged the full excise and ties). The other two are
+`D_EFILE_001`'s two EIN holds, where a wrong guess is undetectable downstream.
+That asymmetry is the argument for allowing a documented-absence designation on
+the 5329 hold *before* the EIN ones.*
 
-*⚠⚠ **s303's OWN LESSON, and it cost two wrong answers inside one hour:
-I READ ONE TIMESTAMP AND GENERALISED FROM IT, TWICE.** Asked where the 49
-redundant returns came from, I first asserted (unmeasured) that they were
-the entry lane's and existed because the broken warning demanded them —
-the entry lane refuted it for their queue. I then probed
-`TaxReturn.created_at`, found all 49 seeded 2026-07-23 by `backfill-2025`,
-and nearly sent a "chronologically impossible, the warning shipped 08-03"
-refutation. **The SHELL's timestamp says nothing about when its PAYMENTS
-were keyed.** The payment rows and taxpayer rows were both written
-2026-08-01→08-25, so ~43 of the 49 were keyed while the broken warning was
-live — the original story survives, but as an INFERENCE that should never
-have been handed on as a fact. ⚠ Second trap in the same probe:
-**`import_vendor` cannot answer "which lane keyed this"** — the column
-landed in mig 0364 on 2026-08-26 (s298) and all 49 predate it, so blank is
-an artifact of the migration date, not evidence. The states lane had
-promoted my inference into S-18 as "the item"; corrected before Ken read
-it, and S-18 now carries a three-tier MEASURED / INFERRED / NOT-ESTABLISHED
-evidence ledger.*
+*▶ NEXT: **item ⑦ (general-category Form 1116) is sized but STILL NOT ORDERED** —
+multi-session and it changes a model (OneToOne→FK + all three registries +
+`SINGLETON_SECTIONS`), so it wants Ken's word before it starts. Then extractor
+follow-ons by the **RE-MEASURED (r17) residual, which is NOT the ranking s303
+left**: f8995 coverage (6 solo / 128 touched) > asset_detail (4) >
+student_loan_educator_wks (4) > sch_c (3) = **line-20 Sch 3 face class (3, was
+"5")** = f8880 (3) = f5695 (3) = f8889 (3). ⚠ Every one is an UPPER BOUND until
+the corpus re-runs with that class open (fifth confirmation). Open BATCH-296
+entry-lane items still unworked: the `div_1099s.us_government_income` → GA S1-10
+auto-derive design (needs an off-switch decision, s237 class) · the D_SCHD_006
+QOF import surface.*
 
-*⭐ **The prod census that settled S-18** (read-only, all 51 returns
-carrying §6654-creditable dated rows): **2** canonical (flat == 0), **49**
-redundant-but-consistent (nonzero flat agreeing exactly), **0** stale
-duplicates. So **the repaired warning fires on ZERO production returns** —
-a false-positive removal plus a guard against a shape single-sided editing
-can still create, explicitly NOT claimed as a live catch. The census also
-withdrew the states lane's own recommendation: option (b) (staging refuses
-the redundant payload) would have refused **49 of 51, the dominant shape**,
-mid-queue on a live import surface. ⛔ **KEN — S-18** now recommends (d):
-clean up the 49, leave the field alone. ⚠ Hard constraint found in the
-probe: `prior_year_applied` appears as a dated kind on these returns, so
-cleanup must be per-return and twin-checked — `py_overpayment_applied` may
-be the only place a return states that figure. The one-week re-census is
-the load-bearing follow-up: if the count holds at 49 after a week of
-rows-only keying, the causal story is confirmed by observation.*
-
-*⭐ **s303 depth probe — build-queue item ⑦ (general-category Form 1116) is
-the LARGE unit, not a gate flip.** Prod cannot size it (5 Form1116 rows, 4
-passive + 1 general — the packets that would populate it are the refused
-ones), so the probe read the 635 Lacerte Inbox PDFs positionally: **254
-carry a 1116 face; 94 passive, 18 general, and 10 carry BOTH passive AND
-general on the same return** (8 general-only). Multi-category is real, so
-the unit needs the OneToOne→FK model change (⚠ + all three registries and
-`SINGLETON_SECTIONS`, the s256 lesson), a genuinely computed Part IV across
-categories (lines 27/32 are hard-wired to the single passive result today),
-`D_1116_003` narrowed to the still-unsupported categories, multi-face
-render, multi-document MeF, and per-category §904(c) carryover. ⚠ **All
-counts are LOWER BOUNDS — the mark detector found no category box on 152 of
-the 254**, my heuristic's miss, not the corpus's. Excluded en route: the 4-
-and 6-page multi-category packets are REGULAR + **AMT** copies of each
-category — and the AMT copy is already refused by name (`D_6251_006`) with
-`Taxpayer.amt_ftc` as the keyed escape hatch, so it is a correctly-labelled
-declared limitation, not a new gap.*
-
-*▶ NEXT: **item ⑦ is sized but NOT started — it is a multi-session unit and
-Ken has not ordered it** ("sits next unless Ken reorders"). Recommend he
-confirms before it begins, given the model change. Then extractor
-follow-ons by residual: line-20 Sch 3 face class (5) > MFJ ownerless
-int/div (4) > the 1099-R 5b-decomposition probe (1) > SchB payer-less
-exception (1). Open BATCH-296 entry-lane items: the
-`div_1099s.us_government_income` → GA S1-10 auto-derive design
-(attribution-only today BY DESIGN; an auto-derive needs an off-switch
-decision, s237 class) · the D_SCHD_006 QOF import surface.*
-
-*⛔ **BLOCKED, AND IT IS KEN'S CALL — the entry lane is stopped.**
-`import-lane.ps1` returns HTTP 403 (the saved session from 08-26 11:15
-expired). The lane commits against **prep**, which holds the real filed
-returns, and its script gates minting on Ken's explicit go for anything but
-demo — so it correctly stopped and asked rather than re-authenticating.
-Nothing lost: the 403 hit the staging POST, which writes nothing. Client
-1855's payload is built and waiting. Client **1633 filed** (first packet on
-that lane to clear cleanup entirely) before the block.*
-
-*Peer state (s303): I hold the tree + test_postgres (states lane confirmed
-it released both after its 254/0 RS run; entry lane blocked on auth, not on
-the tree). Three annexes appended to BATCH-296 — the fix, the provenance
-CORRECTION, and the item-⑦ sizing. Cross-lane triage this session: the
-entry lane's **GA IND-CR 202 note is CONFIRMED, no defect** — `compute_ga500`
-has carried `CC-FED × 0.50` since s243, cited to IT-511 Rev. 07/09/25 p.9
-and the p.57 face (O.C.G.A. §48-7-29.10); their caution is the valuable
-half and is filed, since on that packet the expense-base route also rounds
-to 173 and the packet cannot discriminate the two rules by arithmetic. Their
-**2210 line-8 method** (read the prior-year tax off line 8 rather than
-asking) is filed; client 1518 stays held — it files no 2210, so the figure
-genuinely is not in the packet.*
-
-*⚠ PII housekeeping (states-lane flag, actioned): three code comments
-carried a client surname — `backentry.py:688`, `test_backentry_commit.py`,
-and the staging test class — all scrubbed to a neutral shape reference.
-**Code comments are a PII carrier that travels into every quote of them.**
-Forward-only; history is not rewritten on main.*
-
-*⛔ KEN remaining: NEW — **S-18** (the 49 redundant flat-scalar returns;
-recommendation (d) cleanup) · **the entry lane's auth re-mint** (blocking
-that lane now) · carried: MeF schema trees on Render (D_EFILE_004 is the
-correctly-labeled standing state until ruled) · S-15 + S-16 + S-17 (RS,
-states lane) · the s298 truncated-name PREFIX-MATCH tier + organizer
-enrichment · S-14 SEHI method (three facets) + s300b D_8962_NOCONVERGE
-note · S-11/S-12 dependent-chain · the s295 int/div ruling (narrowed) ·
-the 51-dependent DOB ask · the 1723 GA Eligible-Itemizer question ·
-#21 (partial-allowance-against-PTP-income half stands) · #48 (RS 404),
-#56, #63, #69, #10 tail. Carried: entity second-state-face transport (#3);
-`OVERRIDE_HONORED_STATE_LINES`; 146-packet re-export; NC/CA/SC
-linked-state reopens; #6 1065X/AAR; #68 optimizer; s274 PII narrowings;
-RS 8990 re-authoring gate; 6765 Sec G; client-4545 D_8606_BASIS_ONLY;
-1065 BATCH-004 #4; Analysis line-2 active/passive proxy; the unfloored
-8960 line5 §1211(b) question; tier-3 PII scrub; the 47 RS-integrity-gate
-sweep (12 FAIL, states S-10).*
+*Peer state (s306): I hold the tree + test_postgres; both lanes confirmed no
+collision at boot. **Entry lane is UNBLOCKED and running — 33 packets filed**
+(auth good, Ken gave explicit `--prod-db` go in their session). Their open holds:
+two on Ken's 2024 figures, one sanctioned Pub 974 method difference, one on the
+general-category 1116 (item ⑦ — that packet is not enterable at all). States lane
+holds neither the tree nor test_postgres; RS suite 254 passed / 0 failed.
+⛔ **NOTHING of S-14…S-19 has been ruled** — the states lane's standing warning
+applies: if any lane says Ken ruled one, that is a RELAY, check with him directly
+(three relays on 8/25–26 differed from what he meant or were retracted).*
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -349,6 +214,13 @@ what a batch file or your own probe shows.
   verification route = the in-place rolled-back recompute, s289 pattern;
   s302 ran the 1792 probe this way clean, incl. the commit reconciliation).
 - 🔧 ⚠ pytest-randomly NOT installed (s281).
+- 🌐 ⚠ **`str(Decimal)` preserves the STORED SCALE** — a diagnostic detail
+  written as `str(amount)` reads back `"429.00"`, not `"429"`. Compare
+  `Decimal(details[k])`, never the raw string (s306; two test failures).
+- 🌐 ⚠ **A BACKGROUNDED pytest piped through `Select-Object` buffers ALL
+  output until exit** — no interim progress at all, so a long sweep looks
+  identical to a hung one. (The standing rule already bans that pipe; this is
+  the detached-run reason.) Check liveness with the process's CPU time.
 - 🌐 ⚠ pymupdf: `get_text()` misses AcroForm widget VALUES (s283); word
   bboxes span the FULL line height (s286); synthetic `insert_text` PDFs may
   LOSE leading spaces (s290) — the extractor parses POSITIONALLY everywhere.
@@ -499,3 +371,16 @@ dated-rows source, matching R-2210-REG's precedence) — both staged by the
 states lane, both Ken's. Recorded lane-side, not staged: the RS 8990 spec
 models NO Schedule A surface (the seam if it is ever specified is
 `partner_excess_bie`).
+NEW (s306): **S-19** — `R-8889-EXCEPTIONS` states the same narrow
+`line 2 > line 13` condition the code carried (blind to an employer-only
+HSA excess, which i8889 measures against line 8) and its diagnostic message
+still says the excise is "not computed here", which is stale since Form 5329
+Part VII computes it from line 47. Staged by the states lane, who pulled both
+instruction PDFs and confirmed the quotes verbatim, and who DISSOLVED a third
+suspected defect in the same rule (line 12 vs line 13 are arithmetically
+equivalent given `line 13 = min(line 2, line 12)`) — recorded because a false
+finding attached to a true one is how a good item gets argued down.
+⚠ Also noted by them, no action from this lane: `R-8889-EXCEPTIONS` declares
+`inputs: []` while its formula reads lines 2 and 13 — the THIRD confirmed
+instance of the S-17 under-declaration class, after `R-SE-L8D-L9` and
+`R-1116-SUMMARY`.
