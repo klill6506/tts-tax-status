@@ -261,6 +261,33 @@ defects wanting three different detectors). Building now would be building to a
 hypothesis — the same trap the lane correctly refused to hand me on the rental
 recharacterisation.*
 
+*⭐ **s306g — SC Schedule NR line 46 no longer defaults to zero in silence**
+(`fdf3492f`). NR-46 ("standard or itemized deduction") is a preparer INPUT
+consumed as `L47 = NR-46 × the proration %`; unkeyed it defaults to 0, the
+allowable deduction becomes 0, and the SC brackets run across the ENTIRE
+SC-source AGI — **$1,919 of tax the filed return does not have**, arrived at
+silently (428 + 6% × 232,775 = 14,394 to the dollar). `D_SC1040_NR46` (warning)
+names the ABSENCE and **explicitly says not to back-solve the value**: it is not
+derivable from the federal return (neither the full federal itemized total
+12,436 nor that less state income tax 13,268 reproduces the filed 12,475), and a
+rule nudging anyone toward reverse-engineering 41,463 would be worse than
+silence. 7 new tests — **four of them assert SILENCE**, deliberately, after the
+`D_1116_012` NameError this session showed a positive-only test passes while a
+rule fires on everything.
+⭐ **THE SILENT-DEFAULT FAMILY IS THREE DIFFERENT BUGS WEARING ONE FACE**, and
+only one was a type problem: a COMPUTED output keyed as an input (`ga500_fields`
+"S1-7" — still open), a DISCARDED FieldType (the 30+ state boolean control
+lines — fixed s306f), and an UNKEYED REQUIRED INPUT defaulting to zero (NR-46 —
+now named).*
+
+*⭐ **The reported "SE wage-base re-confirmation" was NOT a defect** — the entry
+lane had keyed box 4 (social security TAX) and not box 3 (wages), so line 8a
+derived nothing. s302d works: with box 3 keyed every federal line ties. ⚠ **The
+lane's arithmetic was right to the cent and named the wrong component** — the
+keeper is *the numbers you observe are evidence, the component you name is a
+hypothesis*. ⭐ Holding the detector was vindicated: the owner-mismatch warning I
+sized (2 of 199 rows) would have been DEAD CODE, because the owners matched.*
+
 *⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
 lane is holding correctly):** ① **the Worksheet for Line 18** (§904(b)(2)(B)
 worldwide QD/capital-gain adjustment — the factors 0.2432 / 0.3243 / 0.5946 are
