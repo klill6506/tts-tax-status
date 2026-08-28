@@ -191,6 +191,56 @@ green result was CAPABLE of catching — the same class as the vacuous SE fixtur
 and the s303 timestamp. It was caught only because the lane refused to bank an
 unverified claim, and because the stored lines were readable after commit.*
 
+*⭐ **s306e/f (same session): two Form 1116 gaps and the state-lane silent-value
+class** (`0b6b6bb6` + `b2d0dd7c`, deploy API-confirmed LIVE). **① Line 3d was
+NOT EXPRESSIBLE** — `compute_part1` always accepted `gross_foreign_source` and
+NOTHING EVER SUPPLIED IT (no field, no allowlist key, no caller), so 3d fell
+back to line 1a. Right only while 1a is UNADJUSTED; under §904(b)(2)(B) the two
+diverge hard (1a 17,964 vs gross 3d 82,309 on the reporting packet → ratio
+0.144389 instead of 0.661573, standard deduction under-apportioned by ~12,000).
+Model field + mig 0371 + allowlist + a description saying plainly it is NOT 1a;
+`deduction_apportion` also documented as the 3a INPUT, not the 3g result.
+**② Line 18's adjustment exception was ASSUMED** — it is evaluated from two
+`default=0` preparer fields, so unkeyed is indistinguishable from stated-zero.
+i1116 is explicit the other way for the shape vendors print: *"You can't make
+this election if you have any foreign qualified dividends or foreign capital
+gains … and you made adjustments to those amounts when you completed lines 1a
+and 5."* Prod census: **3 of 9 full-path returns sit in that blind spot** (one
+with $75,796 of worldwide QD+gains). `D_1116_012` (warning, not RED — the
+engine sees only WORLDWIDE amounts and some of those returns are right) names
+the amounts and the two-part test. **③ s306f — state BOOLEAN control lines are
+now TYPE-checked**: the vocabulary threw away the seeder's `FieldType`, so a
+string in NC's `PYNR` staged clean, Schedule PN never engaged and NC taxed 100%
+of a nonresident's income (**$4,780 overstated, and it read as an engine
+defect**). Never a one-off — **30+ boolean control lines** across all eight
+installed state forms had the same blind spot. Gates 616 + 175 + 6 new.*
+
+*⚠⚠ **s306e/f, TWO errors of my own, both caught before they reached anyone.**
+(a) `D_1116_012` used `_dec`, which does not exist in `rules_1116` — the runner
+records the NameError AS the rule's finding, so the rule appeared to FIRE on
+every return, **including the fixture written to prove it stays silent. The
+positive test passed throughout; only the NEGATIVE test exposed it.** A rule
+that fires everywhere looks like a working rule. (b) I grepped for
+`"RIE-TP-DIS"`, found it only in the seeder, and was one message from telling
+Ken the GA disability exclusion was "seeded but consumed by nothing" — **it is
+consumed, via a dynamically built key** (`truthy(f"RIE-{p}-DIS")`), exactly the
+s272b lesson (*the grep lied because the name was constructed*). s274 built that
+gate deliberately, citing O.C.G.A. §48-7-27(a)(5). ⭐ **A literal grep cannot
+prove an absence when the key is assembled at runtime.***
+
+*⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
+lane is holding correctly):** ① **the Worksheet for Line 18** (§904(b)(2)(B)
+worldwide QD/capital-gain adjustment — the factors 0.2432 / 0.3243 / 0.5946 are
+on the i1116 worksheet; without it a return whose 1a is vendor-adjusted computes
+an overstated credit; `D_1116_012` currently only warns). ② **a per-property
+NONPASSIVE lever** — a filed 8582 omits exactly one of six rentals, so its 465
+flows through, and there is no way to say so; ⚠ the lane deliberately withheld a
+mechanism because their §1.469-2T(f)(3) hypothesis does NOT separate the two
+parcels (1.3% vs 0% depreciable, both far under the 30% test), so building to it
+would encode an unsupported rule. ③ **`ga500_fields` does not warn when a
+COMPUTED line is keyed** (S1-7 is written by `compute_ga500`), while
+`state_returns` does — close the asymmetry.*
+
 *⚠ **s306c, against myself — I broke my own standing rule.** A PS5.1
 `Get-Content | Set-Content -Encoding UTF8` rewrite of a test file double-encoded
 it (every em-dash mangled, BOM added) — the exact rewrite the hazard list BANS.
