@@ -1,768 +1,89 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — ACCOUNT SWITCH 2026-08-28 (read this first)
+## ▶▶ RESUME POINTER — s308 close, 2026-08-28
 
-**Ken switched Claude accounts mid-session (spend limit). Nothing is
-half-built: every unit below is committed, pushed, and deploy-verified.**
-Head at handoff: **`440aac92`** (s306t). Three sessions were running — this
-build lane, the entry lane (`tax-test-data-aa`), the states lane
-(`delvio-states-9c`); both peers were told to write their own durable
-checkpoints, so **do not reconstruct their state from this file — read
-theirs.** ⚠ The cross-session channel does NOT survive the switch: the new
-session's peers are whatever is running then, and any claim that "Ken ruled
-X" arriving by relay must be checked with him directly (three relays on
-8/25–26 differed from what he meant or were retracted). ⚠ **An account switch
-makes that warning matter MORE, not less** — a new session has no memory of
-which claims were retracted.
+**State: idle and CLEAN. Head `504a484f` (s308), deploy
+`dep-da91l1rl550s739kus9g` — verify live at next boot if this file still
+says so.** Post-account-switch: the peer lanes are whatever is running
+now; their last durable checkpoints are the entry lane's
+`D:\tax-test-data\1040\Lacerte Inbox\LACERTE-RESUME-2026-08-28.md`
+(**48 filed / 5 held** after s307's client-2234 GA LIC verification) and
+the states lane's `D:\dev\delvio-states\STATUS.md` top block (staged set
+21 = 8 ruled+built · 3 D-037-deferred · 10 UNRULED). ⚠ Any "Ken ruled X"
+arriving by relay gets checked with him directly (standing; three 8/25–26
+relays were wrong or retracted).
 
-**▶ THE PEER CHECKPOINTS — read these, don't reconstruct them:**
-- **Entry lane** → `D:\tax-test-data\1040\Lacerte Inbox\LACERTE-RESUME-2026-08-28.md`
-  (full checkpoint), plus a `RESUME HERE` block appended to
-  `D:\tax-test-data\1040\tmp\CC-TAKEOVER-STATUS-2026-08-19.md` (where the
-  memory pointer sends a cold session). **47 filed / 6 held** — the recount
-  reason is in the file, so don't re-derive 48 from the table's row count.
-  ⛔⛔ **THREE PACKETS ARE STAGED AND DRY-RUN, NONE COMMITTED**, batch ids
-  recorded. ⛔⛔ **FIVE `*PROBE*` PAYLOADS EXIST AND MUST NEVER BE COMMITTED**
-  — they carry FABRICATED values (a made-up 2024 AGI of 200,000, an invented
-  dependent birth date) and are the evidence behind the 1071/1141 findings.
-  Keep, do not delete, do not commit. A `.batch.json` sitting beside a held
-  packet is not necessarily the real one.
-- **States lane** → `D:\dev\delvio-states\STATUS.md` **top block** (commit
-  `8e37321`), pointer + RS numbers in `D:\dev\delvio-rule-studio\STATUS.md`
-  (`e0db5b8`). Staged set split three ways: **8 ruled and built · 3 ruled but
-  landing on THIS tree and deliberately not started (D-037) · 8 UNRULED.**
-  ⛔ **S-18 and facet 3 remain MINE to raise with Ken** — the states lane
-  records my refusal to run the 49-return cleanup on a relay as correct and
-  not to be worked around. Nothing half-written on their side; suite 254/0.
+**✅ s308 SHIPPED (`504a484f`): the extractor Schedule C leg — sch_c is
+GONE as a refusal class.** r22 = **22 emitted / 245 refused / 267
+scanned** (was 21/246); zero drift on the 21 prior payloads; the one new
+emit **TIES 14/14 lines to the dollar in a rolled-back probe** — the SE
+chain end-to-end (Sch C net → SE tax → ½-SE deduction → AGI → GA RIE
+earned income, §6654 penalty at delta 0). Packet identities live in
+`PipelineOut/r22`, never here. Three gates in one unit:
+- **`sch_c.py`** parses both Schedule C faces positionally (geometry from
+  the nine solo packets' 16 raw dumps + a 126-page corpus calibration:
+  70/70 TaxWise p1 pages parse, zero identity failures; the single p2
+  error is a Lacerte-printed stray that already refuses upstream).
+  Right-edge value recognition from the start (the s307 lesson — line
+  13's caption prints "179"). Refusals by name: statutory box, 32b,
+  passive/unreadable line G, "Other" method/inventory, line-34 Yes,
+  4/27b with no page 2, line 30 with no sqft, Part V note rows.
+  `depreciation_filed` carries a printed line 13. Form 8829 pages now
+  BLOCK by name.
+- **`sch2.py`** — the Schedule 2 other-taxes decomposition: face line 23
+  neither blanket-refuses nor blanket-allows; components engine-derive
+  (4 SE / 11 8959 / 12 8960) or refuse by name; line 21 must equal the
+  printed component sum. ⭐ Proven live on its first corpus pass: it
+  exposed $678 of Form 5329 tax on a packet whose 5329 page TaxWise
+  never printed — the s297 omission class, caught by the sum identity.
+- **f8995 Part I rows** parse (name/TIN/qbi + wrapped-name continuation)
+  when a Schedule C source exists; the emitter matches rows one-for-one
+  by TIN and count and checks Σrows = Σ(line 31) − Sch 1 line 15.
+  ⭐ Also proven live: one packet's 8995 carries a second business whose
+  Schedule C page was never printed — three independent gates refuse it.
+- Plus: Schedule 1 line 3 decomposes against Σ(31); line 15 allowed only
+  with an SE source; **the SE wage-base guard** (the W-2 detail report
+  does NOT print box 3, so Schedule SE line 8a is underivable — refuse
+  when wages + 0.9235×net cross $176,100; marginal cases fall to the
+  dry-run tie).
+- 39 new tests (identity injections, checkbox variants, the
+  caption-numeral and name-initial-in-gutter regressions, the Schedule 2
+  header-"02"/"$150,000"/"965" traps); 161 extractor tests green.
 
-**⛔ WAITING ON KEN — the three he explicitly said he would come back to:**
-1. **Georgia SALT add-back.** *"Let me think on it and ask me again later."*
-   ⚠ A CONFLICT MUST REACH HIM BEFORE THE FIELD IS DESIGNED: the states
-   lane's `R-GA500-DED` implements IT-511's literal **proration** formula
-   while Lacerte does `max(0, 5d − cap)`, and on the entry lane's 9 resident
-   packets the booklet-literal rule gives **0**. Resident/nonresident paths
-   also differ.
-2. **Per-property nonpassive lever.** *"I need to look this up at the
-   office. Ask me about this later."* The lane deliberately withheld a
-   mechanism — their §1.469-2T(f)(3) hypothesis does NOT separate the two
-   parcels, so building to it would encode an unsupported rule.
-3. **The 3 firm-EIN W-2 rows.** *"I'll be at the office in a couple of hours
-   and I will pull up the return and direct you then."* Wrong data on real
-   returns; cleaning is his call, not a unilateral write.
+**▶ NEXT unblocked build work — extractor, by the r22 ranking (all upper
+bounds until a class opens):** student_loan_educator_wks **7** >
+f5695 = f8889 = asset_detail = f8880 = est_payments_wks **5** each >
+other_income_wks 3 > f8962 3. Notes: the est_payments_wks class should
+emit dated `federal_estimated_payments` rows (s302b note, still
+standing); the exempt-interest decomposition (3 named packets, s307)
+remains the cheapest targeted leg. Follow-on noted, not built: face
+line 25c still blanket-refuses 8959 withholding even though it is
+engine-derivable from extracted W-2 rows once an 8959 page is present —
+worth folding into whichever leg next touches a 25c packet. Then: item
+⑦'s **multi-category Form 1116** half (multi-session, model change —
+**wants Ken's go before it starts**).
 
-**⛔ ALSO KEN'S, newer:** client **1071**'s prior-year figures — a printed
-Form 2210 line 8 of 20,395 fits BOTH an 18,541 tax at 110% AND a 20,395 tax
-at 100%; **both tie the whole return**, so the packet cannot distinguish
-them and the lane correctly keyed neither. · Client **1141** is held on a
-dependent DOB that exists nowhere (packet, organizer, or Lacerte's own file
-— its Schedule EIC prints the year of birth as literally "0"); measured cost
-1,700 (ODC 500 where the filed return takes CTC 2,200).
-
-**▶ NEXT unblocked build work (nothing depends on Ken):** ✅ client **2234**'s
-GA Low Income Credit is now **VERIFIED LIVE** (s307, 2026-08-28, post-switch):
-the entry lane re-staged unchanged (`-b`, still no-tie — correct, the credit
-gates on an affirmative `LIC-NODEP`), then keyed the gate + `LIC-CHILD 1`
-(`-c`) → **TIE at the filed numbers** (ga500 23/29 = 154, 45 = 160, the $10
-lands), committed, filed, closed `source_verified` — **48 filed / 5 held**.
-⚠ Finding from the run: the lane could not SEE `D_GA500_022` on the dry-run —
-but the server has echoed full diagnostics on every dry-run since s306m
-(`data.diagnostics`); their DRIVER discards the key. Fix is lane-side
-(their runner renders it), told to them — no delvio-tax change.
-✅ **The f8995 extractor leg SHIPPED (s307, `78d9fedb`, deploy live):**
-r21 = **21 emitted / 246 refused** (was 19/248); f8995 is GONE as a refusal
-class; the two carryforward-only packets emit with their QBI loss
-carryforwards (negative, per the staging sign guard; verified in the
-emitted JSON — identities in `PipelineOut/r21`, which is where packet
-identities BELONG, never here). ⚠ The live corpus
-REFUTED the first geometry in a way the unit tests could not have — line
-10's caption "Add lines 5 and 9" plants a bare "9" inside any left-edge
-value region, and the fixtures were built from probe dumps sharing the
-same left-edge assumption, so they were blind by construction. Values are
-now recognised by RIGHT edge (≥435; caption numerals end ~430),
-regression-pinned incl. line 17's "7." which only survives numeric-parse
-failure. ⭐ The s301 lesson performed live: clearing the gate REVEALED
-deeper refusals on 4 of the 6 "solos" (tax-exempt-interest decomposition
-×3 — packets named in `PipelineOut/r21` — plus attributions), and the duo arithmetic
-reconciled to the packet across runs (sch_c solos 3→9 = exactly its 6
-f8995 duos; student_loan 4→7; est_payments 2→4).
-⛔ KEN, NEW: **one Inbox packet carries "no need to fil" TYPED INTO THE
-TAXWISE NAME FIELD** of its Main Info sheet (identified in
-`PipelineOut/r21`'s refusal and the entry lane's message log) — reads like
-a do-not-file note in the wrong place. Genuine do-not-file? The shell
-matcher rightly refuses; not to be worked around either way.
-**▶ Extractor next, by the r21 ranking (all upper bounds until re-run):**
-sch_c 9 (the big one) > student_loan_educator_wks 7 > asset_detail 5 >
-est_payments_wks 4 = f5695 4 = f8889 4 > f8880 3; the exempt-interest
-decomposition (3 named packets) is the cheapest targeted leg. Then: item
-⑦'s **multi-category** Form 1116 half (multi-session, changes a model
-OneToOne→FK + all three registries + `SINGLETON_SECTIONS` — **wants Ken's
-go before it starts**).
-
-**Two questions staged in `REVIEW_QUEUE.md`** (both mine, neither blocking):
-whether `D_GA500_009` should drop error→warning (as an error it is
-unacknowledgeable and permanently blocks closeout on every Georgia return
-with an NOL, though the computation it warns about is correct), and whether
-the two MFS living-arrangement fields should collapse into one.
-
-*⭐ **s306t (2026-08-28, the last unit before the switch; `440aac92`, deploy
-verified) — THE DEPLOY-SKEW SEVERITY SPLIT, the GA Low Income Credit gate,
-and three messages that named controls which do not exist.** ⚠⚠ **s306s's own
-deploy produced the finding**: the deploy seeds the shared DB at BUILD time,
-so for the ~3.5 min rollout (15:16–15:20Z, measured from the Render API) the
-OLD code served beside the NEW registry row and every diagnostics run in that
-window stamped an **error-severity ENGINE FAULT onto blameless returns** — the
-entry lane caught it live on an HOH return with no spouse. The function was in
-the deployed commit the whole time; this was never a broken build. The runner
-now asks **what THIS build's own registries know**: an unknown code = a row
-from a different build → **warning** (`deploy_skew_unknown_rule`, "re-run once
-the deploy settles", and it says plainly the rule did NOT run); a code this
-build DOES declare that still fails to import = a real defect → **error**,
-unchanged. **Fails toward ERROR** if the aggregation itself breaks. ⭐⭐ **THE
-GATE CONSEQUENCE IS THE PART THAT NEARLY WENT WRONG SILENTLY**: cleanup Gate 4
-held on error-severity findings, and every engine fault used to be one — so
-downgrading skew to a warning would have let a **degraded run close a packet
-whose rules never executed**. Gate 4 now holds on the run's FAILED status
-directly, **unacknowledgeable by design** (the fix is re-running, not attesting
-past it), pinned by a test that acks the warning and proves the status hold
-stands. **Also:** the **GA Low Income Credit** computed 0 on the lane's first
-sub-$20,000 return (filed takes $10; lines 23/29/45 each missed by exactly
-ten) — two causes, both closed: the gate needs an affirmative `LIC-NODEP`
-(IT-511 p17, a preparer assertion the return cannot derive) and **nothing named
-the silence** → `D_GA500_022`; and **`LIC-CHILD` was seeded `is_computed=True`
-with NO writer** (the S4-8 class — seeded computed, nothing writes it,
-un-keyable) so the child count was permanently zero → now an input. **Three
-messages corrected**: `D_SCH1A_006` said "override" lines 4a/4b/4c when there
-is **no import surface** (deferred with a build trigger in DEFERRAL_AUDIT — the
-treatments only diverge when tips are UNDER the line-7 cap); `D_GA500_010`
-never mentioned that `ga500_fields "42"` carries the UET result (it took one
-return from a $1 miss to a full tie); `D_2210_PRIOR_YEAR`'s "(and AGI)"
-parenthetical carried the whole rule — **keying the tax ALONE silently applies
-100%**, understating the penalty for a high-AGI taxpayer as convincingly as the
-blank overstated it. ⚠ **I also fixed `D:\tax-test-data\import-lane.ps1`
-myself** (the lane invited it): `Invoke-Api` handed `Invoke-RestMethod` a
-STRING body, so PS 5.1 encoded it as **Windows-1252** — `§`/em-dash became
-invalid UTF-8 (hard 400) and **`⚠`/`⭐` silently became `?` inside COMMITTED
-payloads** (clients 1109/2081/2723 already carry that, including 2081's marker
-saying box 3/5 were deliberately absent). Now sends
-`[Text.Encoding]::UTF8.GetBytes($json)` with `charset=utf-8`. **Not exercised
-against the server — the lane re-verifies before trusting it.***
-
-*⭐⭐ **s306r (2026-08-28 PM) — THE §904 RATIO NOW COMPUTES FROM THE EXACT
-QUOTIENT; TWO FILED RETURNS REFUTED OPPOSITE ROUNDINGS** (`592be64a`, deploy
-API-confirmed LIVE). The entry lane's 1359 refuted the 5dp quantization s306d
-shipped, in the OPPOSITE direction from 2303 which refuted 4dp: 2,334/34,650 ×
-6,302 = **424.4984 exact → 424 filed**, but the 5dp ratio 0.06736 lifts the
-product across the half-dollar to 425 — that one rounding decision was the
-whole dollar. **NO rounding of line 19 satisfies both witnesses; the exact
-quotient satisfies both**, is what R-1116-LIMIT literally states (`L21 =
-round(L20 × L19)`, no ratio rounding — the quantization was an implementation
-addition, so this moves the code TOWARD the spec), and matches the vendor
-(Lacerte prints 1359's ratio to NINE decimals — it carries the full quotient
-and rounds only for display). Convention now: **compute exact; round only at
-the write seam** — i1116's "at least four places" is a display FLOOR, MeF
-`RatioType` (fractionDigits=5) a transmission CAP; stored/printed/transmitted
-line 19 stays 5dp. ⚠ Line 3f deliberately NOT harmonized — its only witness
-supports computing 3g from the QUANTIZED 4dp value; the code comment forbids
-"cleaning it up". ⭐ The lane asked me to verify their arithmetic before
-changing anything (their own 3f multiplication had failed to reproduce earlier
-that day) — it verified to the digit. Blast radius censused read-only: **all 8
-committed prod full-path returns identical under both conventions; 1359 itself
-is the only return where they differ**, and it moves into agreement with the
-filed return. Gates: 4 new tests (defect-injection-verified), 114 1116, 526
-flow assertions, 620 MeF.*
-
-*⭐ **s306s (same sitting) — THE 8582 MFS LIVED-APART LEVER WAS UNIMPORTABLE:
-TWO FIELDS HOLD ONE FACT FROM OPPOSITE SIDES.** The lane's first MFS packet
-(2723, FILED, tie): they keyed `mfs_lived_with_spouse = FALSE` and
-`D_8582_MFS_TOGETHER` kept firing. Neither of their hypotheses was it —
-`mfs_lived_with_spouse` ("lived WITH spouse at ANY time", §86) drives the SS
-worksheet ONLY and FALSE is its default, while the 8582 lever is
-`f8582_mfs_lived_apart` ("apart the ENTIRE year", §469(i)(5), read by
-compute_schedule_e AND the rule) — **and that field was NOT in the back-entry
-allowlist at all**, so an MFS-apart packet could not get the $12,500 special
-allowance under any keying. ⚠⚠ **The two defaults contradict each other by
-construction** — a fresh MFS return reads as "apart" to the SS worksheet and
-"together" to Form 8582 simultaneously. Shipped: the field joins the
-allowlist; both schema descriptions name each other (the s306 sign-convention
-pattern); the rule's message NAMES the input that clears it (the lane keyed the
-wrong field because nothing named the right one); new `D_8582_MFS_CONTRA`
-(warning) for the affirmative both-true contradiction, silent on the default
-both-false. Collapsing the pair into ONE field = a model change + data
-migration over real returns → staged for Ken in REVIEW_QUEUE.md, recommended
-leave-as-is.*
-
-*⭐ **Entry-lane field results (same sitting):** 1026 FILED — the line-26
-estimated-payments derive CONFIRMED on real data (their arithmetic: line 29
-dropped by exactly 5,920; the row carried `tax_year_for` so the PRIMARY path is
-confirmed, the date/return-year fallbacks are not exercised by any current
-packet — scoped honestly). 2723 FILED — first MFS return; the dry-run
-diagnostics echo (s306m) earned its keep, changing what the lane keyed three
-times pre-commit; one real SOURCE defect on it (Form 8283 Section A columns
-e/f/g empty on the filed return — `D_8283_005` fires ERROR, correctly, and
-stays). 1359 HELD only on the ratio dollar → unblocked by s306r, re-run
-pending. Lane ledger: **47 filed, 3 held.***
-
-*⭐⭐ **s306q (2026-08-28, build lane) — THE NOL STATUTORY PASS: BOTH 80% LIMITS
-ARE CORRECT, AND THE DIFFERENCE BETWEEN THEM IS LAW, NOT A BUG** (`836717ed`,
-deploy API-confirmed **LIVE**). Ken asked for this saying both Lacerte and
-TaxWise might be wrong, so nothing was checked against a vendor return.
-**Federal** IRC §172(a)(2)(B)(ii) verbatim: 80% of the **excess** of taxable
-income *over the pre-2018 NOLs* — our `0.80 × (ti − pre)` is right, and the
-naive `0.80 × ti` would over-deduct **$24,000** on the spec's own T7.
-**Georgia** IT-511 line 15b worksheet, line 5 verbatim: *"NOL from Line 2
-applied to current year (cannot exceed **80% of Line 3**)"*, and line 3 is the
-**RAW** *"Income before GA NOL (Line 15a)"* — so Georgia measures against the
-raw base, which is exactly what `compute_ga500` does. ⭐⭐ **The reconciling
-fact: the excess-over-(A) structure is a CARES Act creation** (TCJA as enacted
-applied 80% flat), **and IT-511 p. 30 says Georgia *"did not adopt the revised
-net operating loss provisions in the CARES Act."*** Georgia is frozen
-pre-CARES. ⚠⚠ **The Georgia REGULATION (560-7-4-.01(3)) is too terse to settle
-it** — *"such limitations … shall be applied to Georgia taxable net income"*
-reads both ways, and I nearly reported our correct GA code as wrong on it; **the
-booklet's printed WORKSHEET is what settles the arithmetic.** Real money: base
-50,000 / pre 30,000 → Georgia allows 20,000 where the federal shape allows
-16,000. **Guarded, not just documented:** `test_ga500_nol_divergence_s306q.py`
-(7 tests) carries the explanation in the load-bearing assertion's failure
-message, verified by defect injection; + DECISIONS.md + a citation at the code
-site. ⚠ **The pre-existing T9 scenario is post-2017-only and could NEVER have
-caught this** — the divergence is observable only when BOTH pools exist.*
-
-*⭐ **s306q also shipped: `D_GA500_021` (warning) — the federal NOL's Georgia
-add-back.** Georgia starts from federal AGI, which is already net of the
-Schedule 1 line 8a deduction, and IT-511's Additions item 6 requires it added
-back because the Georgia NOL is computed separately. **`S1-4` is direct-entry
-and NOTHING writes it** — survivable while 8a was hand-keyed, but since the Form
-172 engine landed **8a computes itself**, so a return can acquire a federal NOL
-deduction with no human touching an NOL field while Georgia income is
-understated by the whole amount, silently. The rule names it and deliberately
-does NOT derive the number (same open design question as the s302
-`us_government_income` → S1-10 item). Also: **`D_GA500_009`'s message cited
-"Schedule 4 Part III"**, which per IT-511 is the **CARRYBACK** schedule, left
-blank for a carry-forward-only loss — rewritten to name what is actually
-missing (two scalars, no vintages, no expiry, no write-back), **and the registry
-description carried the same wrong citation** (the s302b twin lesson, again).
-`D_172_80PCT_STATEMENT` declared `warning` in the registry while always emitting
-`info` — the finding's severity wins at runtime so nothing gated wrongly, but
-the catalogue lied; aligned. Gates: 296 + 526 flow assertions.*
-
-*⚠⚠ **s306p, AGAINST MYSELF — I CAUSED THE SIXTH "THE ROUTE ALREADY EXISTS",
-AFTER FIVE SESSIONS OF SAYING IT TO THE ENTRY LANE** (`0e2405b3`, LIVE). Ken
-authorized "GA estimated payments should reach the payments line"; I started
-building the route. **It existed, from s277**, in the GA-500 attach/resync path
-in `views.py` — and my version read the **GA-500 return's** payment rows (there
-are none; they live on the FEDERAL return), computed 0, and **overwrote the
-correct value**. An existing s277 test caught it. ⭐ **Searching the file you
-expect is not searching** — grep the LINE NUMBER (`"26"`), not the concept.
-⭐ **The real defect, found only after I stopped building:** the s277 predicate
-required `tax_year_for == <return year>` — **strict equality against a field the
-model documents as OPTIONAL** — so a row carrying only state/kind/amount was
-silently dropped, which is exactly the "accepted and ignored" the lane reported.
-Now `tax_year_for` → else `date_paid`'s year → else the return's own year.
-**Blast radius measured against prod: 27 GA estimate rows, exactly ONE newly
-counted — the reported row itself.** Both gates verified by defect injection.
-⚠ The lane has since keyed `tax_year_for: 2025` (the Form 500 line-26 heading
-states the year), so their packet exercises the primary path, not the fallback.*
-
-*⭐ s306 (2026-08-27, build lane): **the HSA excess detector could not see an
-employer-only over-contribution** — three BATCH-296 entry-lane items in one
-pass. The headline is that `D_8889_EXCESS` **already existed and already ran**:
-its condition was `line 2 (own contributions) > line 13 (the deduction)`, the
-taxpayer's own excess and nothing else. Per **i8889** the employer's excess is a
-different quantity against a different comparand — *"the excess, if any, of your
-employer's contributions over your limitation on **line 8**"* — and **i5329 line
-47** is the SUM of the two, *"Also include on line 47 any excess contributions
-your employer made."* When the over-contribution is entirely the employer's,
-lines 2, 12 and 13 are ALL zero, so the old condition was **structurally
-incapable of firing**. Both quotes verified verbatim from the downloaded 2025
-instruction PDFs (the states lane independently pulled both and confirmed them).
-**Prod census: 70 HSA rows, 6 carry an excess, ALL 6 employer-only, old
-condition fires on ZERO.** 3 keyed and agreeing (429 · 1,000 · 2,700 — three
-independent witnesses for the formula), 3 blank at 1,000 each. ⚠ **The $180 of
-missing excise is an UPPER BOUND, not a measured loss** — the excise does not
-apply to a timely-withdrawn excess and the return does not record withdrawal.
-Shipped: `excess_contributions()` in `compute_8889.py` (reads `owner_lines`, so
-diagnostic and compute cannot drift) + the rule rewritten to name the total, its
-composition, the missing excise, where to key it, and the i8889 *"report it as
-Other income if it was not in W-2 wages"* consequence. **Two deliberate calls,
-both evidence-based rather than taste: it stays a WARNING** (back-entry commit
-gates on ZERO error-severity findings and errors are not acknowledgeable —
-`backentry.py` Gate 4 — so an error would hard-block returns whose excess was
-properly withdrawn, against Ken's "warn, never hard-block"), and **line 47 is NOT
-auto-derived** because `Form5329.hsa_curr_excess` is `default=0` **non-nullable**,
-so a keyed zero is indistinguishable from an unkeyed field and there is no
-off-switch for the withdrawal case (s237 class). Silent when line 47 already
-states the derived amount. Verified read-only over every prod HSA return: fires
-on exactly the 3 blank, silent on the 3 keyed.*
-
-*s306 items ② and ③: **the two opposite sign conventions** now carry
-descriptions that each name the other —
-`int_1099s[].accrued_interest_adjustment` is a POSITIVE MAGNITUDE the engine
-subtracts (keying it negative overstates by exactly 2×; the entry lane's tell,
-*"a delta that is exactly 2× an input means an inverted sign, not a missing
-figure"*, is recorded in the field itself), while
-`taxpayer.qbi_loss_carryforward_prior` carries its own sign;
-`form_5329s.hsa_curr_excess` gained one too. **③ the 4547 enum casing was FIXED,
-not documented** — staging upper-cases `form_4547s[].children[].relationship` in
-place (the MeF `ChildRelationshipCd` enum is UPPERCASE while
-`dependents[].relationship` on the SAME payload is lowercase), so `"son"` is
-accepted and `"cousin"` still refuses. Narrow by design: normalising every enum
-generically would change behaviour for lowercase sections. Published back-entry
-schema regenerated.*
-
-*⚠⚠ **s306's OWN LESSON — A COUNT TAKEN AGAINST A LIVE CORPUS IS A TIMESTAMP,
-NOT A FACT.** My census read 68 rows / 5 excess / 2 keyed; a verification run 40
-minutes later read 70 / 6 / 3 — same query, same firm. **Both wrong moves were
-available**: quote whichever run I happened to have first, or treat the
-difference as a defect and go hunting. Reconciling at ONE grain before quoting
-either is what turned an apparent contradiction into a stronger item. The cause
-is now MEASURED, not inferred, because the entry lane held the other half of the
-evidence and supplied it on request: both new rows are theirs and both are NEW
-RETURNS rather than rows changing state — one with 5,825 employer contributions
-against a 9,550 limit (**no excess**, which is why rows moved 68→70 while excess
-moved only 5→6) and one with 8,979 against 8,550 (**the 429**). The
-decomposition is exact. ⭐ Splitting MEASURED from INFERRED *before* handing the
-number on is the S-18 discipline applied before it cost anything.*
-
-*⛔ **KEN — NEW: S-19** (states lane, staged): `R-8889-EXCEPTIONS` states the
-same narrow `line 2 > line 13` condition the code had, and its diagnostic
-message still says the 6% excise is *"not computed here"* — stale, since Form
-5329 Part VII computes it from line 47. Spec and engine should tell one story.
-⚠ The states lane checked and DISSOLVED a third suspected defect in the same
-rule (i5329 names line 12 where the spec compares line 13, but `line 13 = min(
-line 2, line 12)` makes those arithmetically equivalent) — recorded so a false
-finding cannot be used to argue the true one down.*
-
-*🔎 **The "not keyed vs not obtainable" class reaches its THIRD instance**
-(entry lane, s306): `D_5329_003` holds a packet because the 12/31 HSA account
-value is blank — and that value lives on the year-end HSA statement, which a
-Lacerte partial-return print does not carry, so the hold cannot be cleared by
-further reading. ⭐ It is the cleanest instance of the class because **the
-direction of error is known and one-way: `hsa_value` can only ever REDUCE the
-tax**, so a guess could silently under-report while its absence cannot make the
-answer wrong (that return charged the full excise and ties). The other two are
-`D_EFILE_001`'s two EIN holds, where a wrong guess is undetectable downstream.
-That asymmetry is the argument for allowing a documented-absence designation on
-the 5329 hold *before* the EIN ones.*
-
-*🔴 **s306b (same session, LIVE REGRESSION found while Ken was blocked by it):
-the Add W-2 button had been 400ing on EVERY return.** Reported through the entry
-lane as "adding a W-2 throws a 404 / the route is missing". It was neither.
-**s287 (Ken item 11, "no placeholder name") changed the button to POST
-`{employer_name: "", wages: "0.00", federal_tax_withheld: "0.00"}`; nothing
-relaxed the server, where `W2Income.employer_name` was `CharField(max_length=255)`
-with no `blank=True`** — so DRF answered `400 {"employer_name":["This field may
-not be blank."]}` to the exact payload the UI sends, for everyone, on every
-return. **Fix: `blank=True, default=""` + mig 0370** (`ec00bcb3`). A nameless row
-is a legitimate INTERMEDIATE state (add the row, then type the name) and cannot
-reach a filed return — the MeF extract already refuses a W-2 with no employer
-name BY NAME and the diagnostics already render it "employer not named", so
-completeness stays at those gates rather than a create-time 400 that blocks data
-entry outright. 5 new tests + 84 adjacent (W-2 / EIN-autofill / e-file extract).
-**Deploy `dep-da8b65tbedkc73agspg0` (prep) + the demo twin, BOTH API-confirmed
-LIVE on `ec00bcb3`. VERIFIED FUNCTIONALLY, not just deployed:** a POST of the
-exact UI payload to the real route returned **201** with `employer_name=''`,
-followed by a 204 cleanup DELETE. ⚠ That live POST was run against **DEMO, not
-prep** — proving it needs a real write and every prep return is a live client
-record (one mid-edit by another session). Demo serves the same commit and the fix
-is a model-level constraint in code, so demo passing proves prep; prep is
-API-confirmed live on that commit and its deploy runs `migrate --noinput`.*
-
-*⚠⚠ **s306b's METHOD LESSON — A PROBE AND A SYMPTOM LOOK IDENTICAL IN A REQUEST
-LOG.** The escalation named a 404, pointed at two of the day's deploys, and
-offered a list of 404s as corroboration. **Every one of those 404s was the
-reporting lane's OWN URL-guessing** — `/api/v1/w2s/`, `/api/v1/income/w2s/` etc.
-carry a `WindowsPowerShell` user-agent, and `/api/tax-returns/...` simply lacks
-the `/v1/`. The app generates exactly ONE 404 (`GET .../prior-year/`, benign, and
-it fires 6 seconds before the failing POST, which is why the two got conflated).
-**The real failure was a 400, and two of the three predate both deploys**, so
-neither caused it. ⭐ What identified it was the RESPONSE SIZE: the body is 50
-bytes, and enumerating every serializer field × every standard DRF message showed
-only one 50-byte single-field error that the UI could provoke. ⭐ Second keeper:
-**`OPTIONS` on that endpoint advertises twenty TAX-RETURN fields and no
-`employer_name`**, which reads exactly like "the wrong serializer is bound" — it
-is a DRF artifact (`TaxReturnViewSet.get_serializer_class()` returns the LIST
-serializer for every action but `retrieve`, and metadata is built from it), so
-**OPTIONS on any `@action` of that viewset describes a tax return.** It means
-nothing; it is pinned in the test docstring so the next person does not lose the
-same hour. The end-to-end test drives the real route with the real payload —
-proof by behaviour, not by reading.*
-
-*⭐ **s306c (same session, Ken's direct go): THE GENERAL-CATEGORY FORM 1116 IS
-BUILT** (`6930e093`, deploy `dep-da8c5hv10e5c73bobam0`, API-confirmed LIVE and
-PROD-VERIFIED — line 28 seeded with its right label, `general` defers on
-nothing, `951a` still refuses, the mixed guard fires). ⭐⭐ **Sized as a
-multi-session storage-model change; it was ONE session, and re-reading the
-engine before writing is what found that**: the §904 limitation (Parts I+III) is
-**category-AGNOSTIC** — the same computation applied separately per basket — so
-general needed NO new arithmetic. Authority verbatim from the downloaded 2025
-i1116 + the IRS face: *"a separate Form 1116 for each category of income"*, and
-Part IV gives each basket its own line (**27 passive · 28 GENERAL**). Shipped:
-the gate narrowed to {passive, general} (`non_passive_category` renamed
-`unsupported_category`); the credit on ITS OWN Part IV line (was hard-coded 27,
-so a general credit would have printed on the passive line); line 28 seeded +
-both lines persisted; the print widget pinned **POSITIONALLY** against the
-caption, never inferred from the field-name sequence (s285). ⚠⚠ **THE REAL TRAP:
-the foreign-tax SOURCE.** `_foreign_tax_total` added the 1099-INT/DIV aggregate
-to EVERY Form 1116 — that aggregate is **passive-basket tax by definition**
-(payee-statement income), so a general form would have absorbed it and inflated
-the general basket, a §904(d) violation producing a **plausible wrong number
-rather than a failure**. A general form now takes only its keyed
-`additional_foreign_tax`. ⚠⚠ **AND THE MeF HALF, the same class as a detector
-that cannot fire:** the builder hard-coded `ForeignIncPassiveCategoryInd`, so a
-general credit would have **TRANSMITTED UNDER THE PASSIVE INDICATOR** — a silent
-wrong filing. Indicator + Part IV element now category-driven, verified against
-`IRS1116.xsd` directly. **THE SAFETY PROPERTY** (what makes single-category
-support safe without the one-row-per-category model change): two shapes the
-singleton cannot hold refuse BY NAME — `D_1116_010` (a general form beside 1099
-foreign tax = a genuine two-basket return) and `D_1116_011` (§904(j) is
-passive-only by statute). ⚠ The `form_1116s` back-entry shape is UNCHANGED — no
-new keys, no model change. Gates: 614 (all 1116 suites + 526 flow assertions) +
-680 e-file/MeF. RS amendment staged with the states lane (spec, `R-1116-SUMMARY`,
-`FA-1040-1116-07`, and the two new diagnostics).*
-
-*⭐⭐ **s306d — THE CREDIT ORDERING IS CONFIRMED, AND THE TIE THAT "PROVED" IT WAS
-HIDING A REAL $1** (`86db00c0`, deploy `dep-da8cs2m417fc73d99e5g`, LIVE). The
-entry lane committed the general-category return TIE and then refused to let
-that stand as proof — their reasoning exact: **if the ODC had wrongly stayed at
-500, the FTC would simply be limited to the remainder, line 21 would still total
-the tax, and 22/24 would still be zero — the return would TIE WITH BOTH CREDITS
-WRONG.** Reading the committed return's stored lines settles the ordering: **19 =
-70, not 500**; 20 = 9,892; 21 = 9,962; 22/24 = 0; the credit on **line 28
-(general)**, zero on 27. ⚠ **But the filed return shows 9,893 / 69 to our 9,892 /
-70 — identical total, which is exactly why it tied.** MEASURED cause: line 19's
-§904 ratio was quantized to FOUR decimals (`L17 75,997 / L18 76,530 =
-0.9930354…`; 4dp → 9,892, 5dp → 9,893, **exact → 9,893**). **i1116 rounds this
-ratio to "at least four places" — FOUR IS A MINIMUM and we emitted the least
-accurate value permitted.** FIVE is the ceiling, not a preference: MeF
-`RatioType` is `fractionDigits=5`/`totalDigits=6`. Prod census BEFORE the change
-(s302 rule): **8 full-path returns, 7 unchanged, 1 moves by exactly $1 — into
-agreement with the filed return.** ⚠⚠ **LINE 3f STAYS AT FOUR DECIMALS, AND THAT IS NOW A MEASURED DECISION, NOT A
-DEFERRAL.** The entry lane flagged a live return whose vendor-printed 3f carries
-SIX decimals and where the ratio actually binds, predicting a $1 divergence.
-**Both halves were checked and both say leave it alone:** (a) their arithmetic
-does not reproduce — `0.6616 × 23,625 = 15,630.30 → 15,630`, which MATCHES the
-printed line 6, as does the 6-decimal ratio, so the only real witness available
-says our current 4dp answer is RIGHT; (b) the prod census says moving 3f to 5dp
-would shift **5 of 8** full-path returns' line 3g by $1 (vs 1 of 8 for line 19),
-with **no filed-return witness anywhere saying the new value is better**.
-⭐ **The asymmetry is the point: line 19 changed because a filed return PROVED
-4dp wrong; 3f must not change because the only evidence points the other way.**
-`ForeignIncomePct` is also `RatioType` (5dp cap), so 4dp transmits fine. Gates
-614 + 620 MeF.
-⭐ **The keeper: a TIE is not evidence when two errors can offset.** Ask what the
-green result was CAPABLE of catching — the same class as the vacuous SE fixture
-and the s303 timestamp. It was caught only because the lane refused to bank an
-unverified claim, and because the stored lines were readable after commit.*
-
-*⭐ **s306e/f (same session): two Form 1116 gaps and the state-lane silent-value
-class** (`0b6b6bb6` + `b2d0dd7c`, deploy API-confirmed LIVE). **① Line 3d was
-NOT EXPRESSIBLE** — `compute_part1` always accepted `gross_foreign_source` and
-NOTHING EVER SUPPLIED IT (no field, no allowlist key, no caller), so 3d fell
-back to line 1a. Right only while 1a is UNADJUSTED; under §904(b)(2)(B) the two
-diverge hard (1a 17,964 vs gross 3d 82,309 on the reporting packet → ratio
-0.144389 instead of 0.661573, standard deduction under-apportioned by ~12,000).
-Model field + mig 0371 + allowlist + a description saying plainly it is NOT 1a;
-`deduction_apportion` also documented as the 3a INPUT, not the 3g result.
-**② Line 18's adjustment exception was ASSUMED** — it is evaluated from two
-`default=0` preparer fields, so unkeyed is indistinguishable from stated-zero.
-i1116 is explicit the other way for the shape vendors print: *"You can't make
-this election if you have any foreign qualified dividends or foreign capital
-gains … and you made adjustments to those amounts when you completed lines 1a
-and 5."* Prod census: **3 of 9 full-path returns sit in that blind spot** (one
-with $75,796 of worldwide QD+gains). `D_1116_012` (warning, not RED — the
-engine sees only WORLDWIDE amounts and some of those returns are right) names
-the amounts and the two-part test. **③ s306f — state BOOLEAN control lines are
-now TYPE-checked**: the vocabulary threw away the seeder's `FieldType`, so a
-string in NC's `PYNR` staged clean, Schedule PN never engaged and NC taxed 100%
-of a nonresident's income (**$4,780 overstated, and it read as an engine
-defect**). Never a one-off — **30+ boolean control lines** across all eight
-installed state forms had the same blind spot. Gates 616 + 175 + 6 new.*
-
-*⚠⚠ **s306e/f, TWO errors of my own, both caught before they reached anyone.**
-(a) `D_1116_012` used `_dec`, which does not exist in `rules_1116` — the runner
-records the NameError AS the rule's finding, so the rule appeared to FIRE on
-every return, **including the fixture written to prove it stays silent. The
-positive test passed throughout; only the NEGATIVE test exposed it.** A rule
-that fires everywhere looks like a working rule. (b) I grepped for
-`"RIE-TP-DIS"`, found it only in the seeder, and was one message from telling
-Ken the GA disability exclusion was "seeded but consumed by nothing" — **it is
-consumed, via a dynamically built key** (`truthy(f"RIE-{p}-DIS")`), exactly the
-s272b lesson (*the grep lied because the name was constructed*). s274 built that
-gate deliberately, citing O.C.G.A. §48-7-27(a)(5). ⭐ **A literal grep cannot
-prove an absence when the key is assembled at runtime.***
-
-*⭐ **s306e/f AFTERMATH — both shipped items PROVEN on the live packet, and one
-of my near-misses reversed by the lane.** ① **Georgia TIES**: the disability
-retirement exclusion was keyable all along (`RIE-TP-DIS` + `-DIS-DATE` +
-`-DIS-TYPE`) — S1-13 48,933 / RIE-TP-17 35,000, the 1,817 gone. **The lane had
-reported "no way to state disability status" as a blocker and has retracted it**;
-I nearly confirmed it from my own bad grep. ② **The 1116 3d fix is proven by a
-PREDICTED-then-observed experiment**: the lane predicted before running that the
-error would flip from 604 LOW to 259 HIGH, and it did to the dollar (credit 1,028
-→ 165 against a correct 424, with 3f now 0.661573). **That isolates line 18 as
-the SOLE remaining cause.**
-⭐ **FEASIBILITY MEASURED (this changes the sizing of Ken's decision ① below):
-the Worksheet for Line 18 is MUCH smaller than "build a worksheet" —
-`compute_intdiv.compute_qdcgt_worksheet` already produces all 25 QD&CG lines,
-so the 0%-rate slice is `ws_9`, the 15% slice falls straight out of it, and
-`ws_5` IS the very line the adjustment exception's own threshold test names.**
-The 28%/25% rows are unreachable anyway (a return with DIV 2b/2c/2d is already
-ROUTE_BLOCKED). Answer key in the packet: worldwide 15% gains 24,499 × 0.5946 =
-14,567 + 40,032 of 0% gains = 54,599 off 89,249 → 34,650.*
-
-*🔎 (s306f) **A Schedule SE wage-base ATTRIBUTION warning was sized and NOT
-built — deliberately.** A reported "SE blocker" re-run turned out not to be one:
-the engine reproduces the FILED figures exactly when line 8a is populated
-(1,786/893) and the reported wrong ones when it is 0 (9,422/4,711), and
-`se_line_8a_for` zeroes 8a only when the W-2's `owner` differs from the
-ScheduleSE `proprietor` — correct under §1402, which applies the base per
-individual. Prod census for a would-be warning: **2 of 199 ScheduleSE rows** sit
-in that shape, so it would be signal rather than noise. ⚠ **Not built because
-the actual cause on that packet is UNCONFIRMED** (unkeyed box 3, an owner
-mismatch, and a nonzero keyed `w2_ss_wages` override are three different
-defects wanting three different detectors). Building now would be building to a
-hypothesis — the same trap the lane correctly refused to hand me on the rental
-recharacterisation.*
-
-*⭐ **s306g — SC Schedule NR line 46 no longer defaults to zero in silence**
-(`fdf3492f`). NR-46 ("standard or itemized deduction") is a preparer INPUT
-consumed as `L47 = NR-46 × the proration %`; unkeyed it defaults to 0, the
-allowable deduction becomes 0, and the SC brackets run across the ENTIRE
-SC-source AGI — **$1,919 of tax the filed return does not have**, arrived at
-silently (428 + 6% × 232,775 = 14,394 to the dollar). `D_SC1040_NR46` (warning)
-names the ABSENCE and **explicitly says not to back-solve the value**: it is not
-derivable from the federal return (neither the full federal itemized total
-12,436 nor that less state income tax 13,268 reproduces the filed 12,475), and a
-rule nudging anyone toward reverse-engineering 41,463 would be worse than
-silence. 7 new tests — **four of them assert SILENCE**, deliberately, after the
-`D_1116_012` NameError this session showed a positive-only test passes while a
-rule fires on everything.
-⭐ **THE SILENT-DEFAULT FAMILY IS THREE DIFFERENT BUGS WEARING ONE FACE**, and
-only one was a type problem: a COMPUTED output keyed as an input (`ga500_fields`
-"S1-7" — still open), a DISCARDED FieldType (the 30+ state boolean control
-lines — fixed s306f), and an UNKEYED REQUIRED INPUT defaulting to zero (NR-46 —
-now named).*
-
-*⭐ **The reported "SE wage-base re-confirmation" was NOT a defect** — the entry
-lane had keyed box 4 (social security TAX) and not box 3 (wages), so line 8a
-derived nothing. s302d works: with box 3 keyed every federal line ties. ⚠ **The
-lane's arithmetic was right to the cent and named the wrong component** — the
-keeper is *the numbers you observe are evidence, the component you name is a
-hypothesis*. ⭐ Holding the detector was vindicated: the owner-mismatch warning I
-sized (2 of 199 rows) would have been DEAD CODE, because the owners matched.*
-
-*⭐ **s306h/i (`add00472`, deploy verified): "the printed face shows RESULTS;
-the importable vocabulary wants INPUTS."** ⚠⚠ **THREE reported "no route /
-silently ignored" blockers were ROUTES THAT EXIST UNDER THE INPUT'S NAME** —
-the federal NOL is `carryforward_attributes` kind `nol_regular` (feeding
-`compute_form_172` → Sch 1 line 8a as a negative; `taxpayer.amt_nol` is the AMT
-NOL, a different figure); the Georgia NOL is `S4-CF-PRE`/`S4-CF-POST` (line 15b
-is COMPUTED: `pre_applied + post_applied` under the 80% limit); and the
-retirement exclusion is the `RIE-*`/`MIL-*` lines (S1-7 is COMPUTED). **s306h:
-`ga500_fields` had NO vocabulary check at all** — only "string key, scalar
-value" — so a keyed computed line was accepted and recomputed over, while
-`state_returns` has warned since BATCH-296 #41. It now warns and NAMES THE INPUT
-to use instead. A warning not a refusal (`ga500_fields` commits
-`is_overridden=True`); a null stays a CLEAR.
-**s306i — `D_K1_7203_DIST`, and the finding is worse than "not implemented":**
-the §1368(b)(2) excess-distribution gain **was already computed**
-(`compute_7203`'s `_excess_distribution_gain`, which the 1040 side calls) and
-**nothing ever read it**. It is deliberately not auto-entered (Ken s205: the
-holding period is a preparer fact, never guessed) and the entity-side
-disclosure rides the K-1 IMPORT OFFER, which never happens for a back-entered
-return. ⚠⚠ **So the engine omitted the gain, a source return that also omitted
-it TIED, and the tie carried no information** — the lane caught one at 12,583
-and said so rather than banking it. The warning states outright that a return
-omitting it will still reconcile.*
-
-*⚠ **s306h/i process note against myself: A STASH-AND-COMPARE IS NOT A
-CONTROLLED EXPERIMENT WHEN THE DATABASE CARRIES OVER.** One wide run threw 7
-setup ERRORS; I stashed the change, the reverted run came back clean, and I
-nearly recorded "the errors are mine" as proven. The reverted run had reused a
-WARM DB. Two later runs WITH the change were clean (44 passed) and a
-`--create-db` run of the whole neighbourhood is **318 passed** — the failing run
-was the known reuse-DB seed-leakage class and does not reproduce. ⭐ The control
-has to include the database, or the comparison measures the cache.*
-
-*⭐ **s306j (`3f8948cc`) — engine-owned carryforward figures now announce that
-they are OVERWRITTEN.** `CarryforwardAttribute` makes all three amounts inputs
-on purpose (the lane transcribes the FILED worksheet, and a filed pool can
-legitimately show a remaining balance that is not `original − used`). But for
-`ENGINE_COMPUTED_KINDS` (§179, charitable, regular NOL) `compute_form_172`
-recalculates `amount_used_current_year` / `remaining_amount` and writes them
-back — so those keyed figures are **not ignored, they are overwritten, and the
-value reads back CHANGED rather than absent**, which is why a keyed absorption
-produced a byte-identical dry run. The warning names the doomed figures, says to
-key `original_amount` + `source_tax_year`, and adds the clause that matters
-most: **if the engine's absorption disagrees with the filed return that is a
-FINDING to report, not a figure to transcribe over.** Silent for every other
-kind, where transcription is the only source. **Fourth home for one confusion,
-all now covered: `state_returns[].fields`, `ga500_fields`,
-`carryforward_attributes`.** 8 new tests (four assert SILENCE) + 145 adjacent.*
-
-*⭐⭐ **s306m/n (`22958b19`, deploy LIVE) — DRY RUNS NOW ECHO DIAGNOSTICS, and
-that closes the worst-shaped gap on the lane.** A `DiagnosticRun` only exists
-after a COMMIT, so **a HELD packet had no diagnostics at all** — and held
-packets are precisely the ones where a diagnostic explains the gap. The entry
-lane dumped a dry run and measured that there is no `diagnostics` key anywhere:
-`D_SC_007` had fired at ERROR and was invisible to the only interface they have.
-⚠ **My "you did not look" was the wrong half — they looked; the looking had
-nowhere to land.** The dry run already performs the whole commit in a
-rolled-back transaction, so the findings exist at that moment.
-`commit_staged_return` gains `include_diagnostics` (default OFF so real commits
-are unchanged); the view defaults it ON for dry runs. Shape: `rule_code` /
-`severity` / `message`, from the SAME runner the app uses; wrapped so a
-diagnostics failure can never break a commit.
-**s306n — THE s225 DEFECT RECURRED**: staging has accepted the nested
-`form_8829` since s272 and the generator never emitted it, so an author
-validating OFFLINE got a **FALSE REFUSAL for a field the server takes** — which
-is exactly why it was reported as "no route". Now generated from
-`F8829_FIELDS` (30 properties, verified published). ⚠ SUPPORTED-SECTIONS' "neither
-can drift from what staging accepts" is TOO STRONG — it holds only until a
-feature ships after the last regeneration, and this is the second instance
-(`schedule_fs` detail rows were the first, s225).*
-
-*⚠⚠ **s306m, against myself — THE VIEW SERVED TWO LANES AND I CHANGED ONE
-SIGNATURE.** Adding `include_diagnostics` to the 1040 `backentry` module alone
-**500'd EVERY entity-lane commit** (`TypeError: unexpected keyword argument`) —
-**136 failures**. The s295b lesson (one shared caller, two implementations)
-arriving as a live 500 rather than a quiet divergence. ⭐ Caught only because the
-sweep was run at all: the change itself was right and the BLAST RADIUS was not
-where I looked. Both signatures are now pinned together by test, and the entity
-lane imports the ONE helper rather than growing a copy. ⭐ Also re-confirmed the
-quintet discipline: the 5 residual failures are the known files and pass **15/15
-on `--create-db`** — re-diagnosed, not inherited.*
-
-*⭐⭐ (s306l) **THE FIFTH REPORTED "NO ROUTE" THAT EXISTS, AND THE SECOND
-"SILENT" THAT ISN'T — NOTHING BUILT.** The actual-expense **Form 8829 route
-EXISTS**: not a top-level section (which is why it wasn't found) but **NESTED
-under `schedule_cs` as `form_8829`**, because `Form8829`'s only FK is
-`schedule_c` — no `tax_return` column, so it cannot be a top-level list and
-nesting makes the activity link free (s272, BATCH-296 #26). `F8829_FIELDS`
-carries the whole indirect column (`excess_mortgage`, `repairs_indirect`,
-`utilities_indirect`, `other_indirect`, `insurance_indirect`, `rent_indirect`,
-`casualty_indirect`) plus areas, the §280A cap inputs, the Part III basis facts
-and both opening carryovers; every COMPUTED column is deliberately excluded.
-⚠ And the reported "sqft present + no flag silently yields ZERO" is **NOT
-silent — `D_SC_007` fires at ERROR severity** on exactly that predicate
-(`sqft > 0 AND use_simplified is not True AND no Form 8829 row`), naming both
-remedies.
-⭐⭐ **THE REAL FINDING IS THE VISIBILITY GAP, AND IT IS BIGGER THAN THE
-BLOCKER:** the lane measured an AGI delta, inferred silence, and did not see the
-error the engine had already raised. **A lane reading only reconciliation deltas
-misses every diagnostic the engine emits** — which would have short-circuited
-this, the SC NR-46 one and the GA 15b one. Raised to them as the higher-leverage
-fix. ⭐ Five reported "no route"s have now all existed (federal NOL, GA NOL, GA
-disability, GA retirement total, actual-expense 8829); the measurements were
-right every time and the INFERENCE from them was what missed.*
-
-*🔎 (s306k) **A reported "the browser may default a W-2 EIN from the firm
-record" trap CANNOT EXIST — the `Firm` model has NO EIN FIELD** (concrete fields
-are id / name / is_active / created_at / updated_at), so there is nothing to
-default from. Measured rather than only read: **3 of 845** prod W-2 rows carry
-the firm's own EIN, one of them named `'New Employer'` (the OLD placeholder
-retired in s287, so it predates the change and was hand-typed); zero 1099-R
-payer rows; no EIN over-represented in a way suggesting a leaking default.
-**Deliberately NOT built:** the only way to express "employer EIN == the firm's
-EIN" today is to hardcode a real EIN in source — wrong on its own terms and
-against the no-PII rule. If a firm EIN field ever lands for e-file, the check
-becomes trivial and is worth having then. ⛔ **The 3 rows are wrong data on real
-returns — cleaning them is Ken's call, not a unilateral write.***
-
-*🔎 **3517's NOL absorption — ⛔ Ken's, as a SOURCE question. ⚠ MY OWN
-POOL-SIZE HYPOTHESIS IS REFUTED** — the packet's Statement 1 prints it: 190,783
-available, 16,131 absorbed, 174,652 carried to 2026, and the arithmetic closes,
-so 190,783 is the pool ENTERING the year and `min(pool, 80% × base)` cannot be
-the limiter. Cost ten minutes to eliminate and stops an unexamined assumption
-sitting under Ken's ruling.*
-
-*🔎 (original framing, now settled)* Engine absorbs 20,959 (= 80% of a 26,199 base — the
-§172(a)(2)(B) cap, textbook, and the lane agrees the BASE is right because
-Lacerte's own worksheet prints the same 26,199); Lacerte absorbs 16,131
-(61.6%). The lane ruled out a QBI-net base (gives 16,786) and the SEHI/PTC
-circularity (the whole SEHI deduction is 968). ⚠ **Open possibility raised back
-to them: the deduction is `min(pool, 80% × base)`, so if the remaining POOL were
-16,131 the cap never binds and there is no §172 disagreement at all** — the
-190,783 "carryovers to 2026" figure is the pool AFTER absorption, not before.
-Confirm which figure was keyed as `original_amount` before framing it as an
-engine gap. ⭐ **s306q NARROWS THIS TO EXACTLY THAT QUESTION**: the federal 80%
-formula is now verified verbatim against IRC §172(a)(2)(B)(ii) and pinned by
-tests, so `min(pool, 0.80 × (base − pre2018))` is not in doubt. With no
-pre-2018 component the engine's 20,959 is arithmetically forced from a 26,199
-base — **so either the base or the POOL is the disagreement, and neither is a
-§172 defect.** ⚠ Georgia's pools are genuinely NOT in the packet and must not be
-derived from the federal ones — this return is the proof (16,131 federal
-absorbed vs 23,759 Georgia).*
-
-*⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
-lane is holding correctly). ⚠ KEN ANSWERED SIX OF THESE 2026-08-28 — the status
-below is post-ruling:**
-· ⓪ **the Georgia SALT add-back — ⛔ STILL KEN'S** (*"Let me think on it and ask
-me again later"*). ⚠⚠ **A CONFLICT MUST REACH HIM BEFORE THE FIELD IS
-DESIGNED**: the states lane's spec `R-GA500-DED` implements IT-511's literal
-**proration** formula while Lacerte does `max(0, 5d − cap)`, and on the entry
-lane's 9 resident packets the booklet-literal rule gives **0**. The
-resident/nonresident paths also differ. Do not build until that is resolved.
-· ⓪b ~~`state_income_tax_payments` does not reach GA line 26~~ — **✅ DONE
-(s306p)**, and the route had existed since s277; the bug was a predicate
-demanding an OPTIONAL field.
-· ① ~~the Worksheet for Line 18~~ — **✅ BUILT (s306, Ken's go)**.
-· ② **a per-property NONPASSIVE lever — ⛔ STILL KEN'S** (*"I need to look this
-up at the office. Ask me about this later"*). The lane deliberately withheld a
-mechanism because their §1.469-2T(f)(3) hypothesis does NOT separate the two
-parcels, so building to it would encode an unsupported rule.
-· ③ ~~`ga500_fields` does not warn when a COMPUTED line is keyed~~ — **✅ DONE
-(s306h)**.
-· ④ **the 3 firm-EIN W-2 rows — ⛔ STILL KEN'S** (*"I'll be at the office in a
-couple of hours and I will pull up the return and direct you then"*). Wrong data
-on real returns; cleaning them is his call, not a unilateral write.
-· ⑤ ~~the NOL rules~~ — **✅ VERIFIED (s306q)**: both jurisdictions correct, the
-divergence is required by law and is now guarded. See the s306q entry above.
-**NEW from s306q, staged in `REVIEW_QUEUE.md`:** whether `D_GA500_009` should
-drop from **error to warning** (as an error it is unacknowledgable and
-permanently blocks closeout on every Georgia return with an NOL — `backentry.py`
-Gate 4 — even though the computation it warns about is correct), and whether to
-build **Georgia Schedule 4 Parts I & II** (`S4-8` / `S4-NB-18` are seeded
-`is_computed=True` with nothing writing them; the full IT-511 instructions were
-extracted this session, including the Part II line 6 **nonbusiness RIE
-proration**, which is substantial enough to want its own unit).*
-
-*⚠ **s306c, against myself — I broke my own standing rule.** A PS5.1
-`Get-Content | Set-Content -Encoding UTF8` rewrite of a test file double-encoded
-it (every em-dash mangled, BOM added) — the exact rewrite the hazard list BANS.
-Caught only because a following Edit would not match; repaired by reversing the
-cp1252→UTF-8 round trip, and the whole working diff was scanned for mojibake and
-BOM before commit. **The rule exists because the damage is invisible in a
-terminal and survives into the commit.***
-
-*🔎 Carried, NOT built: **multi-category (general AND passive on ONE return)**
-remains the larger unit — the `Form1116` OneToOne→FK change + all three
-registries + `SINGLETON_SECTIONS`, a real Part IV across baskets, multi-face
-render, multi-document MeF, per-category §904(c) carryover. At least 10 clients
-in the Lacerte set file that way; they refuse by name today.*
-
-*▶ NEXT: **item ⑦'s SINGLE-CATEGORY half is DONE (s306c); the MULTI-CATEGORY half
-is not started and not ordered** —
-multi-session and it changes a model (OneToOne→FK + all three registries +
-`SINGLETON_SECTIONS`), so it wants Ken's word before it starts. Then extractor
-follow-ons by the **RE-MEASURED (r17) residual, which is NOT the ranking s303
-left**: f8995 coverage (6 solo / 128 touched) > asset_detail (4) >
-student_loan_educator_wks (4) > sch_c (3) = **line-20 Sch 3 face class (3, was
-"5")** = f8880 (3) = f5695 (3) = f8889 (3). ⚠ Every one is an UPPER BOUND until
-the corpus re-runs with that class open (fifth confirmation). Open BATCH-296
-entry-lane items still unworked: the `div_1099s.us_government_income` → GA S1-10
-auto-derive design (needs an off-switch decision, s237 class) · the D_SCHD_006
-QOF import surface.*
-
-*Peer state (s306): I hold the tree + test_postgres; both lanes confirmed no
-collision at boot. **Entry lane is UNBLOCKED and running — 33 packets filed**
-(auth good, Ken gave explicit `--prod-db` go in their session). Their open holds:
-two on Ken's 2024 figures, one sanctioned Pub 974 method difference, one on the
-general-category 1116 (item ⑦ — that packet is not enterable at all). States lane
-holds neither the tree nor test_postgres; RS suite 254 passed / 0 failed.
-⛔ **NOTHING of S-14…S-19 has been ruled** — the states lane's standing warning
-applies: if any lane says Ken ruled one, that is a RELAY, check with him directly
-(three relays on 8/25–26 differed from what he meant or were retracted).*
+**⛔ WAITING ON KEN — unchanged from s307 (he said he'd come back to
+each):**
+1. **Georgia SALT add-back** (*"let me think on it"*) — ⚠ the
+   booklet-vs-Lacerte proration CONFLICT must reach him before the field
+   is designed (states lane `R-GA500-DED` = IT-511 literal proration →
+   0 on all 9 resident packets; Lacerte does `max(0, 5d − cap)`;
+   nonresident path different again — BATCH-296 tail has the full spec
+   input).
+2. **Per-property nonpassive lever** (*"I need to look this up at the
+   office"*) — the lane's §1.469-2T(f)(3) hypothesis does not separate
+   the parcels; do not build to it.
+3. **The 3 firm-EIN W-2 rows** — wrong data on real returns; his call.
+4. **Client 1071** — a 2210 line 8 fitting two histories, both tying.
+5. **Client 1141** — dependent DOB exists nowhere; REVIEW_QUEUE carries
+   the do-not-build recommendation (measured cost 1,700).
+6. **One Inbox packet carries "no need to fil" typed into the TaxWise
+   name field** (s307; identity in `PipelineOut/r21` refusals) — genuine
+   do-not-file?
+7. The states lane's **10 unruled** staged items + S-18/S-19 + the
+   REVIEW_QUEUE pair (D_GA500_009 error→warning; the MFS
+   living-arrangement field pair).
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -782,8 +103,16 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s306 deploy — API-CONFIRMED LIVE 2026-08-27: `64c4dc15` →
-  `dep-da8ap4ia6suc73bdidtg`** (finished 21:35Z), the currently live deploy. It
+- **s308 deploy: `504a484f` → `dep-da91l1rl550s739kus9g`** — pushed
+  2026-08-28 23:32Z, was `build_in_progress` at session close (verify at
+  next boot). Extractor scripts + tests only — no server runtime change,
+  no migration, no seeder, no schema regeneration.
+- s307 deploy `78d9fedb` API-confirmed LIVE 2026-08-28 (the f8995 leg —
+  also scripts-only).
+- s306t deploy `440aac92` API-confirmed LIVE (deploy-skew severity split
+  + GA LIC gate + LIC-CHILD input + three message fixes).
+- s306 deploy — API-CONFIRMED LIVE 2026-08-27: `64c4dc15` →
+  `dep-da8ap4ia6suc73bdidtg` (finished 21:35Z). It
   carries all three s306 pushes: `1ae86753` (the D_8889_EXCESS widening + the
   4547 casing normalisation + the schema descriptions — its own deploy
   `dep-da8aocpt0dsc73bvgfu0` BUILT and went update_in_progress before being

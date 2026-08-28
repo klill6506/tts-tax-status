@@ -1,6 +1,18 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-28 session 308 — the extractor Schedule C leg (`504a484f`,
+> scripts + tests only, no form legs changed).** No new RENDERED form —
+> extractor coverage: both Schedule C faces parse into the existing
+> `schedule_cs` vocabulary (input/compute/render/assertion chains for
+> SCHEDULE_C itself are unchanged and long green); the Schedule 2 face
+> gains an other-taxes decomposition gate; f8995 Part I business rows
+> match against extracted businesses. r22 = 22/245/267, zero drift on
+> prior payloads, the new emit ties 14/14 rolled back (the SE chain
+> end-to-end). Two live catches on the first corpus pass: a Form 5329
+> tax whose source page was never printed, and an 8995 business row
+> whose Schedule C page was never printed — both refuse by name.
+
 > **2026-08-26 session 302 — the §469(g) PTP release + the Form 8990 1040
 > ledger surface (`9999f2c6`, deploy LIVE, mig 0367); then the line-26
 > estimated-payments source (`a9f97025`) and D_EFILE_004 (`f882e494`),
