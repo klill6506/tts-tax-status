@@ -2,9 +2,10 @@
 
 ## ▶▶ RESUME POINTER — s308 close, 2026-08-28
 
-**State: idle and CLEAN. Head `504a484f` (s308), deploy
-`dep-da91l1rl550s739kus9g` — verify live at next boot if this file still
-says so.** Post-account-switch: the peer lanes are whatever is running
+**State: idle and CLEAN. Head `8dc1eb3d` (s308 close; the unit is
+`504a484f`, deploy `dep-da91l1rl550s739kus9g` **API-confirmed LIVE**;
+the close commit's own deploy is markdown-only and supersedes it —
+zero code delta).** Post-account-switch: the peer lanes are whatever is running
 now; their last durable checkpoints are the entry lane's
 `D:\tax-test-data\1040\Lacerte Inbox\LACERTE-RESUME-2026-08-28.md`
 (**48 filed / 5 held** after s307's client-2234 GA LIC verification) and
@@ -103,10 +104,11 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s308 deploy: `504a484f` → `dep-da91l1rl550s739kus9g`** — pushed
-  2026-08-28 23:32Z, was `build_in_progress` at session close (verify at
-  next boot). Extractor scripts + tests only — no server runtime change,
-  no migration, no seeder, no schema regeneration.
+- **s308 deploy: `504a484f` → `dep-da91l1rl550s739kus9g` —
+  API-CONFIRMED LIVE 2026-08-28.** Extractor scripts + tests only — no
+  server runtime change, no migration, no seeder, no schema
+  regeneration. The close commit `8dc1eb3d` (markdown only) supersedes
+  it with identical server code.
 - s307 deploy `78d9fedb` API-confirmed LIVE 2026-08-28 (the f8995 leg —
   also scripts-only).
 - s306t deploy `440aac92` API-confirmed LIVE (deploy-skew severity split
