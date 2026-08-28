@@ -321,6 +321,36 @@ WARM DB. Two later runs WITH the change were clean (44 passed) and a
 was the known reuse-DB seed-leakage class and does not reproduce. ⭐ The control
 has to include the database, or the comparison measures the cache.*
 
+*⭐ **s306j (`3f8948cc`) — engine-owned carryforward figures now announce that
+they are OVERWRITTEN.** `CarryforwardAttribute` makes all three amounts inputs
+on purpose (the lane transcribes the FILED worksheet, and a filed pool can
+legitimately show a remaining balance that is not `original − used`). But for
+`ENGINE_COMPUTED_KINDS` (§179, charitable, regular NOL) `compute_form_172`
+recalculates `amount_used_current_year` / `remaining_amount` and writes them
+back — so those keyed figures are **not ignored, they are overwritten, and the
+value reads back CHANGED rather than absent**, which is why a keyed absorption
+produced a byte-identical dry run. The warning names the doomed figures, says to
+key `original_amount` + `source_tax_year`, and adds the clause that matters
+most: **if the engine's absorption disagrees with the filed return that is a
+FINDING to report, not a figure to transcribe over.** Silent for every other
+kind, where transcription is the only source. **Fourth home for one confusion,
+all now covered: `state_returns[].fields`, `ga500_fields`,
+`carryforward_attributes`.** 8 new tests (four assert SILENCE) + 145 adjacent.*
+
+*🔎 **3517's NOL absorption — ⛔ Ken's, as a SOURCE question, and it may not be
+a rule question at all.** Engine absorbs 20,959 (= 80% of a 26,199 base — the
+§172(a)(2)(B) cap, textbook, and the lane agrees the BASE is right because
+Lacerte's own worksheet prints the same 26,199); Lacerte absorbs 16,131
+(61.6%). The lane ruled out a QBI-net base (gives 16,786) and the SEHI/PTC
+circularity (the whole SEHI deduction is 968). ⚠ **Open possibility raised back
+to them: the deduction is `min(pool, 80% × base)`, so if the remaining POOL were
+16,131 the cap never binds and there is no §172 disagreement at all** — the
+190,783 "carryovers to 2026" figure is the pool AFTER absorption, not before.
+Confirm which figure was keyed as `original_amount` before framing it as an
+engine gap. ⚠ Georgia's pools are genuinely NOT in the packet and must not be
+derived from the federal ones — this return is the proof (16,131 federal
+absorbed vs 23,759 Georgia).*
+
 *⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
 lane is holding correctly):** ⓪ **the Georgia SALT add-back is not derived** —
 GA does not conform to the OBBBA SALT increase, so every GA itemizer with more
