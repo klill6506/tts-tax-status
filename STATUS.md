@@ -337,6 +337,29 @@ kind, where transcription is the only source. **Fourth home for one confusion,
 all now covered: `state_returns[].fields`, `ga500_fields`,
 `carryforward_attributes`.** 8 new tests (four assert SILENCE) + 145 adjacent.*
 
+*⭐⭐ (s306l) **THE FIFTH REPORTED "NO ROUTE" THAT EXISTS, AND THE SECOND
+"SILENT" THAT ISN'T — NOTHING BUILT.** The actual-expense **Form 8829 route
+EXISTS**: not a top-level section (which is why it wasn't found) but **NESTED
+under `schedule_cs` as `form_8829`**, because `Form8829`'s only FK is
+`schedule_c` — no `tax_return` column, so it cannot be a top-level list and
+nesting makes the activity link free (s272, BATCH-296 #26). `F8829_FIELDS`
+carries the whole indirect column (`excess_mortgage`, `repairs_indirect`,
+`utilities_indirect`, `other_indirect`, `insurance_indirect`, `rent_indirect`,
+`casualty_indirect`) plus areas, the §280A cap inputs, the Part III basis facts
+and both opening carryovers; every COMPUTED column is deliberately excluded.
+⚠ And the reported "sqft present + no flag silently yields ZERO" is **NOT
+silent — `D_SC_007` fires at ERROR severity** on exactly that predicate
+(`sqft > 0 AND use_simplified is not True AND no Form 8829 row`), naming both
+remedies.
+⭐⭐ **THE REAL FINDING IS THE VISIBILITY GAP, AND IT IS BIGGER THAN THE
+BLOCKER:** the lane measured an AGI delta, inferred silence, and did not see the
+error the engine had already raised. **A lane reading only reconciliation deltas
+misses every diagnostic the engine emits** — which would have short-circuited
+this, the SC NR-46 one and the GA 15b one. Raised to them as the higher-leverage
+fix. ⭐ Five reported "no route"s have now all existed (federal NOL, GA NOL, GA
+disability, GA retirement total, actual-expense 8829); the measurements were
+right every time and the INFERENCE from them was what missed.*
+
 *🔎 (s306k) **A reported "the browser may default a W-2 EIN from the firm
 record" trap CANNOT EXIST — the `Firm` model has NO EIN FIELD** (concrete fields
 are id / name / is_active / created_at / updated_at), so there is nothing to
