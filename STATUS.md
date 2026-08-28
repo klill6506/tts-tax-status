@@ -58,15 +58,45 @@ dependent DOB that exists nowhere (packet, organizer, or Lacerte's own file
 — its Schedule EIC prints the year of birth as literally "0"); measured cost
 1,700 (ODC 500 where the filed return takes CTC 2,200).
 
-**▶ NEXT unblocked build work (nothing depends on Ken):** client **2234**'s
-GA Low Income Credit is FIXED and shipped (s306t) but **unverified on the
-real return** — the lane should re-run it and confirm the $10 lands. Then:
-item ⑦'s **multi-category** Form 1116 half (multi-session, changes a model
-OneToOne→FK + all three registries + `SINGLETON_SECTIONS` — **wants Ken's go
-before it starts**), and the extractor follow-ons by the r17 residual
-(f8995 6 solo > asset_detail 4 > student_loan_educator_wks 4 > sch_c 3 =
-line-20 Sch 3 face class 3 = f8880 3 = f5695 3 = f8889 3 — every one an
-UPPER BOUND until the corpus re-runs).
+**▶ NEXT unblocked build work (nothing depends on Ken):** ✅ client **2234**'s
+GA Low Income Credit is now **VERIFIED LIVE** (s307, 2026-08-28, post-switch):
+the entry lane re-staged unchanged (`-b`, still no-tie — correct, the credit
+gates on an affirmative `LIC-NODEP`), then keyed the gate + `LIC-CHILD 1`
+(`-c`) → **TIE at the filed numbers** (ga500 23/29 = 154, 45 = 160, the $10
+lands), committed, filed, closed `source_verified` — **48 filed / 5 held**.
+⚠ Finding from the run: the lane could not SEE `D_GA500_022` on the dry-run —
+but the server has echoed full diagnostics on every dry-run since s306m
+(`data.diagnostics`); their DRIVER discards the key. Fix is lane-side
+(their runner renders it), told to them — no delvio-tax change.
+✅ **The f8995 extractor leg SHIPPED (s307, `78d9fedb`, deploy live):**
+r21 = **21 emitted / 246 refused** (was 19/248); f8995 is GONE as a refusal
+class; the two carryforward-only packets emit with their QBI loss
+carryforwards (negative, per the staging sign guard; verified in the
+emitted JSON — identities in `PipelineOut/r21`, which is where packet
+identities BELONG, never here). ⚠ The live corpus
+REFUTED the first geometry in a way the unit tests could not have — line
+10's caption "Add lines 5 and 9" plants a bare "9" inside any left-edge
+value region, and the fixtures were built from probe dumps sharing the
+same left-edge assumption, so they were blind by construction. Values are
+now recognised by RIGHT edge (≥435; caption numerals end ~430),
+regression-pinned incl. line 17's "7." which only survives numeric-parse
+failure. ⭐ The s301 lesson performed live: clearing the gate REVEALED
+deeper refusals on 4 of the 6 "solos" (tax-exempt-interest decomposition
+×3 — packets named in `PipelineOut/r21` — plus attributions), and the duo arithmetic
+reconciled to the packet across runs (sch_c solos 3→9 = exactly its 6
+f8995 duos; student_loan 4→7; est_payments 2→4).
+⛔ KEN, NEW: **one Inbox packet carries "no need to fil" TYPED INTO THE
+TAXWISE NAME FIELD** of its Main Info sheet (identified in
+`PipelineOut/r21`'s refusal and the entry lane's message log) — reads like
+a do-not-file note in the wrong place. Genuine do-not-file? The shell
+matcher rightly refuses; not to be worked around either way.
+**▶ Extractor next, by the r21 ranking (all upper bounds until re-run):**
+sch_c 9 (the big one) > student_loan_educator_wks 7 > asset_detail 5 >
+est_payments_wks 4 = f5695 4 = f8889 4 > f8880 3; the exempt-interest
+decomposition (3 named packets) is the cheapest targeted leg. Then: item
+⑦'s **multi-category** Form 1116 half (multi-session, changes a model
+OneToOne→FK + all three registries + `SINGLETON_SECTIONS` — **wants Ken's
+go before it starts**).
 
 **Two questions staged in `REVIEW_QUEUE.md`** (both mine, neither blocking):
 whether `D_GA500_009` should drop error→warning (as an error it is
@@ -833,6 +863,13 @@ what a batch file or your own probe shows.
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
 - 🔧 ⚠⚠ **NEVER edit `apps/` source while a detached pytest is in flight**
   (s286): five phantom failures. New files/markdown/scratchpad only.
+- 🌐 ⚠ **The teardown warning "database test_postgres is being accessed by
+  other users / 1 other session" is NOT lock contention on this setup** —
+  it is YOUR OWN pooled connection: Supavisor holds it open after pytest
+  finishes, so Django's teardown finds it still attached. Verified against
+  `pg_stat_activity` (states lane, 2026-08-28: one idle connection, started
+  inside the run window, idled as the run ended). Recurs on every run; zero
+  effect on results. Do not go hunting for a peer who isn't there.
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
   `server\`. ⚠ `poetry run python -c "<multi-line>"` binds wrong —
