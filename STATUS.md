@@ -173,8 +173,19 @@ ratio to "at least four places" — FOUR IS A MINIMUM and we emitted the least
 accurate value permitted.** FIVE is the ceiling, not a preference: MeF
 `RatioType` is `fractionDigits=5`/`totalDigits=6`. Prod census BEFORE the change
 (s302 rule): **8 full-path returns, 7 unchanged, 1 moves by exactly $1 — into
-agreement with the filed return.** ⚠ Line 3f deliberately LEFT at four (its
-→3g→7 blast radius unmeasured, no divergence reported). Gates 614 + 620 MeF.
+agreement with the filed return.** ⚠⚠ **LINE 3f STAYS AT FOUR DECIMALS, AND THAT IS NOW A MEASURED DECISION, NOT A
+DEFERRAL.** The entry lane flagged a live return whose vendor-printed 3f carries
+SIX decimals and where the ratio actually binds, predicting a $1 divergence.
+**Both halves were checked and both say leave it alone:** (a) their arithmetic
+does not reproduce — `0.6616 × 23,625 = 15,630.30 → 15,630`, which MATCHES the
+printed line 6, as does the 6-decimal ratio, so the only real witness available
+says our current 4dp answer is RIGHT; (b) the prod census says moving 3f to 5dp
+would shift **5 of 8** full-path returns' line 3g by $1 (vs 1 of 8 for line 19),
+with **no filed-return witness anywhere saying the new value is better**.
+⭐ **The asymmetry is the point: line 19 changed because a filed return PROVED
+4dp wrong; 3f must not change because the only evidence points the other way.**
+`ForeignIncomePct` is also `RatioType` (5dp cap), so 4dp transmits fine. Gates
+614 + 620 MeF.
 ⭐ **The keeper: a TIE is not evidence when two errors can offset.** Ask what the
 green result was CAPABLE of catching — the same class as the vacuous SE fixture
 and the s303 timestamp. It was caught only because the lane refused to bank an
