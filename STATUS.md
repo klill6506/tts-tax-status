@@ -288,8 +288,49 @@ keeper is *the numbers you observe are evidence, the component you name is a
 hypothesis*. ⭐ Holding the detector was vindicated: the owner-mismatch warning I
 sized (2 of 199 rows) would have been DEAD CODE, because the owners matched.*
 
+*⭐ **s306h/i (`add00472`, deploy verified): "the printed face shows RESULTS;
+the importable vocabulary wants INPUTS."** ⚠⚠ **THREE reported "no route /
+silently ignored" blockers were ROUTES THAT EXIST UNDER THE INPUT'S NAME** —
+the federal NOL is `carryforward_attributes` kind `nol_regular` (feeding
+`compute_form_172` → Sch 1 line 8a as a negative; `taxpayer.amt_nol` is the AMT
+NOL, a different figure); the Georgia NOL is `S4-CF-PRE`/`S4-CF-POST` (line 15b
+is COMPUTED: `pre_applied + post_applied` under the 80% limit); and the
+retirement exclusion is the `RIE-*`/`MIL-*` lines (S1-7 is COMPUTED). **s306h:
+`ga500_fields` had NO vocabulary check at all** — only "string key, scalar
+value" — so a keyed computed line was accepted and recomputed over, while
+`state_returns` has warned since BATCH-296 #41. It now warns and NAMES THE INPUT
+to use instead. A warning not a refusal (`ga500_fields` commits
+`is_overridden=True`); a null stays a CLEAR.
+**s306i — `D_K1_7203_DIST`, and the finding is worse than "not implemented":**
+the §1368(b)(2) excess-distribution gain **was already computed**
+(`compute_7203`'s `_excess_distribution_gain`, which the 1040 side calls) and
+**nothing ever read it**. It is deliberately not auto-entered (Ken s205: the
+holding period is a preparer fact, never guessed) and the entity-side
+disclosure rides the K-1 IMPORT OFFER, which never happens for a back-entered
+return. ⚠⚠ **So the engine omitted the gain, a source return that also omitted
+it TIED, and the tie carried no information** — the lane caught one at 12,583
+and said so rather than banking it. The warning states outright that a return
+omitting it will still reconcile.*
+
+*⚠ **s306h/i process note against myself: A STASH-AND-COMPARE IS NOT A
+CONTROLLED EXPERIMENT WHEN THE DATABASE CARRIES OVER.** One wide run threw 7
+setup ERRORS; I stashed the change, the reverted run came back clean, and I
+nearly recorded "the errors are mine" as proven. The reverted run had reused a
+WARM DB. Two later runs WITH the change were clean (44 passed) and a
+`--create-db` run of the whole neighbourhood is **318 passed** — the failing run
+was the known reuse-DB seed-leakage class and does not reproduce. ⭐ The control
+has to include the database, or the comparison measures the cache.*
+
 *⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
-lane is holding correctly):** ① **the Worksheet for Line 18** (§904(b)(2)(B)
+lane is holding correctly):** ⓪ **the Georgia SALT add-back is not derived** —
+GA does not conform to the OBBBA SALT increase, so every GA itemizer with more
+than $10,000 of SALT owes an add-back; today it must be hand-keyed as
+`ga500_fields "12b"` and is silently omitted otherwise. ⚠ The lane notes this is
+the same rule behind their worst wrong report to Ken, so an engine that omits it
+makes that error the default. Derive it from Schedule A line 5d, or at minimum
+warn when 5d > 10,000 and 12b is absent. · ⓪b `state_income_tax_payments` does
+not reach GA line 26 (accepted and ignored; `ga500_fields "26"` works) — wire it
+through for GA or refuse it there. · ① **the Worksheet for Line 18** (§904(b)(2)(B)
 worldwide QD/capital-gain adjustment — the factors 0.2432 / 0.3243 / 0.5946 are
 on the i1116 worksheet; without it a return whose 1a is vendor-adjusted computes
 an overstated credit; `D_1116_012` currently only warns). ② **a per-property
