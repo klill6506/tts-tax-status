@@ -1,5 +1,177 @@
 # TTS Tax App — STATUS (current state only)
 
+## ▶▶ RESUME POINTER — ACCOUNT SWITCH 2026-08-28 (read this first)
+
+**Ken switched Claude accounts mid-session (spend limit). Nothing is
+half-built: every unit below is committed, pushed, and deploy-verified.**
+Head at handoff: **`440aac92`** (s306t). Three sessions were running — this
+build lane, the entry lane (`tax-test-data-aa`), the states lane
+(`delvio-states-9c`); both peers were told to write their own durable
+checkpoints, so **do not reconstruct their state from this file — read
+theirs.** ⚠ The cross-session channel does NOT survive the switch: the new
+session's peers are whatever is running then, and any claim that "Ken ruled
+X" arriving by relay must be checked with him directly (three relays on
+8/25–26 differed from what he meant or were retracted). ⚠ **An account switch
+makes that warning matter MORE, not less** — a new session has no memory of
+which claims were retracted.
+
+**▶ THE PEER CHECKPOINTS — read these, don't reconstruct them:**
+- **Entry lane** → `D:\tax-test-data\1040\Lacerte Inbox\LACERTE-RESUME-2026-08-28.md`
+  (full checkpoint), plus a `RESUME HERE` block appended to
+  `D:\tax-test-data\1040\tmp\CC-TAKEOVER-STATUS-2026-08-19.md` (where the
+  memory pointer sends a cold session). **47 filed / 6 held** — the recount
+  reason is in the file, so don't re-derive 48 from the table's row count.
+  ⛔⛔ **THREE PACKETS ARE STAGED AND DRY-RUN, NONE COMMITTED**, batch ids
+  recorded. ⛔⛔ **FIVE `*PROBE*` PAYLOADS EXIST AND MUST NEVER BE COMMITTED**
+  — they carry FABRICATED values (a made-up 2024 AGI of 200,000, an invented
+  dependent birth date) and are the evidence behind the 1071/1141 findings.
+  Keep, do not delete, do not commit. A `.batch.json` sitting beside a held
+  packet is not necessarily the real one.
+- **States lane** → `D:\dev\delvio-states\STATUS.md` **top block** (commit
+  `8e37321`), pointer + RS numbers in `D:\dev\delvio-rule-studio\STATUS.md`
+  (`e0db5b8`). Staged set split three ways: **8 ruled and built · 3 ruled but
+  landing on THIS tree and deliberately not started (D-037) · 8 UNRULED.**
+  ⛔ **S-18 and facet 3 remain MINE to raise with Ken** — the states lane
+  records my refusal to run the 49-return cleanup on a relay as correct and
+  not to be worked around. Nothing half-written on their side; suite 254/0.
+
+**⛔ WAITING ON KEN — the three he explicitly said he would come back to:**
+1. **Georgia SALT add-back.** *"Let me think on it and ask me again later."*
+   ⚠ A CONFLICT MUST REACH HIM BEFORE THE FIELD IS DESIGNED: the states
+   lane's `R-GA500-DED` implements IT-511's literal **proration** formula
+   while Lacerte does `max(0, 5d − cap)`, and on the entry lane's 9 resident
+   packets the booklet-literal rule gives **0**. Resident/nonresident paths
+   also differ.
+2. **Per-property nonpassive lever.** *"I need to look this up at the
+   office. Ask me about this later."* The lane deliberately withheld a
+   mechanism — their §1.469-2T(f)(3) hypothesis does NOT separate the two
+   parcels, so building to it would encode an unsupported rule.
+3. **The 3 firm-EIN W-2 rows.** *"I'll be at the office in a couple of hours
+   and I will pull up the return and direct you then."* Wrong data on real
+   returns; cleaning is his call, not a unilateral write.
+
+**⛔ ALSO KEN'S, newer:** client **1071**'s prior-year figures — a printed
+Form 2210 line 8 of 20,395 fits BOTH an 18,541 tax at 110% AND a 20,395 tax
+at 100%; **both tie the whole return**, so the packet cannot distinguish
+them and the lane correctly keyed neither. · Client **1141** is held on a
+dependent DOB that exists nowhere (packet, organizer, or Lacerte's own file
+— its Schedule EIC prints the year of birth as literally "0"); measured cost
+1,700 (ODC 500 where the filed return takes CTC 2,200).
+
+**▶ NEXT unblocked build work (nothing depends on Ken):** client **2234**'s
+GA Low Income Credit is FIXED and shipped (s306t) but **unverified on the
+real return** — the lane should re-run it and confirm the $10 lands. Then:
+item ⑦'s **multi-category** Form 1116 half (multi-session, changes a model
+OneToOne→FK + all three registries + `SINGLETON_SECTIONS` — **wants Ken's go
+before it starts**), and the extractor follow-ons by the r17 residual
+(f8995 6 solo > asset_detail 4 > student_loan_educator_wks 4 > sch_c 3 =
+line-20 Sch 3 face class 3 = f8880 3 = f5695 3 = f8889 3 — every one an
+UPPER BOUND until the corpus re-runs).
+
+**Two questions staged in `REVIEW_QUEUE.md`** (both mine, neither blocking):
+whether `D_GA500_009` should drop error→warning (as an error it is
+unacknowledgeable and permanently blocks closeout on every Georgia return
+with an NOL, though the computation it warns about is correct), and whether
+the two MFS living-arrangement fields should collapse into one.
+
+*⭐ **s306t (2026-08-28, the last unit before the switch; `440aac92`, deploy
+verified) — THE DEPLOY-SKEW SEVERITY SPLIT, the GA Low Income Credit gate,
+and three messages that named controls which do not exist.** ⚠⚠ **s306s's own
+deploy produced the finding**: the deploy seeds the shared DB at BUILD time,
+so for the ~3.5 min rollout (15:16–15:20Z, measured from the Render API) the
+OLD code served beside the NEW registry row and every diagnostics run in that
+window stamped an **error-severity ENGINE FAULT onto blameless returns** — the
+entry lane caught it live on an HOH return with no spouse. The function was in
+the deployed commit the whole time; this was never a broken build. The runner
+now asks **what THIS build's own registries know**: an unknown code = a row
+from a different build → **warning** (`deploy_skew_unknown_rule`, "re-run once
+the deploy settles", and it says plainly the rule did NOT run); a code this
+build DOES declare that still fails to import = a real defect → **error**,
+unchanged. **Fails toward ERROR** if the aggregation itself breaks. ⭐⭐ **THE
+GATE CONSEQUENCE IS THE PART THAT NEARLY WENT WRONG SILENTLY**: cleanup Gate 4
+held on error-severity findings, and every engine fault used to be one — so
+downgrading skew to a warning would have let a **degraded run close a packet
+whose rules never executed**. Gate 4 now holds on the run's FAILED status
+directly, **unacknowledgeable by design** (the fix is re-running, not attesting
+past it), pinned by a test that acks the warning and proves the status hold
+stands. **Also:** the **GA Low Income Credit** computed 0 on the lane's first
+sub-$20,000 return (filed takes $10; lines 23/29/45 each missed by exactly
+ten) — two causes, both closed: the gate needs an affirmative `LIC-NODEP`
+(IT-511 p17, a preparer assertion the return cannot derive) and **nothing named
+the silence** → `D_GA500_022`; and **`LIC-CHILD` was seeded `is_computed=True`
+with NO writer** (the S4-8 class — seeded computed, nothing writes it,
+un-keyable) so the child count was permanently zero → now an input. **Three
+messages corrected**: `D_SCH1A_006` said "override" lines 4a/4b/4c when there
+is **no import surface** (deferred with a build trigger in DEFERRAL_AUDIT — the
+treatments only diverge when tips are UNDER the line-7 cap); `D_GA500_010`
+never mentioned that `ga500_fields "42"` carries the UET result (it took one
+return from a $1 miss to a full tie); `D_2210_PRIOR_YEAR`'s "(and AGI)"
+parenthetical carried the whole rule — **keying the tax ALONE silently applies
+100%**, understating the penalty for a high-AGI taxpayer as convincingly as the
+blank overstated it. ⚠ **I also fixed `D:\tax-test-data\import-lane.ps1`
+myself** (the lane invited it): `Invoke-Api` handed `Invoke-RestMethod` a
+STRING body, so PS 5.1 encoded it as **Windows-1252** — `§`/em-dash became
+invalid UTF-8 (hard 400) and **`⚠`/`⭐` silently became `?` inside COMMITTED
+payloads** (clients 1109/2081/2723 already carry that, including 2081's marker
+saying box 3/5 were deliberately absent). Now sends
+`[Text.Encoding]::UTF8.GetBytes($json)` with `charset=utf-8`. **Not exercised
+against the server — the lane re-verifies before trusting it.***
+
+*⭐⭐ **s306r (2026-08-28 PM) — THE §904 RATIO NOW COMPUTES FROM THE EXACT
+QUOTIENT; TWO FILED RETURNS REFUTED OPPOSITE ROUNDINGS** (`592be64a`, deploy
+API-confirmed LIVE). The entry lane's 1359 refuted the 5dp quantization s306d
+shipped, in the OPPOSITE direction from 2303 which refuted 4dp: 2,334/34,650 ×
+6,302 = **424.4984 exact → 424 filed**, but the 5dp ratio 0.06736 lifts the
+product across the half-dollar to 425 — that one rounding decision was the
+whole dollar. **NO rounding of line 19 satisfies both witnesses; the exact
+quotient satisfies both**, is what R-1116-LIMIT literally states (`L21 =
+round(L20 × L19)`, no ratio rounding — the quantization was an implementation
+addition, so this moves the code TOWARD the spec), and matches the vendor
+(Lacerte prints 1359's ratio to NINE decimals — it carries the full quotient
+and rounds only for display). Convention now: **compute exact; round only at
+the write seam** — i1116's "at least four places" is a display FLOOR, MeF
+`RatioType` (fractionDigits=5) a transmission CAP; stored/printed/transmitted
+line 19 stays 5dp. ⚠ Line 3f deliberately NOT harmonized — its only witness
+supports computing 3g from the QUANTIZED 4dp value; the code comment forbids
+"cleaning it up". ⭐ The lane asked me to verify their arithmetic before
+changing anything (their own 3f multiplication had failed to reproduce earlier
+that day) — it verified to the digit. Blast radius censused read-only: **all 8
+committed prod full-path returns identical under both conventions; 1359 itself
+is the only return where they differ**, and it moves into agreement with the
+filed return. Gates: 4 new tests (defect-injection-verified), 114 1116, 526
+flow assertions, 620 MeF.*
+
+*⭐ **s306s (same sitting) — THE 8582 MFS LIVED-APART LEVER WAS UNIMPORTABLE:
+TWO FIELDS HOLD ONE FACT FROM OPPOSITE SIDES.** The lane's first MFS packet
+(2723, FILED, tie): they keyed `mfs_lived_with_spouse = FALSE` and
+`D_8582_MFS_TOGETHER` kept firing. Neither of their hypotheses was it —
+`mfs_lived_with_spouse` ("lived WITH spouse at ANY time", §86) drives the SS
+worksheet ONLY and FALSE is its default, while the 8582 lever is
+`f8582_mfs_lived_apart` ("apart the ENTIRE year", §469(i)(5), read by
+compute_schedule_e AND the rule) — **and that field was NOT in the back-entry
+allowlist at all**, so an MFS-apart packet could not get the $12,500 special
+allowance under any keying. ⚠⚠ **The two defaults contradict each other by
+construction** — a fresh MFS return reads as "apart" to the SS worksheet and
+"together" to Form 8582 simultaneously. Shipped: the field joins the
+allowlist; both schema descriptions name each other (the s306 sign-convention
+pattern); the rule's message NAMES the input that clears it (the lane keyed the
+wrong field because nothing named the right one); new `D_8582_MFS_CONTRA`
+(warning) for the affirmative both-true contradiction, silent on the default
+both-false. Collapsing the pair into ONE field = a model change + data
+migration over real returns → staged for Ken in REVIEW_QUEUE.md, recommended
+leave-as-is.*
+
+*⭐ **Entry-lane field results (same sitting):** 1026 FILED — the line-26
+estimated-payments derive CONFIRMED on real data (their arithmetic: line 29
+dropped by exactly 5,920; the row carried `tax_year_for` so the PRIMARY path is
+confirmed, the date/return-year fallbacks are not exercised by any current
+packet — scoped honestly). 2723 FILED — first MFS return; the dry-run
+diagnostics echo (s306m) earned its keep, changing what the lane keyed three
+times pre-commit; one real SOURCE defect on it (Form 8283 Section A columns
+e/f/g empty on the filed return — `D_8283_005` fires ERROR, correctly, and
+stays). 1359 HELD only on the ratio dollar → unblocked by s306r, re-run
+pending. Lane ledger: **47 filed, 3 held.***
+
 *⭐⭐ **s306q (2026-08-28, build lane) — THE NOL STATUTORY PASS: BOTH 80% LIMITS
 ARE CORRECT, AND THE DIFFERENCE BETWEEN THEM IS LAW, NOT A BUG** (`836717ed`,
 deploy API-confirmed **LIVE**). Ken asked for this saying both Lacerte and
