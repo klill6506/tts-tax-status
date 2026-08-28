@@ -1,5 +1,66 @@
 # TTS Tax App — STATUS (current state only)
 
+*⭐⭐ **s306q (2026-08-28, build lane) — THE NOL STATUTORY PASS: BOTH 80% LIMITS
+ARE CORRECT, AND THE DIFFERENCE BETWEEN THEM IS LAW, NOT A BUG** (`836717ed`,
+deploy API-confirmed **LIVE**). Ken asked for this saying both Lacerte and
+TaxWise might be wrong, so nothing was checked against a vendor return.
+**Federal** IRC §172(a)(2)(B)(ii) verbatim: 80% of the **excess** of taxable
+income *over the pre-2018 NOLs* — our `0.80 × (ti − pre)` is right, and the
+naive `0.80 × ti` would over-deduct **$24,000** on the spec's own T7.
+**Georgia** IT-511 line 15b worksheet, line 5 verbatim: *"NOL from Line 2
+applied to current year (cannot exceed **80% of Line 3**)"*, and line 3 is the
+**RAW** *"Income before GA NOL (Line 15a)"* — so Georgia measures against the
+raw base, which is exactly what `compute_ga500` does. ⭐⭐ **The reconciling
+fact: the excess-over-(A) structure is a CARES Act creation** (TCJA as enacted
+applied 80% flat), **and IT-511 p. 30 says Georgia *"did not adopt the revised
+net operating loss provisions in the CARES Act."*** Georgia is frozen
+pre-CARES. ⚠⚠ **The Georgia REGULATION (560-7-4-.01(3)) is too terse to settle
+it** — *"such limitations … shall be applied to Georgia taxable net income"*
+reads both ways, and I nearly reported our correct GA code as wrong on it; **the
+booklet's printed WORKSHEET is what settles the arithmetic.** Real money: base
+50,000 / pre 30,000 → Georgia allows 20,000 where the federal shape allows
+16,000. **Guarded, not just documented:** `test_ga500_nol_divergence_s306q.py`
+(7 tests) carries the explanation in the load-bearing assertion's failure
+message, verified by defect injection; + DECISIONS.md + a citation at the code
+site. ⚠ **The pre-existing T9 scenario is post-2017-only and could NEVER have
+caught this** — the divergence is observable only when BOTH pools exist.*
+
+*⭐ **s306q also shipped: `D_GA500_021` (warning) — the federal NOL's Georgia
+add-back.** Georgia starts from federal AGI, which is already net of the
+Schedule 1 line 8a deduction, and IT-511's Additions item 6 requires it added
+back because the Georgia NOL is computed separately. **`S1-4` is direct-entry
+and NOTHING writes it** — survivable while 8a was hand-keyed, but since the Form
+172 engine landed **8a computes itself**, so a return can acquire a federal NOL
+deduction with no human touching an NOL field while Georgia income is
+understated by the whole amount, silently. The rule names it and deliberately
+does NOT derive the number (same open design question as the s302
+`us_government_income` → S1-10 item). Also: **`D_GA500_009`'s message cited
+"Schedule 4 Part III"**, which per IT-511 is the **CARRYBACK** schedule, left
+blank for a carry-forward-only loss — rewritten to name what is actually
+missing (two scalars, no vintages, no expiry, no write-back), **and the registry
+description carried the same wrong citation** (the s302b twin lesson, again).
+`D_172_80PCT_STATEMENT` declared `warning` in the registry while always emitting
+`info` — the finding's severity wins at runtime so nothing gated wrongly, but
+the catalogue lied; aligned. Gates: 296 + 526 flow assertions.*
+
+*⚠⚠ **s306p, AGAINST MYSELF — I CAUSED THE SIXTH "THE ROUTE ALREADY EXISTS",
+AFTER FIVE SESSIONS OF SAYING IT TO THE ENTRY LANE** (`0e2405b3`, LIVE). Ken
+authorized "GA estimated payments should reach the payments line"; I started
+building the route. **It existed, from s277**, in the GA-500 attach/resync path
+in `views.py` — and my version read the **GA-500 return's** payment rows (there
+are none; they live on the FEDERAL return), computed 0, and **overwrote the
+correct value**. An existing s277 test caught it. ⭐ **Searching the file you
+expect is not searching** — grep the LINE NUMBER (`"26"`), not the concept.
+⭐ **The real defect, found only after I stopped building:** the s277 predicate
+required `tax_year_for == <return year>` — **strict equality against a field the
+model documents as OPTIONAL** — so a row carrying only state/kind/amount was
+silently dropped, which is exactly the "accepted and ignored" the lane reported.
+Now `tax_year_for` → else `date_paid`'s year → else the return's own year.
+**Blast radius measured against prod: 27 GA estimate rows, exactly ONE newly
+counted — the reported row itself.** Both gates verified by defect injection.
+⚠ The lane has since keyed `tax_year_for: 2025` (the Form 500 line-26 heading
+states the year), so their packet exercises the primary path, not the fallback.*
+
 *⭐ s306 (2026-08-27, build lane): **the HSA excess detector could not see an
 employer-only over-contribution** — three BATCH-296 entry-lane items in one
 pass. The headline is that `D_8889_EXCESS` **already existed and already ran**:
@@ -422,30 +483,47 @@ to them: the deduction is `min(pool, 80% × base)`, so if the remaining POOL wer
 16,131 the cap never binds and there is no §172 disagreement at all** — the
 190,783 "carryovers to 2026" figure is the pool AFTER absorption, not before.
 Confirm which figure was keyed as `original_amount` before framing it as an
-engine gap. ⚠ Georgia's pools are genuinely NOT in the packet and must not be
+engine gap. ⭐ **s306q NARROWS THIS TO EXACTLY THAT QUESTION**: the federal 80%
+formula is now verified verbatim against IRC §172(a)(2)(B)(ii) and pinned by
+tests, so `min(pool, 0.80 × (base − pre2018))` is not in doubt. With no
+pre-2018 component the engine's 20,959 is arithmetically forced from a 26,199
+base — **so either the base or the POOL is the disagreement, and neither is a
+§172 defect.** ⚠ Georgia's pools are genuinely NOT in the packet and must not be
 derived from the federal ones — this return is the proof (16,131 federal
 absorbed vs 23,759 Georgia).*
 
 *⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
-lane is holding correctly):** ⓪ **the Georgia SALT add-back is not derived** —
-GA does not conform to the OBBBA SALT increase, so every GA itemizer with more
-than $10,000 of SALT owes an add-back; today it must be hand-keyed as
-`ga500_fields "12b"` and is silently omitted otherwise. ⚠ The lane notes this is
-the same rule behind their worst wrong report to Ken, so an engine that omits it
-makes that error the default. Derive it from Schedule A line 5d, or at minimum
-warn when 5d > 10,000 and 12b is absent. · ⓪b `state_income_tax_payments` does
-not reach GA line 26 (accepted and ignored; `ga500_fields "26"` works) — wire it
-through for GA or refuse it there. · ① **the Worksheet for Line 18** (§904(b)(2)(B)
-worldwide QD/capital-gain adjustment — the factors 0.2432 / 0.3243 / 0.5946 are
-on the i1116 worksheet; without it a return whose 1a is vendor-adjusted computes
-an overstated credit; `D_1116_012` currently only warns). ② **a per-property
-NONPASSIVE lever** — a filed 8582 omits exactly one of six rentals, so its 465
-flows through, and there is no way to say so; ⚠ the lane deliberately withheld a
+lane is holding correctly). ⚠ KEN ANSWERED SIX OF THESE 2026-08-28 — the status
+below is post-ruling:**
+· ⓪ **the Georgia SALT add-back — ⛔ STILL KEN'S** (*"Let me think on it and ask
+me again later"*). ⚠⚠ **A CONFLICT MUST REACH HIM BEFORE THE FIELD IS
+DESIGNED**: the states lane's spec `R-GA500-DED` implements IT-511's literal
+**proration** formula while Lacerte does `max(0, 5d − cap)`, and on the entry
+lane's 9 resident packets the booklet-literal rule gives **0**. The
+resident/nonresident paths also differ. Do not build until that is resolved.
+· ⓪b ~~`state_income_tax_payments` does not reach GA line 26~~ — **✅ DONE
+(s306p)**, and the route had existed since s277; the bug was a predicate
+demanding an OPTIONAL field.
+· ① ~~the Worksheet for Line 18~~ — **✅ BUILT (s306, Ken's go)**.
+· ② **a per-property NONPASSIVE lever — ⛔ STILL KEN'S** (*"I need to look this
+up at the office. Ask me about this later"*). The lane deliberately withheld a
 mechanism because their §1.469-2T(f)(3) hypothesis does NOT separate the two
-parcels (1.3% vs 0% depreciable, both far under the 30% test), so building to it
-would encode an unsupported rule. ③ **`ga500_fields` does not warn when a
-COMPUTED line is keyed** (S1-7 is written by `compute_ga500`), while
-`state_returns` does — close the asymmetry.*
+parcels, so building to it would encode an unsupported rule.
+· ③ ~~`ga500_fields` does not warn when a COMPUTED line is keyed~~ — **✅ DONE
+(s306h)**.
+· ④ **the 3 firm-EIN W-2 rows — ⛔ STILL KEN'S** (*"I'll be at the office in a
+couple of hours and I will pull up the return and direct you then"*). Wrong data
+on real returns; cleaning them is his call, not a unilateral write.
+· ⑤ ~~the NOL rules~~ — **✅ VERIFIED (s306q)**: both jurisdictions correct, the
+divergence is required by law and is now guarded. See the s306q entry above.
+**NEW from s306q, staged in `REVIEW_QUEUE.md`:** whether `D_GA500_009` should
+drop from **error to warning** (as an error it is unacknowledgable and
+permanently blocks closeout on every Georgia return with an NOL — `backentry.py`
+Gate 4 — even though the computation it warns about is correct), and whether to
+build **Georgia Schedule 4 Parts I & II** (`S4-8` / `S4-NB-18` are seeded
+`is_computed=True` with nothing writing them; the full IT-511 instructions were
+extracted this session, including the Part II line 6 **nonbusiness RIE
+proration**, which is substantial enough to want its own unit).*
 
 *⚠ **s306c, against myself — I broke my own standing rule.** A PS5.1
 `Get-Content | Set-Content -Encoding UTF8` rewrite of a test file double-encoded
