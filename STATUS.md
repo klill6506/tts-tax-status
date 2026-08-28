@@ -228,6 +228,39 @@ s272b lesson (*the grep lied because the name was constructed*). s274 built that
 gate deliberately, citing O.C.G.A. §48-7-27(a)(5). ⭐ **A literal grep cannot
 prove an absence when the key is assembled at runtime.***
 
+*⭐ **s306e/f AFTERMATH — both shipped items PROVEN on the live packet, and one
+of my near-misses reversed by the lane.** ① **Georgia TIES**: the disability
+retirement exclusion was keyable all along (`RIE-TP-DIS` + `-DIS-DATE` +
+`-DIS-TYPE`) — S1-13 48,933 / RIE-TP-17 35,000, the 1,817 gone. **The lane had
+reported "no way to state disability status" as a blocker and has retracted it**;
+I nearly confirmed it from my own bad grep. ② **The 1116 3d fix is proven by a
+PREDICTED-then-observed experiment**: the lane predicted before running that the
+error would flip from 604 LOW to 259 HIGH, and it did to the dollar (credit 1,028
+→ 165 against a correct 424, with 3f now 0.661573). **That isolates line 18 as
+the SOLE remaining cause.**
+⭐ **FEASIBILITY MEASURED (this changes the sizing of Ken's decision ① below):
+the Worksheet for Line 18 is MUCH smaller than "build a worksheet" —
+`compute_intdiv.compute_qdcgt_worksheet` already produces all 25 QD&CG lines,
+so the 0%-rate slice is `ws_9`, the 15% slice falls straight out of it, and
+`ws_5` IS the very line the adjustment exception's own threshold test names.**
+The 28%/25% rows are unreachable anyway (a return with DIV 2b/2c/2d is already
+ROUTE_BLOCKED). Answer key in the packet: worldwide 15% gains 24,499 × 0.5946 =
+14,567 + 40,032 of 0% gains = 54,599 off 89,249 → 34,650.*
+
+*🔎 (s306f) **A Schedule SE wage-base ATTRIBUTION warning was sized and NOT
+built — deliberately.** A reported "SE blocker" re-run turned out not to be one:
+the engine reproduces the FILED figures exactly when line 8a is populated
+(1,786/893) and the reported wrong ones when it is 0 (9,422/4,711), and
+`se_line_8a_for` zeroes 8a only when the W-2's `owner` differs from the
+ScheduleSE `proprietor` — correct under §1402, which applies the base per
+individual. Prod census for a would-be warning: **2 of 199 ScheduleSE rows** sit
+in that shape, so it would be signal rather than noise. ⚠ **Not built because
+the actual cause on that packet is UNCONFIRMED** (unkeyed box 3, an owner
+mismatch, and a nonzero keyed `w2_ss_wages` override are three different
+defects wanting three different detectors). Building now would be building to a
+hypothesis — the same trap the lane correctly refused to hand me on the rental
+recharacterisation.*
+
 *⛔ **KEN — DECISIONS OPEN FROM THE ENTRY LANE'S PACKETS (none blocking, the
 lane is holding correctly):** ① **the Worksheet for Line 18** (§904(b)(2)(B)
 worldwide QD/capital-gain adjustment — the factors 0.2432 / 0.3243 / 0.5946 are
