@@ -337,6 +337,39 @@ kind, where transcription is the only source. **Fourth home for one confusion,
 all now covered: `state_returns[].fields`, `ga500_fields`,
 `carryforward_attributes`.** 8 new tests (four assert SILENCE) + 145 adjacent.*
 
+*⭐⭐ **s306m/n (`22958b19`, deploy LIVE) — DRY RUNS NOW ECHO DIAGNOSTICS, and
+that closes the worst-shaped gap on the lane.** A `DiagnosticRun` only exists
+after a COMMIT, so **a HELD packet had no diagnostics at all** — and held
+packets are precisely the ones where a diagnostic explains the gap. The entry
+lane dumped a dry run and measured that there is no `diagnostics` key anywhere:
+`D_SC_007` had fired at ERROR and was invisible to the only interface they have.
+⚠ **My "you did not look" was the wrong half — they looked; the looking had
+nowhere to land.** The dry run already performs the whole commit in a
+rolled-back transaction, so the findings exist at that moment.
+`commit_staged_return` gains `include_diagnostics` (default OFF so real commits
+are unchanged); the view defaults it ON for dry runs. Shape: `rule_code` /
+`severity` / `message`, from the SAME runner the app uses; wrapped so a
+diagnostics failure can never break a commit.
+**s306n — THE s225 DEFECT RECURRED**: staging has accepted the nested
+`form_8829` since s272 and the generator never emitted it, so an author
+validating OFFLINE got a **FALSE REFUSAL for a field the server takes** — which
+is exactly why it was reported as "no route". Now generated from
+`F8829_FIELDS` (30 properties, verified published). ⚠ SUPPORTED-SECTIONS' "neither
+can drift from what staging accepts" is TOO STRONG — it holds only until a
+feature ships after the last regeneration, and this is the second instance
+(`schedule_fs` detail rows were the first, s225).*
+
+*⚠⚠ **s306m, against myself — THE VIEW SERVED TWO LANES AND I CHANGED ONE
+SIGNATURE.** Adding `include_diagnostics` to the 1040 `backentry` module alone
+**500'd EVERY entity-lane commit** (`TypeError: unexpected keyword argument`) —
+**136 failures**. The s295b lesson (one shared caller, two implementations)
+arriving as a live 500 rather than a quiet divergence. ⭐ Caught only because the
+sweep was run at all: the change itself was right and the BLAST RADIUS was not
+where I looked. Both signatures are now pinned together by test, and the entity
+lane imports the ONE helper rather than growing a copy. ⭐ Also re-confirmed the
+quintet discipline: the 5 residual failures are the known files and pass **15/15
+on `--create-db`** — re-diagnosed, not inherited.*
+
 *⭐⭐ (s306l) **THE FIFTH REPORTED "NO ROUTE" THAT EXISTS, AND THE SECOND
 "SILENT" THAT ISN'T — NOTHING BUILT.** The actual-expense **Form 8829 route
 EXISTS**: not a top-level section (which is why it wasn't found) but **NESTED
