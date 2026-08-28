@@ -337,8 +337,27 @@ kind, where transcription is the only source. **Fourth home for one confusion,
 all now covered: `state_returns[].fields`, `ga500_fields`,
 `carryforward_attributes`.** 8 new tests (four assert SILENCE) + 145 adjacent.*
 
-*🔎 **3517's NOL absorption — ⛔ Ken's, as a SOURCE question, and it may not be
-a rule question at all.** Engine absorbs 20,959 (= 80% of a 26,199 base — the
+*🔎 (s306k) **A reported "the browser may default a W-2 EIN from the firm
+record" trap CANNOT EXIST — the `Firm` model has NO EIN FIELD** (concrete fields
+are id / name / is_active / created_at / updated_at), so there is nothing to
+default from. Measured rather than only read: **3 of 845** prod W-2 rows carry
+the firm's own EIN, one of them named `'New Employer'` (the OLD placeholder
+retired in s287, so it predates the change and was hand-typed); zero 1099-R
+payer rows; no EIN over-represented in a way suggesting a leaking default.
+**Deliberately NOT built:** the only way to express "employer EIN == the firm's
+EIN" today is to hardcode a real EIN in source — wrong on its own terms and
+against the no-PII rule. If a firm EIN field ever lands for e-file, the check
+becomes trivial and is worth having then. ⛔ **The 3 rows are wrong data on real
+returns — cleaning them is Ken's call, not a unilateral write.***
+
+*🔎 **3517's NOL absorption — ⛔ Ken's, as a SOURCE question. ⚠ MY OWN
+POOL-SIZE HYPOTHESIS IS REFUTED** — the packet's Statement 1 prints it: 190,783
+available, 16,131 absorbed, 174,652 carried to 2026, and the arithmetic closes,
+so 190,783 is the pool ENTERING the year and `min(pool, 80% × base)` cannot be
+the limiter. Cost ten minutes to eliminate and stops an unexamined assumption
+sitting under Ken's ruling.*
+
+*🔎 (original framing, now settled)* Engine absorbs 20,959 (= 80% of a 26,199 base — the
 §172(a)(2)(B) cap, textbook, and the lane agrees the BASE is right because
 Lacerte's own worksheet prints the same 26,199); Lacerte absorbs 16,131
 (61.6%). The lane ruled out a QBI-net base (gives 16,786) and the SEHI/PTC
