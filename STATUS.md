@@ -18,17 +18,26 @@ label anchor still raises Ga500ParseError.
   16/23 to 16/23/29/30/45/46 (same line-8 gate).
 - **r31 = 34 / 233 / 267** (`PipelineOut\r31`, batches twr31-001..004);
   drift vs r30 verified flat-key-by-key: EXACTLY the added zero lines
-  on all 34, every addition absent→"0". Eight packets gained ALL FOUR
-  — their GA chains were previously checked by nothing.
+  on all 34, every addition absent→"0". NINE packets gained ALL FOUR
+  — their GA chains were previously checked by nothing. *(My annex
+  first said eight; the entry lane's independent re-verification
+  counted nine and my own drift output confirms it — corrected.)*
 - **Corpus sweep (the entry lane's ask): ZERO committed returns
-  carried the exposure — all 34 emitted packets resolve to
-  status=draft** (their "~31 of twr30 already committed" claim was
-  refuted by the measurement). 32/34 TIE under the stricter key
-  (rolled-back probes, `tmp\ga_chain_sweep_s314*.txt`), including all
-  NINE queued returns and both all-blank-chain shapes. The 2 no_ties
-  are the KNOWN s309 GA RIE class (S1-7 deltas 2,442 / 1,701 — the
-  latter is the REVIEW_QUEUE §111 packet), now correctly visible at
-  outcome grain.
+  carried the exposure — established on BOTH fields: all 34 emitted
+  packets resolve to status=draft AND docs=0** (their "~31 of twr30
+  already committed" claim was refuted by the measurement; ⚠ their
+  counter-correction to MY first close is equally standing —
+  status=draft alone is NOT evidence no rows were written, the
+  client-1484 draft-with-2-docs shape; the docs= read is what
+  establishes it, `docs_check_s314`). 32/34 TIE under the stricter
+  key (rolled-back probes, `tmp\ga_chain_sweep_s314*.txt`), including
+  all NINE queued returns and both all-blank-chain shapes. The 2
+  no_ties are the KNOWN s309 GA RIE class (S1-7 deltas 2,442 / 1,701
+  — the latter is the REVIEW_QUEUE §111 packet), now correctly
+  visible at outcome grain. The entry lane triple-corroborated from
+  the payload side: of 974 local GA-keyed payload copies, only three
+  stale pre-r31 files lack an outcome line, and all 16 hand-authored
+  committed-population payloads cover one.
 - **The staging vehicle is now `tmp\Q9-20260829\twq9-20260829.batch.json`**
   (all nine queued returns, payloads verbatim from r31) — SUPERSEDES
   twq6-20260829, the twr30 batches, and the entry lane's unblessed
