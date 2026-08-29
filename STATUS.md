@@ -73,7 +73,12 @@ but needs its own depth probe (box 5 is not printed; s310). Then item
 ⑦'s multi-category Form 1116 half (multi-session, model change —
 **wants Ken's go before it starts**).
 
-**⛔ WAITING ON KEN — unchanged from s310 except item 7:**
+**⛔ WAITING ON KEN — s312d compiled the MORNING LIST (the BATCH-296
+tail annex): every data ask in one sitting — the token mint (5 queued
+commits), 19 dependent birth years across 14 packets (two packets
+emit the same day the years arrive), the one-number Schedule D
+carryover question, and the reprint asks. The standing decisions
+below are unchanged:**
 1. **Georgia SALT add-back** (*"let me think on it"*) — ⚠ the
    booklet-vs-Lacerte proration CONFLICT must reach him first; BATCH-296
    tail has the full spec input incl. the nonresident path.
