@@ -35,6 +35,29 @@ him directly (standing).
   "1" inside a too-wide marker band, and a template caption leaking
   into QM PIN fields (both fixed + regression-pinned; the annex
   carries the detail).
+- **The overnight triage pass (s312c) resolved all three carried
+  TRIAGE holds** and r27 = 30/237/267 with ZERO drift:
+  1. The "8995 line 9 = 0 vs line 10 = 9" oddity was OUR parser's
+     defect, not the packet's — the right-gutter repeat was dropped by
+     TEXT alone, so a value equal to its own line number ($9 on
+     line 9) was structurally invisible (the third
+     marker-inside-the-value-window instance). Fixed positionally
+     (x0 485-510) + regression; **that packet's do-not-hand-enter
+     hold LIFTS** (it still refuses extraction on real classes: DOB,
+     Sch D line 19, 25c, Sch 2-13 box 12).
+  2. The Schedule D identity break (delta 2,039) is a GENUINE vendor
+     self-inconsistency, decomposed to one line: every component ties
+     its printed 8949 exactly, TaxWise used −19,103 downstream
+     (line 16 AND its own carryover worksheet, LT figure 19,103), but
+     printed line 14 = −32,002 where its arithmetic used −29,963.
+     **Hold stays; the question for Ken is one number: the 2024 LT
+     carryover into 2025 — 32,002 or 29,963?** (2,039 of 2026
+     carryover rides on it; current-year tax identical either way.)
+  3. The 5b decomposition (115,150 vs 15,150) was OUR emit check
+     ignoring a $100,000 R-marker rollover the parser had already
+     captured — the check now mirrors the engine's doc_taxable
+     (max(0, taxable − rollover)). That packet's remaining wall is a
+     $21 Sch 2-13 box-12 item (the standing box-12 class).
 
 **▶ NEXT unblocked build work — extractor, by the r26 solo ranking
 (all upper bounds):** asset_detail **7** = est_payments_wks **7** >
@@ -224,13 +247,10 @@ against what a batch file or your own probe shows.
 - (s311) **The more-than-four-dependents box** (1 packet): the marked box
   means dependents beyond the grid exist only outside the packet —
   refuses by name; no route until a source exists.
-- (s310) **A Schedule D identity break on one refused packet** (line 15
-  −19,103 vs the column (h) sum −21,142, delta 2,039 — identity in
-  `PipelineOut/r25` refusals). Decompose before hand-entry (annex warned
-  the entry lane; they hold it do-not-hand-enter).
-- (s310) **A Form 8995 single-digit-row oddity on one refused packet**
-  (face line 9 prints 0 while line 10 prints 9) — triage before
-  hand-entry (entry lane holds it).
+- (s310→s312c) **The Schedule D identity break is DECOMPOSED** (see the
+  s312c triage block above): vendor self-inconsistency at line 14;
+  waiting on Ken's 2024 LT-carryover number. The 8995 oddity is
+  CLOSED (our parser defect, fixed).
 - (s310) The two 25c/8959 witnesses (107 / 22) — the fold-in is NOT free
   (box 5 is not printed in the W-2 detail report).
 - (s309) **The two GA RIE no_ties on r23's payloads** are DECOMPOSED and

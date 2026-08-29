@@ -1,6 +1,32 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-29 session 312c (overnight triage pass) — two extractor
+> defects fixed, all three carried TRIAGE holds resolved, r27 =
+> 30/237/267 with ZERO drift.** ① f8995's right-gutter guard dropped
+> the repeat by TEXT alone — a value equal to its own line number ($9
+> on line 9) was structurally invisible and a CONSISTENT face refused
+> on two phantom identities (the third marker-inside-the-value-window
+> instance; now positional, x0 485-510, regression-pinned). ② The
+> 4b/5b income decompositions ignored `rollover_amount` the 1099-R
+> parser had already captured — a $100,000 R-marker rollover read as a
+> 100,000 mismatch; the checks now mirror compute_retirement's
+> doc_taxable (max(0, taxable − rollover)). ③ The s310 Schedule D
+> identity break is a GENUINE vendor self-inconsistency decomposed to
+> one line: components tie their printed 8949s exactly; TaxWise used
+> −19,103 downstream (line 16 + its own carryover worksheet) while
+> printed line 14 (−32,002) differs from the −29,963 its arithmetic
+> used — one question for Ken (the 2024 LT carryover), 2,039 of 2026
+> carryover at stake, current-year tax identical. Also priced and
+> shelved: the asset_detail class (130 landscape pages / 82 packets /
+> 45+ free-text Form-header variants → multi-session, gated behind a
+> sch_e leg; 3 of its 4 solos are points-amortization register-only
+> shapes) and depth-probed f2441 (0 immediate emits — five of its
+> near-surface packets carry the DOB class the care credit needs
+> structurally) and f8962 (0 immediate emits; three of its carriers
+> print a Schedule-2-pair classification oddity worth a look when the
+> class is next touched).
+
 > **2026-08-29 session 312 — the 8962 family-size claimed-only fix +
 > the extractor Form 5695 (Residential Energy Credits) leg.** Two
 > units. ① `compute_8962.family_size` now counts CLAIMED dependents
