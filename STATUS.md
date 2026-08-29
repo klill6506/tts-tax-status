@@ -1,85 +1,76 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s314 close (daytime, Ken away; both peer lanes synced), 2026-08-29
+## ▶▶ RESUME POINTER — s315 close (daytime, all three peer lanes active), 2026-08-29
 
-**State: idle and CLEAN. One extractor unit shipped (`dbb5f210`,
-deploy per the close-out line below): the GA outcome lines 29/30/45/46
-now ALWAYS join `expected.ga500` — as explicit zeros when the face
-prints them blank — so the GA payments chain is checked on EVERY
-emitted return.** Entry-lane finding (their BATCH-296 annex): with
-tax and payments cancelling exactly, the old key ended at line 23 and
-a wrongly-derived GA withholding would have committed silently
-(24/28 are outside the reconcilable set — 29/30/45/46 are the chain's
-only landing spots). Blank-vs-absent stays structural: a missing
-label anchor still raises Ga500ParseError.
+**State: idle and CLEAN. ALL NINE queue returns are COMMITTED (entry
+lane, Ken's go): seven from twq9 + the two DOB-held from
+`twq10-20260829` (batch 62745692-3fa0-443c-b5fb-380f9a56217a), every
+one a TIE. None marked filed, no closeout run — both still awaiting
+Ken.** The day's headline was the entry lane's commit-blocking find:
+**every emitted dependent DOB carried a fabricated Jan-1 month/day**
+(the emitter used the Schedule EIC birth YEAR while the Main Info
+sheet printed the full date in a dependents section no parser read).
+Fixed same-day; the entry lane re-verified digit-for-digit.
 
-**✅ s314 SHIPPED (`dbb5f210`, extractor scripts + tests only):**
-- `parse_ga500_expected`'s explicit-zero convention extended from
-  16/23 to 16/23/29/30/45/46 (same line-8 gate).
-- **r31 = 34 / 233 / 267** (`PipelineOut\r31`, batches twr31-001..004);
-  drift vs r30 verified flat-key-by-key: EXACTLY the added zero lines
-  on all 34, every addition absent→"0". NINE packets gained ALL FOUR
-  — their GA chains were previously checked by nothing. *(My annex
-  first said eight; the entry lane's independent re-verification
-  counted nine and my own drift output confirms it — corrected.)*
-- **Corpus sweep (the entry lane's ask): ZERO committed returns
-  carried the exposure — established on BOTH fields: all 34 emitted
-  packets resolve to status=draft AND docs=0** (their "~31 of twr30
-  already committed" claim was refuted by the measurement; ⚠ their
-  counter-correction to MY first close is equally standing —
-  status=draft alone is NOT evidence no rows were written, the
-  client-1484 draft-with-2-docs shape; the docs= read is what
-  establishes it, `docs_check_s314`). 32/34 TIE under the stricter
-  key (rolled-back probes, `tmp\ga_chain_sweep_s314*.txt`), including
-  all NINE queued returns and both all-blank-chain shapes. The 2
-  no_ties are the KNOWN s309 GA RIE class (S1-7 deltas 2,442 / 1,701
-  — the latter is the REVIEW_QUEUE §111 packet), now correctly
-  visible at outcome grain. The entry lane triple-corroborated from
-  the payload side: of 974 local GA-keyed payload copies, only three
-  stale pre-r31 files lack an outcome line, and all 16 hand-authored
-  committed-population payloads cover one.
-- **The staging vehicle is now `tmp\Q9-20260829\twq9-20260829.batch.json`**
-  (all nine queued returns, payloads verbatim from r31) — SUPERSEDES
-  twq6-20260829, the twr30 batches, and the entry lane's unblessed
-  twq3. One batch, no 409 noise.
-- 256 extractor tests green (blank-outcome-zero + across-pages tests
-  re-pinned). Sweep hazard note: the first sweep run died on the
-  pooler statement-timeout mid-corpus — part 2 resumed with
-  close_old_connections() + retry (the s289 note performing).
-- Adopted from the entry lane: **a tie and a correct answer key are
-  independent facts** — their offline `verify_expected.py` closes the
-  gap; worth running over every emit before a batch is announced.
+**✅ s315 SHIPPED (four commits, deploy per the close-out line):**
+- `dd8afe65` — **dependent DOBs from the Main Info dependents section**
+  (rows between Filing Status and the Preparer block, corpus-pinned
+  bands). Full date keyed by SSN; EIC year cross-checks it (mismatch
+  refuses); a bare-year-only dependent REFUSES by name — fabrication
+  retired. **r32 = 36/231/267**: drift vs r31 EXACTLY dependent
+  date_of_birth (6 corrected + 1 gained), zero regressions, and the
+  **morning list's 19-birth-years ask DISSOLVED** — all 19 "carries no
+  birth year" refusal lines vanished (the dates were in the packets),
+  two packets newly emitted (clients 1828, 4053).
+- `ddae39bc` — **D_CREDIT_ODC explains through ODC's OWN gates**
+  (R002 spec-verified: claimed/citizenship/TIN — §24(h)(4) has no age
+  test). The "is 35 … must be under 17" explainer class is gone;
+  outcomes were always computed right.
+- `998318c7` — **lookup/staging `docs=` runs the full ~30-family
+  SECTION_RELATED census** (the commit gate's own census; the entity
+  twin already did). The old four-family count read docs=0 on shells
+  holding only a Schedule C / 1095-A / W-2G — the entry lane caught
+  three commits off by exactly one uncounted type each.
+- `63e25a00` — **the g1099_detail extractor leg** (1099-G unemployment
+  detail; federal + GA variants reconcile 1:1, line 7 decomposes both
+  directions, box 4 joins the 25b roster, GA WH joins the s313 line-24
+  attribution sum). **r33 = 38/229/267**, zero drift, zero
+  regressions. 264 extractor tests green.
 
-**▶ NEXT unblocked build work — the immediate-yield tail is still
-EXHAUSTED.** Deferred legs with triggers unchanged: the f8959 parser
-(trigger: birth years), asset_detail (multi-session, after a sch_e
-leg, daytime, Ken's depreciation domain), item ⑦'s multi-category
-1116 half (**Ken's go first**). Newly repriced solo classes checked
-this session (unknown 4 · f7206 3 · g1099_detail 2 · nol_wks 2 ·
-f8606 2 · detail_sheet 1) are undepthed but were deprioritized behind
-the entry lane's build item; they are the next depth-probe candidates
-if Ken wants build work before the token/birth-year data arrives.
+**Rolled-back tie probes on the four new emits:** client 4053 TIES
+20/20 (available whenever Ken blesses queue additions). Clients 1828,
+2947, 3754 are DECOMPOSED no_ties, not queue candidates: 1828 + 2947
+fail SOLELY on the §6654 penalty (deltas 89 / 166 — **the 2210
+prior-year safe-harbor class, now THREE witnesses** with committed
+client 2968's warning); 3754 adds the cleanest **GA RIE composition
+witness yet** (delta EXACTLY his 365 of unemployment — REVIEW_QUEUE
+s309 item updated: unemployment joins the §111 refund under the same
+"other similar income" question) plus a 3,730 face-13b residual above
+the statutory 12,000 senior deduction (DEFERRAL_AUDIT item 6).
 
-**⛔ WAITING ON KEN — the s312d MORNING LIST stands (BATCH-296 tail;
-the s313 + entry-lane + s314 annexes sit below it): the token mint
-unblocks NINE commits (stage ALL NINE from `twq9-20260829`), 19
-dependent birth years across 14 packets, the one-number Schedule D
-carryover question (32,002 vs 29,963), the reprint asks.** Standing
-decisions items 1–8 unchanged (enumerated in the archived s312 STATUS
-block: GA SALT add-back conflict · per-property nonpassive · 3
-firm-EIN W-2s · 1071 · 1141 · "no need to fil" packet · the two GA
-RIE questions · the states lane's 10 unruled). Also standing: the 2a
-ruling-scope flag (REVIEW_QUEUE top, nothing blocked) · client 4059's
-W-2G payer street address (a DOCUMENT ask — she ties and commits
-either way; the gate is the filed sweep). **NEW from the states lane
-(diagnosed, waiting on Ken, all read-only so far): whether they fix
-the schedule_a integrity gate (S-10 closed, so the sequencing reason
-weakened — if Ken rules to this lane, tell them only THAT he ruled;
-the content goes to them directly per the relay protocol) · S-7's
-four `primary_authority` sites (a ranking judgement) · the IRC_170
-repair order (⚠ prod's citation carries the P.L. 119-21 §70425
-charitable-floor provenance — any re-seed must lift the declaration
-to prod's content FIRST, never overwrite it).**
+**▶ NEXT unblocked build work (all priced in DEFERRAL_AUDIT s315):**
+① the **2210 prior-year leg** (top candidate — converts two no_ties,
+find where TaxWise prints the prior-year figures); ② the **f7206 leg**
+(2 immediate emits, route exists); ③ the **nol_wks transcription leg**
+(2 emits + carryforward preservation, the s235 rows); ④ the
+classify-ignore for the MFJ/MFS comparison worksheet (1 emit) + named
+refusals for 6781 / GA-itemized-wks / VA-multistate pages; ⑤ the 65+
+13b senior-residual refinement (**before the next 65+ 13b emit is
+staged**). Older deferred legs unchanged: f8959 (trigger now MET —
+birth years exist — but all carriers still hold other walls;
+re-verify), asset_detail (Ken's domain, daytime), item ⑦'s 1116 half
+(**Ken's go first**).
+
+**⛔ WAITING ON KEN — the morning list SHRANK:** ~~token ×9~~ **DONE
+(all nine committed)** · ~~19 birth years~~ **DISSOLVED (packet data
+all along)** · still standing: the one-number Schedule D carryover
+question (32,002 vs 29,963) · the reprint asks · client 4059's W-2G
+payer street address (document ask — committed and tying, cannot
+e-file) · mark-filed / closeout authorization for the nine · standing
+decisions items 1–8 (archived s312 block) · the 2a ruling-scope flag
+(REVIEW_QUEUE top) · the states lane's three diagnosed items (+ their
+AL D-16 prose application `5a1f9e0` is done in RS; prod reseed is
+their direct ask to Ken).
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -99,20 +90,15 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s314 deploy: see the close-out line at the bottom of this file.**
-- s313 `e728a72b` → `dep-da9f3r7lk1mc73829830` was LIVE, then
-  superseded by an intervening `6225ec56` deploy (`dep-da9f7lf10e5c73b1v4ug`,
-  LIVE — the s313 close commit itself triggered it) and now by s314.
-- s312 deploys all API-confirmed LIVE 2026-08-29: `93428e59` (8962
-  family-size, the ONE runtime change) / `2990fbe2` (f5695) /
-  `9a84de63` (s312c triage) / `1f298125` (sch2 relaxation) /
-  `c84e1f19` (f8962 leg). s311 `67debb5f` LIVE.
+- **s315 deploy: see the close-out line at the bottom of this file.**
+- s314's terminating docs-only commit `22a2a597` →
+  `dep-da9g7nou01pc73d1q9i0` was API-confirmed LIVE at s315 boot (the
+  s314 close-out loop is fully settled).
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (Current as of `9999f2c6`; s313 changed no schema/vocabulary — the
-  fields staged, `box13_state` and `preparer.ptin`, were already in the
-  published allowlists.)
+  (s315 changed no vocabulary — G1099_FIELDS pre-existed from s224; the
+  docs= change is response-shape only.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -125,10 +111,10 @@ load-bearing goes in batch-file annexes too. **Never relay tokens through
 the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
 holder — coordinate EXPLICITLY before every run. Peers stage; Ken decides.
 ⚠ A peer's factual claim can be RETRACTED minutes later — build only
-against what a batch file or your own probe shows. *(s313 practiced both
-directions: the peer's PTIN claim was code-verified before building; their
-4609 no_tie prediction was refuted from the s312f probe file and they
-withdrew it.)*
+against what a batch file or your own probe shows. *(s315 practiced it
+again: the DOB claim was code-verified before building; their "~31
+committed" class of error did not recur — their docs= qualification was
+itself verified in code and answered with the section census.)*
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
 - ~~12 of 47 RS `check_*_integrity.py` gates FAIL~~ — **THE 12 WAS WRONG AND
@@ -144,7 +130,7 @@ withdrew it.)*
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s313 touched no client code).
+- **Client typecheck**: green (s302; s315 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -166,19 +152,22 @@ withdrew it.)*
   `validated_data`, never `setattr` on the instance.
 - 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
   or `[IO.File]` BOM-less UTF8. ⚠ Embedded double-quote in a here-string
-  arg to a NATIVE exe SPLITS the argument. ⚠ `$1` in an unquoted PS arg
-  EXPANDS to empty. ⚠ PS `Sort-Object -Unique` on a one-element pipeline
-  UNWRAPS to scalar (s296). ⚠ `[IO.File]` calls resolve against the
-  PROCESS cwd, not PowerShell's `cd` (re-hit s310) — absolute paths.
+  arg to a NATIVE exe SPLITS the argument (re-hit s315 — a git commit -m
+  here-string with an embedded quote split and MISASSEMBLED two commits;
+  caught pre-push, reset --soft and redone with `-F` files. ALWAYS `-F`).
+  ⚠ `$1` in an unquoted PS arg EXPANDS to empty. ⚠ PS `Sort-Object
+  -Unique` on a one-element pipeline UNWRAPS to scalar (s296). ⚠
+  `[IO.File]` calls resolve against the PROCESS cwd (s310) — absolute paths.
 - 🌐 ⚠⚠ `Measure-Object -Line` skips blank lines — `ReadAllLines().Count`.
 - 🌐 ⚠⚠ A bare HTTP 400 (no `error` body) = the body never parsed.
 - 🌐 Staging answers 201 even for an invalid payload — the verdict is
   `row["status"]`; return CRUD routes carry the trailing slash. ⚠ A
   COMMITTED return refuses plain stage+dryrun with HTTP 409 (s298 —
   verification route = the in-place rolled-back recompute, s289 pattern;
-  s313 probed all three r30 payloads this way — batch+staged rows created
-  INSIDE the rolled-back transaction, `commit_staged_return`
-  self-validates, nothing landed).
+  s315 probed four candidates this way — batch+staged rows created INSIDE
+  the rolled-back transaction, nothing landed). ⚠ An EXCLUDED staged
+  return 409s BEFORE the merge parameter is read (s315) — the designed
+  stale-batch kill switch; per-return `/exclude`, preparer-run.
 - 🔧 ⚠ pytest-randomly NOT installed (s281).
 - 🌐 ⚠ **`str(Decimal)` preserves the STORED SCALE** — compare
   `Decimal(details[k])`, never the raw string (s306).
@@ -195,65 +184,63 @@ withdrew it.)*
   a caption FRAGMENT can END inside a value window (trailing punctuation
   excludes it), and **a MARKER token can END inside a value window too**
   (f8880: the marker/value split is x1 ≤ 493 vs ≥ 494, measured, s311).
+  ⚠ s315: a single-value report's per-column mini-ruler is ONE dash word
+  — below `_table`'s two-word ruler test — so the totals row arrives
+  ownerless inside the body; classify in-loop, never assume the ruler.
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase, not the text**
   (s288). Download the PDF and extract the section.
 - 🔧 ⭐ **An instrumented ROLLED-BACK dry-run reproduces production behavior
-  locally** (s289; s292–s313 ran probes this way). ⚠ Scripts touching
+  locally** (s289; s292–s315 ran probes this way). ⚠ Scripts touching
   client-named returns live in SCRATCHPAD or tax-test-data, never the repo
   (PII). ⚠ `Firm.objects.first()` is the DEV firm — probe with
   `Firm.objects.get(name="The Tax Shelter")`. ⚠ Pooler statement timeouts
   kill the connection — ping + retry loop.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s311:
-  nine confirmations).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s315:
+  now also at TIE grain — both s315 g1099 emits parsed perfectly and
+  no_tied on OTHER walls; a solo conversion is not a queue add until the
+  rolled-back tie probe says so).
 - 🔧 ⭐ **DRY-RUN THE CORRECTION PASS AND READ EVERY ROW before --commit**
   (s298). ⭐ **CENSUS THE PROD BLAST RADIUS before changing a computed
   line's source** (s302).
-- 🌐 ⭐⭐ **THE THIRD QUESTION (s302): "does anything ACT on it?"** — s313's
-  S1-9 was its cleanest instance yet: parsed correctly, consumed by
-  NOTHING, invisible until the tie probe. s310: grep the enclosing scope
-  before defining a nested helper.
+- 🌐 ⭐⭐ **THE THIRD QUESTION (s302): "does anything ACT on it?"** — and
+  s315's converse: the Main Info dependents section was PRINTED on every
+  packet and read by nothing; grep for the page section nobody parses.
 - 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d):
   key the INPUT, and assert the intermediate is nonzero first.
 - 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT**
   (s311). When a field's contract says "every X", grep for every X.
-- 🔧 ⚠ **The answer key is a CONTRACT: adding an expected line drifts every
-  prior payload** (s313) — new face reads that only feed gates go in as
-  INPUT MATERIAL (`parse_ga500_line24` pattern), never into
-  `expected.ga500`, unless a wholesale re-verification is intended
-  (s314 did exactly that deliberately: the 29/30/45/46 zeros, with the
-  full 34-payload corpus re-probed under the stricter key).
+- 🔧 ⚠ **The answer key is a CONTRACT** (s313/s314): new face reads that
+  only feed gates go in as INPUT MATERIAL, never into `expected`, unless
+  a wholesale re-verification is intended. ⚠ **A TIE CANNOT SEE
+  NON-RECONCILED FIELDS** (s315, the entry lane's ⭐): the DOB fix moved
+  nothing a tie sees — identity fields need their own verifier
+  (DEFERRAL_AUDIT item 7).
 
 ## 🔎 Carried for triage — NOT claims
-- ~~(s310) The two 25c/8959 witnesses~~ — **PROBED s313**: now FOUR
-  witnesses, ALL print an in-packet Form 8959 page; the fold-in is a
-  deferred parser leg (DEFERRAL_AUDIT), trigger = birth years arriving.
-- (s313) **Client 4059's D_W2G_PAYER_ID error** — the W-2G payer
-  address is ABSENT from the packet; ties/commits but cannot file
-  until the client's own W-2G document supplies it (a document ask,
-  not a keying task — refuse-don't-guess held).
+- ~~(s313) the four 25c/8959 witnesses' DOB gates~~ — birth years now
+  extract (s315); the f8959 deferral's trigger is MET but each carrier
+  holds other walls — re-verify the cheapest carrier before building.
+- (s313) **Client 4059's D_W2G_PAYER_ID error** — committed and tying;
+  the W-2G payer address is ABSENT from the packet (document ask).
 - (s313) The entry lane's `verify_expected.py` reader misses the 1040
   inner band (line 38) and reads the extractor's explicit-zero GA 16/23
   convention as MISSING — their tool, noted in the annex.
 - (s312) **A $56 unextracted Schedule 3 line-1-3/6d/6l credit on one
-  f5695 packet** (identity in `PipelineOut/r26` refusals) — the 5695
-  line-31 CLW names it; the packet also carries ownerless-document
-  refusals.
+  f5695 packet** — the 5695 line-31 CLW names it.
 - (s311) **The more-than-four-dependents box** (1 packet) — refuses by
   name; no route until a source exists.
 - (s310→s312c) **The Schedule D identity break is DECOMPOSED** — vendor
   self-inconsistency at line 14; waiting on Ken's 2024 LT-carryover
-  number (morning list item 3).
-- (s309) **The two GA RIE no_ties** are DECOMPOSED and staged
-  (REVIEW_QUEUE, with the states lane's IT-511 research). · The two
-  fully-phased-out student-loan-interest packets emit when their other
-  classes clear.
-- (s303) **Home-office 300 sq ft cap**: aggregate per home (Rev. Proc.
-  2013-13 §4.08(6)); prod census ZERO. · §4.08(4) monthly averaging
-  unrepresentable.
+  number (morning list).
+- (s309) **The GA RIE no_ties: now FOUR witnesses** (REVIEW_QUEUE — the
+  s315 unemployment witness is exact-to-the-kind; two s309 originals;
+  one undecomposed). · The two fully-phased-out student-loan-interest
+  packets emit when their other classes clear.
+- (s303) **Home-office 300 sq ft cap**: aggregate per home; prod census
+  ZERO. · §4.08(4) monthly averaging unrepresentable.
 - (s302d) **D_EFILE_001 cannot distinguish "EIN not keyed" from "EIN not
-  obtainable"** (also the s298 21-blank-row class; Lacerte wage schedules
-  never print W-2 employer EINs).
+  obtainable"** (also the s298 21-blank-row class).
 - (s302) `D_8582_PTP` unverified (S-10c) · `div_1099s.us_government_income`
   attribution-only, off-switch decision pending (s237 class) ·
   D_SCHD_006 QOF has no import surface.
@@ -262,7 +249,8 @@ withdrew it.)*
 - (s298) 21 named-but-blank W-2/1099-R rows held on D_EFILE_001.
 - (s297) The X mark at (474.7, y≈389) on one 1040 p2 EIC row —
   unidentified, parser-ignored. ⚠ s302b: est_payments_wks emits dated
-  rows when it opens.
+  rows when it opens — **and the s315 2210 finding repriced that leg**
+  (DEFERRAL_AUDIT item 1).
 - (s296) The 22 sch_d GEOMETRY-error packets refuse loudly by design. ·
   (s295) 7 auxiliary Inbox PDFs refuse as non-packets — correct. ·
   `_summary_lines` GA500_SUMMARY_LINES lacks S1-6.
@@ -280,14 +268,11 @@ withdrew it.)*
 - (s285) Sch 4 nonresident arm still apportions the whole widened base. ·
   (s283) The stamp excludes 1040 packets (Ken). · (s282)
   `OVERRIDE_HONORED_STATE_LINES` hand-synced. · (s281) OOS-state line-18
-  prompt diagnostic specified, not built; stage allowlists `schd_fields`
-  keys, `ga500_fields` not at all *(stale — s313 verified: ga500_fields
-  accepts any line-shaped key by design; S1-9 staged through it)*. ·
-  (s268) 1,604 queries/run. · (s241/s281) `Form8606` unique-constraint
-  candidate · 🔴 `HSAAccount` half CLOSED. · (s275/s281)
-  `.first()`-on-per-form-rules remainder. · (s294) a state face left by
-  an omitting correction batch is not recomputed against that batch's
-  federal changes.
+  prompt diagnostic specified, not built. · (s268) 1,604 queries/run. ·
+  (s241/s281) `Form8606` unique-constraint candidate · 🔴 `HSAAccount`
+  half CLOSED. · (s275/s281) `.first()`-on-per-form-rules remainder. ·
+  (s294) a state face left by an omitting correction batch is not
+  recomputed against that batch's federal changes.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
@@ -299,15 +284,18 @@ Everything from s277–s306 stands (see STATUS_ARCHIVE). Highlights:
 correction), **S-16** (R-PAY-04 dated-rows source), **S-19**
 (`R-8889-EXCEPTIONS` narrow condition + stale message + `inputs: []`
 under-declaration). Carried candidates (ruling-dependent): the §111
-refund → R-GA500-RIE fact list (s309).
+refund + unemployment → R-GA500-RIE fact list (s309/s315, one ruling).
+NEW (states lane, s315): AL D-16 prose applied in RS (`5a1f9e0`);
+their `[UNVERIFIED]` on the individual owner's Form 40 claim line —
+this app models it as Schedule OC refundable → Form 40 line 25
+(direct-entry, NOT a verbatim ALDOR citation; told them so).
 
 ---
-**s314 deploy close-out:** the code unit `dbb5f210` →
-`dep-da9g1mjncjis7399nm4g` **API-confirmed LIVE**, then superseded by
-the docs-only close commits `24c70538` → `dep-da9g3h0u01pc73d1m900`
-LIVE and `45edb379` → `dep-da9g5ve7bikc73aup7bg` LIVE (all verified
-this session). Extractor scripts + tests only; no runtime change, no
-migration, no seeder, no schema regeneration (29/30/45/46 were
-already in GA500_SUMMARY_LINES). ⚠ ONE more docs-only commit follows
-this very line — **verify its deploy at next boot** (the terminating
-pattern; expect a clean docs-only build on top of `45edb379`).
+**s315 deploy close-out:** the four-commit push (`dd8afe65` /
+`ddae39bc` / `998318c7` / head `63e25a00`) → deploy
+`dep-da9ktjnlk1mc7387dgb0` **API-confirmed LIVE**. Runtime changes:
+credit_gates (ODC explainer) + backentry (docs= census) — no
+migration, no seeder, no schema regeneration. ⚠ The docs-only close
+commit(s) after this line trigger further deploys — verify the LAST
+one at next boot (the s314 terminating pattern; expect a clean
+docs-only build on top of `63e25a00`).
