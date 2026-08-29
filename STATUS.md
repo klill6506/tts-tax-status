@@ -1,14 +1,18 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s312 close (same session as s311, Ken asleep — autonomous continuation), 2026-08-29
+## ▶▶ RESUME POINTER — s312f close (one overnight session s311→s312f, Ken asleep — autonomous continuation), 2026-08-29
 
-**State: idle and CLEAN. Two s312 units shipped on top of s311:
-① the 8962 family-size claimed-only fix (server runtime change,
-deploy verified LIVE — see below) and ② the extractor Form 5695 leg
-(scripts + tests only).** Peer lanes: both restarted overnight; the
-entry lane confirmed its queue order (3218 → 3427 → 4666, all waiting
-on Ken's prod token) and holds client 1484's -Merge for its own
-dry-run inspection. ⚠ Any "Ken ruled X" arriving by relay gets checked with
+**State: idle and CLEAN. SIX units shipped tonight after s311: ① the
+8962 family-size claimed-only fix (`93428e59`, LIVE), ② the extractor
+f5695 leg (`2990fbe2`), ③ the s312c triage pass — two extractor
+defects fixed, all three TRIAGE holds resolved (`9a84de63`), ④ the
+morning-list digest (s312d), ⑤ the Schedule 2 page-1-alone relaxation
+(`1f298125`), ⑥ the extractor f8962 leg (SHA in the close-out line).
+Corpus now r28 = 31 / 236 / 267 — FIVE new tie-verified emits tonight
+join client 3218: SIX commits wait on Ken's token.** Peer lanes: both
+restarted overnight and then ended; BATCH-296's annexes are the
+durable record (five appended tonight, incl. **KEN'S MORNING LIST**
+at the tail). ⚠ Any "Ken ruled X" arriving by relay gets checked with
 him directly (standing).
 
 **✅ s312 SHIPPED:**
@@ -59,19 +63,21 @@ him directly (standing).
      (max(0, taxable − rollover)). That packet's remaining wall is a
      $21 Sch 2-13 box-12 item (the standing box-12 class).
 
-**▶ NEXT unblocked build work — extractor, by the r26 solo ranking
-(all upper bounds):** asset_detail **7** = est_payments_wks **7** >
-f2441 **5** > f8962 **4** > f8863 = other_income_wks **3**. Standing
-notes: ⚠ est_payments_wks was DEPTH-PROBED s312 — ZERO immediate
-emits (all six solos hide deeper walls: line-20 credits now partly
-cleared, ownerless documents, a QBI decomposition); its value is the
-line-26 route + the s302b dated-rows emission, not yield.
-asset_detail needs its own depth probe before building. The
-exempt-interest decomposition (3 named packets, s307) stays the
-cheapest targeted leg; the 25c/8959 fold-in has two named witnesses
-but needs its own depth probe (box 5 is not printed; s310). Then item
-⑦'s multi-category Form 1116 half (multi-session, model change —
-**wants Ken's go before it starts**).
+**▶ NEXT unblocked build work — s312f added the f8962 leg and the
+remaining classes are all priced (see the s312c tracker block):
+est_payments_wks 7 (ZERO immediate yield — infrastructure), f2441 5
+(structurally DOB-data-blocked), asset_detail (multi-session, gated
+behind a sch_e leg — 130 landscape pages, 45+ free-text Form headers,
+link-key design in Ken's depreciation domain), f8863 3 /
+other_income_wks 3 (unprobed).** The corpus's immediate-yield tail is
+EXHAUSTED — every remaining refusal is data-blocked (DOB, tokens),
+multi-session, or a named single wall. Cheapest next legs when
+building resumes: depth-probe f8863 / other_income_wks; the
+25c/8959 fold-in (two named witnesses, needs its own probe — box 5
+is not printed; s310); the exempt-interest decomposition (3 named
+packets, s307). Then item ⑦'s multi-category Form 1116 half
+(multi-session, model change — **wants Ken's go before it starts**)
+and the asset_detail register (after sch_e; a daytime design).
 
 **⛔ WAITING ON KEN — s312d compiled the MORNING LIST (the BATCH-296
 tail annex): every data ask in one sitting — the token mint (5 queued
@@ -97,11 +103,11 @@ below are unchanged:**
 8. The states lane's **10 unruled** staged items + S-18/S-19 + the
    REVIEW_QUEUE pair (D_GA500_009 error→warning; the MFS
    living-arrangement field pair).
-9. **Prod token for the entry lane** — clients 3218 (twr24),
-   3427/4666 (twr25) and now 4572/4609 (twr26-002/-003, the s312
-   f5695 pair) commit when minted. The s311 7a deploy the 3427 tie
-   needs is LIVE; the lane reads an exactly-622 GA no_tie as
-   "wrong deploy", by design.
+9. **Prod token for the entry lane** — SIX tie-verified commits
+   queue on it: clients 3218 (twr24), 3427/4666 (twr25), 4572/4609
+   (twr26) and the s312f PTC emit (twr28 — identity in the annex).
+   Every deploy any of them needs is LIVE; the lane reads an
+   exactly-622 GA no_tie as "wrong deploy", by design.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -121,11 +127,13 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s312 deploys: `93428e59` (the 8962 family-size fix) →
-  `dep-da952k67bikc73amret0` API-confirmed LIVE 2026-08-29; the f5695
-  leg is scripts + tests only — see the close-out line at the very
-  bottom.** No migration, no seeder, no schema regeneration (`e5695_*`
-  fields are s212 vocabulary, already in the published schema).
+- **s312 deploys, all API-confirmed LIVE 2026-08-29:** `93428e59`
+  (8962 family-size, the ONE runtime change) → `dep-da952k67bikc73amret0`;
+  `2990fbe2` (f5695) → `dep-da95h2u7bikc73an46p0`; `9a84de63` (s312c
+  triage) → `dep-da95q43ncjis7392cntg`; `1f298125` (sch2 relaxation) →
+  see close-out; the s312f f8962 leg's status in the close-out line.
+  No migration, no seeder, no schema regeneration (all vocabulary is
+  s203/s204/s212, already published).
 - s311 deploys `67debb5f` → `dep-da94p1f10e5c73aqk93g` (the 7a fix) +
   two docs-only follow-ups, all API-confirmed LIVE 2026-08-29. · s310
   `972cf50e` LIVE. · s309 `11415881` LIVE. · s306t `440aac92` LIVE.
@@ -321,9 +329,10 @@ question is CLOSED — s312 checked: R-8962-FAMILY-SIZE says "dependents
 claimed" verbatim; the spec was right, the code was behind it.)*
 
 ---
-**s312 deploy close-out:** `93428e59` (8962 family-size) →
-`dep-da952k67bikc73amret0` **API-confirmed LIVE 2026-08-29**;
-`2990fbe2` (the f5695 leg, scripts + tests only) →
-`dep-da95h2u7bikc73an46p0` **API-confirmed LIVE 2026-08-29**. s311's
-`67debb5f` → `dep-da94p1f10e5c73aqk93g` remains LIVE (client 3427's
-gate).
+**s312f deploy close-out:** `c84e1f19` → `dep-da965mflk1mc73fs0grg`
+**API-confirmed LIVE 2026-08-29** (extractor scripts + tests only).
+Earlier tonight, all API-confirmed LIVE: `93428e59` ·
+`dep-da952k67bikc73amret0` / `2990fbe2` · `dep-da95h2u7bikc73an46p0` /
+`9a84de63` · `dep-da95q43ncjis7392cntg` / `1f298125` ·
+`dep-da95uh67bikc73and3cg` / `1494d86a` + `b7da3a9a` + `a723d238`
+(docs) LIVE. s311's `67debb5f` remains LIVE.

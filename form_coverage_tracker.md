@@ -1,6 +1,33 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-29 session 312f (overnight, fourth unit) — the extractor
+> Form 8962 (Premium Tax Credit) leg.** No new RENDERED form —
+> extractor coverage: the single-page 8962 face parses into the s204
+> vocabulary; the ANNUAL method (line 10 Yes) emits
+> f8962_all_year_same + the three line-11 totals, the MONTHLY method
+> reconstructs ONE consolidated form_1095as row from grid columns
+> (a)/(b)/(f) — the face's own captions cite "Form(s) 1095-A, lines
+> 21-32", and the engine aggregates policies itself (the 2026-08-26
+> consolidated-row convention, warned by name). Verified conventions:
+> line 5 FLOORS (183.5% → 183, refuting nearest-round); 8a/8b HALF-UP;
+> monthly (c) mirrors 8b where annual (c) mirrors 8a; a BLANK line 28
+> = no repayment limitation (≥401% FPL). Emit gates: line 1 vs
+> 1 + spouse + CLAIMED dependents (the family_size fixed earlier
+> tonight), line 2a vs the face-derivable MAGI, and the 1040 face
+> lines 17 and 31 now COMPOSE from the printed 29 / 26 (residuals —
+> AMT etc. — refuse by name). Line 9 Yes (Parts IV/V, unprinted
+> pages), Alaska/Hawaii FPL boxes and any unknown X refuse by name.
+> f8962's blanket face-17/31 refusals are decomposed. r28 =
+> 31/236/267, zero drift on the 30 prior payloads; the new emit
+> (client — see annex) ties 15/15 rolled back, the excess-APTC chain
+> live end-to-end (consolidated 1095-A → monthly aggregation → 1,625
+> repayment → Schedule 2 line 1a → face 17), with the packet's energy
+> credit riding the same payload. Two more carriers upgraded to
+> single-named-wall refusals (a 22,643 Schedule 1-A deduction; a
+> pre-existing allocation-worksheet identity). 9 new tests; 248
+> extractor tests green.
+
 > **2026-08-29 session 312c (overnight triage pass) — two extractor
 > defects fixed, all three carried TRIAGE holds resolved, r27 =
 > 30/237/267 with ZERO drift.** ① f8995's right-gutter guard dropped
