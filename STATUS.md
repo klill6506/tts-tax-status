@@ -1,81 +1,76 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s313 close (daytime, Ken said "go" then away; peer entry lane active), 2026-08-29
+## ▶▶ RESUME POINTER — s314 close (daytime, Ken away; both peer lanes synced), 2026-08-29
 
-**State: idle and CLEAN. One extractor unit shipped (`e728a72b`,
-deploy API-confirmed LIVE): THREE new tie-verified emits
-join the queue — r30 = 34 / 233 / 267 — and EVERY payload now carries
-the signing preparer's PTIN (an entry-lane-reported defect, fixed
-same-day). The token queue is now SIX + THREE.** The entry lane is
-running (token-blocked, verify-only): it hand-fixed the six queued
-payloads' PTINs in its consolidated batch `twq6-20260829` (byte-equal
-to the r28 originals except the preparer block — USE IT for staging,
-my annex ratifies it), built an offline expected-vs-face verifier
-(`1040\tmp\verify_expected.py`), and withdrew its 4609 itemizer-credit
-no_tie prediction after reading the s312f probe (line 19 is
-engine-derived, Ken-ruled 2026-08-23 — not the 2234 LIC shape).
+**State: idle and CLEAN. One extractor unit shipped (`dbb5f210`,
+deploy per the close-out line below): the GA outcome lines 29/30/45/46
+now ALWAYS join `expected.ga500` — as explicit zeros when the face
+prints them blank — so the GA payments chain is checked on EVERY
+emitted return.** Entry-lane finding (their BATCH-296 annex): with
+tax and payments cancelling exactly, the old key ended at line 23 and
+a wrongly-derived GA withholding would have committed silently
+(24/28 are outside the reconcilable set — 29/30/45/46 are the chain's
+only landing spots). Blank-vs-absent stays structural: a missing
+label anchor still raises Ga500ParseError.
 
-**✅ s313 SHIPPED (`e728a72b`, extractor scripts + tests only):**
-- **W-2G withholding routing** — the 25b/25c decomposition now mirrors
-  the engine's rosters (FORM_W2G spec verbatim: "a W-2G is not a
-  1099"; box 4 → the 25c roster). The blanket face:25c refusal is a
-  RESIDUAL check; the surviving class is the genuine Form 8959
-  residual (4 packets, all of which print an 8959 page — parser leg
-  deferred at zero immediate yield, see DEFERRAL_AUDIT).
-- **W-2G GA state attribution** — the filed GA-500 line 24 is the
-  witness (`parse_ga500_line24`, input material only, NEVER the answer
-  key — adding it there would have drifted every prior payload); an
-  exact decomposition over W-2 GA + 1099-R GA + W-2G box 15 proves the
-  state and stages `box13_state "GA"`; anything else refuses by name.
-  The engine's line-24 roster already consumed box 15 gated on
-  box13_state — the extractor simply never staged it (found as an
-  exactly-2,696 no_tie split 1,695 due / 1,001 refund).
-- **The 2a consolidated valve at AMOUNT GRAIN** — a face-2a amount is
-  payer-less by construction even with a Schedule B present (the form
-  never lists tax-exempt payers; no USSTB page in the corpus). Non-MFJ
-  → consolidated row; MFJ refuses by name. **Ruling-scope flag for Ken
-  in REVIEW_QUEUE (top item)** — recommendation: keep it.
-- **GA Schedule 1 line 9 (Path2College) transcribes to S1-9** (seeded
-  line the engine already sums into S1-13; the beneficiary count is
-  not printed — D_GA500_006 governs the cap). Lines 11/12 refuse by
-  name (12 may fold the HB 463 tips/overtime exclusions the engine
-  computes separately as S1-12a/12b).
-- **The preparer PTIN on every payload** — read off the 1040 p2 Paid
-  Preparer block ONLY (DECISIONS s280; the GA-8453 ERO PTIN
-  legitimately differs on two packets — trap avoided by page
-  selection, pinned in tests). PTIN is the roster match's
-  authoritative key; all three fresh probes assigned cleanly (zero
-  preparer warnings).
-- Verification: 256 extractor tests green (8 new); r30 drift vs r29 is
-  EXACTLY `preparer.ptin` everywhere + the two named field additions;
-  three rolled-back tie probes ALL TIE (16/16, 18/18, 15/15) —
-  `tmp\tie_probe_s313.txt` / `s313b.txt`.
+**✅ s314 SHIPPED (`dbb5f210`, extractor scripts + tests only):**
+- `parse_ga500_expected`'s explicit-zero convention extended from
+  16/23 to 16/23/29/30/45/46 (same line-8 gate).
+- **r31 = 34 / 233 / 267** (`PipelineOut\r31`, batches twr31-001..004);
+  drift vs r30 verified flat-key-by-key: EXACTLY the added zero lines
+  on all 34, every addition absent→"0". Eight packets gained ALL FOUR
+  — their GA chains were previously checked by nothing.
+- **Corpus sweep (the entry lane's ask): ZERO committed returns
+  carried the exposure — all 34 emitted packets resolve to
+  status=draft** (their "~31 of twr30 already committed" claim was
+  refuted by the measurement). 32/34 TIE under the stricter key
+  (rolled-back probes, `tmp\ga_chain_sweep_s314*.txt`), including all
+  NINE queued returns and both all-blank-chain shapes. The 2 no_ties
+  are the KNOWN s309 GA RIE class (S1-7 deltas 2,442 / 1,701 — the
+  latter is the REVIEW_QUEUE §111 packet), now correctly visible at
+  outcome grain.
+- **The staging vehicle is now `tmp\Q9-20260829\twq9-20260829.batch.json`**
+  (all nine queued returns, payloads verbatim from r31) — SUPERSEDES
+  twq6-20260829, the twr30 batches, and the entry lane's unblessed
+  twq3. One batch, no 409 noise.
+- 256 extractor tests green (blank-outcome-zero + across-pages tests
+  re-pinned). Sweep hazard note: the first sweep run died on the
+  pooler statement-timeout mid-corpus — part 2 resumed with
+  close_old_connections() + retry (the s289 note performing).
+- Adopted from the entry lane: **a tie and a correct answer key are
+  independent facts** — their offline `verify_expected.py` closes the
+  gap; worth running over every emit before a batch is announced.
 
-**▶ NEXT unblocked build work — the corpus's immediate-yield tail
-remains EXHAUSTED after these three.** Remaining named legs: the
-f8959 parser (deferred, trigger = birth years arriving), asset_detail
-(multi-session, gated behind a sch_e leg, daytime design in Ken's
-depreciation domain), item ⑦'s multi-category 1116 half (**Ken's go
-first**). Every other refusal is data-blocked (DOB, tokens) or a
-named single wall.
+**▶ NEXT unblocked build work — the immediate-yield tail is still
+EXHAUSTED.** Deferred legs with triggers unchanged: the f8959 parser
+(trigger: birth years), asset_detail (multi-session, after a sch_e
+leg, daytime, Ken's depreciation domain), item ⑦'s multi-category
+1116 half (**Ken's go first**). Newly repriced solo classes checked
+this session (unknown 4 · f7206 3 · g1099_detail 2 · nol_wks 2 ·
+f8606 2 · detail_sheet 1) are undepthed but were deprioritized behind
+the entry lane's build item; they are the next depth-probe candidates
+if Ken wants build work before the token/birth-year data arrives.
 
-**⛔ WAITING ON KEN — the s312d MORNING LIST stands (BATCH-296 tail,
-two annexes above the s313 one): the token mint now unblocks NINE
-commits (six + clients 2968 / 3852 / 4059 — stage
-the six from `twq6-20260829`, the three from twr30), 19 dependent
-birth years across 14 packets, the one-number Schedule D carryover
-question (32,002 vs 29,963), the reprint asks.** Standing decisions
-items 1–8 unchanged (see the archived s312 STATUS block in
-STATUS_ARCHIVE for the enumerated list: GA SALT add-back conflict ·
-per-property nonpassive · 3 firm-EIN W-2s · 1071 · 1141 · "no need to
-fil" packet · the two GA RIE questions · the states lane's 10
-unruled). NEW for Ken: the 2a ruling-scope flag (REVIEW_QUEUE top,
-nothing blocked) · client 4059 needs ONE DOCUMENT to file: her own
-W-2G (or the firm's copy) for the lottery payer's street address —
-D_W2G_PAYER_ID; the address is ABSENT from the packet, and per
-refuse-don't-guess nobody fills a filed record from general
-knowledge. She ties and commits either way; the gate is the filed
-sweep (the D_EFILE_001 shape).
+**⛔ WAITING ON KEN — the s312d MORNING LIST stands (BATCH-296 tail;
+the s313 + entry-lane + s314 annexes sit below it): the token mint
+unblocks NINE commits (stage ALL NINE from `twq9-20260829`), 19
+dependent birth years across 14 packets, the one-number Schedule D
+carryover question (32,002 vs 29,963), the reprint asks.** Standing
+decisions items 1–8 unchanged (enumerated in the archived s312 STATUS
+block: GA SALT add-back conflict · per-property nonpassive · 3
+firm-EIN W-2s · 1071 · 1141 · "no need to fil" packet · the two GA
+RIE questions · the states lane's 10 unruled). Also standing: the 2a
+ruling-scope flag (REVIEW_QUEUE top, nothing blocked) · client 4059's
+W-2G payer street address (a DOCUMENT ask — she ties and commits
+either way; the gate is the filed sweep). **NEW from the states lane
+(diagnosed, waiting on Ken, all read-only so far): whether they fix
+the schedule_a integrity gate (S-10 closed, so the sequencing reason
+weakened — if Ken rules to this lane, tell them only THAT he ruled;
+the content goes to them directly per the relay protocol) · S-7's
+four `primary_authority` sites (a ranking judgement) · the IRC_170
+repair order (⚠ prod's citation carries the P.L. 119-21 §70425
+charitable-floor provenance — any re-seed must lift the declaration
+to prod's content FIRST, never overwrite it).**
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -95,7 +90,10 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s313 deploy: see the close-out line at the bottom of this file.**
+- **s314 deploy: see the close-out line at the bottom of this file.**
+- s313 `e728a72b` → `dep-da9f3r7lk1mc73829830` was LIVE, then
+  superseded by an intervening `6225ec56` deploy (`dep-da9f7lf10e5c73b1v4ug`,
+  LIVE — the s313 close commit itself triggered it) and now by s314.
 - s312 deploys all API-confirmed LIVE 2026-08-29: `93428e59` (8962
   family-size, the ONE runtime change) / `2990fbe2` (f5695) /
   `9a84de63` (s312c triage) / `1f298125` (sch2 relaxation) /
@@ -213,7 +211,9 @@ withdrew it.)*
 - 🔧 ⚠ **The answer key is a CONTRACT: adding an expected line drifts every
   prior payload** (s313) — new face reads that only feed gates go in as
   INPUT MATERIAL (`parse_ga500_line24` pattern), never into
-  `expected.ga500`, unless a wholesale re-verification is intended.
+  `expected.ga500`, unless a wholesale re-verification is intended
+  (s314 did exactly that deliberately: the 29/30/45/46 zeros, with the
+  full 34-payload corpus re-probed under the stricter key).
 
 ## 🔎 Carried for triage — NOT claims
 - ~~(s310) The two 25c/8959 witnesses~~ — **PROBED s313**: now FOUR
@@ -293,7 +293,9 @@ under-declaration). Carried candidates (ruling-dependent): the §111
 refund → R-GA500-RIE fact list (s309).
 
 ---
-**s313 deploy close-out:** `e728a72b` → `dep-da9f3r7lk1mc73829830`
-**API-confirmed LIVE 2026-08-29** (extractor scripts + tests only; no
-runtime change, no migration, no seeder, no schema regeneration). All
-s312/s311 deploys remain LIVE per the archived close-outs.
+**s314 deploy close-out:** `dbb5f210` → `dep-da9g1mjncjis7399nm4g`
+**status at close: see the final session report** (extractor scripts +
+tests only; no runtime change, no migration, no seeder, no schema
+regeneration — the fields touched are answer-key-side only and
+29/30/45/46 were already in GA500_SUMMARY_LINES). s313/s312/s311
+deploys were all API-confirmed LIVE before this one superseded them.
