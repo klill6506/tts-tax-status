@@ -1,66 +1,54 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s311 close, 2026-08-29
+## ▶▶ RESUME POINTER — s312 close (same session as s311, Ken asleep — autonomous continuation), 2026-08-29
 
-**State: idle and CLEAN. Head = the s311 unit (extractor f8880 leg +
-the GA-500 7a claimed-dependents fix — ONE server runtime change in
-views.py; deploy verification at the bottom of this file).** Peer
-lanes at s311: the entry lane (tax-test-data-dc) reported the Lacerte
-queue EMPTY (49 filed / 5 held; client 2455 filed TIE) and client 3218's
-twr24 commit queued behind an expired prod token — Ken mints, they
-commit. The states lane delivered the IT-511 line-10 research
-(REVIEW_QUEUE item updated — see below). ⚠ Any "Ken ruled X" arriving
-by relay gets checked with him directly (standing).
+**State: idle and CLEAN. Two s312 units shipped on top of s311:
+① the 8962 family-size claimed-only fix (server runtime change,
+deploy verified LIVE — see below) and ② the extractor Form 5695 leg
+(scripts + tests only).** Peer lanes: both restarted overnight; the
+entry lane confirmed its queue order (3218 → 3427 → 4666, all waiting
+on Ken's prod token) and holds client 1484's -Merge for its own
+dry-run inspection. ⚠ Any "Ken ruled X" arriving by relay gets checked with
+him directly (standing).
 
-**✅ s311 SHIPPED: the extractor Form 8880 (Saver's Credit) leg —
-f8880 is GONE as a refusal class — plus the GA-500 line-7a
-claimed-dependents-only fix the tie probe forced.** r25 = **28
-emitted / 239 refused / 267 scanned** (was 26/241); zero drift on the
-26 prior payloads; BOTH new emits tie-probed rolled back (**13/13 and
-15/15** — the second exercising the s310 GA lines 31-44 machinery
-live: line 30/46 amount-due 53) and are flagged clean-to-commit in
-the annex (clients 3427 and 4666, batches twr25-001/-003 — commit
-ONLY those two; twr25 re-bundles everything, and client 3218's twr24
-commit stands as already instructed). 16 new tests (15 parser + 1
-derive); 222 extractor tests, 37 dependent tests, 616 flow-assertion
-+ GA suite tests all green. Packet identities in `PipelineOut/r25`,
-never here.
+**✅ s312 SHIPPED:**
+- **`compute_8962.family_size` counts CLAIMED dependents only** —
+  the RS FORM_8962 spec's R-8962-FAMILY-SIZE is verbatim "taxpayer +
+  spouse (if not MFS) + dependents claimed" (§36B(d)(1)); an EIC-only
+  row inflated the tax family → lower FPL% → larger PTC. The s311
+  GA-7a class, found by the same sweep. Census: the one false-row
+  return has ZERO 8962 engagement — nothing committed moves.
+- **The extractor Form 5695 (Residential Energy Credits) leg — f5695
+  is GONE as a refusal class.** All four faces parse into the s212
+  `e5695_*` vocabulary (engine recomputes both parts); §25C identity
+  gates re-run every printed cap; §25D refuses by name (no corpus
+  witness); the 1040 line-20 gate now COMPOSES (face 20 == 8880 l12 +
+  5695 l15 + l32) and the 5695 line-31 CLW gates against face 18 less
+  the 8880 credit — which caught a $56 unextracted Schedule 3 credit
+  by name on its first pass. r26 = **30 emitted / 237 refused / 267
+  scanned** (was 28/239); zero drift on the 28 prior payloads; BOTH
+  new emits tie-probed rolled back (32 tie lines total; one carries a
+  $553 GA balance due, vendor-matched). 16 new tests; 237 extractor
+  tests + the 25-test 8962 suite green. Packet identities in
+  `PipelineOut/r26`, never here.
+- Two calibration catches before anything landed: a p1 caption's bare
+  "1" inside a too-wide marker band, and a template caption leaking
+  into QM PIN fields (both fixed + regression-pinned; the annex
+  carries the detail).
 
-Unit shape (detail in form_coverage_tracker + the commit message):
-- The 8880 face parses into the s202 `f8880_*` taxpayer vocabulary
-  (the engine recomputes the credit; line 2 emits as the deferral
-  OVERRIDE — the W-2 detail report prints no box 12, so the box-12
-  derive is structurally 0 and the override is the designed route).
-  Face line 20 gates against printed line 12: TaxWise omits the
-  Schedule 3 page (s297 omission class), so the 8880 face is line
-  20's only witness; residuals refuse by name.
-- **⚠ THE ENGINE FIX (one no_tie, decomposed to the dollar): the s235
-  GA-500 line-7a derive counted `claimed_as_dependent=False` EIC-only
-  rows** — a field that postdates it (s281) and whose own contract
-  excludes such rows from "every dependency-derived count". 3 × 4,000
-  × 5.19% = 622 = the exact GA line-16 no_tie; TaxWise and O.C.G.A.
-  §48-7-26 grant no exemption for an unclaimed EIC-only child. The
-  derive + its LIC-CHILD twin now filter claimed-only. Prod census:
-  ONE filed return carries a false row, NO GA-500 attached — nothing
-  committed moves.
-- The s295 upper-bound rule again: 8 solos → 2 emits + deeper named
-  refusals — a NEW class (the more-than-four-dependents box, 1
-  packet), a shell-carries-documents -Merge route (agent lane), and
-  four packets now held ONLY by the 13b Schedule 1-A class.
-
-**▶ NEXT unblocked build work — extractor, by the r25 solo ranking
-(all upper bounds):** f5695 = est_payments_wks **6** > asset_detail =
-f2441 **5** > f8863 = f8962 = other_income_wks **3**. Standing notes:
-est_payments_wks should emit dated `federal_estimated_payments` rows
-when it opens (s302b); the exempt-interest decomposition (3 named
-packets, s307) stays the cheapest targeted leg; the 25c/8959 fold-in
-has two named witnesses but needs its own depth probe (box 5 is not
-printed; s310). **NEW (s311, before any f8962 extractor leg):
-`compute_8962.family_size` counts ALL Dependent rows where §36B
-counts CLAIMED dependents — same class as the 7a fix; verify the RS
-FORM_8962 spec's family-size fact, then fix + test (population today:
-1 return, no 8962).** Then item ⑦'s multi-category Form 1116 half
-(multi-session, model change — **wants Ken's go before it starts**).
+**▶ NEXT unblocked build work — extractor, by the r26 solo ranking
+(all upper bounds):** asset_detail **7** = est_payments_wks **7** >
+f2441 **5** > f8962 **4** > f8863 = other_income_wks **3**. Standing
+notes: ⚠ est_payments_wks was DEPTH-PROBED s312 — ZERO immediate
+emits (all six solos hide deeper walls: line-20 credits now partly
+cleared, ownerless documents, a QBI decomposition); its value is the
+line-26 route + the s302b dated-rows emission, not yield.
+asset_detail needs its own depth probe before building. The
+exempt-interest decomposition (3 named packets, s307) stays the
+cheapest targeted leg; the 25c/8959 fold-in has two named witnesses
+but needs its own depth probe (box 5 is not printed; s310). Then item
+⑦'s multi-category Form 1116 half (multi-session, model change —
+**wants Ken's go before it starts**).
 
 **⛔ WAITING ON KEN — unchanged from s310 except item 7:**
 1. **Georgia SALT add-back** (*"let me think on it"*) — ⚠ the
@@ -81,9 +69,11 @@ FORM_8962 spec's family-size fact, then fix + test (population today:
 8. The states lane's **10 unruled** staged items + S-18/S-19 + the
    REVIEW_QUEUE pair (D_GA500_009 error→warning; the MFS
    living-arrangement field pair).
-9. **Prod token for the entry lane** — client 3218 (twr24) + clients
-   3427/4666 (twr25) commit when minted; ⚠ the 3427 tie needs the s311
-   deploy LIVE first (the 7a fix is server-side).
+9. **Prod token for the entry lane** — clients 3218 (twr24),
+   3427/4666 (twr25) and now 4572/4609 (twr26-002/-003, the s312
+   f5695 pair) commit when minted. The s311 7a deploy the 3427 tie
+   needs is LIVE; the lane reads an exactly-622 GA no_tie as
+   "wrong deploy", by design.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -103,14 +93,14 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s311 deploy: see the close-out line at the very bottom of this file
-  for the API-confirmed status.** ONE server runtime change (the
-  views.py 7a/LIC-CHILD claimed-only filter); no migration, no seeder,
-  no schema regeneration (`f8880_*` fields are s202 vocabulary, already
-  in the published schema).
-- s310 deploy `972cf50e` → `dep-da934fvlk1mc73fq7ng0` API-confirmed LIVE
-  2026-08-29 (scripts-only). · s309 `11415881` LIVE. · s306t `440aac92`
-  LIVE.
+- **s312 deploys: `93428e59` (the 8962 family-size fix) →
+  `dep-da952k67bikc73amret0` API-confirmed LIVE 2026-08-29; the f5695
+  leg is scripts + tests only — see the close-out line at the very
+  bottom.** No migration, no seeder, no schema regeneration (`e5695_*`
+  fields are s212 vocabulary, already in the published schema).
+- s311 deploys `67debb5f` → `dep-da94p1f10e5c73aqk93g` (the 7a fix) +
+  two docs-only follow-ups, all API-confirmed LIVE 2026-08-29. · s310
+  `972cf50e` LIVE. · s309 `11415881` LIVE. · s306t `440aac92` LIVE.
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
@@ -225,10 +215,12 @@ against what a batch file or your own probe shows.
   says "every X", grep for every X.
 
 ## 🔎 Carried for triage — NOT claims
-- (s311) **`compute_8962.family_size` counts ALL Dependent rows; §36B's
-  tax family is taxpayer + spouse + CLAIMED dependents** — the 7a class.
-  Population today: 1 return with a false row (no 8962 on it). Fix wants
-  the RS FORM_8962 spec's family-size fact verified first. NOT built.
+- ~~(s311) `compute_8962.family_size`~~ — **FIXED s312** (`93428e59`,
+  deploy LIVE; the spec's own formula settled it).
+- (s312) **A $56 unextracted Schedule 3 line-1-3/6d/6l credit on one
+  f5695 packet** (probably foreign tax; identity in `PipelineOut/r26`
+  refusals) — the 5695 line-31 CLW names it; the packet also carries
+  ownerless-document refusals.
 - (s311) **The more-than-four-dependents box** (1 packet): the marked box
   means dependents beyond the grid exist only outside the packet —
   refuses by name; no route until a source exists.
@@ -299,14 +291,14 @@ Everything from s277–s306 stands (see STATUS_ARCHIVE). Highlights:
 correction), **S-16** (R-PAY-04 dated-rows source), **S-19**
 (`R-8889-EXCEPTIONS` narrow condition + stale message + `inputs: []`
 under-declaration). Carried candidates (ruling-dependent): the §111
-refund → R-GA500-RIE fact list (s309); **NEW s311: if the FORM_8962
-spec's family-size fact says "dependents" without the claimed
-qualifier, it inherits the s302 spec-omits-the-bar class — check when
-the 8962 family_size fix runs.**
+refund → R-GA500-RIE fact list (s309). *(The s311 FORM_8962 spec
+question is CLOSED — s312 checked: R-8962-FAMILY-SIZE says "dependents
+claimed" verbatim; the spec was right, the code was behind it.)*
 
 ---
-**s311 deploy close-out:** `67debb5f` → `dep-da94p1f10e5c73aqk93g` —
-**API-confirmed LIVE 2026-08-29** (the ONE server runtime change: the
-GA-500 7a/LIC-CHILD claimed-only filter; extractor scripts + tests
-otherwise). ⚠ Client 3427's entry-lane commit is now unblocked — her
-tie needs this deploy, which is live.
+**s312 deploy close-out:** `93428e59` (8962 family-size) →
+`dep-da952k67bikc73amret0` **API-confirmed LIVE 2026-08-29**;
+`2990fbe2` (the f5695 leg, scripts + tests only) →
+`dep-da95h2u7bikc73an46p0` **API-confirmed LIVE 2026-08-29**. s311's
+`67debb5f` → `dep-da94p1f10e5c73aqk93g` remains LIVE (client 3427's
+gate).

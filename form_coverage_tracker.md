@@ -1,6 +1,41 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-29 session 312 — the 8962 family-size claimed-only fix +
+> the extractor Form 5695 (Residential Energy Credits) leg.** Two
+> units. ① `compute_8962.family_size` now counts CLAIMED dependents
+> only — the RS FORM_8962 spec's R-8962-FAMILY-SIZE formula is
+> verbatim "taxpayer + spouse (if not MFS) + dependents claimed"
+> (§36B(d)(1)); an EIC-only row inflated the tax family → lower FPL% →
+> larger PTC (the s311 GA-7a class, same field-contract sweep). Prod
+> census: the ONE false-row return has zero 1095-A rows / f8962 inputs
+> / FORM_8962 values — nothing committed moves. ② No new RENDERED
+> form — extractor coverage: all four Form 5695 faces parse into the
+> s212 `e5695_*` vocabulary (FORM_5695 v2 chains unchanged and long
+> green — the ENGINE recomputes both parts); §25C identity gates
+> re-run every printed cap (HALF-UP verified: 1,798.5→1,799,
+> 367.5→368); §25D refuses by name (no corpus witness — TaxWise
+> prints line 15 as an explicit 0 corpus-wide); gate X-marks, QM PINs
+> and the 17d/21c home-address blocks transcribe (⚠ the 17d block
+> fills ABOVE its column-header row, 21c BELOW; a caption row must
+> never read as a PIN — every caption row runs past x1 305, a filled
+> QM row never does). The 1040 line-20 gate now COMPOSES: face 20 ==
+> 8880 line 12 + 5695 lines 15 + 32; the 5695 line-31 CLW gates
+> against face 18 less the 8880 credit. f5695 is GONE as a refusal
+> class. r26 = 30/237/267, zero drift on the 28 prior payloads; BOTH
+> new emits tie rolled back (32 tie lines total — one carries a $553
+> GA balance due, vendor-matched with no UET). Two calibration
+> catches before anything landed: a p1 caption's bare "1" inside a
+> too-wide marker band (both would-be emits refused loudly on the
+> first r26 pass), and the caption-into-PIN leak (visible in the
+> payload, fixed + regression-pinned). A $56 unextracted Schedule 3
+> credit surfaced by name on one refused packet (the line-31
+> worksheet caught it — the composed-gate design working). New solo
+> ranking: asset_detail 7 = est_payments_wks 7 > f2441 5 > f8962 4 >
+> f8863 = other_income_wks 3 (⚠ est_payments_wks depth-probed s312:
+> ZERO immediate emits — all six solos hide deeper walls; its value
+> is the line-26 route + the s302b dated-rows note, not yield).
+
 > **2026-08-29 session 311 — the extractor Form 8880 (Saver's Credit) leg
 > + the GA-500 line-7a claimed-dependents-only fix (scripts + tests + one
 > views.py derive re-scope).** No new RENDERED form — extractor coverage:
