@@ -1,6 +1,16 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-28 session 309 — the extractor student-loan/educator worksheet
+> leg (`11415881`, scripts + tests only, no form legs changed).** No new
+> RENDERED form — extractor coverage: the USW10402 worksheet (student loan
+> interest §221 / educator expenses §62(a)(2)(D) / ESA-QTP rows) parses as
+> a cross-check against the FILED face Schedule 1 lines 11/21, which stay
+> the importable route (`SCH1_DIRECT_LINES`); ESA/QTP/ABLE rows refuse by
+> name. r23 = 25/242/267, zero drift on prior payloads; one new emit ties
+> 14/14 rolled back, two carry decomposed GA-RIE no_ties staged for Ken
+> (REVIEW_QUEUE — engine/vendor questions, not extraction defects).
+
 > **2026-08-28 session 308 — the extractor Schedule C leg (`504a484f`,
 > scripts + tests only, no form legs changed).** No new RENDERED form —
 > extractor coverage: both Schedule C faces parse into the existing
