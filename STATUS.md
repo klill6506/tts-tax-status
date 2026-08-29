@@ -71,8 +71,11 @@ behind a sch_e leg — 130 landscape pages, 45+ free-text Form headers,
 link-key design in Ken's depreciation domain), f8863 3 /
 other_income_wks 3 (unprobed).** The corpus's immediate-yield tail is
 EXHAUSTED — every remaining refusal is data-blocked (DOB, tokens),
-multi-session, or a named single wall. Cheapest next legs when
-building resumes: depth-probe f8863 / other_income_wks; the
+multi-session, or a named single wall. **s312g probed the last two
+unprobed classes: f8863 and other_income_wks BOTH zero immediate
+yield** (f8863's near-surface packets all carry the DOB class — more
+weight on the birth-year ask; other_income_wks's four carriers all
+have other walls). Cheapest next legs when building resumes: the
 25c/8959 fold-in (two named witnesses, needs its own probe — box 5
 is not printed; s310); the exempt-interest decomposition (3 named
 packets, s307). Then item ⑦'s multi-category Form 1116 half
