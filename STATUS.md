@@ -1,63 +1,68 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s310 close, 2026-08-29
+## ▶▶ RESUME POINTER — s311 close, 2026-08-29
 
-**State: idle and CLEAN. Head `972cf50e` (the s310 unit; scripts +
-tests only, no server runtime change; deploy verification noted
-below).** Peer lanes: both were up at s310 boot but had gone offline by
-close — the s310 handoff is in the BATCH-296 annex (the standing
-channel-drop protocol); the entry lane's durable checkpoint is
-`D:\tax-test-data\1040\Lacerte Inbox\LACERTE-RESUME-2026-08-28.md`, the
-states lane's is `D:\dev\delvio-states\STATUS.md`. ⚠ Any "Ken ruled X"
-arriving by relay gets checked with him directly (standing).
+**State: idle and CLEAN. Head = the s311 unit (extractor f8880 leg +
+the GA-500 7a claimed-dependents fix — ONE server runtime change in
+views.py; deploy verification at the bottom of this file).** Peer
+lanes at s311: the entry lane (tax-test-data-dc) reported the Lacerte
+queue EMPTY (49 filed / 5 held; HARVJOHN filed TIE) and client 3218's
+twr24 commit queued behind an expired prod token — Ken mints, they
+commit. The states lane delivered the IT-511 line-10 research
+(REVIEW_QUEUE item updated — see below). ⚠ Any "Ken ruled X" arriving
+by relay gets checked with him directly (standing).
 
-**✅ s310 SHIPPED (`972cf50e`): the extractor Form 8889 (HSA) leg —
-f8889 is GONE as a refusal class — plus the GA-500 lines 31-44
-decomposition the tie probe forced.** r24 = **26 emitted / 241 refused
-/ 267 scanned** (was 25/242); zero drift on the 25 prior payloads; the
-one new emit tie-probed **15/15 rolled back** and is flagged clean-to-
-commit in the annex (client 3218, batch twr24-001 — commit ONLY that
-one; twr24 re-bundles everything). 27 new tests; 207 extractor tests
-green. Packet identities in `PipelineOut/r24`, never here.
+**✅ s311 SHIPPED: the extractor Form 8880 (Saver's Credit) leg —
+f8880 is GONE as a refusal class — plus the GA-500 line-7a
+claimed-dependents-only fix the tie probe forced.** r25 = **28
+emitted / 239 refused / 267 scanned** (was 26/241); zero drift on the
+26 prior payloads; BOTH new emits tie-probed rolled back (**13/13 and
+15/15** — the second exercising the s310 GA lines 31-44 machinery
+live: line 30/46 amount-due 53) and are flagged clean-to-commit in
+the annex (clients 3427 and 4666, batches twr25-001/-003 — commit
+ONLY those two; twr25 re-bundles everything, and client 3218's twr24
+commit stands as already instructed). 16 new tests (15 parser + 1
+derive); 222 extractor tests, 37 dependent tests, 616 flow-assertion
++ GA suite tests all green. Packet identities in `PipelineOut/r25`,
+never here.
 
 Unit shape (detail in form_coverage_tracker + the commit message):
-- The 8889 face parses into `hsa_accounts` (the s224 route was already
-  complete); identity gates re-run the engine math over the printed
-  values; Sch 1 lines 13/8f became engine-derived cross-checks (their
-  blanket refusals survive only as the no-8889-page shape). TaxWise
-  folds the age-55 catch-up INTO line 3 per the i8889 chart (self
-  5,300 / family 9,550) — the contract pins at line 8. Funding
-  distributions (10/19), prorated line 3/7, and any unrecognised X
-  (17a has no witness) refuse by name; predicted Sch 2 17c/17d refuses
-  by name (the 17a-z block has no route).
-- **The GA half was found by the tie probe** (the new emit no_tied GA
-  L45 by exactly 48): TaxWise computes a line-42 500-UET penalty
-  WITHOUT printing a 500-UET page. GA-500 face lines 31-44 are
-  preparer-entry lines `compute_ga500` consumes into L45/L46 — the
-  extractor now transcribes them into `ga500_fields`, and the emit
-  gates both sum identities (L45 = L29 + Σ32-44; L46 = L30 − 31 −
-  Σ32-44). **~30 corpus packets carry a line-42 penalty** — they
-  transcribe automatically as their other classes clear.
-- ⭐ The s295 upper-bound rule performed again: 7 f8889 solos → 1 emit
-  + 6 DEEPER named refusals (annex has per-client detail): the DOB
-  class ×3, an omitted-second-business packet (s297 class, caught
-  three independent ways), tax-exempt 2a ×2, Sch 3 credits ×2, GA
-  S1-10 attribution, and **two live 25c/8959 witnesses** (107 and 22)
-  for the standing fold-in note.
+- The 8880 face parses into the s202 `f8880_*` taxpayer vocabulary
+  (the engine recomputes the credit; line 2 emits as the deferral
+  OVERRIDE — the W-2 detail report prints no box 12, so the box-12
+  derive is structurally 0 and the override is the designed route).
+  Face line 20 gates against printed line 12: TaxWise omits the
+  Schedule 3 page (s297 omission class), so the 8880 face is line
+  20's only witness; residuals refuse by name.
+- **⚠ THE ENGINE FIX (one no_tie, decomposed to the dollar): the s235
+  GA-500 line-7a derive counted `claimed_as_dependent=False` EIC-only
+  rows** — a field that postdates it (s281) and whose own contract
+  excludes such rows from "every dependency-derived count". 3 × 4,000
+  × 5.19% = 622 = the exact GA line-16 no_tie; TaxWise and O.C.G.A.
+  §48-7-26 grant no exemption for an unclaimed EIC-only child. The
+  derive + its LIC-CHILD twin now filter claimed-only. Prod census:
+  ONE filed return carries a false row, NO GA-500 attached — nothing
+  committed moves.
+- The s295 upper-bound rule again: 8 solos → 2 emits + deeper named
+  refusals — a NEW class (the more-than-four-dependents box, 1
+  packet), a shell-carries-documents -Merge route (agent lane), and
+  four packets now held ONLY by the 13b Schedule 1-A class.
 
-**▶ NEXT unblocked build work — extractor, by the r24 solo ranking
-(all upper bounds):** f8880 **8** > f5695 = est_payments_wks **6** >
-asset_detail **5** = f2441 **5** > other_income_wks = f8962 = f8863
-**3**. Standing notes: est_payments_wks should emit dated
-`federal_estimated_payments` rows when it opens (s302b); the
-exempt-interest decomposition (3 named packets, s307) stays the
-cheapest targeted leg; face 25c's 8959 blanket refusal now has TWO
-named witnesses — but the fold-in needs its own depth probe (the W-2
-detail report does not print box 5, and 8959 reads box 5; s310 checked
-that far and stopped). Then item ⑦'s **multi-category Form 1116** half
+**▶ NEXT unblocked build work — extractor, by the r25 solo ranking
+(all upper bounds):** f5695 = est_payments_wks **6** > asset_detail =
+f2441 **5** > f8863 = f8962 = other_income_wks **3**. Standing notes:
+est_payments_wks should emit dated `federal_estimated_payments` rows
+when it opens (s302b); the exempt-interest decomposition (3 named
+packets, s307) stays the cheapest targeted leg; the 25c/8959 fold-in
+has two named witnesses but needs its own depth probe (box 5 is not
+printed; s310). **NEW (s311, before any f8962 extractor leg):
+`compute_8962.family_size` counts ALL Dependent rows where §36B
+counts CLAIMED dependents — same class as the 7a fix; verify the RS
+FORM_8962 spec's family-size fact, then fix + test (population today:
+1 return, no 8962).** Then item ⑦'s multi-category Form 1116 half
 (multi-session, model change — **wants Ken's go before it starts**).
 
-**⛔ WAITING ON KEN — unchanged from s309 (nothing new this session):**
+**⛔ WAITING ON KEN — unchanged from s310 except item 7:**
 1. **Georgia SALT add-back** (*"let me think on it"*) — ⚠ the
    booklet-vs-Lacerte proration CONFLICT must reach him first; BATCH-296
    tail has the full spec input incl. the nonresident path.
@@ -69,11 +74,16 @@ that far and stopped). Then item ⑦'s **multi-category Form 1116** half
    do-not-build recommendation; measured cost 1,700).
 6. **The "no need to fil" name-field packet** (s307; identity in
    `PipelineOut/r21` refusals) — genuine do-not-file?
-7. The two s309 GA RIE items (REVIEW_QUEUE top two: the §111 refund in
-   RIE line 10; the joint-gain 50/50 vs whole-to-spouse split).
+7. The two s309 GA RIE items (REVIEW_QUEUE top two) — **now carrying
+   the states lane's IT-511 research (s311): the booklet is SILENT on
+   RIE line 10, and its one "similar income" phrase is an EXCLUSION —
+   quoting it in support of the reg's category would be backwards.**
 8. The states lane's **10 unruled** staged items + S-18/S-19 + the
    REVIEW_QUEUE pair (D_GA500_009 error→warning; the MFS
    living-arrangement field pair).
+9. **Prod token for the entry lane** — client 3218 (twr24) + clients
+   3427/4666 (twr25) commit when minted; ⚠ the 3427 tie needs the s311
+   deploy LIVE first (the 7a fix is server-side).
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -93,18 +103,18 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
 auto-discovers `seed_*` at BUILD time).**
-- **s310 deploy: `972cf50e` → `dep-da934fvlk1mc73fq7ng0` — see the
-  close-out line at the very bottom of this file for the API-confirmed
-  status.** Extractor scripts + tests only; no server runtime change,
-  no migration, no seeder, no schema regeneration.
-- s309 deploy `11415881` → `dep-da92atrncjis7390908g` API-confirmed
-  LIVE 2026-08-28 (scripts-only).
-- s306t deploy `440aac92` API-confirmed LIVE (deploy-skew severity split
-  + GA LIC gate + LIC-CHILD input + three message fixes).
+- **s311 deploy: see the close-out line at the very bottom of this file
+  for the API-confirmed status.** ONE server runtime change (the
+  views.py 7a/LIC-CHILD claimed-only filter); no migration, no seeder,
+  no schema regeneration (`f8880_*` fields are s202 vocabulary, already
+  in the published schema).
+- s310 deploy `972cf50e` → `dep-da934fvlk1mc73fq7ng0` API-confirmed LIVE
+  2026-08-29 (scripts-only). · s309 `11415881` LIVE. · s306t `440aac92`
+  LIVE.
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (Current as of `9999f2c6`; s310 changed no schema.)
+  (Current as of `9999f2c6`; s311 changed no schema.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -112,27 +122,30 @@ to find defects. State the finding and move on.
 
 ## ▶ SINGLE-CHANNEL RULE — STANDING (Ken, 2026-08-22)
 **The build session MANAGES the sibling Claude sessions.** ListAgents +
-SendMessage — ⚠ the channel DROPPED a morning both ways (s277), and both
-peers were offline at s310 close: anything load-bearing goes in batch-file
-annexes too. **Never relay tokens through the message channel.** ONE
-delvio-tax tree holder; ONE pytest/test_postgres holder — coordinate
-EXPLICITLY before every run. Peers stage; Ken decides. ⚠ A peer's factual
-claim can be RETRACTED minutes later — build only against what a batch
-file or your own probe shows.
+SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
+load-bearing goes in batch-file annexes too. **Never relay tokens through
+the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
+holder — coordinate EXPLICITLY before every run. Peers stage; Ken decides.
+⚠ A peer's factual claim can be RETRACTED minutes later — build only
+against what a batch file or your own probe shows.
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
 - ~~12 of 47 RS `check_*_integrity.py` gates FAIL~~ — **THE 12 WAS WRONG AND
   S-10 IS CLOSED** (states lane, 2026-08-27). True pre-existing count **7**,
   10 of 12 resolved, 10 gates pinned in `tests/test_integrity_gates.py`;
   RS suite **254 passed / 0 failed**. ⚠ S-10a survives (`R-1040X-SUPERSED`
-  has no authority link; "superseding" appears ZERO times in the 2025
-  i1040x). S-10c (`D_8582_PTP`'s unwritten recompute) also stands.
+  has no authority link). S-10c (`D_8582_PTP`'s unwritten recompute) also
+  stands. **S-10b diagnosed (states lane, 2026-08-28, `cdd524f`): all 15
+  schedule_a gate failures are GATE defects, none spec — the gate reads
+  three contribution buckets where the spec models seven §170(b)(1)
+  classes + vintages, and one scenario DESTROYS a carryover. Never read
+  that gate as authority for engine work.**
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s310 touched no client code).
+- **Client typecheck**: green (s302; s311 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -165,7 +178,7 @@ file or your own probe shows.
   `row["status"]`; return CRUD routes carry the trailing slash. ⚠ A
   COMMITTED return refuses plain stage+dryrun with HTTP 409 (s298 —
   verification route = the in-place rolled-back recompute, s289 pattern;
-  s310 probed the new r24 payload this way — batch+staged rows created
+  s311 probed both new r25 payloads this way — batch+staged rows created
   INSIDE the rolled-back transaction, `commit_staged_return`
   self-validates, nothing landed).
 - 🔧 ⚠ pytest-randomly NOT installed (s281).
@@ -179,84 +192,80 @@ file or your own probe shows.
   ⚠ **The AcroForm FILLER flattens ALL widgets out of its output** (s296).
   ⚠ **TaxWise RE-TYPESETS whole schedules** (s297): pin from packets only.
   ⚠ s301: a fixture that encodes the WINDOW's geometry instead of the
-  CORPUS's keeps a blind spot green. ⚠ s307–s310: values are recognised
-  by RIGHT edge — caption numerals live at the left of value regions
-  ("179", a bare "9", "$300."), and a caption FRAGMENT can END inside a
-  value window ("Form 8853," — s310): trailing punctuation excludes it.
+  CORPUS's keeps a blind spot green. ⚠ s307–s311: values are recognised
+  by RIGHT edge — caption numerals live at the left of value regions,
+  a caption FRAGMENT can END inside a value window (trailing punctuation
+  excludes it), and **a MARKER token can END inside a value window too**
+  (f8880: "10"-"12" reach x1≈492 into the You column — the marker/value
+  split is x1 ≤ 493 vs ≥ 494, measured, s311).
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase, not the text**
   (s288). Download the PDF and extract the section.
 - 🔧 ⭐ **An instrumented ROLLED-BACK dry-run reproduces production behavior
-  locally** (s289; s292–s310 ran probes this way). ⚠ Scripts touching
+  locally** (s289; s292–s311 ran probes this way). ⚠ Scripts touching
   client-named returns live in SCRATCHPAD or tax-test-data, never the repo
   (PII). ⚠ `Firm.objects.first()` is the DEV firm — probe with
   `Firm.objects.get(name="The Tax Shelter")`. ⚠ Pooler statement timeouts
   kill the connection — ping + retry loop.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s310:
-  eight confirmations; s310's 7 solos yielded 1 emit + 6 deeper).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s311:
+  nine confirmations; s311's 8 solos yielded 2 emits + deeper).
 - 🔧 ⭐ **DRY-RUN THE CORRECTION PASS AND READ EVERY ROW before --commit**
   (s298). ⭐ **CENSUS THE PROD BLAST RADIUS before changing a computed
-  line's source** (s302).
+  line's source** (s302; s311: the 7a fix censused to ONE unaffected
+  return before landing).
 - 🌐 ⭐⭐ **THE THIRD QUESTION (s302): "does anything ACT on it?"** — after
-  "does it exist?" and "does it run?". s310: a helper NAME reused inside
-  one giant function SHADOWED an earlier closure (`az`) — the corpus run
-  caught it as a TypeError on the first packet that reached the later
-  caller; grep the enclosing scope before defining a nested helper.
+  "does it exist?" and "does it run?". s310: grep the enclosing scope
+  before defining a nested helper (`az` shadowing).
 - 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d):
   key the INPUT, and assert the intermediate is nonzero first.
+- 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT**
+  (s311, the 7a lesson): `claimed_as_dependent` (s281) promised exclusion
+  from "every dependency-derived count", but the s235 GA 7a derive and
+  compute_8962's family_size were never re-swept. When a field's contract
+  says "every X", grep for every X.
 
 ## 🔎 Carried for triage — NOT claims
+- (s311) **`compute_8962.family_size` counts ALL Dependent rows; §36B's
+  tax family is taxpayer + spouse + CLAIMED dependents** — the 7a class.
+  Population today: 1 return with a false row (no 8962 on it). Fix wants
+  the RS FORM_8962 spec's family-size fact verified first. NOT built.
+- (s311) **The more-than-four-dependents box** (1 packet): the marked box
+  means dependents beyond the grid exist only outside the packet —
+  refuses by name; no route until a source exists.
 - (s310) **A Schedule D identity break on one refused packet** (line 15
-  −19,103 vs the 8a-14 column (h) sum −21,142, delta 2,039 — identity in
-  `PipelineOut/r24` refusals). Suspected misparse or an unextracted
-  Sch D row — decompose before hand-entry (annex warns the entry lane).
+  −19,103 vs the column (h) sum −21,142, delta 2,039 — identity in
+  `PipelineOut/r25` refusals). Decompose before hand-entry (annex warned
+  the entry lane; they hold it do-not-hand-enter).
 - (s310) **A Form 8995 single-digit-row oddity on one refused packet**
-  (face line 9 prints 0 while line 10 prints 9; identity in r24
-  refusals) — possibly a mis-slotted tiny value; triage before
-  hand-entry.
-- (s310) The two 25c/8959 witnesses (107 / 22) — see NEXT above; the
-  fold-in is NOT free (box 5 is not printed in the W-2 detail report).
-- (s309) **The two GA RIE no_ties on r23's payloads** are DECOMPOSED
-  and staged (REVIEW_QUEUE top two; BATCH-296 annex has per-client
-  workarounds). Neither blocks anything — no_tie commits are named.
-- (s309) The two fully-phased-out student-loan-interest packets (SL paid
-  printed, deduction row ABSENT — identities in `PipelineOut/r23`
-  refusals) will emit a warning naming the phaseout when their other
-  classes clear — the face carries no line 21 by design, not omission.
-- (s303) **The simplified home-office 300 sq ft cap is applied PER
-  SCHEDULE C, but Rev. Proc. 2013-13 §4.08(6) caps ONE TAXPAYER'S
-  AGGREGATE across qualified business uses of the SAME home.** Prod
-  census: ZERO returns hit it today. ⚠⚠ **THE THRESHOLD IS AGGREGATE >
-  300, NOT "TWO ROWS"** — two elected rows in the same home are
-  MANDATORY under (6); aggregate ≤ 300 is legitimate-and-compelled;
-  refusable only above 300 per proprietor (see STATUS_ARCHIVE s303 for
-  the full three-case decomposition). `proprietor` + aggregate sqft is
-  the key.
-- (s303) **§4.08(4) monthly averaging is unrepresentable** — one
-  `home_office_sqft`, no in-service date; size with the home identifier.
+  (face line 9 prints 0 while line 10 prints 9) — triage before
+  hand-entry (entry lane holds it).
+- (s310) The two 25c/8959 witnesses (107 / 22) — the fold-in is NOT free
+  (box 5 is not printed in the W-2 detail report).
+- (s309) **The two GA RIE no_ties on r23's payloads** are DECOMPOSED and
+  staged (REVIEW_QUEUE top two — now carrying the states lane's IT-511
+  research, s311). Neither blocks anything — no_tie commits are named.
+- (s309) The two fully-phased-out student-loan-interest packets emit a
+  phaseout warning when their other classes clear.
+- (s303) **Home-office 300 sq ft cap is per SCHEDULE C but Rev. Proc.
+  2013-13 §4.08(6) caps ONE TAXPAYER'S AGGREGATE per home.** Prod census
+  ZERO. Threshold = aggregate > 300, NOT "two rows" (see STATUS_ARCHIVE
+  s303). · §4.08(4) monthly averaging unrepresentable.
 - (s302d) **D_EFILE_001 cannot distinguish "EIN not keyed" from "EIN not
-  obtainable"** (third-party sick-pay payer with no EIN anywhere; the
-  s298 21-blank-row class is the same question — Ken's prefix-tier call).
-- (s302, states S-10c) **`D_8582_PTP` remains unverified** — and
-  `check_topic8`-style gates never compare the FORMULA against the
-  declaration, so **the emptier a rule's declaration the safer it looks**.
-- (s302) `div_1099s.us_government_income` is attribution-only BY DESIGN —
-  auto-derive question needs an off-switch decision (s237 class). ·
-  D_SCHD_006 QOF answer has no import surface (warning-level, filed).
-- (s301) One packet's 5b decomposition: extracted pension rows carry
-  115,150 vs face 15,150 — probe the 1099-R parse before assuming a
-  rollover. · One packet's Sch D carries 1b grid totals with NO f8949
-  pages + its own h-identity break — suspected misparse. · A blank
-  printed 8949 page refuses "no transaction rows" — over-refusal by
-  design.
-- (s298) 21 named-but-blank W-2/1099-R rows held on D_EFILE_001 —
-  movement waits on Ken's prefix-tier call.
-- (s297) The X mark at (474.7, y≈389) in the 1040 p2 EIC row region —
-  unidentified, parser-ignored. ⚠ s302b: when est_payments_wks opens,
-  emit dated `federal_estimated_payments` rows.
+  obtainable"** (also the s298 21-blank-row class — Ken's prefix-tier
+  call; the entry lane's HARVJOHN close-out is held on the same gap:
+  Lacerte wage schedules never print W-2 employer EINs).
+- (s302) `D_8582_PTP` unverified (S-10c) · `div_1099s.us_government_income`
+  attribution-only, off-switch decision pending (s237 class) ·
+  D_SCHD_006 QOF has no import surface.
+- (s301) One packet's 5b decomposition (115,150 vs 15,150) — probe the
+  1099-R parse first. · One packet's Sch D 1b-grid/h-identity break. ·
+  A blank printed 8949 page refuses — by design.
+- (s298) 21 named-but-blank W-2/1099-R rows held on D_EFILE_001.
+- (s297) The X mark at (474.7, y≈389) on one 1040 p2 EIC row —
+  unidentified, parser-ignored. ⚠ s302b: est_payments_wks emits dated
+  rows when it opens.
 - (s296) The 22 sch_d GEOMETRY-error packets refuse loudly by design. ·
-  (s295) 7 auxiliary Inbox PDFs refuse as non-packets — correct
-  (they are the "not a TaxWise 1040 packet" 7 in every solo ranking). ·
+  (s295) 7 auxiliary Inbox PDFs refuse as non-packets — correct. ·
   `_summary_lines` GA500_SUMMARY_LINES lacks S1-6.
 - (s290) GA RIE interest row excludes K-1 16A tax-exempt interest —
   stated boundary. · The rendered 8995 TIN prints unformatted — cosmetic.
@@ -273,7 +282,8 @@ file or your own probe shows.
   (s283) The stamp excludes 1040 packets (Ken). · (s282)
   `OVERRIDE_HONORED_STATE_LINES` hand-synced. · (s281) OOS-state line-18
   prompt diagnostic specified, not built; stage allowlists `schd_fields`
-  keys, `ga500_fields` not at all. · (s268) 1,604 queries/run. ·
+  keys, `ga500_fields` not at all *(stale? s310 added ga500_fields 31-44
+  staging — re-verify before citing)*. · (s268) 1,604 queries/run. ·
   (s241/s281) `Form8606` unique-constraint candidate · 🔴 `HSAAccount`
   half CLOSED. · (s275/s281) `.first()`-on-per-form-rules remainder. ·
   (s294) a state face left by an omitting correction batch is not
@@ -287,13 +297,16 @@ file or your own probe shows.
 Everything from s277–s306 stands (see STATUS_ARCHIVE). Highlights:
 **S-15** (SCHEDULE_K1 §469(g) disposition trio + R-8582-PTP related-party
 correction), **S-16** (R-PAY-04 dated-rows source), **S-19**
-(`R-8889-EXCEPTIONS` narrow condition + stale message; also declares
-`inputs: []` while reading lines 2/13 — the THIRD S-17 under-declaration
-instance). Carried candidate (s309, ruling-dependent): if Ken rules the
-§111 refund into RIE line 10, amend R-GA500-RIE's fact list in the same
-pass.
+(`R-8889-EXCEPTIONS` narrow condition + stale message + `inputs: []`
+under-declaration). Carried candidates (ruling-dependent): the §111
+refund → R-GA500-RIE fact list (s309); **NEW s311: if the FORM_8962
+spec's family-size fact says "dependents" without the claimed
+qualifier, it inherits the s302 spec-omits-the-bar class — check when
+the 8962 family_size fix runs.**
 
 ---
-**s310 deploy close-out:** `972cf50e` → `dep-da934fvlk1mc73fq7ng0` —
-**API-confirmed LIVE 2026-08-29** (scripts + tests only; no server
-runtime change).
+**s311 deploy close-out:** `67debb5f` → `dep-da94p1f10e5c73aqk93g` —
+**API-confirmed LIVE 2026-08-29** (the ONE server runtime change: the
+GA-500 7a/LIC-CHILD claimed-only filter; extractor scripts + tests
+otherwise). ⚠ Client 3427's entry-lane commit is now unblocked — her
+tie needs this deploy, which is live.

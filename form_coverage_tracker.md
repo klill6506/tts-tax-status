@@ -1,6 +1,35 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-29 session 311 — the extractor Form 8880 (Saver's Credit) leg
+> + the GA-500 line-7a claimed-dependents-only fix (scripts + tests + one
+> views.py derive re-scope).** No new RENDERED form — extractor coverage:
+> the filed Form 8880 face parses into the existing s202 `f8880_*`
+> taxpayer vocabulary (FORM_8880 input/compute/render chains unchanged
+> and long green — the ENGINE recomputes the credit; the extractor sends
+> line 1 as the ira override, line 2 as the deferral override the W-2
+> detail report makes necessary — it prints no box 12 — and line 4
+> distributions); identity gates re-run the whole face (per-column
+> 3/5/6, combined 7/10/12, half-up rounding verified on four fractional
+> witnesses), and emit gates line 8 vs the face AGI, line 9 vs the tier
+> ladder, line 11 vs face line 18, and face line 20 vs printed line 12
+> (TaxWise omits the Schedule 3 page — the 8880 face is its only
+> witness; any residual refuses by name). f8880 is GONE as a refusal
+> class. r25 = 28/239/267, zero drift on the 26 prior payloads; BOTH new
+> emits tie rolled back (13/13 and 15/15 — the latter exercising the
+> s310 GA lines 31-44 machinery live). ⚠ The first tie required an
+> ENGINE fix: the s235 GA-500 line-7a derive counted
+> `claimed_as_dependent=False` EIC-only rows (a field that postdates it,
+> s281), granting $4,000 exemptions TaxWise and O.C.G.A. §48-7-26 do not
+> — the no_tie decomposed to exactly 3 x 4,000 x 5.19% = 622. The derive
+> (and its LIC-CHILD twin) now count CLAIMED dependents only; prod
+> census: ONE filed return carries a false row, no GA-500 attached —
+> nothing committed moves. Same-class finding recorded, NOT built:
+> compute_8962 `family_size` counts all Dependent rows where §36B counts
+> claimed dependents (RS FORM_8962 spec check first). Freed solos also
+> surfaced the more-than-four-dependents-box class (new, 1 packet) and a
+> shell-carries-documents -Merge route (agent lane).
+
 > **2026-08-29 session 310 — the extractor Form 8889 (HSA) leg + the
 > GA-500 lines 31-44 decomposition (`972cf50e`, scripts + tests only, no
 > form legs changed).** No new RENDERED form — extractor coverage: the
