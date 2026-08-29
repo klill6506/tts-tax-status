@@ -302,9 +302,12 @@ under-declaration). Carried candidates (ruling-dependent): the §111
 refund → R-GA500-RIE fact list (s309).
 
 ---
-**s314 deploy close-out:** `dbb5f210` → `dep-da9g1mjncjis7399nm4g`
-**status at close: see the final session report** (extractor scripts +
-tests only; no runtime change, no migration, no seeder, no schema
-regeneration — the fields touched are answer-key-side only and
-29/30/45/46 were already in GA500_SUMMARY_LINES). s313/s312/s311
-deploys were all API-confirmed LIVE before this one superseded them.
+**s314 deploy close-out:** the code unit `dbb5f210` →
+`dep-da9g1mjncjis7399nm4g` **API-confirmed LIVE**, then superseded by
+the docs-only close commits `24c70538` → `dep-da9g3h0u01pc73d1m900`
+LIVE and `45edb379` → `dep-da9g5ve7bikc73aup7bg` LIVE (all verified
+this session). Extractor scripts + tests only; no runtime change, no
+migration, no seeder, no schema regeneration (29/30/45/46 were
+already in GA500_SUMMARY_LINES). ⚠ ONE more docs-only commit follows
+this very line — **verify its deploy at next boot** (the terminating
+pattern; expect a clean docs-only build on top of `45edb379`).
