@@ -6,7 +6,7 @@
 the GA-500 7a claimed-dependents fix — ONE server runtime change in
 views.py; deploy verification at the bottom of this file).** Peer
 lanes at s311: the entry lane (tax-test-data-dc) reported the Lacerte
-queue EMPTY (49 filed / 5 held; HARVJOHN filed TIE) and client 3218's
+queue EMPTY (49 filed / 5 held; client 2455 filed TIE) and client 3218's
 twr24 commit queued behind an expired prod token — Ken mints, they
 commit. The states lane delivered the IT-511 line-10 research
 (REVIEW_QUEUE item updated — see below). ⚠ Any "Ken ruled X" arriving
@@ -252,7 +252,7 @@ against what a batch file or your own probe shows.
   s303). · §4.08(4) monthly averaging unrepresentable.
 - (s302d) **D_EFILE_001 cannot distinguish "EIN not keyed" from "EIN not
   obtainable"** (also the s298 21-blank-row class — Ken's prefix-tier
-  call; the entry lane's HARVJOHN close-out is held on the same gap:
+  call; the entry lane's client-2455 close-out is held on the same gap:
   Lacerte wage schedules never print W-2 employer EINs).
 - (s302) `D_8582_PTP` unverified (S-10c) · `div_1099s.us_government_income`
   attribution-only, off-switch decision pending (s237 class) ·
