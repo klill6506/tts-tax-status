@@ -1,6 +1,22 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-29 session 310 — the extractor Form 8889 (HSA) leg + the
+> GA-500 lines 31-44 decomposition (`972cf50e`, scripts + tests only, no
+> form legs changed).** No new RENDERED form — extractor coverage: the
+> filed Form 8889 face parses into the existing `hsa_accounts` vocabulary
+> (the s224 import route; FORM_8889 input/compute/render chains unchanged
+> and long green); Schedule 1 lines 13/8f become engine-derived
+> cross-checks; GA-500 face lines 31-44 (check-offs, the 500-UET penalty,
+> late penalty/interest, credit-forward) transcribe into `ga500_fields`
+> with L45/L46 sum-identity gates. r24 = 26/241/267, zero drift on prior
+> payloads; the one new emit ties 15/15 rolled back — its GA tie required
+> the line-42 UET transcription (TaxWise computes the penalty without
+> printing a 500-UET page; ~30 corpus packets carry one). Six freed
+> solos surfaced deeper named refusals (the s295 upper-bound rule),
+> including a packet whose second business's Schedule C page was never
+> printed (the s297 omission class, caught three independent ways).
+
 > **2026-08-28 session 309 — the extractor student-loan/educator worksheet
 > leg (`11415881`, scripts + tests only, no form legs changed).** No new
 > RENDERED form — extractor coverage: the USW10402 worksheet (student loan
