@@ -1,78 +1,64 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s316 close part 2 (Ken's four rulings executed), 2026-08-30
+## ▶▶ RESUME POINTER — s317 (the Schedule 1-A leg), 2026-08-30
 
-**State: idle and CLEAN. Ken ruled four ways this morning ("1. mark
-filed 2. blessed 3. clear all 3 4. go to work") and ALL FOUR ARE
-EXECUTED: FIFTEEN returns are now FILED, FOURTEEN packets are CLOSED
-to Done, and the GA RIE ruling is built, deployed, and both §111
-witnesses are committed+filed under it.** Head `be03f6c6`; deploys per
-the close-out line.
+**State: idle and CLEAN. The r40→r41 re-census unit is BUILT, probed,
+committed and pushed (`3f67f3bb`; extractor+tests only — zero runtime
+change). The Schedule 1-A page (role=ignore since s127, the s315
+converse's FIFTH instance) is now an extract source: r41 = 36/217/253,
++9 emits at EXACTLY the depth-probe price, and 8 of the 9 dry-ran full
+TIE on prod rolled back.** Deploy for `3f67f3bb` verified per the
+close-out line.
 
-**Ruling execution record:**
-- **① Mark-filed:** the nine committed returns swept filed via the
-  real Leg-D endpoint (7 twq9 + 2 twq10; the two stale twq9 DOB copies
-  EXCLUDED per the designed per-return action). Fresh auth minted
-  (dev magic link, one-process rule).
-- **② The four blessed:** staged as `twq11-20260830`, dry-run all
-  four TIE on the live server, committed, marked filed.
-- **③ The GA RIE ruling ("clear all 3") — s316f, `3e459267`:** the
-  §111 taxable state refund + unemployment JOIN the RIE L10 derive.
-  **Authority re-pointed STATUTE-PRIMARY same day** (O.C.G.A.
-  §48-7-27(a)(5)(E)(i) "shall include but not be limited to" — the
-  states lane's verbatim pull found the reg's tail invites ejusdem
-  generis AND the same reg sentence prints a stale $4,000 earned cap
-  vs the statutory $5,000; reg demoted to secondary, its (3) used only
-  as the amount filter). ONE shared helper
-  (`compute_ga500.rie_l10_other_income_by_owner`) feeds both the views
-  pull and D_GA500_017's mirror — which had ALREADY drifted (the MISC
-  box-3 component never joined the old PATR-only mirror; closed).
-  Blast-radius census (rolled-back recompute over all 12 candidates):
-  2 filed manual-entry returns move — client 2538 printed-exclusion
-  only (GA tax already 0), client 1382 a REAL triage finding (a
-  preparer-keyed RIE-TP-10 override holding the whole joint refund
-  would DOUBLE-COUNT the spouse half on any future recompute; filed
-  returns don't auto-recompute — carried below). Both §111 witnesses
-  (clients 4025, 1828) then dry-ran TIE on the deployed build →
-  committed as `twq12-20260830` → filed. The unemployment witness
-  (3754) stays extract-refused on his separate 13b residual; his arm
-  is unit-tested. D_GA500_019 stays patronage-scoped (flagged, not
-  silently widened). RS R-GA500-RIE amendment: relayed to the states
-  lane, who correctly held their gate for Ken's DIRECT word — it's on
-  his queue with their staged write-up (`ga_rie_line10_ruling_staged`).
-- **④ "Go to work" — s316g, `be03f6c6`:** the closeout gate held ALL
-  the filed returns on ONE cause: **the digital-asset question,
-  printed on every packet's 1040 face and read by nothing** (the s315
-  converse, third instance this session). ⚠ My first read
-  pattern-matched D_EFILE_001 to the s298 EIN class — the error's own
-  message said otherwise (the s281 rule). `parse_p1_digital_assets`
-  ships (X left of its Yes/No label, both-marked/out-of-window raise,
-  unmarked stays None); r39 = 41/226/267 with drift EXACTLY the one
-  new key on all 41 emits (whole corpus answers No); the s298-style
-  correction pass set all 15 filed returns' fields from their OWN
-  faces (every row printed and read first). Cleanup then cleared 14
-  of 15 (warnings acknowledged source-verified per the tie
-  verification + Ken's authorization) → **14 packets moved
-  Inbox→Done**. The one hold: client 4059's W-2G payer street address
-  — the standing document ask, exactly as designed.
+**The s317 unit in brief:**
+- r40 (27/226/253) re-census: the top single-wall class was 14 packets
+  refusing for "tips/overtime/car-loan inputs outside the extract" —
+  while every one PRINTS the two-page Schedule 1-A carrying those
+  inputs. Class probe over all 16 candidates: OT 14 · tips 2 · car
+  loan 1 · senior 2; all six joint packets have W-2s on BOTH owners.
+- Built `scripts/taxwise1040/sch_1a.py` (positional parse + engine
+  mirror of compute_sch_1a's four chains, RS-specced constants
+  verbatim), classify role flip, emit wiring, 17 unit tests (327
+  extractor tests green). Emits are INPUTS only: single-filer 14a →
+  `qualified_overtime_w2_amount`; single-W-2 tips → box 7 + the
+  attestation; Part IV rows → `car_loan_vehicles`. Joint 14a refuses
+  by name (item 64); multi-W-2 tips refuses by name.
+- r41 drift FULLY accounted: old 13b classes (18+3) cleared; new = 7
+  item-64 joint-OT + 1 multi-W-2 tips + 2 omitted-page fallbacks + 9
+  emits; every other class +0.
+- Rolled-back prod tie probe (batch `02b06114`, nothing written):
+  **8/9 full TIE**. The ninth no_ties by ±$5 on GA 23/30/46 = the GA
+  Low Income Credit keyed gate (D_GA500_022; the s316 class) — TWO
+  packets now wait only on the LIC-NODEP assertion from the entry
+  side.
+- Annex posted to BATCH-296 (2026-08-30 evening). ⚠⚠ PII near-miss
+  caught pre-commit AGAIN: witness surnames + a real VIN were in the
+  parser docstring/test file at write time — scrubbed to shape-named
+  witnesses + a synthetic VIN before commit; repo git-grep clean.
 
-**Corpus: r39 = 41/226/267** (extractor tests 310 green). ⚠ The 14
-closed packets leave the Inbox, so r40+ scans ~253 and emit counts
-drop by 14 — expected, not a regression.
+**Corpus: r41 = 36/217/253** (extractor tests 327 green).
 
-**▶ NEXT:** re-census the r39 residual classes (nothing priced is
-open); deferred-with-triggers unchanged (f8959 / asset_detail / 1116
-multi-category — Ken's go). The entry lane's Lacerte book and the
-50-of-John's pilot remain the standing big arcs.
+**▶ NEXT:** nothing priced is open at single-wall scale below the
+deferred classes — the remaining big single-wall unlocks are
+asset_detail (10 solos, DEFERRED on Ken's trigger) and est_payments_wks
+(7 solos, unpriced — next depth-probe candidate). Deferred-with-
+triggers otherwise unchanged (f8959 / 1116 multi-category — Ken's go;
+⚠ the s306t multi-employer-tips trigger SHAPE has now ARRIVED — see
+DEFERRAL_AUDIT 2026-08-30 note — decision needs i1040 + RS amendment).
+The entry lane's Lacerte book and the 50-of-John's pilot remain the
+standing big arcs.
 
-**⛔ WAITING ON KEN (the list SHRANK again):** the RS R-GA500-RIE
-amendment needs his DIRECT word to the states lane (my relay
-correctly refused at their gate; their write-up is staged) · client
-4059's W-2G payer street address (the last Inbox hold of the filed
-set) · the one-number Schedule D carryover question (32,002 vs
-29,963) · reprints · standing decisions 1–8 · the 2a ruling-scope
-flag · the AL Form 40 line-26/Schedule CP app leg (his direct word;
-acceptance vector recorded).
+**⛔ WAITING ON KEN (adds two items):** ① bless the EIGHT tie-verified
+queue candidates (clients 3393 · 3425 · 3430 · 3615 · 3689 · 4177 ·
+4371 · 4636 — the BATCH-296 annex has the names + batch id) · ② item 64
+(joint overtime owner attribution) now holds SEVEN packets refusing by
+name — owner-agnostic aggregate vs 50/50 ruling; for TY2025 nothing
+owner-sensitive consumes the split (GA HB 463 pulls are TY2026+) ·
+carried: the RS R-GA500-RIE amendment (his DIRECT word to the states
+lane) · client 4059's W-2G payer street address · the one-number
+Schedule D carryover question (32,002 vs 29,963) · reprints · standing
+decisions 1–8 · the 2a ruling-scope flag · the AL Form 40 line-26/
+Schedule CP app leg.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -91,14 +77,13 @@ is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
 authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds.** ⚠⚠ **A runtime
-change must be deploy-LIVE before lane commits ride it** (s316f practiced:
-the RIE fix deployed and API-verified BEFORE twq12 staged).
-- **s316 deploys: see the close-out line at the bottom of this file.**
+change must be deploy-LIVE before lane commits ride it.**
+- **s317 deploys: see the close-out line at the bottom of this file.**
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (s316f/g changed no vocabulary — digital_assets_answer and the RIE
-  fields all pre-existed in the allowlists.)
+  (s317 changed no vocabulary — the OT/tips fields, box 7 and
+  `car_loan_vehicles` all pre-existed in the allowlists.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -110,13 +95,9 @@ SendMessage — anything load-bearing goes in batch-file annexes too.
 **Never relay tokens through the message channel.** ONE delvio-tax tree
 holder; ONE pytest/test_postgres holder. Peers stage; Ken decides.
 ⚠ **A SECOND delvio-tax session existed 2026-08-30 (`delvio-tax-1f`)** —
-the states lane flagged it; this session asserted the one-writer
-protocol to it directly and heard nothing back before close. If a future
-boot finds uncommitted tree changes it didn't make, THAT session is the
-suspect — coordinate before touching anything.
-⚠ **A peer's authority-upgrade can be adoptable even when their gate
-holds** (s316f: their statute-primary re-point was doc-only and
-verifiable — adopted; their RS seed correctly waits for Ken).
+if a future boot finds uncommitted tree changes it didn't make, THAT
+session is the suspect — coordinate before touching anything. (s317 boot
+found the tree clean.)
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
 - **S-10a** (`R-1040X-SUPERSED` no authority link) · **S-10c**
@@ -128,7 +109,7 @@ verifiable — adopted; their RS seed correctly waits for Ken).
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s316 touched no client code).
+- **Client typecheck**: green (s302; s317 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -138,13 +119,13 @@ verifiable — adopted; their RS seed correctly waits for Ken).
   pooled connection** (Supavisor; re-confirmed 2026-08-30).
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
-  `server\`. ⚠ inline `-c` BANNED — script FILES (re-broken s316, caught).
-  ⚠ scripts by absolute path need `sys.path.insert(0, server)` (s298).
-  ⚠ `python -m taxwise1040` doesn't resolve from `server\` — run
-  `__main__.py` BY PATH (s297).
+  `server\`. ⚠ inline `-c` BANNED — script FILES (re-broken s317 once,
+  caught at the parse error). ⚠ scripts by absolute path need
+  `sys.path.insert(0, server)` (s298). ⚠ `python -m taxwise1040` doesn't
+  resolve from `server\` — run `__main__.py` BY PATH (s297).
 - 🌐 ⚠⚠ **`close_old_connections()` INSIDE a `.iterator()` loop kills the
-  server-side cursor's own connection** (s316f census, self-inflicted) —
-  materialize the ID list FIRST, then per-item close+get.
+  server-side cursor's own connection** (s316f census) — materialize the
+  ID list FIRST, then per-item close+get.
 - 🔧 ⚠ **`BaseModelSerializer` partial updates save ONLY the patched
   columns** (s298).
 - 🌐 ⚠⚠ PS5.1 traps: regex-replace file rewrites BANNED; Edit tool or
@@ -163,51 +144,61 @@ verifiable — adopted; their RS seed correctly waits for Ken).
   RIGHT edge; marker/caption tokens can END inside value windows
   (s307–s311); dot LEADERS invade value regions — skip, never raise; an
   f7206-style value prints up to 6pt ABOVE its own marker; a checkbox X
-  sits LEFT of its own label and ~2.7pt ABOVE the label row (s316g);
-  TaxWise RE-TYPESETS schedules (s297) and can OMIT a page it bills on
-  the invoice (s297/s316 — no federal 2210 page prints, ever).
+  sits LEFT of its own label (s316g); TaxWise RE-TYPESETS schedules
+  (s297) and can OMIT a page it bills on the invoice (s297/s316/s317 —
+  two packets print 13b with NO Schedule 1-A page). ⚠ s317: an IRS-form
+  face's left-gutter anchors + right-edge value columns (the f8995
+  idiom) transfer cleanly to new forms — but caption text can print
+  line-number-shaped words INSIDE the gutter x-range ("4b"@x0=59), so
+  the cutoff is load-bearing.
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase** (s288).
 - 🔧 ⭐ **Rolled-back dry-runs reproduce production locally** (s289;
-  s292–s316). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
+  s292–s317). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
   ⚠ `Firm.objects.get(name="The Tax Shelter")`, never `.first()`.
   ⚠ Pooler timeouts kill the connection — ping + retry.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s316;
-  the s316 units all landed exactly at their depth-probe prices).
-- 🔧 ⭐ **DRY-RUN a correction pass and READ EVERY ROW** (s298; s316g did
-  — 15/15 uniform). ⭐ **CENSUS THE BLAST RADIUS before changing a
-  computed line's source** (s302; the s316f census caught a filed-return
-  double-count shape BEFORE deploy).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s317;
+  s317 landed exactly at its depth-probe price: 9 predicted, 9 emitted).
+- 🔧 ⭐ **DRY-RUN a correction pass and READ EVERY ROW** (s298). ⭐
+  **CENSUS THE BLAST RADIUS before changing a computed line's source**
+  (s302/s316f).
 - 🌐 ⭐⭐ **THE THIRD QUESTION + ITS CONVERSE** (s302/s315): "does anything
   ACT on it?" / "which printed page (or face fact) does NOBODY read?" —
-  s316 cashed the converse THREE times (Three-Year Summary, NOL
-  worksheet, the digital-asset checkbox).
+  s317 cashed the converse a FIFTH time (the Schedule 1-A pair,
+  role=ignore while 14 packets refused for its own contents).
 - 🌐 ⚠⚠ **READ WHAT THE ERROR SAYS before pattern-matching it to a known
-  class** (s316g: D_EFILE_001 was the digital-asset question, not the
-  s298 EIN class; the s281 evidence rule).
+  class** (s316g; the s281 evidence rule).
 - 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d).
 - 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT** (s311).
 - 🔧 ⚠ **The answer key is a CONTRACT** (s313/s314); **A TIE CANNOT SEE
   NON-RECONCILED FIELDS** (s315; identity-verifier still open,
   DEFERRAL item 7).
 - 🔧 ⭐ **MIRROR THE ENGINE, and make shared derives ONE HELPER both the
-  feed and the diagnostic read** (s312→s316f: the 017 mirror had already
-  drifted from its feeder when the components were separate functions).
+  feed and the diagnostic read** (s312→s317: mirror_sch_1a re-derives
+  compute_sch_1a's chains from printed inputs; divergence refuses).
+- 🔧 ⚠⚠ **THE SURNAME REFLEX MUST FIRE AT WRITE TIME** (s307/s316/s317 —
+  three sessions running, surnames + a real VIN reached draft repo files
+  and were caught only at the pre-commit sweep. Grep EVERY draft for the
+  working set's surnames before commit; VINs count as identifying).
 
 ## 🔎 Carried for triage — NOT claims
-- **(s316f) Client 1382 (filed, manual entry): a preparer-keyed
-  RIE-TP-10 override holds the whole joint refund; the new spouse-half
-  derive would DOUBLE-COUNT 513 on any future recompute.** Fix = clear
-  the override (preparer/Ken); filed returns don't auto-recompute, so
-  nothing moves silently. Client 2538's shape is harmless (exclusion
-  grows, GA tax already 0).
-- (s316) **Two 13b-residual packets refuse by name** (+180, +3,730);
-  a Schedule 1-A component-worksheet leg would decompose them.
-- (s316) **The third f7206 solo**: allocation-worksheet identity break
+- **(s317) TWO packets wait only on the GA LIC keyed gate** (the s316
+  witness + the new r41 witness, client 3815): entry side keys
+  `LIC-NODEP` true (+`LIC-CHILD 0`) and both should TIE.
+- **(s317) Item-64 joint-OT class: 7 packets refuse by name** (6
+  single-wall; the s316 senior-residual pair now decompose to exactly
+  their OT residuals 180 / 3,730). Emit arm is small once Ken rules.
+- **(s317) The multi-W-2 tips witness** (2 same-owner W-2s, 4c=770) —
+  ALSO the s306t deferral trigger shape arrived; needs i1040 + RS
+  amendment, flagged.
+- (s316f) Client 1382 (filed, manual entry): preparer-keyed RIE-TP-10
+  override holds the whole joint refund — would double-count 513 on any
+  future recompute; fix = clear the override (Ken's queue).
+- (s316) The third f7206 solo: allocation-worksheet identity break
   (rows sum 130,193 vs printed 127,952) — undecomposed.
 - (s313) the four 25c/8959 witnesses — every carrier holds other walls.
-- (s313) **Client 4059's W-2G payer street address** — the LAST Inbox
-  hold of the filed set (D_W2G_PAYER_ID error; document ask).
+- (s313) Client 4059's W-2G payer street address — the LAST Inbox hold
+  of the filed set (document ask).
 - (s313) The entry lane's `verify_expected.py` reader gaps (their tool).
 - (s312) The $56 unextracted Schedule 3 credit on one f5695 packet.
 - (s311) The more-than-four-dependents box (1 packet).
@@ -215,8 +206,7 @@ verifiable — adopted; their RS seed correctly waits for Ken).
   LT-carryover number.
 - (s309) The two fully-phased-out student-loan-interest packets emit
   when their other classes clear. · The unattributed-joint-capital-gain
-  RIE question (client 3825) is STILL OPEN — it was NOT part of the
-  2026-08-30 ruling.
+  RIE question (client 3825) is STILL OPEN.
 - (s303) Home-office 300 sq ft cap: prod census ZERO. · §4.08(4)
   monthly averaging unrepresentable.
 - (s302d) D_EFILE_001 "not keyed vs not obtainable" (the s298 21-row
@@ -248,19 +238,24 @@ verifiable — adopted; their RS seed correctly waits for Ken).
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
 ## RS AGENDA — carried:
-S-15 / S-16 / S-19 stand (see STATUS_ARCHIVE). **NEW: the R-GA500-RIE
-L10 amendment (the 2026-08-30 ruling) is WITH THE STATES LANE pending
-Ken's direct word** — their staged write-up recommends citing O.C.G.A.
-§48-7-27(a)(5)(E)(i) primary and recording the reg's stale $4,000.
-Also staged there: whether D_GA500_019 widens beyond patronage (my
-flag). AL Form 40 line-26/Schedule CP app leg queued on Ken's direct
-word (acceptance vector recorded).
+S-15 / S-16 / S-19 stand (see STATUS_ARCHIVE). The R-GA500-RIE L10
+amendment is WITH THE STATES LANE pending Ken's direct word (their
+staged write-up: statute-primary O.C.G.A. §48-7-27(a)(5)(E)(i)). Also
+staged there: whether D_GA500_019 widens beyond patronage. AL Form 40
+line-26/Schedule CP app leg queued on Ken's direct word. **NEW (s317
+flag): the s306t multi-employer-tips 4c method will need an RS
+amendment when Ken opens it** (trigger shape arrived; see
+DEFERRAL_AUDIT).
 
 ---
-**s316 deploy close-out (part 2):** `3e459267` (s316f, the RIE ruling
-— RUNTIME) → `dep-daa6lquq1p3s7390ncf0` **API-confirmed LIVE before
-twq12 staged** · `be03f6c6` (s316g + citation re-point) → deploy
-verified per the background check at close (expect live; scripts +
-docstring only — zero runtime behavior change beyond s316f's). The
+**s317 deploy close-out:** `3f67f3bb` (extractor + tests + deferral
+note ONLY — zero server/runtime change) → the auto-deploy
+**build_failed on a corrupted Render venv cache** (pip metadata crash
+uninstalling charset-normalizer; same lockfile built green hours
+earlier — the commit was NOT the cause; prod kept serving `0b5da5b7`
+throughout) → manual `{"clearCache":"clear"}` redeploy
+`dep-daaau2ks728c73fskll0` **API-confirmed LIVE**. ⚠ New hazard for
+the standing list: a build_failed on a docs/scripts-only commit =
+suspect the CACHE first; read the build log before the commit. The
 docs-only close commits after this line trigger one more deploy —
 verify the LAST one at next boot.
