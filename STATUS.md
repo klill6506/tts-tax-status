@@ -1,88 +1,78 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s316 close (autonomous, "go"), 2026-08-30
+## ▶▶ RESUME POINTER — s316 close part 2 (Ken's four rulings executed), 2026-08-30
 
-**State: idle and CLEAN. THE ENTIRE s315 PRICED TAIL (①–⑤) IS BUILT —
-four code pushes, every unit tie-probed rolled back before commit.
-Corpus r33 38/229/267 → r38 41/226/267, zero unexplained drift at any
-step.** Head `2fdb2ec8`; deploy verification in the close-out line.
+**State: idle and CLEAN. Ken ruled four ways this morning ("1. mark
+filed 2. blessed 3. clear all 3 4. go to work") and ALL FOUR ARE
+EXECUTED: FIFTEEN returns are now FILED, FOURTEEN packets are CLOSED
+to Done, and the GA RIE ruling is built, deployed, and both §111
+witnesses are committed+filed under it.** Head `be03f6c6`; deploys per
+the close-out line.
 
-**✅ s316 SHIPPED (five units, four code commits):**
-- `1597f8f9` — **① the 2210 prior-year safe-harbor leg.** The figures
-  print on the Three-Year Tax Summary (USSUMRY1) — NO federal 2210
-  page prints at all (the invoice bills one; the s297 omitted-page
-  pattern; the GA 500-UET carries only the GA prior-year tax). The
-  2025 column self-calibrates against the packet's own 1040 face
-  (AGI==11, tax-after-credits==24, EIC/ACTC==27a+28) before the 2024
-  column is trusted; prior tax nets the refundable-credit row (the
-  i2210 line-8 quantity); a zero/negative prior tax NEVER asserts the
-  §6654(e)(2) waiver (witnessed live: a −1,641 EIC-exceeds-tax prior
-  year, warned and not emitted). r34: 28 of 38 emits gained EXACTLY
-  the two fields (1 first-year, 9 zero-prior-tax, all warned; 0
-  unexplained). Probes: client 2947 → **full TIE** (166→0); client
-  1828's federal fully ties (89→0); committed client 2968 verified
-  UNMOVED in-place (harbor doesn't bind — the tie is safe).
-- `b32e5632` — **② the f7206 SEHI leg.** Face parses by marker
-  windows with its own derivation identities; premiums attribute to
-  THEIR Schedule C business (line 4 == line 31; line 5 == the
-  engine's per-owner positive-profit base, mirrored from
-  `_line5_base`); only the INPUTS emit (sehi_amount/sehi_ltc_amount);
-  Schedule 1 line 17 decomposes as Σ line 14. r35: EXACTLY the two
-  priced transitions; one TIES in full; the other decomposes to **+5
-  GA = the Low Income Credit keyed-gate class** (single, GA AGI
-  15,517 = the $5/exemption IT-511 bracket — the s307 client-2234
-  shape, entry-lane keyable via LIC-NODEP + LIC-CHILD).
-- `40a47552` — **③④ the four `unknown` pages named + the 65+ 13b
-  derivation gate.** MFJ/MFS comparison (USMFJVS1/2) ignores → its
-  packet emitted; 6781 / GA-itemized-adj (GAW529$1) / GA-other-state-
-  credit (GAWKSH$1) / VA-8453 refuse by name. Then DEFERRAL item 6's
-  trigger tripped the same session (the new emit's probe no_tied +180
-  = its own 13b residual): `derived_senior_deduction` mirrors
-  compute_sch_1a R-SEN-01..09 (§70103) and any 13b residual refuses
-  by name. r37: EXACTLY the two known residual carriers (+180; the
-  s315 +3,730) converted emit→named refusal; all 21 other 13b
-  packets re-verified against the engine arithmetic (the phase-out
-  witness 1,496 = 6,000 − r0(6%×75,074) reproduces exactly).
-- `2fdb2ec8` — **⑤ the nol_wks leg.** Per-vintage NOL carryovers →
-  `carryforward_attributes` (kind=nol_regular, vintage + column D
-  only — utilization is ENGINE-OWNED, s306j; F/H/Total are parser
-  identities; nonzero C/G refuse by name). r38: both solos emit and
-  **TIE in full** (a 2022 vintage 5,238 untouched; a 2020 vintage
-  33,458 − 22,261 prior use).
+**Ruling execution record:**
+- **① Mark-filed:** the nine committed returns swept filed via the
+  real Leg-D endpoint (7 twq9 + 2 twq10; the two stale twq9 DOB copies
+  EXCLUDED per the designed per-return action). Fresh auth minted
+  (dev magic link, one-process rule).
+- **② The four blessed:** staged as `twq11-20260830`, dry-run all
+  four TIE on the live server, committed, marked filed.
+- **③ The GA RIE ruling ("clear all 3") — s316f, `3e459267`:** the
+  §111 taxable state refund + unemployment JOIN the RIE L10 derive.
+  **Authority re-pointed STATUTE-PRIMARY same day** (O.C.G.A.
+  §48-7-27(a)(5)(E)(i) "shall include but not be limited to" — the
+  states lane's verbatim pull found the reg's tail invites ejusdem
+  generis AND the same reg sentence prints a stale $4,000 earned cap
+  vs the statutory $5,000; reg demoted to secondary, its (3) used only
+  as the amount filter). ONE shared helper
+  (`compute_ga500.rie_l10_other_income_by_owner`) feeds both the views
+  pull and D_GA500_017's mirror — which had ALREADY drifted (the MISC
+  box-3 component never joined the old PATR-only mirror; closed).
+  Blast-radius census (rolled-back recompute over all 12 candidates):
+  2 filed manual-entry returns move — client 2538 printed-exclusion
+  only (GA tax already 0), client 1382 a REAL triage finding (a
+  preparer-keyed RIE-TP-10 override holding the whole joint refund
+  would DOUBLE-COUNT the spouse half on any future recompute; filed
+  returns don't auto-recompute — carried below). Both §111 witnesses
+  (clients 4025, 1828) then dry-ran TIE on the deployed build →
+  committed as `twq12-20260830` → filed. The unemployment witness
+  (3754) stays extract-refused on his separate 13b residual; his arm
+  is unit-tested. D_GA500_019 stays patronage-scoped (flagged, not
+  silently widened). RS R-GA500-RIE amendment: relayed to the states
+  lane, who correctly held their gate for Ken's DIRECT word — it's on
+  his queue with their staged write-up (`ga_rie_line10_ruling_staged`).
+- **④ "Go to work" — s316g, `be03f6c6`:** the closeout gate held ALL
+  the filed returns on ONE cause: **the digital-asset question,
+  printed on every packet's 1040 face and read by nothing** (the s315
+  converse, third instance this session). ⚠ My first read
+  pattern-matched D_EFILE_001 to the s298 EIN class — the error's own
+  message said otherwise (the s281 rule). `parse_p1_digital_assets`
+  ships (X left of its Yes/No label, both-marked/out-of-window raise,
+  unmarked stays None); r39 = 41/226/267 with drift EXACTLY the one
+  new key on all 41 emits (whole corpus answers No); the s298-style
+  correction pass set all 15 filed returns' fields from their OWN
+  faces (every row printed and read first). Cleanup then cleared 14
+  of 15 (warnings acknowledged source-verified per the tie
+  verification + Ken's authorization) → **14 packets moved
+  Inbox→Done**. The one hold: client 4059's W-2G payer street address
+  — the standing document ask, exactly as designed.
 
-**Extractor suite: 309 green** (was 264). No server runtime change all
-session — scripts + tests only (the 13b gate and docs= are emit-side).
+**Corpus: r39 = 41/226/267** (extractor tests 310 green). ⚠ The 14
+closed packets leave the Inbox, so r40+ scans ~253 and emit counts
+drop by 14 — expected, not a regression.
 
-**▶ QUEUE CANDIDATES (Ken's blessing to stage/commit):** FOUR
-tie-verified emits — client 4053 (s315, 20/20) + the three s316 TIEs
-(the f7206 witness, and the two NOL-worksheet witnesses). A FIFTH
-(the +5 GA LIC packet) ties as soon as the entry lane keys LIC-NODEP +
-LIC-CHILD (the client-2234 recipe).
+**▶ NEXT:** re-census the r39 residual classes (nothing priced is
+open); deferred-with-triggers unchanged (f8959 / asset_detail / 1116
+multi-category — Ken's go). The entry lane's Lacerte book and the
+50-of-John's pilot remain the standing big arcs.
 
-**▶ NEXT build (nothing unblocked without new pricing):** the priced
-tail is EXHAUSTED again — remaining deferrals all carry triggers not
-yet met: f8959 (every carrier holds other walls — re-verify the
-cheapest), asset_detail (Ken's domain, daytime), item ⑦'s 1116
-multi-category half (**Ken's go first**), the Sch-1A component
-worksheet leg if a tips/OT/car-loan packet ever needs the 13b residual
-imported (two named witnesses now refuse on it), f8606/detail_sheet
-(zero immediate). Depth-probe candidates: none priced — next session
-should re-census r38's residual classes.
-
-**⛔ WAITING ON KEN (unchanged from s315 except the queue):** the
-one-number Schedule D carryover question (32,002 vs 29,963) · reprints
-· client 4059's W-2G payer street address · mark-filed/closeout for
-the NINE committed · queue blessing for the four new TIEs · standing
-decisions 1–8 · the 2a ruling-scope flag · **the GA RIE ruling now has
-its cleanest tally: §111 refund ×2 (1,701 · 1,195 — the s316 probe
-decomposed the fourth witness to the kind: her 1,195 prior-year GA
-refund reappears as 2025 Other income) + unemployment ×1 (365); ONE
-ruling clears three GA faces** (REVIEW_QUEUE updated) · the states
-lane's items (their AL reseed ruling reached me as a RELAY — my Form
-40 line-26/Schedule CP app leg waits on Ken's direct word; their L27
-discriminating scenario recorded as the acceptance vector, and their
-line-24 amended-payments gap noted so the four-term sum isn't read as
-complete).
+**⛔ WAITING ON KEN (the list SHRANK again):** the RS R-GA500-RIE
+amendment needs his DIRECT word to the states lane (my relay
+correctly refused at their gate; their write-up is staged) · client
+4059's W-2G payer street address (the last Inbox hold of the filed
+set) · the one-number Schedule D carryover question (32,002 vs
+29,963) · reprints · standing decisions 1–8 · the 2a ruling-scope
+flag · the AL Form 40 line-26/Schedule CP app leg (his direct word;
+acceptance vector recorded).
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -100,15 +90,15 @@ is not a deploy — CHECK THE DEPLOY STATUS after pushing** (API key in
 `D:\dev\Passwords & Secrets\render-api-key.txt`). **Standing push
 authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
-LIVE → seed → verify — and the deploy ITSELF seeds (`build.sh seed_all`
-auto-discovers `seed_*` at BUILD time).**
+LIVE → seed → verify — and the deploy ITSELF seeds.** ⚠⚠ **A runtime
+change must be deploy-LIVE before lane commits ride it** (s316f practiced:
+the RIE fix deployed and API-verified BEFORE twq12 staged).
 - **s316 deploys: see the close-out line at the bottom of this file.**
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (s316 changed no vocabulary — t2210_prior_year_*, sehi_*, and
-  carryforward_attributes all pre-existed in the allowlists; every s316
-  change is extractor-side.)
+  (s316f/g changed no vocabulary — digital_assets_answer and the RIE
+  fields all pre-existed in the allowlists.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -116,24 +106,23 @@ to find defects. State the finding and move on.
 
 ## ▶ SINGLE-CHANNEL RULE — STANDING (Ken, 2026-08-22)
 **The build session MANAGES the sibling Claude sessions.** ListAgents +
-SendMessage — ⚠ the channel DROPPED a morning both ways (s277): anything
-load-bearing goes in batch-file annexes too. **Never relay tokens through
-the message channel.** ONE delvio-tax tree holder; ONE pytest/test_postgres
-holder — coordinate EXPLICITLY before every run. Peers stage; Ken decides.
-*(s316 practiced it: the states lane borrowed test_postgres mid-session
-and released it explicitly; their AL ruling arrived as a RELAY and was
-NOT acted on — the app leg waits for Ken's direct word.)*
+SendMessage — anything load-bearing goes in batch-file annexes too.
+**Never relay tokens through the message channel.** ONE delvio-tax tree
+holder; ONE pytest/test_postgres holder. Peers stage; Ken decides.
+⚠ **A SECOND delvio-tax session existed 2026-08-30 (`delvio-tax-1f`)** —
+the states lane flagged it; this session asserted the one-writer
+protocol to it directly and heard nothing back before close. If a future
+boot finds uncommitted tree changes it didn't make, THAT session is the
+suspect — coordinate before touching anything.
+⚠ **A peer's authority-upgrade can be adoptable even when their gate
+holds** (s316f: their statute-primary re-point was doc-only and
+verifiable — adopted; their RS seed correctly waits for Ken).
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
-- ~~12 of 47 RS `check_*_integrity.py` gates FAIL~~ — **THE 12 WAS WRONG AND
-  S-10 IS CLOSED** (states lane, 2026-08-27). True pre-existing count **7**,
-  10 of 12 resolved, 10 gates pinned in `tests/test_integrity_gates.py`;
-  RS suite **254 passed / 0 failed** (re-confirmed by the states lane's
-  2026-08-30 run on this machine). ⚠ S-10a survives (`R-1040X-SUPERSED`
-  has no authority link). S-10c (`D_8582_PTP`'s unwritten recompute) also
-  stands. **S-10b diagnosed (states lane, 2026-08-28, `cdd524f`): all 15
-  schedule_a gate failures are GATE defects, none spec — never read that
-  gate as authority for engine work.**
+- **S-10a** (`R-1040X-SUPERSED` no authority link) · **S-10c**
+  (`D_8582_PTP` unwritten recompute) survive; RS suite 254/0
+  (states lane, 2026-08-30 run). **S-10b: all 15 schedule_a gate
+  failures are GATE defects, none spec.**
 - **The quintet** (s225/s258 files) — seed_builtin_rules leakage;
   `--create-db` = reset AND non-implication proof.
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
@@ -144,181 +133,134 @@ NOT acted on — the app leg waits for Ken's direct word.)*
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
 - 🔧 ⚠⚠ **NEVER edit `apps/` source while a detached pytest is in flight**
-  (s286): five phantom failures. New files/markdown/scratchpad only.
-- 🌐 ⚠ **The teardown warning "database test_postgres is being accessed by
-  other users / 1 other session" is NOT lock contention on this setup** —
-  it is YOUR OWN pooled connection (Supavisor; re-confirmed by the states
-  lane 2026-08-30). Zero effect on results.
+  (s286). New files/markdown/scratchpad only.
+- 🌐 ⚠ **The test_postgres teardown "1 other session" warning is your OWN
+  pooled connection** (Supavisor; re-confirmed 2026-08-30).
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
-  `server\`. ⚠ `poetry run python -c "<multi-line>"` binds wrong —
-  script FILES, not inline `-c` (⚠ re-broken ONCE s316, caught on the
-  error, script-file rerun); a script run by absolute path needs
-  `sys.path.insert(0, server)` (s298). ⚠ `python -m taxwise1040` does
-  NOT resolve from `server\` — run `__main__.py` BY PATH (s297).
+  `server\`. ⚠ inline `-c` BANNED — script FILES (re-broken s316, caught).
+  ⚠ scripts by absolute path need `sys.path.insert(0, server)` (s298).
+  ⚠ `python -m taxwise1040` doesn't resolve from `server\` — run
+  `__main__.py` BY PATH (s297).
+- 🌐 ⚠⚠ **`close_old_connections()` INSIDE a `.iterator()` loop kills the
+  server-side cursor's own connection** (s316f census, self-inflicted) —
+  materialize the ID list FIRST, then per-item close+get.
 - 🔧 ⚠ **`BaseModelSerializer` partial updates save ONLY the patched
-  columns** (s298) — a serializer-side derived write must be injected into
-  `validated_data`, never `setattr` on the instance.
-- 🌐 ⚠⚠ PS5.1 encoding traps: regex-replace file rewrites BANNED; Edit tool
-  or `[IO.File]` BOM-less UTF8. ⚠ Embedded double-quote in a here-string
-  arg to a NATIVE exe SPLITS the argument (s315 — ALWAYS `-F` files for
-  commit messages; s316 used `-F` throughout, clean). ⚠ `$1` in an
-  unquoted PS arg EXPANDS to empty. ⚠ PS `Sort-Object -Unique` on a
-  one-element pipeline UNWRAPS to scalar (s296). ⚠ `[IO.File]` calls
-  resolve against the PROCESS cwd (s310) — absolute paths.
-- 🌐 ⚠⚠ `Measure-Object -Line` skips blank lines — `ReadAllLines().Count`.
+  columns** (s298).
+- 🌐 ⚠⚠ PS5.1 traps: regex-replace file rewrites BANNED; Edit tool or
+  `[IO.File]` BOM-less UTF8. ⚠ git commit messages ALWAYS `-F` files
+  (s315). ⚠ `$1` in an unquoted PS arg EXPANDS empty. ⚠ `Sort-Object
+  -Unique` on one element UNWRAPS (s296). ⚠ `[IO.File]` resolves against
+  PROCESS cwd (s310). ⚠⚠ `Measure-Object -Line` skips blanks.
 - 🌐 ⚠⚠ A bare HTTP 400 (no `error` body) = the body never parsed.
-- 🌐 Staging answers 201 even for an invalid payload — the verdict is
-  `row["status"]`; return CRUD routes carry the trailing slash. ⚠ A
-  COMMITTED return refuses plain stage+dryrun with HTTP 409 (s298 —
-  verification route = the in-place rolled-back recompute, s289 pattern;
-  s316 used BOTH probe shapes: staged-rollback for fresh shells, in-place
-  for the committed witness). ⚠ An EXCLUDED staged return 409s BEFORE the
-  merge parameter is read (s315) — the designed stale-batch kill switch;
-  per-return `/exclude`, preparer-run.
-- 🔧 ⚠ pytest-randomly NOT installed (s281).
-- 🌐 ⚠ **`str(Decimal)` preserves the STORED SCALE** — compare
-  `Decimal(details[k])`, never the raw string (s306).
-- 🌐 ⚠ **A BACKGROUNDED pytest piped through `Select-Object` buffers ALL
-  output until exit** — check liveness with the process's CPU time.
-- 🌐 ⚠ pymupdf: `get_text()` misses AcroForm widget VALUES (s283); word
-  bboxes span the FULL line height (s286); synthetic `insert_text` PDFs may
-  LOSE leading spaces (s290) — the extractor parses POSITIONALLY everywhere.
-  ⚠ **The AcroForm FILLER flattens ALL widgets out of its output** (s296).
-  ⚠ **TaxWise RE-TYPESETS whole schedules** (s297): pin from packets only.
-  ⚠ s301: a fixture that encodes the WINDOW's geometry instead of the
-  CORPUS's keeps a blind spot green. ⚠ s307–s311: values are recognised
-  by RIGHT edge — caption numerals live at the left of value regions,
-  a caption FRAGMENT can END inside a value window (trailing punctuation
-  excludes it), and **a MARKER token can END inside a value window too**
-  (f8880: the marker/value split is x1 ≤ 493 vs ≥ 494, measured, s311).
-  ⚠ s315: a single-value report's per-column mini-ruler is ONE dash word
-  — below `_table`'s two-word ruler test — so the totals row arrives
-  ownerless inside the body; classify in-loop, never assume the ruler.
-  ⚠ s316: dot LEADERS pad label rows rightward INTO value regions —
-  skip pure-dot words, never raise on them; and a value prints on the
-  LAST row of its label block, up to ~6pt ABOVE its own line marker
-  (the f7206 window convention).
-- 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase, not the text**
-  (s288). Download the PDF and extract the section.
-- 🔧 ⭐ **An instrumented ROLLED-BACK dry-run reproduces production behavior
-  locally** (s289; s292–s316 ran probes this way). ⚠ Scripts touching
-  client-named returns live in SCRATCHPAD or tax-test-data, never the repo
-  (PII). ⚠ `Firm.objects.first()` is the DEV firm — probe with
-  `Firm.objects.get(name="The Tax Shelter")`. ⚠ Pooler statement timeouts
-  kill the connection — ping + retry loop.
+- 🌐 Staging answers 201 even for invalid payloads — the verdict is
+  `row["status"]`; CRUD routes carry the trailing slash. ⚠ A COMMITTED
+  return refuses stage+dryrun with 409 (in-place rolled-back recompute is
+  the verification route, s289). ⚠ An EXCLUDED staged return 409s BEFORE
+  merge is read (s315).
+- 🌐 ⚠ **`str(Decimal)` preserves the STORED SCALE** (s306).
+- 🌐 ⚠ pymupdf/TaxWise geometry: parse POSITIONALLY; values recognised by
+  RIGHT edge; marker/caption tokens can END inside value windows
+  (s307–s311); dot LEADERS invade value regions — skip, never raise; an
+  f7206-style value prints up to 6pt ABOVE its own marker; a checkbox X
+  sits LEFT of its own label and ~2.7pt ABOVE the label row (s316g);
+  TaxWise RE-TYPESETS schedules (s297) and can OMIT a page it bills on
+  the invoice (s297/s316 — no federal 2210 page prints, ever).
+- 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase** (s288).
+- 🔧 ⭐ **Rolled-back dry-runs reproduce production locally** (s289;
+  s292–s316). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
+  ⚠ `Firm.objects.get(name="The Tax Shelter")`, never `.first()`.
+  ⚠ Pooler timeouts kill the connection — ping + retry.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s316:
-  the s316 units landed EXACTLY at their s315 depth-probe prices — the
-  probe-first discipline is what made five units in one session safe).
-- 🔧 ⭐ **DRY-RUN THE CORRECTION PASS AND READ EVERY ROW before --commit**
-  (s298). ⭐ **CENSUS THE PROD BLAST RADIUS before changing a computed
-  line's source** (s302; s316d censused all 23 wave-through carriers
-  BEFORE the 13b gate landed — 21 predicted to pass, 21 passed).
-- 🌐 ⭐⭐ **THE THIRD QUESTION (s302): "does anything ACT on it?"** — and
-  s315's converse: grep for the page section nobody parses (s316 cashed
-  it twice: the Three-Year Summary and the NOL worksheet were both
-  printed-on-every/many-packets and read by nothing).
-- 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d):
-  key the INPUT, and assert the intermediate is nonzero first.
-- 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT**
-  (s311). When a field's contract says "every X", grep for every X.
-- 🔧 ⚠ **The answer key is a CONTRACT** (s313/s314): new face reads that
-  only feed gates go in as INPUT MATERIAL, never into `expected` (s316
-  followed it: prior-year figures, SEHI premiums and NOL vintages all
-  entered as inputs; zero `expected` keys changed all session). ⚠ **A TIE
-  CANNOT SEE NON-RECONCILED FIELDS** (s315): identity fields need their
-  own verifier (DEFERRAL item 7, still open).
-- 🔧 ⭐ **MIRROR THE ENGINE'S DERIVATION, never re-derive law, in
-  emit-side gates** (s312→s316: `derived_senior_deduction` mirrors
-  compute_sch_1a; the f7206 line-5 check mirrors `_line5_base`; the
-  three-year TLAC check pins to face 24 because that's what l4 reads).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s316;
+  the s316 units all landed exactly at their depth-probe prices).
+- 🔧 ⭐ **DRY-RUN a correction pass and READ EVERY ROW** (s298; s316g did
+  — 15/15 uniform). ⭐ **CENSUS THE BLAST RADIUS before changing a
+  computed line's source** (s302; the s316f census caught a filed-return
+  double-count shape BEFORE deploy).
+- 🌐 ⭐⭐ **THE THIRD QUESTION + ITS CONVERSE** (s302/s315): "does anything
+  ACT on it?" / "which printed page (or face fact) does NOBODY read?" —
+  s316 cashed the converse THREE times (Three-Year Summary, NOL
+  worksheet, the digital-asset checkbox).
+- 🌐 ⚠⚠ **READ WHAT THE ERROR SAYS before pattern-matching it to a known
+  class** (s316g: D_EFILE_001 was the digital-asset question, not the
+  s298 EIN class; the s281 evidence rule).
+- 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d).
+- 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT** (s311).
+- 🔧 ⚠ **The answer key is a CONTRACT** (s313/s314); **A TIE CANNOT SEE
+  NON-RECONCILED FIELDS** (s315; identity-verifier still open,
+  DEFERRAL item 7).
+- 🔧 ⭐ **MIRROR THE ENGINE, and make shared derives ONE HELPER both the
+  feed and the diagnostic read** (s312→s316f: the 017 mirror had already
+  drifted from its feeder when the components were separate functions).
 
 ## 🔎 Carried for triage — NOT claims
-- (s313) the four 25c/8959 witnesses — birth years extract (s315) but
-  each carrier holds other walls; re-verify the cheapest before building.
-- (s313) **Client 4059's D_W2G_PAYER_ID error** — committed and tying;
-  the W-2G payer address is ABSENT from the packet (document ask).
-- (s313) The entry lane's `verify_expected.py` reader misses the 1040
-  inner band (line 38) and reads the extractor's explicit-zero GA
-  convention as MISSING — their tool, noted in the annex.
-- (s312) **A $56 unextracted Schedule 3 line-1-3/6d/6l credit on one
-  f5695 packet** — the 5695 line-31 CLW names it.
-- (s311) **The more-than-four-dependents box** (1 packet) — refuses by
-  name; no route until a source exists.
-- (s310→s312c) **The Schedule D identity break is DECOMPOSED** — vendor
-  self-inconsistency at line 14; waiting on Ken's 2024 LT-carryover
-  number (morning list).
-- (s309→s316) **The GA RIE no_ties: FOUR witnesses, now ALL decomposed
-  to kind** (REVIEW_QUEUE: §111 refund ×2, unemployment ×1, plus the
-  s309 original) — one ruling clears three GA faces. · The two
-  fully-phased-out student-loan-interest packets emit when their other
-  classes clear.
-- (s316) **Two 13b-residual packets refuse by name** (+180, +3,730 —
-  tips/OT/car-loan components); a Schedule 1-A component-worksheet leg
-  would decompose them if the class grows.
-- (s316) **The third f7206 solo** falls to an allocation-worksheet
-  identity break (anchored rows sum 130,193 vs printed 127,952) —
-  undecomposed, the s301 deeper-wall mechanism.
-- (s303) **Home-office 300 sq ft cap**: aggregate per home; prod census
-  ZERO. · §4.08(4) monthly averaging unrepresentable.
-- (s302d) **D_EFILE_001 cannot distinguish "EIN not keyed" from "EIN not
-  obtainable"** (also the s298 21-blank-row class).
-- (s302) `D_8582_PTP` unverified (S-10c) · `div_1099s.us_government_income`
-  attribution-only, off-switch decision pending (s237 class) ·
-  D_SCHD_006 QOF has no import surface.
-- (s301) One packet's Sch D 1b-grid/h-identity break. · A blank printed
-  8949 page refuses — by design.
-- (s298) 21 named-but-blank W-2/1099-R rows held on D_EFILE_001.
-- (s297) The X mark at (474.7, y≈389) on one 1040 p2 EIC row —
-  unidentified, parser-ignored.
-- (s296) The 22 sch_d GEOMETRY-error packets refuse loudly by design. ·
-  (s295) 7 auxiliary Inbox PDFs refuse as non-packets — correct. ·
-  `_summary_lines` GA500_SUMMARY_LINES lacks S1-6.
+- **(s316f) Client 1382 (filed, manual entry): a preparer-keyed
+  RIE-TP-10 override holds the whole joint refund; the new spouse-half
+  derive would DOUBLE-COUNT 513 on any future recompute.** Fix = clear
+  the override (preparer/Ken); filed returns don't auto-recompute, so
+  nothing moves silently. Client 2538's shape is harmless (exclusion
+  grows, GA tax already 0).
+- (s316) **Two 13b-residual packets refuse by name** (+180, +3,730);
+  a Schedule 1-A component-worksheet leg would decompose them.
+- (s316) **The third f7206 solo**: allocation-worksheet identity break
+  (rows sum 130,193 vs printed 127,952) — undecomposed.
+- (s313) the four 25c/8959 witnesses — every carrier holds other walls.
+- (s313) **Client 4059's W-2G payer street address** — the LAST Inbox
+  hold of the filed set (D_W2G_PAYER_ID error; document ask).
+- (s313) The entry lane's `verify_expected.py` reader gaps (their tool).
+- (s312) The $56 unextracted Schedule 3 credit on one f5695 packet.
+- (s311) The more-than-four-dependents box (1 packet).
+- (s310→s312c) The Schedule D identity break — awaiting Ken's 2024
+  LT-carryover number.
+- (s309) The two fully-phased-out student-loan-interest packets emit
+  when their other classes clear. · The unattributed-joint-capital-gain
+  RIE question (client 3825) is STILL OPEN — it was NOT part of the
+  2026-08-30 ruling.
+- (s303) Home-office 300 sq ft cap: prod census ZERO. · §4.08(4)
+  monthly averaging unrepresentable.
+- (s302d) D_EFILE_001 "not keyed vs not obtainable" (the s298 21-row
+  class). · (s302) `D_8582_PTP` unverified (S-10c) ·
+  `div_1099s.us_government_income` off-switch pending · D_SCHD_006 QOF
+  no import surface.
+- (s301) One packet's Sch D 1b-grid/h-identity break. · (s298) 21
+  named-but-blank W-2/1099-R rows. · (s297) the X mark at (474.7,
+  y≈389) on one 1040 p2 EIC row.
+- (s296) 22 sch_d geometry packets refuse by design · (s295) 7
+  auxiliary PDFs refuse as non-packets · `_summary_lines`
+  GA500_SUMMARY_LINES lacks S1-6.
 - (s290) GA RIE interest row excludes K-1 16A tax-exempt interest —
-  stated boundary. · The rendered 8995 TIN prints unformatted — cosmetic.
-- (s289) `IndividualForm7203`: no §179/charitable carryover keying;
-  the §179 cap doesn't extend to 1065. · K-1 capital gains reach Sch D
-  but not the L9 gain/loss WEIGHTS (⚠ s298: also the #78 aggregate
-  convention under BOTH vendors).
-- (s288) `IndividualForm7203` no home for box 16 code E; 1065 box 18
-  a/b/c none recipient-side. · `ctc_override`/`odc_override` +
-  `Dependent.compute_qualifies_*` are DEAD — removal candidate (Ken).
-- (s287) 8825 line-1 repaint covers the LINE-1 table only. · Suggested-
-  field convention covers W-2 3/5 + 1099-R box 16 (CLAUDE.md note stale).
-- (s285) Sch 4 nonresident arm still apportions the whole widened base. ·
-  (s283) The stamp excludes 1040 packets (Ken). · (s282)
-  `OVERRIDE_HONORED_STATE_LINES` hand-synced. · (s281) OOS-state line-18
-  prompt diagnostic specified, not built. · (s268) 1,604 queries/run. ·
-  (s241/s281) `Form8606` unique-constraint candidate · 🔴 `HSAAccount`
-  half CLOSED. · (s275/s281) `.first()`-on-per-form-rules remainder. ·
-  (s294) a state face left by an omitting correction batch is not
-  recomputed against that batch's federal changes.
+  stated boundary. · 8995 TIN prints unformatted — cosmetic.
+- (s289) `IndividualForm7203` carryover keying gaps · K-1 gains vs L9
+  weights (+ the #78 aggregate convention).
+- (s288) 7203 box 16E / 1065 18a-c gaps · `ctc_override`/`odc_override`
+  DEAD — removal candidate (Ken).
+- (s287) 8825 line-1 repaint scope · suggested-field convention note
+  stale. · (s285) Sch 4 nonresident arm · (s283) stamp excludes 1040
+  packets (Ken) · (s282) `OVERRIDE_HONORED_STATE_LINES` hand-synced ·
+  (s281) OOS-state line-18 diagnostic specified not built · (s268)
+  1,604 queries/run · (s241/s281) `Form8606` unique-constraint ·
+  🔴 `HSAAccount` half CLOSED · (s275/s281) `.first()` remainder ·
+  (s294) omitting-correction state-face staleness.
 
 ## ⛔ KEN DECISIONS OUTSTANDING — carried (see STATUS_ARCHIVE for detail)
 - Form 6765 Section G (TY2026+) · 1040 v5.4 business rules · 1120-S
   Inbox: 180 / 214 / pre-incorporation trailer · 17a / 17d.
 
 ## RS AGENDA — carried:
-Everything from s277–s306 stands (see STATUS_ARCHIVE). Highlights:
-**S-15** (SCHEDULE_K1 §469(g) disposition trio + R-8582-PTP related-party
-correction), **S-16** (R-PAY-04 dated-rows source), **S-19**
-(`R-8889-EXCEPTIONS` narrow condition + stale message + `inputs: []`
-under-declaration). Carried candidates (ruling-dependent): the §111
-refund + unemployment → R-GA500-RIE fact list (s309/s315/s316 — the
-tally is now kind-complete, one ruling). States lane s316: AL
-passthrough reseed + AL_FORM_40 line-26/Schedule CP amendment are DONE
-in RS prod (their verified report); the delvio-tax app leg is QUEUED on
-Ken's direct word, with their discriminating scenario (L27=3500/L35=500
-refund, flipping to 1500 owed if the CP term drops) as the acceptance
-vector and their stated line-24 amended-payments gap noted.
+S-15 / S-16 / S-19 stand (see STATUS_ARCHIVE). **NEW: the R-GA500-RIE
+L10 amendment (the 2026-08-30 ruling) is WITH THE STATES LANE pending
+Ken's direct word** — their staged write-up recommends citing O.C.G.A.
+§48-7-27(a)(5)(E)(i) primary and recording the reg's stale $4,000.
+Also staged there: whether D_GA500_019 widens beyond patronage (my
+flag). AL Form 40 line-26/Schedule CP app leg queued on Ken's direct
+word (acceptance vector recorded).
 
 ---
-**s316 deploy close-out:** four code pushes this session —
-`1597f8f9`+`f5cdb6de` → `dep-daa3ukuq1p3s738u534g` LIVE ·
-`b32e5632`+`181fdd6d` → superseded in-pipeline · `40a47552`+`f168ba88`
-→ `dep-daa48g8ae00c73b3cncg` LIVE · head `2fdb2ec8` (s316e) →
-`dep-daa4c6uk1f9s73cqj1m0` building at close — **verify at next boot**
-(expect a clean scripts-only build; zero server runtime changes all
-session). The docs-only close commit(s) after this line trigger one
-more deploy — verify the LAST one.
+**s316 deploy close-out (part 2):** `3e459267` (s316f, the RIE ruling
+— RUNTIME) → `dep-daa6lquq1p3s7390ncf0` **API-confirmed LIVE before
+twq12 staged** · `be03f6c6` (s316g + citation re-point) → deploy
+verified per the background check at close (expect live; scripts +
+docstring only — zero runtime behavior change beyond s316f's). The
+docs-only close commits after this line trigger one more deploy —
+verify the LAST one at next boot.
