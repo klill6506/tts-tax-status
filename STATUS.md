@@ -1,77 +1,76 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s319 (the Form 2441 extractor leg), 2026-08-30 late night
+## ▶▶ RESUME POINTER — s320 (the Form 8863 extractor leg), 2026-08-31 early morning
 
-**State: idle and CLEAN. The f2441 leg shipped (`c638e8d1`, extractor +
+**State: idle and CLEAN. The f8863 leg shipped (`183a91c8`, extractor +
 tests only, zero runtime change; deploy verified per the close-out line
-at the bottom). r46 = 43/210/253 (+2 emits, zero drift on the prior
-41). One new FULL TIE on the rolled-back prod probe joins the queue —
-candidates pending Ken's blessing now number THIRTEEN. The other new
-emit no_ties on the §6654 penalty ONLY, decomposed to one mechanism
-verified to the dollar both ways (below). Item 64's price GREW: 10
-packets now refuse by its name, SEVEN single-wall.**
+at the bottom). r47 = 44/209/253 (+1 emit, zero drift on the prior 43
+— byte-identical payloads). One new FULL TIE on the rolled-back prod
+probe joins the queue — candidates pending Ken's blessing now number
+FOURTEEN. The s308 sum-identity missing-page detector fired LIVE on
+two packets (TaxWise omitted Part III student pages — named refusals).
+Item 64's price GREW again: a censored solo fell through to it —
+ELEVEN packets now, EIGHT single-wall.**
 
-**The s319 unit in brief:**
-- The r44 re-census (identical to r43: 41/212/253, zero corpus drift)
-  ranked f2441 the top UNBLOCKED solo class (7 solo / 11 touched;
-  asset_detail's 10 stay behind Ken's trigger). Depth probe: all seven
-  witnesses print the full input surface; the consumption route was
-  ALREADY COMPLETE server-side (compute_2441 + care_providers + the
-  f2441_* override facts — the staging warnings bless exactly the emit
-  shapes the leg uses). Parser mirrors the engine line-for-line
-  (CDCC bracket, caps, the Part III §129 chain); engine boundaries
-  refuse by name (9b, Part III 13/14/22, sub-statutory plan cap,
-  household-employee Yes, checkbox A/B, deeming, off-grid or 13+ or
-  zero-expense qualifying persons, earned-income divergence with no
-  printed SE source). Schedule 3 line 2 became a cross-check; the
-  1040 line-1z decomposition now accepts the Part III line-26
-  taxable-DCB component.
-- **Tie probe (rolled back, batch key `s319-tie-probe-rb`, output
-  `tmp\tie_probe_s319.txt`): one FULL TIE incl. the Part III/DCB
-  shape** (taxable benefits → 1e, gross line 16 keyed, refund exact;
-  the earned-income override fired as the blessed SE shape) — **queue
-  candidate #13**. The other emit no_ties by exactly the penalty:
-  TaxWise §6654 penalty 47 = the 100% prior-year safe harbor to the
-  dollar, where §6654(d)(1)(C) requires **110% above $150k prior AGI**
-  (the packet's own Three-Year Summary prints 224,913) — at 110% the
-  90%-of-current limb binds and the engine's 93 is statutory. Both
-  endpoints hand-verified exactly. **The filed return understates the
-  penalty by $46.** Recorded, not forced (s309).
-- The five other "solos" hit walls behind (the upper-bound lesson,
-  measured again): one routes to the agent lane (shell already
-  carries 2 doc rows — the -Merge case), one is now SINGLE-wall on
-  item 64, the rest carry payer-less int/div, an ownerless 8z, a
-  Sch-C decomposition gap, a 5329 tax — all named.
-- PII: the write-time reflex fired LATE again — real dependent SSNs,
-  provider EINs, and surname-bearing helper names reached the test
-  fixture draft; caught and scrubbed at the pre-commit sweep (fifth
-  session running — the sweep is load-bearing, run it on EVERY draft).
+**The s320 unit in brief:**
+- The r46 census ranked f8863 the top UNBLOCKED solo class (3 solo /
+  6 touched). Depth probe: the consumption route was ALREADY COMPLETE
+  server-side (the `education_students` section + compute_8863 +
+  rules_8863 + both MeF paths + the dependent_key resolver, all since
+  s241b) — the parser was the only missing leg. Both IRS faces parse
+  positionally (two tag columns on p1; gutter-anchored Part III
+  bands); every Part I/II line mirrors compute_8863; each Part III
+  page emits one education_students row (eligibility answers as
+  printed, line 27 → aotc_expenses / 31 → llc_expenses, institution
+  block, owner/dependent_key by SSN match). Schedule 3 line 3 and
+  1040 line 29 became cross-checks; the Credit Limit Worksheet gates
+  after the Schedule 3 parse (one witness IS tax-limited). MFS, the
+  line-7 lockout box, a second institution, an off-grid student SSN
+  and an unanswered eligibility line refuse by name.
+- **Tie probe (rolled back, batch key `s320-tie-probe-rb`, output
+  `tmp\tie_probe_s320.txt`): one FULL TIE** — refund exact, line 33
+  carries the refundable AOTC, GA chain exact — **queue candidate
+  #14**.
+- **The line-1/10 sum identities are a MISSING-PAGE DETECTOR and both
+  live breaks fired**: one solo packet prints line 1 = 2,711 against
+  a single printed student's 1,807 (a 904 student page absent); one
+  deep packet prints 6,463 against 2,009 (≥2 pages absent). Named
+  refusals; reprints with all Part III pages would convert the solo.
+- The censored-solo lesson again (s318): with the f8863 wall gone,
+  one "solo" witness fell through to the item-64 joint-overtime
+  refusal — its ONLY remaining wall. One other witness dropped to
+  ira_wks solo; one to asset_detail alone.
+- Extractor tests 373 → 399 green (+26). PII: the write-time sweep
+  caught the real institution EIN + street address in the test
+  fixture draft; scrubbed before commit (sixth session the sweep is
+  load-bearing).
 
-**Corpus: r46 = 43/210/253** (extractor tests 373 green).
+**Corpus: r47 = 44/209/253** (extractor tests 399 green).
 
-**▶ NEXT:** re-census the residual after Ken's rulings; nothing priced
-is open — the remaining unlocks are deferred-with-triggers
-(asset_detail 10 solos — Ken's trigger; f8959; 1116 multi-category —
-Ken's go) or Ken decisions (item 64 converts SEVEN single-wall packets
-now). Next depth-probe candidates from r46: f8863 (3/6) · f8606 (3/14)
-· other_income_wks (3/4). The GA RIE L10 spec-gap item stays STAGED
-(REVIEW_QUEUE s318). The entry lane's Lacerte book and the 50-of-
-John's pilot remain the standing big arcs.
+**▶ NEXT:** nothing priced is open — the remaining unlocks are
+deferred-with-triggers (asset_detail 12 solos — Ken's trigger; f8959;
+1116 multi-category — Ken's go) or Ken decisions (item 64 converts
+EIGHT single-wall packets now). Next depth-probe candidates from r47:
+ira_wks (3/13) · f8606 (3/14) · other_income_wks (3/4). The GA RIE
+L10 spec-gap item stays STAGED (REVIEW_QUEUE s318). The entry lane's
+Lacerte book and the 50-of-John's pilot remain the standing big arcs.
 
-**⛔ WAITING ON KEN:** ① bless the THIRTEEN tie-verified queue
+**⛔ WAITING ON KEN:** ① bless the FOURTEEN tie-verified queue
 candidates (s317: clients 3393 · 3425 · 3430 · 3615 · 3689 · 4177 ·
-4371 · 4636; s318: 1945 · 2162 · 2861 · 4583; s319: the new Part III
-witness — BATCH-296 annexes have names + batch ids) · ② item 64
-(joint overtime owner attribution; now 10 packets, 7 single-wall) ·
-③ NEW: the $46 §6654 safe-harbor divergence on the s319 no_tie
-witness (TaxWise 100% vs the statutory 110% above $150k prior AGI —
-does TaxWise's 2210 worksheet carry a blank prior-AGI field?) ·
+4371 · 4636; s318: 1945 · 2162 · 2861 · 4583; s319: the Part III/DCB
+witness; s320: the education-credit witness — BATCH-296 annexes have
+names + batch ids) · ② item 64 (joint overtime owner attribution; now
+11 packets, 8 single-wall) · ③ the $46 §6654 safe-harbor divergence
+(s319; TaxWise 100% vs the statutory 110% above $150k prior AGI) ·
 ④ the GA RIE L10 spec/engine set-size item (REVIEW_QUEUE s318) ·
-⑤ client 4081's $169 RIE-interest vendor divergence · carried: the RS
-R-GA500-RIE amendment (states lane seeded; Ken's re-check) · client
-4059's W-2G payer street address · the one-number Schedule D carryover
-question (32,002 vs 29,963) · reprints · standing decisions 1–8 · the
-2a ruling-scope flag · the AL Form 40 line-26/Schedule CP app leg.
+⑤ client 4081's $169 RIE-interest vendor divergence · ⑥ NEW: two
+packets miss printed Part III student pages (the omitted-page shape)
+— cheap reprints WITH all 8863 pages would convert one immediately ·
+carried: the RS R-GA500-RIE amendment (states lane seeded; Ken's
+re-check) · client 4059's W-2G payer street address · the one-number
+Schedule D carryover question (32,002 vs 29,963) · reprints ·
+standing decisions 1–8 · the 2a ruling-scope flag · the AL Form 40
+line-26/Schedule CP app leg.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -91,12 +90,12 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds.** ⚠⚠ **A runtime
 change must be deploy-LIVE before lane commits ride it.**
-- **s319 deploys: see the close-out line at the bottom of this file.**
+- **s320 deploys: see the close-out line at the bottom of this file.**
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (s319 changed no vocabulary — care_providers, the dependents care
-  fields and every f2441_* fact all pre-existed in the allowlists.)
+  (s320 changed no vocabulary — `education_students` and every field the
+  leg emits pre-existed in the allowlists and the published schema.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -109,7 +108,7 @@ SendMessage — anything load-bearing goes in batch-file annexes too.
 holder; ONE pytest/test_postgres holder. Peers stage; Ken decides.
 ⚠ **A SECOND delvio-tax session existed 2026-08-30 (`delvio-tax-1f`)** —
 if a future boot finds uncommitted tree changes it didn't make, THAT
-session is the suspect — coordinate before touching anything. (s319 boot
+session is the suspect — coordinate before touching anything. (s320 boot
 found the tree clean.)
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
@@ -122,7 +121,7 @@ found the tree clean.)
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s317–s319 touched no client code).
+- **Client typecheck**: green (s302; s317–s320 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -132,10 +131,9 @@ found the tree clean.)
   pooled connection** (Supavisor; re-confirmed 2026-08-30).
 - 🔧 One shared `test_postgres` (RS suite included). Long runs DETACHED;
   never pipe pytest through `Select-Object`; `poetry run` only from
-  `server\`. ⚠ inline `-c` BANNED — script FILES (re-broken s319 once,
-  caught at the parse error). ⚠ scripts by absolute path need
-  `sys.path.insert(0, server)` (s298). ⚠ `python -m taxwise1040` doesn't
-  resolve from `server\` — run `__main__.py` BY PATH (s297).
+  `server\`. ⚠ inline `-c` BANNED — script FILES. ⚠ scripts by absolute
+  path need `sys.path.insert(0, server)` (s298). ⚠ `python -m taxwise1040`
+  doesn't resolve from `server\` — run `__main__.py` BY PATH (s297).
 - 🌐 ⚠⚠ **`close_old_connections()` INSIDE a `.iterator()` loop kills the
   server-side cursor's own connection** (s316f census) — materialize the
   ID list FIRST, then per-item close+get.
@@ -157,22 +155,26 @@ found the tree clean.)
   RIGHT edge; marker/caption tokens can END inside value windows
   (s307–s311); dot LEADERS invade value regions — skip, never raise; an
   f7206-style value prints up to 6pt ABOVE its own marker; a checkbox X
-  sits LEFT of its own label (s316g/s319 — the 2441 provider X sits left
-  of its "No"); TaxWise RE-TYPESETS schedules (s297) and can OMIT a page
-  it bills on the invoice (s297/s316/s317). ⚠ s317/s319: IRS-face
-  left-gutter anchors + right-edge value columns transfer cleanly to new
-  forms — but caption text plants line-number-shaped words inside naive
-  bands (s319: the 2441 Part III line-25 caption prints a bare "20" at
-  x0 360 next to the 347.3 inner-tag column — band ceilings are
+  sits LEFT of its own label (s316g/s319/s320 — the 8863 Part III X
+  anchors at two fixed columns left of Yes/No); TaxWise RE-TYPESETS
+  schedules (s297) and can OMIT a page it bills on the invoice
+  (s297/s316/s317 — and s320: it can omit a Part III STUDENT page whose
+  line-30 total still rides Part I; the SUM IDENTITY is the detector).
+  ⚠ s317/s319/s320: IRS-face left-gutter anchors + right-edge value
+  columns transfer cleanly to new forms — but caption text plants
+  line-number-shaped words inside naive bands (s320: the 8863 line-26
+  caption prints a bare "30" at x0 503 and the 24/25 captions "31" at
+  x0 563, inside the value x-window — the tag-relative dy band is
   load-bearing).
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase** (s288).
 - 🔧 ⭐ **Rolled-back dry-runs reproduce production locally** (s289;
-  s292–s319). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
+  s292–s320). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
   ⚠ `Firm.objects.get(name="The Tax Shelter")`, never `.first()`.
   ⚠ Pooler timeouts kill the connection — ping + retry.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s319;
-  s319: 7 solos → 2 emits + 1 agent-lane route + 4 deeper-walled).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s320;
+  s320: 3 solos → 1 emit + 1 omitted-page refusal + 1 fell through to
+  item 64 — the coverage gate CENSORS the wall behind, s318).
 - 🔧 ⭐ **DRY-RUN a correction pass and READ EVERY ROW** (s298). ⭐
   **CENSUS THE BLAST RADIUS before changing a computed line's source**
   (s302/s316f).
@@ -186,24 +188,29 @@ found the tree clean.)
   NON-RECONCILED FIELDS** (s315; identity-verifier still open,
   DEFERRAL item 7).
 - 🔧 ⭐ **MIRROR THE ENGINE, and make shared derives ONE HELPER both the
-  feed and the diagnostic read** (s312→s319: mirror_f2441 re-derives
-  compute_2441's chains from printed inputs; divergence refuses).
-- 🔧 ⚠⚠ **THE SURNAME REFLEX MUST FIRE AT WRITE TIME** (s307–s319 —
-  FIVE sessions running; s319's draft fixture carried real dependent
-  SSNs, provider EINs, and surname-bearing HELPER NAMES. Grep EVERY
-  draft — including function names — for the working set's identifiers
-  before commit; SSNs, EINs and VINs all count).
+  feed and the diagnostic read** (s312→s320: mirror_f8863 re-derives
+  compute_8863's chains from printed inputs; divergence refuses).
+- 🔧 ⚠⚠ **THE SURNAME REFLEX MUST FIRE AT WRITE TIME** (s307–s320 —
+  SIX sessions running; s320's draft fixture carried the real
+  institution EIN and street address — institutional data counts too.
+  Grep EVERY draft — including function names — for the working set's
+  identifiers before commit; SSNs, EINs, VINs and addresses all count).
 
 ## 🔎 Carried for triage — NOT claims
+- **(s320) TWO packets miss printed 8863 Part III student pages** —
+  the sum-identity refusals; a reprint WITH all pages converts the
+  solo one immediately (document/reprint ask for Ken).
+- **(s320) One packet is now single-wall on ira_wks** (the class rose
+  to 3/13 — next depth-probe candidate).
 - **(s319) The $46 §6654 safe-harbor divergence** — TaxWise penalty 47
   (100% prior-year harbor exact) vs engine 93 (110% above $150k prior
-  AGI per §6654(d)(1)(C); the 90%-current limb then binds). Filed
-  return understates by $46; vendor-divergence deliverable for Ken.
+  AGI per §6654(d)(1)(C)). Filed return understates by $46;
+  vendor-divergence deliverable for Ken.
 - **(s319) The agent-lane -Merge witness** — an f2441 emit whose shell
   already carries 2 document rows; routed, not lost.
 - **(s319) The Sch-C decomposition gap witness** — Schedule 1 line 3
-  prints 12,223 where the extracted Schedule C nets sum 2,760; a
-  second business may not be in the extract. Undiagnosed.
+  prints 12,223 where the extracted Schedule C nets sum 2,760.
+  Undiagnosed.
 - **(s318) Client 4081's $169 RIE-L6 interest divergence** — TaxWise
   251 vs engine 420, GA-taxed either way, outcomes tie.
 - **(s318) The FTC-205-against-tax-0 witness** — refuses by name at
@@ -213,11 +220,10 @@ found the tree clean.)
 - **(s317) TWO packets wait only on the GA LIC keyed gate** (client
   3815 + the s316 witness): entry side keys `LIC-NODEP` true
   (+`LIC-CHILD 0`) and both should TIE.
-- **(s317→s319) Item-64 joint-OT class: now 10 packets, 7 single-wall**
-  — a ruling converts seven immediately; the emit arm is small.
+- **(s317→s320) Item-64 joint-OT class: now 11 packets, 8 single-wall**
+  — a ruling converts eight immediately; the emit arm is small.
 - **(s317) The multi-W-2 tips witness** (2 same-owner W-2s, 4c=770) —
-  the s306t deferral trigger shape arrived; needs i1040 + RS
-  amendment, flagged.
+  needs i1040 + RS amendment, flagged.
 - (s316f) Client 1382 (filed, manual entry): preparer-keyed RIE-TP-10
   override holds the whole joint refund — clearing it is on Ken's queue.
 - (s316) The third f7206 solo: allocation-worksheet identity break
@@ -272,7 +278,7 @@ multi-employer-tips 4c method will need an RS amendment when Ken opens
 it (trigger shape arrived; see DEFERRAL_AUDIT).
 
 ---
-**s319 deploy close-out:** `c638e8d1` (the f2441 leg — extractor +
-tests only, zero server/runtime change) deploy `dep-daadfimk1f9s73d29kcg`
+**s320 deploy close-out:** `183a91c8` (the f8863 leg — extractor +
+tests only, zero server/runtime change) deploy `dep-daaecbuq1p3s7396vmpg`
 **API-confirmed LIVE**. The docs-only close commits after this line
 trigger one more deploy — verify the LAST one at next boot.
