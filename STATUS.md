@@ -1,89 +1,105 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s321 (the IRA pair leg + the other-income leg), 2026-08-31
+## ▶▶ RESUME POINTER — s322 (the K-1 domain trio leg), 2026-08-31
 
-**State: idle and CLEAN. TWO extractor legs shipped this session
-(`4db9ab3a` + parent; deploy status at the close-out line below).
-r49 = 46/207/253 (+2 emits, zero drift on the 44 priors both runs).
-One new FULL TIE — queue candidates pending Ken now number FIFTEEN.
-One new §6654 sub-110%-harbor vendor divergence (witness #2 of the
-s319 class, ~$61). One packet parses fully but has NO SEEDED SHELL
-(a seeding ask). ONE new runtime surface: the `roth_ira_bases`
-backentry section (schema + SUPPORTED-SECTIONS regenerated).**
+**State: idle and CLEAN. ONE extractor leg shipped this session
+(`80d845bd`; deploy status at the close-out line below). r50 =
+47/206/253 (+1 emit, zero drift on the 46 priors — byte-identical).
+One new FULL TIE — queue candidates pending Ken now number SIXTEEN.
+One MORE packet parses fully but has NO SEEDED SHELL (witness #2 of
+the s321 class — seeding ask renewed). No runtime/vocabulary change:
+the leg emits into the existing `schedule_k1s` surface (nested
+`form_7203` included), so no schema regeneration was needed.**
 
-**The s321 units in brief:**
-- **① The IRA pair (f8606 + ira_wks)** — the r47 top solo siblings
-  (3/13 + 3/14, overlap 1) opened as one leg. Depth probe: form_8606s
-  + compute_8606 complete since mig 0079; the ONE gap was the
-  RothIRABasis tracker's missing lane surface (two of three ira_wks
-  solos print ONLY a Roth contribution — 7,000 and 350, witnesses
-  named in the BATCH-296 annex). Section added (dup-owner error,
-  all-zero + override-disagreement warns; 9 tests). f8606 parses per
-  OWNER (pages group by printed SSN — multi-page packets are two
-  owners' faces, NEVER a p1+p2 pair) with a full compute_8606 mirror;
-  ira_wks parses the byte-uniform US8606W1 grid by right-edge column
-  recognition. The 4b/5b decomposition now mirrors doc_is_ira_path
-  (s239): J/T/Q Roth rows are IRA-path with 8606-determined taxable —
-  the gate was blind to it while the coverage gate censored every
-  witness (the s306 fourth question).
-- **② other_income_wks + the line-36 route** — TWO page shapes under
-  one class key: the 1099-MISC report's other-income section →
-  misc_1099s rows routed sch1_8z; the USW10407 Describe rows →
-  other_income_items 8z rows; the face-level single-8z import is
-  SUPPRESSED when the class supplies detail (double-count fence);
-  face 8z / line 31 / the report total / the line-1-restates-the-
-  report seam are identity gates. Plus 1040 line 36 (the irrevocable
-  applied-forward election) now emits on the batch-001 #3
-  f1040_fields route — nothing had EVER fed it, and the first witness
-  no_tied on line 36 alone before the fix.
-- **Tie probes (rolled back, `s321-tie-probe-rb`, outputs
-  `tmp\tie_probe_s321{,b}.txt`): one FULL TIE** (applied-forward 494
-  + the whole GA retirement-exclusion chain exact — **queue candidate
-  #15**); one no_tie decomposed to the §6654 sub-110% harbor
-  (engine 160 statutory vs filed 99; prior AGI 153,941 > 150k printed
-  on the packet's own Three-Year Summary; TaxWise's 99 does not
-  reconstruct from printed facts — a 100% harbor gives ≈95; no 2210
-  page prints). **Witness #2 of the s319 vendor-divergence class.**
-- The censored-solo lesson at full strength: NINE solos across the
-  two classes delivered TWO emits. Fallthroughs: one -Merge (agent
-  lane), one alloc-wks identity break, one 2b-no-payer + 25c, one
-  GA-S1-12 + an odd recap-vs-face 1000/4000 mismatch, one GA RIE L10
-  (joins that Ken item), one Sch 1-A tips wall, one NO-SHELL, two MFJ
-  ownerless-row named refusals (one a clergy-housing shape).
-- Extractor tests 399 → 439 green; backentry suites 209; flow
-  assertions 526. PII: write-time sweep caught a real surname in a
-  new parser docstring pre-commit (seventh session the sweep is
-  load-bearing); fixtures fully synthetic.
+**The s322 unit in brief — the K-1 trio (sch_e_p2 + k1_detail +
+f7203):**
+- The r49 census's two k1_detail solos depth-probed into a
+  THREE-SIBLING domain (the s321 size-by-domain lesson): every
+  k1_detail witness rides a Schedule E page 2 whose small bare-integer
+  values slip the currency census (no commas → invisible to VALUE_MIN;
+  only the report's dash ruler tripped), and eleven more packets add
+  Form 7203 faces. Priced up to 18 packets; the censored walls behind
+  delivered 1 emit + 1 no-shell (the upper-bound lesson, again).
+- `sch_e_p2` classifies ahead of the p1 rental face (p1 stays block).
+  Part II rows pair with report rows on (P/S, amount, §179) — the
+  report's 15-char entity can differ from the face name (a witness
+  prints the shareholder's own name where the face prints the INC).
+  Emit: schedule_k1s rows, material_participation=True (every
+  witnessed amount is NONPASSIVE), §179 → col (j) cross-checked,
+  Schedule 1 line 5 == the verified Schedule E line 41 (both ways).
+- f7203 faces: basis-chain inputs (1/2/6/8a/8b + the s242n
+  charitable_current_year_generic for a Part III line-42 amount
+  without subtype detail) → the nested form_7203 dict; every derived
+  line mirrored (⚠ TaxWise OMITS lines 11/14 even when nonzero — 15
+  is the tripwire; the line-47 value row prints ~35pt BELOW its
+  wrapped tag). MFJ ownership pins by 7203 shareholder SSN, else by
+  the allocation worksheet's Schedule E row, else joint (MFS →
+  taxpayer).
+- **The s321 carried alloc-wks identity break is DIAGNOSED AND FIXED**:
+  the worksheet's Schedule E row (signed) was never anchored, so a
+  K-1 loss made the anchored subset exceed the printed total by
+  exactly the K-1 net. The row is now anchored AND doubles as an MFJ
+  ownership witness (it pinned the s322 FULL-TIE emit's spouse owner).
+- f8995 Part I matching extended to K-1 entity EINs (per-EIN pairing;
+  QBI = net − §179 within $1/row; the filed figure emits as
+  section_199a_qbi).
+- Named refusals (witnessed): **S-corp "UPE" rows — 3 packets, Ken
+  item ③ below**; passive cols (g)/(h) (8582 engine-owned — the
+  corpus's first passive-allowed witness surfaced); PTP with a
+  NEGATIVE §179; report carryforward/Sch-B/ST/LT/§1231/carryover
+  columns; allowed≠current (TaxWise's Allowed column is internally
+  inconsistent — one witness prints current+§179, another current
+  alone); line-27 Yes; Part III estates; col (f) not-at-risk; 7203
+  Part II debt values; **distributions exceeding stock basis (the
+  §1368(b)(2) excess-gain shape — Ken item ④)**; 47(b) carryovers.
+- Extractor tests 439 → 455 green. Tie probes rolled back
+  (`s322-tie-probe-rb`, outputs `tmp\tie_probe_s322.txt`): one FULL
+  TIE (AGI 183,209 exact, spouse-owned K-1 loss through Sch 1 line 5,
+  whole GA-500 chain — **queue candidate #16**); the no-shell packet
+  stages clean and emits the moment a shell exists. PII: the
+  write-time sweep caught a client personal name in an emit.py
+  comment + real names in test fixtures pre-commit (EIGHTH session
+  the sweep is load-bearing); fixtures fully synthetic.
 
-**Corpus: r49 = 46/207/253** (extractor tests 439 green).
+**Corpus: r50 = 47/206/253** (extractor tests 455 green).
 
 **▶ NEXT:** nothing priced is open — remaining unlocks are
 deferred-with-triggers (asset_detail 12 solos — Ken's trigger; f8959;
 1116 multi-category — Ken's go) or Ken decisions (item 64: 11 packets
-/ 8 single-wall). Next depth-probe candidates from r49: k1_detail
-(2 solos) and the residual named-refusal classes. The GA RIE L10
-spec-gap item stays STAGED (REVIEW_QUEUE s318). The entry lane's
-Lacerte book and the 50-of-John's pilot remain the standing big arcs.
+/ 8 single-wall). r50 census next candidates: f5329 (3 solos),
+ctc_ext_carryover_wks / sched_line_detail / f4952 / f8814 (1 solo
+each), and the residual named-refusal classes (the f7206
+>2%-shareholder SEHI class gained two witnesses behind the K-1 wall).
+The GA RIE L10 spec-gap item stays STAGED (REVIEW_QUEUE s318). The
+entry lane's Lacerte book and the 50-of-John's pilot remain the
+standing big arcs.
 
-**⛔ WAITING ON KEN:** ① bless the FIFTEEN tie-verified queue
+**⛔ WAITING ON KEN:** ① bless the SIXTEEN tie-verified queue
 candidates (s317: clients 3393 · 3425 · 3430 · 3615 · 3689 · 4177 ·
 4371 · 4636; s318: 1945 · 2162 · 2861 · 4583; s319: the Part III/DCB
 witness; s320: the education-credit witness; s321: the
-applied-forward/GA-RIE witness — BATCH-296 annexes have names + batch
-ids) · ② item 64 (joint overtime owner attribution; 11 packets, 8
-single-wall) · ③ the §6654 sub-110% safe-harbor vendor divergence —
-NOW TWO WITNESSES (s319 $46 · s321 ~$61; both filed returns
-understate; TaxWise appears to use the 100% harbor above $150k prior
-AGI) · ④ the GA RIE L10 spec/engine set-size item (REVIEW_QUEUE
-s318; +1 witness s321) · ⑤ client 4081's $169 RIE-interest vendor
-divergence · ⑥ two packets miss printed 8863 Part III student pages
-(cheap reprints convert one) · ⑦ NEW: one packet needs a SEEDED SHELL
-(the foreign-pension 8z witness — it emits the moment the shell
-exists; entry-lane ask in the s321 annex) · carried: the RS
-R-GA500-RIE amendment (states lane; Ken's re-check) · client 4059's
-W-2G payer street address · the one-number Schedule D carryover
-question (32,002 vs 29,963) · reprints · standing decisions 1–8 · the
-2a ruling-scope flag · the AL Form 40 line-26/Schedule CP app leg.
+applied-forward/GA-RIE witness; s322: the spouse-owned-K-1 witness —
+BATCH-296 annexes have names + batch ids) · ② item 64 (joint overtime
+owner attribution; 11 packets, 8 single-wall) · ③ **NEW: the S-corp
+"UPE" preparer-practice class (3 packets)** — filed returns deduct
+"UPE <entity>" rows against S corporations on Schedule E; the app's
+UPE surface is 1065-only by design and current law is against S-corp
+UPE; decide surface-vs-refusal (s322 annex has names/amounts) · ④
+**NEW: one packet's filed 7203 takes distributions 39,955 against
+stock basis 27,220 with line 7 = 0** — §1368(b)(2) makes the 12,735
+excess a capital gain and none is visible on the packet's Schedule D
+(s322 annex) · ⑤ the §6654 sub-110% safe-harbor vendor divergence —
+TWO WITNESSES (s319 $46 · s321 ~$61) · ⑥ the GA RIE L10 spec/engine
+set-size item (REVIEW_QUEUE s318) · ⑦ client 4081's $169 RIE-interest
+vendor divergence · ⑧ two packets miss printed 8863 Part III student
+pages (cheap reprints convert one) · ⑨ TWO packets now need SEEDED
+SHELLS (the s321 foreign-pension 8z witness + the s322 S-corp-K-1
+witness — both emit the moment shells exist; entry-lane asks in the
+annexes) · carried: the RS R-GA500-RIE amendment (states lane; Ken's
+re-check) · client 4059's W-2G payer street address · the one-number
+Schedule D carryover question (32,002 vs 29,963) · reprints ·
+standing decisions 1–8 · the 2a ruling-scope flag · the AL Form 40
+line-26/Schedule CP app leg.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -103,12 +119,12 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds.** ⚠⚠ **A runtime
 change must be deploy-LIVE before lane commits ride it.**
-- **s321 deploys: see the close-out line at the bottom of this file.**
+- **s322 deploy: see the close-out line at the bottom of this file.**
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (s321 DID add vocabulary — `roth_ira_bases` — and both the schema and
-  SUPPORTED-SECTIONS.md were regenerated the same session.)
+  (s322 added NO vocabulary — the schedule_k1s surface predates the leg;
+  nothing to regenerate.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -121,8 +137,10 @@ SendMessage — anything load-bearing goes in batch-file annexes too.
 holder; ONE pytest/test_postgres holder. Peers stage; Ken decides.
 ⚠ **A SECOND delvio-tax session existed 2026-08-30 (`delvio-tax-1f`)** —
 if a future boot finds uncommitted tree changes it didn't make, THAT
-session is the suspect — coordinate before touching anything. (s321 boot
-found the tree clean.)
+session is the suspect — coordinate before touching anything. (s322 boot:
+the harness git snapshot listed this session's OWN in-flight files — a
+snapshot-timing artifact, verified hunk-by-hunk before commit; the tree
+held nothing foreign.)
 
 ## ⚠ Known red / rotted — THE ONE LIST (post-s302)
 - **S-10a** (`R-1040X-SUPERSED` no authority link) · **S-10c**
@@ -134,7 +152,7 @@ found the tree clean.)
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s317–s321 touched no client code).
+- **Client typecheck**: green (s302; s317–s322 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -167,79 +185,87 @@ found the tree clean.)
   merge is read (s315).
 - 🌐 ⚠ **`str(Decimal)` preserves the STORED SCALE** (s306).
 - 🌐 ⚠ pymupdf/TaxWise geometry: parse POSITIONALLY; values recognised by
-  RIGHT edge (s321: right-edge alignment is the FENCE that excludes
-  caption numerals inside a value x-window — the "1," hazard); marker/
-  caption tokens can END inside value windows (s307–s311); dot LEADERS
-  invade value regions — skip, never raise; an f7206-style value prints
-  up to 6pt ABOVE its own marker (s321: the US8606W1/USW10407 grid
-  family prints values exactly 1.7pt above the caption's LAST row); a
-  checkbox X sits LEFT of its own label (s316g/s319–s321); TaxWise
-  RE-TYPESETS schedules (s297) and can OMIT a page it bills on
-  (s297/s316/s317/s320; s321: an 8606 page 2 can print Part II
-  conversions whose line-17 basis computes on an unprinted page 1 —
-  named refusal; a worksheet line 1 can restate an entire absent MISC
-  report). ⚠ s321: a multi-page IRS form in one packet can be TWO
-  OWNERS' faces, not one owner's p1+p2 — group by the printed SSN.
+  RIGHT edge; marker/caption tokens can END inside value windows
+  (s307–s311); dot LEADERS invade value regions — skip, never raise; a
+  value prints up to 6pt ABOVE its own marker (s321/s322: the Sch E p2 /
+  7203 families print ~1pt above; ⚠ s322: the 7203 line-47 value row
+  prints ~35pt BELOW its wrapped-caption tag — anchor bands per LINE, not
+  per page); a checkbox X sits LEFT of its own label (s316g–s322); a
+  DETAIL REPORT prints bare integers invisible to the currency census —
+  the dash ruler is the value-bearing marker, and a SIBLING IRS face's
+  small bare integers can slip the census entirely (s322: every k1_detail
+  wall hid a Schedule E p2); TaxWise RE-TYPESETS schedules (s297) and can
+  OMIT a page it bills on (s297–s321); ⚠ s322: TaxWise OMITS 7203 lines
+  11/14 even when nonzero (15 is the tripwire) and its K-1 report
+  "Allowed" column is internally inconsistent across packets.
 - 🌐 ⚠ **A WebFetch SUMMARY of an IRS page is a paraphrase** (s288).
 - 🔧 ⭐ **Rolled-back dry-runs reproduce production locally** (s289;
-  s292–s321 — the s321 probe script is REUSABLE:
-  `D:\tax-test-data\1040\tmp\tie_probe_s321.py`, edit PAYLOADS). ⚠
-  Client-named scripts in SCRATCHPAD/tax-test-data only.
+  s292–s322 — reusable probe: `D:\tax-test-data\1040\tmp\tie_probe_s322.py`,
+  edit PAYLOADS). ⚠ Client-named scripts in SCRATCHPAD/tax-test-data only.
   ⚠ `Firm.objects.get(name="The Tax Shelter")`, never `.first()`.
   ⚠ Pooler timeouts kill the connection — ping + retry.
 - 🌐 ⚠⚠ **A probe that moves TWO variables is not a probe** (s294).
-- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s321;
-  s321: NINE solos → TWO emits — the coverage gate censors the walls
-  behind, s318).
+- 🔧 ⚠ **A refusal census "solo" count is an upper bound** (s295–s322;
+  s322: 18 domain packets → 1 emit + 1 no-shell — the walls behind were
+  2b/3b no-payer, ownerless docs, 7206 SEHI, UPE, PTP, passive). ⚠⚠ the
+  RUN LOG truncates refusal lists ("+N more") — census from the
+  refused.json files, never the log lines (s322 measured 71 sch_e "solos"
+  from the log; the JSONs said ONE).
 - 🔧 ⭐ **DRY-RUN a correction pass and READ EVERY ROW** (s298). ⭐
   **CENSUS THE BLAST RADIUS before changing a computed line's source**
   (s302/s316f).
 - 🌐 ⭐⭐ **THE THIRD QUESTION + ITS CONVERSE + THE FOURTH** (s302/s315/
   s306): "does anything ACT on it?" / "which printed fact does NOBODY
-  read?" / "can its condition ever be TRUE for the shape I care
-  about?" (s321: the 4b/5b Roth blindness could never fire while the
-  coverage gate censored every 8606 packet — opening the class made
-  the latent mismatch observable the same hour).
+  read?" / "can its condition ever be TRUE for the shape I care about?"
 - 🌐 ⚠⚠ **READ WHAT THE ERROR SAYS before pattern-matching it to a known
   class** (s316g; the s281 evidence rule).
 - 🔧 ⚠⚠ **A FIXTURE THAT KEYS A COMPUTED COLUMN MEASURES NOTHING** (s302d).
 - 🔧 ⚠⚠ **A NEW BOOLEAN FIELD RE-SCOPES EVERY COUNT THAT PREDATES IT** (s311).
 - 🔧 ⚠ **The answer key is a CONTRACT** (s313/s314); **A TIE CANNOT SEE
   NON-RECONCILED FIELDS** (s315; identity-verifier still open,
-  DEFERRAL item 7). (s321: line 36 was IN the answer key since
-  batch-001 #4 and nothing ever FED its route — the first witness
-  found it.)
-- 🔧 ⭐ **MIRROR THE ENGINE, one helper both sides** (s312→s321:
-  mirror_f8606 re-types part_i/ii/iii; the 4b/5b split now reads the
-  engine's own doc_is_ira_path semantics).
-- 🔧 ⚠⚠ **THE SURNAME REFLEX MUST FIRE AT WRITE TIME** (s307–s321 —
-  SEVEN sessions running; s321's draft parser docstring carried a real
-  client surname copied from a code comment — sweep even text you
-  copied from ALREADY-COMMITTED files; the s318 server/tests triage
-  still holds three legacy instances).
+  DEFERRAL item 7).
+- 🔧 ⭐ **MIRROR THE ENGINE, one helper both sides** (s312→s322:
+  mirror_f7203 re-types the Ken-verified Part I/III arithmetic; the
+  filed-column placement drives material_participation exactly as
+  schedule_e_p2_totals reads it).
+- 🔧 ⚠⚠ **THE SURNAME REFLEX MUST FIRE AT WRITE TIME** (s307–s322 —
+  EIGHT sessions running; s322's draft carried a client personal name in
+  an emit.py comment and real client/business names in test fixtures —
+  swept to synthetic pre-commit; the s318 server/tests triage still holds
+  three legacy instances).
 
 ## 🔎 Carried for triage — NOT claims
+- **(s322) The excess-distribution 7203 witness** — filed line 6 39,955
+  vs line 5 27,220, line 7 printed 0; the §1368(b)(2) gain (12,735) is
+  not visible on the packet's Schedule D. Ken item ④.
+- **(s322) The Allowed-column inconsistency** — one packet prints
+  allowed = current + §179, another current alone with §179 in its own
+  column. Recorded; allowed≠current refuses.
+- **(s322) The first passive-allowed col (g) witness** — a partnership
+  loss allowed via a printed Form 8582 page (packet also holds 1099-R
+  cost-column walls). 8582 remains engine-owned; refused by name.
+- **(s322) The f7206 >2%-shareholder SEHI class gained two witnesses**
+  (S-corp Medicare wages on line 11) — surfaced behind the K-1 wall;
+  joins the existing named-refusal class (DEFERRAL_AUDIT trigger shape).
 - **(s321) The recap-vs-face refund mismatch witness** — one packet's
-  Main-Info recap prints 1000 where the face shows 4000 (surfaced
-  when its f8606 wall fell). Un-diagnosed; suspect a source anomaly.
-- **(s321) The alloc-wks identity witness** — rows sum 159,918 vs
-  printed total income 158,873 (Δ1,045); surfaced behind the f8606
-  wall. Un-decomposed.
+  Main-Info recap prints 1000 where the face shows 4000. Un-diagnosed.
+- ~~(s321) The alloc-wks identity witness~~ **DIAGNOSED + FIXED s322**:
+  the un-anchored Schedule E row; Δ was exactly the K-1 net.
 - **(s321) The 2b-no-payer + 25c-210 witness** (the Part-III Roth
   packet) — both pre-existing classes, now its only walls.
 - **(s321) The Sch 1-A tips wall witness** (25,000 trade-or-business
   tips, lines 5/13/38) — unwitnessed shape, named refusal.
 - **(s321) Two MFJ ownerless-8z witnesses** — 11,040 ministerial
-  housing / 3,000 box-3; the worksheet CAN print T/S letters (column
-  exists) but these rows don't. A TSJ-keyed reprint would convert.
+  housing / 3,000 box-3; a TSJ-keyed reprint would convert.
 - **(s320) TWO packets miss printed 8863 Part III student pages** —
-  reprints convert the solo one (Ken ask ⑥).
+  reprints convert the solo one (Ken ask ⑧).
 - **(s319) The $46 + (s321) ~$61 §6654 safe-harbor divergences** —
-  now ONE two-witness class (Ken item ③).
-- **(s319) The agent-lane -Merge witnesses** (now two: the f2441 one
-  + the s321 ira_wks one) — routed, not lost.
+  ONE two-witness class (Ken item ⑤).
+- **(s319) The agent-lane -Merge witnesses** (the f2441 one + the s321
+  ira_wks one) — routed, not lost.
 - **(s319) The Sch-C decomposition gap witness** — Schedule 1 line 3
-  prints 12,223 vs extracted nets 2,760. Undiagnosed.
+  prints 12,223 vs extracted nets 2,760. Undiagnosed. (s322 surfaced a
+  SECOND line-3 gap witness: 30,517 vs 517 behind the K-1 wall.)
 - **(s318) Client 4081's $169 RIE-L6 interest divergence** — outcomes
   tie either way.
 - **(s318) The FTC-205-against-tax-0 witness** — refuses by name.
@@ -253,7 +279,8 @@ found the tree clean.)
 - (s316f) Client 1382: preparer-keyed RIE-TP-10 override holds the
   joint refund — clearing it is on Ken's queue.
 - (s316) The third f7206 solo: allocation-worksheet identity break
-  (130,193 vs 127,952) — undecomposed.
+  (130,193 vs 127,952) — undecomposed (⚠ re-test after the s322
+  alloc-wks Schedule-E-row fix — the same class may now parse).
 - (s313) the four 25c/8959 witnesses — every carrier holds other walls.
 - (s313) Client 4059's W-2G payer street address (document ask).
 - (s313) The entry lane's `verify_expected.py` reader gaps (their tool).
@@ -303,7 +330,7 @@ multi-employer-tips 4c method will need an RS amendment when Ken opens
 it (trigger shape arrived; see DEFERRAL_AUDIT).
 
 ---
-**s321 deploy close-out:** `4db9ab3a` (both legs + the roth_ira_bases
-surface) — deploy `dep-daag1rgu01pc73dprjcg` status at session end
-recorded below; the docs-only close commits after this line trigger
-one more deploy — verify the LAST one at next boot.
+**s322 deploy close-out:** `80d845bd` (the K-1 trio leg — extractor +
+tests only, zero runtime change) — deploy `dep-daap996q1p3s739gil4g`
+verified LIVE 2026-08-31. The docs-only close commit after this line
+triggers one more deploy — verify the LAST one at next boot.
