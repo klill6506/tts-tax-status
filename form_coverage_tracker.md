@@ -1,6 +1,44 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-08-31 session 321 — TWO extractor legs: the IRA pair (f8606 +
+> ira_wks) with the `roth_ira_bases` lane surface, and the
+> other_income_wks pair-of-shapes leg with the line-36 applied-forward
+> route.** No new RENDERED form — extractor coverage plus ONE runtime
+> surface: the RothIRABasis tracker (mig 0140, engine-consumed by
+> compute_8606's Part III basis resolve since s267) gains its
+> backentry section — a regular Roth contribution files on NO form in
+> a no-distribution year and two of the three ira_wks solos print ONLY
+> that fact; published schema + SUPPORTED-SECTIONS.md regenerated.
+> f8606 faces parse per OWNER (multi-page packets are two owners'
+> faces grouping by printed SSN, never a p1+p2 pair) with a full
+> compute_8606 mirror; the US8606W1 worksheet parses on right-edge
+> column recognition (line 11 gates Schedule 1 line 20, line 12 gates
+> the owner's 8606 line 1 as the omitted-page shape, lines 13/21
+> refuse to Form 5329). The 4b/5b retirement decomposition now mirrors
+> doc_is_ira_path (the s239 rule): J/T/Q Roth rows are IRA-path with
+> 8606-determined taxable — the gate was structurally blind to this
+> while the coverage gate censored every 8606 packet (the s306 fourth
+> question, again). other_income_wks: the 1099-MISC report's
+> other-income section → misc_1099s rows routed sch1_8z; USW10407
+> Describe rows → other_income_items 8z rows; the face-level
+> single-8z import SUPPRESSED when the class supplies detail (the
+> double-count fence); face 8z / line-31 / the report total / the
+> line-1-restates-the-report seam are identity gates. And 1040 line
+> 36 (the irrevocable applied-forward election) now emits on the
+> batch-001 #3 f1040_fields route nothing had ever fed. r48 then
+> r49 = 46/207/253, zero drift both runs; all 30 coverage walls of
+> the two classes fell with zero geometry refusals. The nine solos
+> delivered TWO emits (the upper-bound lesson, hard): one FULL TIE
+> (the applied-forward + GA retirement-exclusion chain exact — queue
+> candidate #15) and one no_tie decomposed to the §6654 sub-110%
+> harbor (witness #2 of the s319 vendor-divergence class, ~$61
+> understated, prior AGI 153,941 printed on the packet's own
+> summary); one packet parses fully but lacks a seeded SHELL (a
+> seeding ask); the rest fell to -Merge / Sch 1-A tips / alloc-wks /
+> GA-RIE-L10 / recap-mismatch walls now visible. Extractor tests
+> 399 → 439; backentry 209; flow 526 — all green.
+
 > **2026-08-29 session 312f (overnight, fourth unit) — the extractor
 > Form 8962 (Premium Tax Credit) leg.** No new RENDERED form —
 > extractor coverage: the single-page 8962 face parses into the s204
