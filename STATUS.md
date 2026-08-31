@@ -4,21 +4,34 @@
 
 **⚠⚠ FIRST ACTION AT BOOT: check the GAIL commit batch**
 (`tmp\commit_s324_gail131.txt` under tax-test-data\1040): 132 gail-g4
-emits committing LIVE (batch key `s324-gail-commit-001`, 2/132 at this
-writing, zero holds; per-return transactions — a kill is safe). If no
-SUMMARY line: count `COMMITTED`, rebuild the remainder from the gail-g4
-emit list minus landed (fresh batch key `-002`; the 409 fence reports
-HELD for already-landed — skip in the tally). Then post the tally to
-the entry lane + a BATCH-296 annex. Landed Gail packets do NOT move
-(Gail's originals stay in `Inbox\Gail`; the merged copies in
+emits committing LIVE (batch key `s324-gail-commit-001`, **62/132 with
+4 holds** at this writing; per-return transactions — a kill is safe).
+If no SUMMARY line: count `COMMITTED`, rebuild the remainder from the
+gail-g4 emit list minus landed (fresh batch key `-002`; the 409 fence
+reports HELD for already-landed — skip in the tally). Then post the
+tally to the entry lane + a BATCH-296 annex. Landed Gail packets do
+NOT move (Gail's originals stay in `Inbox\Gail`; the merged copies in
 `tmp\merged-gail-v5\Gail` are the pipeline artifacts).
 
+**⚠ THE WHOLE COMMIT QUEUE IS SERIALIZED BEHIND THAT BATCH** (one DB
+writer). Waiting on it, in order: ① the TWO LIC holds (…2276, …8505 —
+re-emitted clean with the gate keyed, `PipelineOut\tom-lic2`, expected
+to TIE) · ② the four georgianna-g4 joint-valve emits
+(`tmp\commit_s324_g4_4.py`, written and ready) · ③ the new books'
+**135 emits** (jenny-p2 112 + jacob-p2 23; whit-p1 4; david 0).
+
+**⚠ RE-EXTRACT THE BOOKS BEFORE COMMITTING THEM** — gail-g4, tom-t1
+and jenny/jacob-p2 all predate tonight's later legs (the LIC gate
+`6ed55795`, the matcher `e629f7b5`/`04207d7c`, the §179 allowlist).
+Evidence it will pay: a Gail hold in flight reads `ga500:23 expected
+10 actual 18` — a bare Δ8, the LIC signature exactly.
+
 **s323 boot actions: ALL DONE.** ① Tom batch FINISHED: **158/162
-tie-committed** (96 s323-001 + 62 s324-003); 4 holds (below). Packet
-accounting AIRTIGHT after the Done\Tom audit (see Carried): Done\Tom =
-158 = exactly the committed set; Inbox\Tom = 182 = 4 holds + the
-178-refusal work-list; 23 silently-parked uncommitted packets found
-and RESTORED to Inbox. ② Migration 0014 applied (had to precede
+tie-committed** (96 s323-001 + 62 s324-003); 4 holds (below).
+Done\Tom = 186 = the 158 backentry-committed + 28 worked through
+ANOTHER ROUTE (hand-keyed, marked `filed`, no StagedReturn row);
+Inbox\Tom = 154. ⚠⚠ See the Carried entry: my "23 silently lost
+packets" call was WRONG and is RETRACTED. ② Migration 0014 applied (had to precede
 the batch — the /clear killed the old-code process and every new one
 needs the dba column); pushes `8bb8f932` → `1d1efe13` all deployed +
 Render-verified live (dep-daavm1bl550s73etkm00). ③ Mirror sync ran
@@ -57,8 +70,49 @@ clean after the states lane scrubbed the publisher name (their f43c13a).
   federal print** — Ken's reprint list in `tmp\GAIL-TRIAGE-2026-08-31.md`
   (56 GA-only, 3 other-state, 1 trust + 1 partnership = other lanes).
 
+**s324 LATE — four more legs shipped + KEN FINISHED THE PRINTING:**
+- **THE CORPUS IS COMPLETE** (Ken, late): every 2025 TaxWise return is
+  PDFed, plus the previously-printed Lacerte book (individuals,
+  partnerships, S-corps). **~4,560 PDFs**: 1040 lane 4,276 (preparer
+  books 1,338 in Inbox + 223 in Done; flat 308 Inbox / 618 Done;
+  **Lacerte Inbox 635 — THE IMPORTER HAS NEVER SEEN THESE**, a
+  different vendor layout = its own reading pass, NOT just a run) ·
+  1120-S 182 · 1065 103. The constraint has MOVED from data to
+  extractor coverage.
+- **Three (then four) new preparer books, first contact:** Jenny
+  **112/177** · Jacob **23/40** · Whit **4/14** (arrived mid-session) ·
+  David **0/5** (five unrelated causes, not a class).
+- **The GA LOW INCOME CREDIT gate** (`6ed55795`): compute_ga500 fires
+  the credit only on `truthy("LIC-NODEP")`, so an unkeyed gate computes
+  ZERO and lands as a bare no_tie of (exemptions × the IT-511 p35 band
+  amount). Every input is PRINTED — 1040 12a claimed-as-dependent
+  (eligibility), 12b age-65 (LIC-65), the GA-500's own 17a/17b/17c —
+  so the extractor derives and RECONCILES against the printed count,
+  refusing by name on any mismatch. ⚠ The LIC count is NARROWER than
+  line 7c (IT-511 p35: natural/adopted children ONLY). Both Tom holds
+  now reproduce their filed rows exactly.
+- **match_shell could NEVER match a compound/hyphenated surname**
+  (`04207d7c` + `e629f7b5`): it tested the surname STRING against a
+  token SET. 29 of 33 "no seeded shell" refusals were FALSE — relaying
+  them would have duplicated 29 live clients in prod. Now surname-set
+  EQUALITY vs the roster's surname half (measured over 2,962 names:
+  loses nothing, and RESOLVES four ambiguous pairs — a simple surname
+  #2373 vs its two-word neighbour #2372, #4518 vs a contaminated
+  roster row #4514, and a pair whose forename and surname are each
+  other's reversal, #1067/#1874). Names in the BATCH-296 annex.
+- **The shell refusal now DIAGNOSES** (`7f48c155` + `a56db608`): it
+  names the nearest roster rows with client numbers, and an exact name
+  match whose SSN differs is its own case — reporting both SSN tails
+  and BOTH causes (a namesake needing a NEW client vs a wrong number)
+  while concluding NEITHER. ⚠⚠ Its first draft asserted "one identity
+  is wrong", which would have overwritten a correct FILED client;
+  corrected within the hour. **SEEDING QUEUE IS ONE: the …4641
+  taxpayer in Jenny's book — client #4054 must NOT be edited (a
+  different, real person who shares the name).** Name in the annex.
+
 **▶ NEXT:** ① finish/verify the Gail commit batch (boot action) ·
-② **the Schedule E + Schedule F extractor legs** (the activity-depth
+①b re-extract the books on tonight's legs, THEN commit the queue
+above · ② **the Schedule E + Schedule F extractor legs** (the activity-depth
 domain: 27 packets gate on E, 21 on F across the books; rental_
 properties + schedule_fs backentry sections already exist) · ③ the
 classifier patch (1099-NEC DETAIL REPORT — new page type, many Gail
@@ -71,7 +125,23 @@ exports land · ⑧ the zero-activity GA-attach gap (3 witnesses) · ⑨ the
 §6654 recompute divergences (…7701 Δ65 · …7044 Δ9) · ⑩ commit …7595 +
 …7107 (NOT …4203 — named issue; NOT the 7b six).
 
-**⛔ WAITING ON KEN:** ① the 61 Gail federal reprints
+**⛔ WAITING ON KEN:** ⓪⓪ (s324 latest) **seed ONE client** — the
+…4641 taxpayer in Jenny's book (⚠ do NOT edit #4054: a different real
+person, correctly filed; names in the annex) · **client #3572's name
+is contaminated** (a "no need to fil" note is IN the client record —
+data cleanup; #4514 carries the same shape) · **three clients have no
+2025 1040 shell** (two report
+as 1120-S filers — if so their 1040 packets should leave the queue;
+entry lane flagged directly) · **the LACERTE BOOK (635)** — a whole
+vendor layout the importer has never read: worth a go/no-go rather
+than an assumption · ⓪ TWO scope questions (s324): does
+the standing tie-at-landing commit authorization extend to ENTRY-LANE
+HAND-KEYED commits? (their client 3250 LIC return is staged, dry-run
+TIE, held for your word — the lane rightly declined my extension of
+the ruling) · and the client-2149 filed GA return claims 2 exemptions
+(17a) on a single/zero-dependent return the form doesn't support —
+filed-return substance, IT-511 question · ① the 61 Gail federal
+reprints
 (`tmp\GAIL-TRIAGE-2026-08-31.md`) · ② the …4203 W-code question (entry
 lane's) · ③ one Georgianna reprint + five named reprints · ④ entry-lane
 auth token (their session still 403'd) · ⑤ the asset METHOD-DERIVATION
@@ -150,6 +220,25 @@ collide in Tom's book); surnames only inside the working tree.**
 - 🌐 ⚠⚠ a feature can pass tests+typecheck and ship as TREE-SHAKEN DEAD
   CODE — the routed-page mount test + the deployed-bundle grep are the
   gates (s324, the dba build).
+- 🌐 ⚠⚠⚠ **A REFUSAL MUST REPORT THE EFFECT IT OBSERVED, NEVER ASSERT A
+  CAUSE** (s324, twice in one hour, both lanes): "no seeded shell" was
+  wrong THREE ways in an evening and the buried "or the name differs"
+  was always the truth; its replacement then said "one identity is
+  wrong" when a NAMESAKE was the likelier cause and the two remedies
+  are OPPOSITE (seed new vs edit existing — the latter would have
+  overwritten a correct filed client). When drafting refusal text ask:
+  what did the check actually OBSERVE, and could a SECOND cause produce
+  the same observation? A refusal message is where this failure lives,
+  because writing one feels like explaining rather than reporting.
+- 🌐 ⚠⚠ **A CHECK THAT OBSERVES ONE ROUTE PROVES NOTHING ABOUT THE
+  OTHERS** (s324's worst call — see the Carried retraction): "no
+  StagedReturn row" is evidence about the backentry lane, not about a
+  return's existence. Route-agnostic answer = the minimal-payload
+  -Merge probe against the filed face.
+- 🌐 ⚠ THREE TIMES IN ONE DAY a SUMMARY LINE disagreed with its own
+  DETAIL and the detail was right (a peer's runner-capture regex, my
+  empty-SSN harness artifact, a status=draft inference). Trust the
+  per-item output over the rollup.
 - 🌐 ⚠⚠ the run LOG truncates refusals — census from refused.json
   (s322); a "solo" count is an UPPER BOUND (s318/s324).
 - 🔧 ⭐ live-commit pattern: `tmp\commit_s324_gail131.py` (per-return
@@ -170,14 +259,22 @@ collide in Tom's book); surnames only inside the working tree.**
 ## 🔎 Carried for triage — NOT claims (fresh s324 items first)
 - **(s324) The four Tom holds** (⛔ list above) — the two GA-500 ones
   share the low-income-credit smell; decompose before assuming.
-- **(s324) RESOLVED-BUT-OPEN: 23 packets were silently parked in
-  Done\Tom uncommitted** (all A–C — an unrecorded worker's trail;
-  entry-lane audit + build-lane StagedReturn check; exactly one
-  pre-existing Done packet was legitimately committed). ALL 23 restored
-  to Inbox\Tom; the book is airtight (Done 158 = the committed set;
-  Inbox 182 = 4 holds + 178 refusals). Names in the BATCH-296 annex.
-  OPEN: whose hand — and the Codex-brief amendment (notes BEFORE
-  moves) is Ken's call.
+- **⚠⚠ (s324) RETRACTED — "23 silently lost packets" was MY ERROR; no
+  packet was ever lost.** I tested Done\Tom's pre-existing packets
+  against `StagedReturn` only, found none, and concluded unworked —
+  then moved 23 FINISHED returns back into the work queue (duplicate-
+  keying risk; reversed same session). The deep check (TaxReturn by
+  client) shows **all 23 have 2 filed returns each**, as do the 5 that
+  arrived later — they were worked through a route that creates NO
+  StagedReturn row (hand-key/UI + mark-filed). The entry lane had
+  EXPLICITLY flagged that blind spot; I acknowledged it and acted
+  anyway. **THE LESSON: a check that can only observe ONE route proves
+  nothing about the others — absence in one table is not absence
+  (s291's evidence rule, re-learned the hard way).** Done\Tom = 186
+  (158 backentry + 28 other-route); Inbox\Tom = 154. STILL OPEN, much
+  smaller: notes-before-moves would have made both audits unnecessary
+  (Ken's call for the Codex brief), and WHO works Tom's book by hand
+  is worth knowing.
 - **(s324) The 12 §179 Gail asset witnesses** re-emit on the next Gail
   re-extract (the allowlist fix landed AFTER gail-g4) — fold into the
   Sch E/F re-extract, don't re-run for this alone.
