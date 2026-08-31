@@ -4713,7 +4713,7 @@
 > **DIAGNOSTICS**: rules_2553 (19) + rules_2848 (17) code-registered
 > verbatim from the specs + prod seed_rules (D_2553_* 19 / D_2848_* 17
 > live). **UI**: entity "Elections & POA (2553/2848)" tab (1120-S both
-> cards / 1065 2848-only) + the 1040 "Power of Atty (2848)" tab; cards
+> cards / 1065 2848-only) + the 1040 attorney-authorization (2848) tab; cards
 > self-manage from the singleton endpoints under a monotonic seq guard
 > (an out-of-order paint was caught LIVE in the browser probe and fixed);
 > D_2553_/D_2848_ nav-mapped in all three scopes. **FAs**: FA-2553-WINDOW/
