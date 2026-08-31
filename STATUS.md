@@ -1,64 +1,77 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s317 (the Schedule 1-A leg), 2026-08-30
+## ▶▶ RESUME POINTER — s318 (est_payments + Schedule 3 FTC legs), 2026-08-30
 
-**State: idle and CLEAN. The r40→r41 re-census unit is BUILT, probed,
-committed and pushed (`3f67f3bb`; extractor+tests only — zero runtime
-change). The Schedule 1-A page (role=ignore since s127, the s315
-converse's FIFTH instance) is now an extract source: r41 = 36/217/253,
-+9 emits at EXACTLY the depth-probe price, and 8 of the 9 dry-ran full
-TIE on prod rolled back.** Deploy for `3f67f3bb` verified per the
-close-out line.
+**State: idle and CLEAN. TWO extractor legs shipped in one evening
+(`d48ae4b2` est_payments_wks, `a4743f61` Schedule 3 — both extractor+
+tests only, zero runtime change; deploys API-verified, `a4743f61`
+LIVE). r43 = 41/212/253 (+5 emits). FOUR of the five dry-ran FULL TIE
+on prod rolled back — three with the printed §6654 penalty reproduced
+EXACTLY from the dated payment rows (35 / 72 / 38). Queue candidates
+pending Ken's blessing now number TWELVE (s317's eight + four new).**
 
-**The s317 unit in brief:**
-- r40 (27/226/253) re-census: the top single-wall class was 14 packets
-  refusing for "tips/overtime/car-loan inputs outside the extract" —
-  while every one PRINTS the two-page Schedule 1-A carrying those
-  inputs. Class probe over all 16 candidates: OT 14 · tips 2 · car
-  loan 1 · senior 2; all six joint packets have W-2s on BOTH owners.
-- Built `scripts/taxwise1040/sch_1a.py` (positional parse + engine
-  mirror of compute_sch_1a's four chains, RS-specced constants
-  verbatim), classify role flip, emit wiring, 17 unit tests (327
-  extractor tests green). Emits are INPUTS only: single-filer 14a →
-  `qualified_overtime_w2_amount`; single-W-2 tips → box 7 + the
-  attestation; Part IV rows → `car_loan_vehicles`. Joint 14a refuses
-  by name (item 64); multi-W-2 tips refuses by name.
-- r41 drift FULLY accounted: old 13b classes (18+3) cleared; new = 7
-  item-64 joint-OT + 1 multi-W-2 tips + 2 omitted-page fallbacks + 9
-  emits; every other class +0.
-- Rolled-back prod tie probe (batch `02b06114`, nothing written):
-  **8/9 full TIE**. The ninth no_ties by ±$5 on GA 23/30/46 = the GA
-  Low Income Credit keyed gate (D_GA500_022; the s316 class) — TWO
-  packets now wait only on the LIC-NODEP assertion from the entry
-  side.
-- Annex posted to BATCH-296 (2026-08-30 evening). ⚠⚠ PII near-miss
-  caught pre-commit AGAIN: witness surnames + a real VIN were in the
-  parser docstring/test file at write time — scrubbed to shape-named
-  witnesses + a synthetic VIN before commit; repo git-grep clean.
+**The s318 units in brief:**
+- **Leg 1 (est_payments_wks, 7 solos + 20 carriers)**: the s312
+  zero-yield depth-probe verdict had EXPIRED (s302b line-26 rows +
+  s306p GA predicate landed after it). Parser for the USWW2E$1
+  worksheet: federal slots 1-4 → dated `federal_estimated_payments`;
+  state grid → `state_income_tax_payments` with `tax_year_for` pinned.
+  ⚠ The fixed 04/15/2026 "Pay date" row is TaxWise's 2210 PROJECTION,
+  never a payment — face 26 = rows 1-4 on all seven witnesses (one
+  prints ONLY a pay-date amount and NO line 26). Class retired
+  corpus-wide; zero new emits — the coverage gate's early return had
+  hidden deeper walls on every "solo" (the s295 upper-bound lesson,
+  measured again).
+- **Leg 2 (Schedule 3)**: ALL 15 "line 20" refusals were ONE shape — a
+  foreign tax credit with NO Form 1116 printed (the §904(j) de minimis
+  election, engine-auto-applied from `div_foreign_tax_agg`, b296 #65).
+  The page slips the uncovered gate's VALUE_MIN floor. Full-page
+  decomposition; ceiling (300/600 MFJ-QSS) + face-16 limitation gates;
+  8880/5695/8962 faces cross-check; the rest refuses by name. +5
+  emits; 10 carriers lost the wall.
+- **Tie probe (rolled back, batch key `s318-tie-probe-rb`)**: clients
+  1945 · 2162 · 2861 · 4583 FULL TIE (1945 also proves the GA
+  estimate rows land: GA 30/46 tie with the 900 keyed). **Client 4081
+  no_ties by EXACTLY 169 on the RIE chain only, decomposed to ONE
+  row**: TaxWise's own RIE worksheet L6 interest prints 251 where the
+  engine derives 420 — TaxWise GA-taxed the 169 yet excluded it from
+  its own retirement-interest row; the packet prints no interest
+  detail to attribute it; all GA OUTCOME lines tie. The s309 rule:
+  recorded, not forced.
+- ⚠⚠ PII: the write-time surname reflex failed a FOURTH session — and
+  the sweep also found a witness surname committed in extractor
+  comments SINCE s297 (+2 more from s312). All scrubbed to shape
+  names in `a4743f61`; a repo-wide sweep of server/tests docstrings is
+  spawned as its own follow-up task (chip pending with Ken).
 
-**Corpus: r41 = 36/217/253** (extractor tests 327 green).
+**Corpus: r43 = 41/212/253** (extractor tests 350 green).
 
-**▶ NEXT:** nothing priced is open at single-wall scale below the
-deferred classes — the remaining big single-wall unlocks are
-asset_detail (10 solos, DEFERRED on Ken's trigger) and est_payments_wks
-(7 solos, unpriced — next depth-probe candidate). Deferred-with-
-triggers otherwise unchanged (f8959 / 1116 multi-category — Ken's go;
-⚠ the s306t multi-employer-tips trigger SHAPE has now ARRIVED — see
-DEFERRAL_AUDIT 2026-08-30 note — decision needs i1040 + RS amendment).
-The entry lane's Lacerte book and the 50-of-John's pilot remain the
-standing big arcs.
+**▶ NEXT:** the remaining big single-wall unlocks stay deferred-with-
+triggers — asset_detail (10 solos, Ken's trigger), f8959, 1116
+multi-category (Ken's go; ⚠ the FULL-path 1116 class now has named
+witnesses: an FTC of 429 and one of 205-against-tax-0 refuse by name
+at the §904(j) gates). ⚠ s306t multi-employer-tips trigger shape
+ARRIVED (DEFERRAL_AUDIT 2026-08-30). Next depth-probe candidates from
+r43: re-census the residual solo ranking. The GA RIE L10 spec-gap item
+is STAGED for Ken (REVIEW_QUEUE s318 — the states-lane exchange
+refined it to per-item citations). The entry lane's Lacerte book and
+the 50-of-John's pilot remain the standing big arcs.
 
-**⛔ WAITING ON KEN (adds two items):** ① bless the EIGHT tie-verified
-queue candidates (clients 3393 · 3425 · 3430 · 3615 · 3689 · 4177 ·
-4371 · 4636 — the BATCH-296 annex has the names + batch id) · ② item 64
-(joint overtime owner attribution) now holds SEVEN packets refusing by
-name — owner-agnostic aggregate vs 50/50 ruling; for TY2025 nothing
-owner-sensitive consumes the split (GA HB 463 pulls are TY2026+) ·
-carried: the RS R-GA500-RIE amendment (his DIRECT word to the states
-lane) · client 4059's W-2G payer street address · the one-number
-Schedule D carryover question (32,002 vs 29,963) · reprints · standing
-decisions 1–8 · the 2a ruling-scope flag · the AL Form 40 line-26/
-Schedule CP app leg.
+**⛔ WAITING ON KEN:** ① bless the TWELVE tie-verified queue candidates
+(s317: clients 3393 · 3425 · 3430 · 3615 · 3689 · 4177 · 4371 · 4636;
+s318: 1945 · 2162 · 2861 · 4583 — BATCH-296 annexes have names +
+batch ids) · ② item 64 (joint overtime owner attribution; 7 packets)
+· ③ NEW: the GA RIE L10 spec/engine set-size item (REVIEW_QUEUE s318:
+propagate the 2026-08-17 MISC-box-3 ruling to RS; re-confirm PATR
+statute-primary; K-1 box 5 gets a SPLIT citation) · ④ NEW: client
+4081's $169 RIE-interest vendor divergence (does TaxWise's interest
+statement carry a split the packet doesn't print?) · carried: the RS
+R-GA500-RIE amendment (CONFIRMED live by the states lane 2026-08-30 —
+their seed is in RS prod; Ken's re-check per the symmetric rule) ·
+client 4059's W-2G payer street address · the one-number Schedule D
+carryover question (32,002 vs 29,963) · reprints · standing decisions
+1–8 · the 2a ruling-scope flag · the AL Form 40 line-26/Schedule CP
+app leg.
 
 ## How this file works (read before editing)
 - **Current state only**: resume pointer, active gate, in-flight work. **Overwritten each session.**
@@ -78,12 +91,12 @@ authorization (Ken 2026-08-23): push at own judgment; verify every deploy;
 hold only for a named reason.** ⚠⚠ **ORDERING (s279/s282): push → deploy
 LIVE → seed → verify — and the deploy ITSELF seeds.** ⚠⚠ **A runtime
 change must be deploy-LIVE before lane commits ride it.**
-- **s317 deploys: see the close-out line at the bottom of this file.**
+- **s318 deploys: see the close-out line at the bottom of this file.**
 - ⚠⚠ **STANDING: `scripts\gen_backentry_schema.py` (and the entity twin)
   are LOCAL generators the deploy NEVER runs** — any vocabulary/allowlist/
   state-seeder change MUST regenerate the published schema at close.
-  (s317 changed no vocabulary — the OT/tips fields, box 7 and
-  `car_loan_vehicles` all pre-existed in the allowlists.)
+  (s317/s318 changed no vocabulary — the OT/tips/estimated-payment/
+  FTC fields all pre-existed in the allowlists.)
 
 ## ⚠⚠ STANDING FACT: THIS IS TESTING, NOT FILING
 Ken, s195: **no 2025 returns are being prepared in the app.** Entries exist
@@ -109,7 +122,7 @@ found the tree clean.)
 - **`test_1040.py` — 6 pipeline tests** (s234, reuse-db only) ·
   **`test_mappings.py` — 7 setup ERRORS** (s239) · `test_4868.py` (4, ⛔ KEN s217).
 - ⚠ Re-diagnose before inheriting (the s281 topic7 lesson).
-- **Client typecheck**: green (s302; s317 touched no client code).
+- **Client typecheck**: green (s302; s317/s318 touched no client code).
 
 ### ⚠ Test-run hazards (standing)
 🌐 = campaign-wide · 🔧 = this repo only (scope marking, s281).
@@ -182,6 +195,13 @@ found the tree clean.)
   working set's surnames before commit; VINs count as identifying).
 
 ## 🔎 Carried for triage — NOT claims
+- **(s318) Client 4081's $169 RIE-L6 interest divergence** — TaxWise
+  251 vs engine 420, GA-taxed either way, outcomes tie; the packet
+  prints no interest decomposition. Vendor-divergence deliverable.
+- **(s318) The FTC-205-against-tax-0 witness** — refuses by name at
+  the face-16 limitation gate; the paid amount is unprinted.
+- **(s318) One packet prints 1040 line 26 with NO est-payments
+  worksheet page** (the omitted-page shape; named blanket refusal).
 - **(s317) TWO packets wait only on the GA LIC keyed gate** (the s316
   witness + the new r41 witness, client 3815): entry side keys
   `LIC-NODEP` true (+`LIC-CHILD 0`) and both should TIE.
@@ -248,14 +268,9 @@ amendment when Ken opens it** (trigger shape arrived; see
 DEFERRAL_AUDIT).
 
 ---
-**s317 deploy close-out:** `3f67f3bb` (extractor + tests + deferral
-note ONLY — zero server/runtime change) → the auto-deploy
-**build_failed on a corrupted Render venv cache** (pip metadata crash
-uninstalling charset-normalizer; same lockfile built green hours
-earlier — the commit was NOT the cause; prod kept serving `0b5da5b7`
-throughout) → manual `{"clearCache":"clear"}` redeploy
-`dep-daaau2ks728c73fskll0` **API-confirmed LIVE**. ⚠ New hazard for
-the standing list: a build_failed on a docs/scripts-only commit =
-suspect the CACHE first; read the build log before the commit. The
-docs-only close commits after this line trigger one more deploy —
-verify the LAST one at next boot.
+**s318 deploy close-out:** `d48ae4b2` (est_payments leg) built green
+and was superseded by `a4743f61` (Schedule 3 leg + PII scrub) —
+`dep-daacafuk1f9s73d1fjc0` **API-confirmed LIVE**. Both commits are
+extractor + tests only, zero server/runtime change. (s317's cache
+hazard did not recur.) The docs-only close commits after this line
+trigger one more deploy — verify the LAST one at next boot.
