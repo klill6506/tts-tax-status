@@ -44,6 +44,58 @@ creation" as support. The CONCLUSION stands on the answer-key
 comparison (122/122 tie), which uses no timestamps — but the timestamp
 strand should not be reused.
 
+**▶▶ s325 COMMIT BATCH — KEN'S "commit them" IS EXECUTED AND VERIFIED
+BY THE DATA.** Final ledger, footing exactly to the 283 payloads:
+- **LANDED 138** — every one a per-return-transaction FULL TIE
+  (gail 9 new · jenny 102 · jacob 23/23 · whit 4/4, the last after one
+  pooler retry). Verified against the DB, not the log: 138 staged rows
+  `status=committed` with `committed_at` + `resolved_return` set.
+- **FENCE 121** — Gail's already-landed set refused by the double-commit
+  fence, exactly as designed.
+- **NO_TIE HELD 19** (rolled back in-transaction) — triage list at
+  `1040/tmp/s325_holds_triage.txt`; the deltas cluster in the KNOWN
+  families: GA RIE (RIE-SP-17 ×7 · RIE-TP-17 ×6 · S1-7/S1-13) and the
+  federal payments/§6654 lines (37/38).
+- **STAGING ERRORS 5** — four the KNOWN 3-char `r_1099s
+  distribution_codes` model gap (carried from the s324 Gail holds; the
+  model caps at 2 chars, packets print 3 — a real product item), one
+  depreciation `link_key` naming.
+Batch log: `1040/tmp/commit_s325_books.txt`.
+
+⚠⚠ **THE RUN ITSELF FAILED TWICE BEFORE IT RAN, AND BOTH FAILURES ARE
+LESSONS:** (1) my killed first launch left its `ImportBatch` row behind
+(a bare `.create` autocommits) and the relaunch died on the unique key
+BEFORE the first payload — with the traceback in an err file my monitor
+was not watching, so **the silence read as progress and I told Ken it
+was committing**; the entry lane caught it by MEASURING (pid dead, log
+63 bytes, err file has the cause). Scripts now `get_or_create` the
+batch and merge stderr into the one watched log; **verify a launch by
+its OUTPUT GROWING before reporting it running.** (2) A third
+statement-timeout on one return was a LOCK, not slowness: my own killed
+attempt's connection sat `idle in transaction` for 13 minutes holding
+the uncommitted insert of the SAME (batch, return_key) — every retry
+waited on the invisible tuple. `pg_terminate_backend` on the orphan,
+then the return tied first try. **After killing a batch process, sweep
+for its idle-in-transaction connection.**
+
+⚠ **THE BOOKKEEPING FIX IS FORWARD-ONLY** (the entry lane's sharpening,
+adopted verbatim): in-process commits now write
+`status/committed_at/commit_result/resolved_return`, so the staged row
+tells the truth **from tonight on** — but every in-process commit
+BEFORE tonight still looks uncommitted. The audit rule stays "audit by
+the DATA against the payload's `expected` key"; the discriminator is
+reliable looking forward and unreliable looking back.
+
+**🔎 THE SSN-COVERAGE FINDING (for Ken's EIN/SSN priority, via the CRM
+lane's ruling relay):** `backfill_tax_identities --dry-run` after the
+138 landings found only **1** identity to create — because the seeded
+shells already carry SSNs (that is how identity matching works), the
+import campaign adds essentially NO SSN coverage. **The real gap is
+1,704 individuals with no SSN source anywhere the returns can reach**
+— closing it needs a SOURCE decision (another export, or organizer
+data), not more imports. The CRM lane holds the EIN half (516/520
+Lacerte rows settled, their ledger).
+
 **▶ s325 BUILD: THE FORM 8582 LEG SHIPPED (`e6cf21c0`, deploy verified)
 AND ALL FOUR BOOKS ARE RE-EXTRACTED ON EVERY CURRENT LEG.** The top
 unlock opened: f8582 BLOCK→EXTRACT, and the page's two INPUTS route —
