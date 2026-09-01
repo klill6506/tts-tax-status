@@ -26,10 +26,79 @@ SCHF_FIELDS/ScheduleF already carried every field.
   biggest remaining unlock** (a rental return almost always carries
   one) and is the next build.
 
-**⚠⚠ FIRST ACTION AT BOOT: check the GAIL commit batch**
-**GAIL IS DONE: 121 of 132 committed** (86 + 35 across
-`s324-gail-commit-001` / `-003-remaining`), every landing a verified
-tie. ⚠ 38 mid-batch "holds" were ONE DNS DROP, not data — read the
+⚠⚠ **ANOTHER CC ACCOUNT WRITES THIS LANE — THE SHARED FILES ARE THE
+ONLY PLACE ITS WORK IS VISIBLE.** s325: the Lacerte book was fully
+worked in an account this session cannot see, while STATUS still said
+"the importer has never seen these" and Ken's list still carried it as
+an open go/no-go. Two concrete hazards measured by the entry lane the
+same day: (a) their held batches for 1141/2234 are still `status=staged`
+yet those returns CARRY ROWS, and batch keys `L058-2455-a`/`-b` already
+existed on the server under their own naming convention, `-b` bump
+included — i.e. a key collision between accounts is real, not
+theoretical; (b) **DO NOT ORDER EVENTS BY `updated_at`** — the DB
+reports 08-28 on two of those returns and 08-31 on a third, the lane's
+files are dated 08-31, and this box's clock says 08-28. There is
+genuine CLOCK SKEW ACROSS MACHINES. ⚠ This retro-weakens one strand of
+the s325 Gail evidence: I cited "min updated_at is 5s after batch
+creation" as support. The CONCLUSION stands on the answer-key
+comparison (122/122 tie), which uses no timestamps — but the timestamp
+strand should not be reused.
+
+**▶ s325 BUILD: THE FORM 8582 LEG SHIPPED (`e6cf21c0`, deploy verified)
+AND ALL FOUR BOOKS ARE RE-EXTRACTED ON EVERY CURRENT LEG.** The top
+unlock opened: f8582 BLOCK→EXTRACT, and the page's two INPUTS route —
+column (c) prior-year unallowed (single-candidate rule, aggregate
+"SCH E RENTAL"/"K1S" rows, ambiguity refuses) and the **Part IV/V
+placement as the active_participation witness** (model default True =
+the $25,000 allowance granted silently; a Part V rental now keys
+false). 13/13 witnesses parse; the first opened packet DRY-RAN the
+full live chain and **tied 15/15** — and that first packet exposed two
+upstream defects a session old (s318 censoring, 3rd+4th instances):
+sch_e_p1 emitted property_type WORDS where the model stores DIGITS
+(parsing ≠ staging — no rental payload had ever reached staging), and
+the asset register's abbreviated rental names never matched the
+server's exact-equality link (emit now reconciles against the packet's
+own parsed properties; unique-prefix or single-property only).
+⚠ Plus the s317 class AGAIN: the extract runner DIED PRINTING a
+refusal containing Σ to the cp1252 console — Jenny stopped at 22 of
+177 with exit 0 and NO traceback, and the truncated run looked
+complete. `__main__` now reconfigures stdout/stderr to UTF-8.
+
+**▶ THE COMMIT QUEUE IS RE-BASED ON THE s325 RUNS (re-extract-first is
+SATISFIED — commit from these, the older run dirs are VOID):**
+`PipelineOut\gail-s325` **150** emits (⚠ includes the 122 already
+committed — the double-commit fence / replace semantics handle them;
+~28 are NEW) · `jenny-s325` **106** · `jacob-s325` **23** (the first-opened
+8582 witness now carries its routed inputs) · `whit-s325` **4**. Census vs the
+old runs: 283 vs 271, and EVERY movement attributes to a named leg —
+Gail +18 (8582/asset/matcher) · Jenny −7 ALL the vacuous-GA guard
+(packets that would have "tied" an all-blank Georgia answer key —
+the s324 lesson enforcing itself) +1 the compound-surname matcher ·
+Jacob/Whit unchanged. Only 1 of 283 emits carries the new 8582 inputs
+yet — the other 8582 witnesses sit behind their NEXT walls (f6251 13 ·
+sched_line_detail 6+ · f5329 · unknowns), the layered-yield truth.
+**VOID: gail-g4, jenny-p2, jacob-p2, whit-p1** (superseded by -s325).
+
+**GAIL IS DONE AND VERIFIED AGAINST THE DB (s325 boot): 124 commit
+events across 122 distinct clients**, all 122 re-verified this boot as
+TIE against their own `expected` answer keys (86 in
+`s324-gail-commit-001` + 3 in `-002-netretry` + 35 in
+`-003-remaining`; 2 clients committed in more than one batch).
+⚠ The old figure here read "121 (86 + 35)" — it OMITTED the netretry
+batch's 3 entirely and was 3 low. Corrected s325.
+
+⚠⚠ **TWO COMMIT ROUTES SHARE ONE FIELD — DO NOT AUDIT COMMITS VIA
+`StagedReturn.committed_at`.** Gail was committed by an IN-PROCESS
+script calling `commit_staged_return()` directly, and that function
+says so at `backentry.py:8770`: *"Does NOT touch staged.status /
+batch.status — the view persists those (so dry_run stays write-free by
+rollback)."* So a SUCCESSFUL in-process commit leaves `status='valid'`,
+`committed_at` NULL, `commit_result` `{}`, `resolved_return` NULL —
+byte-identical to never having committed. The 1,248 corpus rows that DO
+carry timestamps are HTTP-lane commits. **Audit by the DATA (compare
+the return against the payload's `expected` block), never by the staged
+row.** This is the same discriminator that produced the s324 "23 Tom
+packets silently lost" retraction; it has now cost two sessions. ⚠ 38 mid-batch "holds" were ONE DNS DROP, not data — read the
 error text before counting holds. Landed Gail packets do NOT move
 (originals stay in `Inbox\Gail`; `tmp\merged-gail-v5\Gail` holds the
 pipeline artifacts).
@@ -106,8 +175,15 @@ clean after the states lane scrubbed the publisher name (their f43c13a).
   PDFed, plus the previously-printed Lacerte book (individuals,
   partnerships, S-corps). **~4,560 PDFs**: 1040 lane 4,276 (preparer
   books 1,338 in Inbox + 223 in Done; flat 308 Inbox / 618 Done;
-  **Lacerte Inbox 635 — THE IMPORTER HAS NEVER SEEN THESE**, a
-  different vendor layout = its own reading pass, NOT just a run) ·
+  **Lacerte Inbox 635 — CORRECTED s325: these have ALREADY BEEN
+  WORKED, in a DIFFERENT CC ACCOUNT.** Ken told the entry lane directly;
+  they then verified it against the live DB rather than relaying it —
+  client 2455 `filed` with 13/13 pinned lines matching an INDEPENDENT
+  transcription built from scratch (incl. NIIT + a general-category 1116
+  + a zero GA nonresident allocation), 2234 13/13, 1141 11/11. The book
+  looks untouched only because the Lacerte export was thinner than the
+  TaxWise ones, so Ken re-exported the ORGANIZERS to pick up birth dates
+  for clients and dependents) ·
   1120-S 182 · 1065 103. The constraint has MOVED from data to
   extractor coverage.
 - **Three (then four) new preparer books, first contact:** Jenny
@@ -141,6 +217,18 @@ clean after the states lane scrubbed the publisher name (their f43c13a).
   taxpayer in Jenny's book — client #4054 must NOT be edited (a
   different, real person who shares the name).** Name in the annex.
 
+**▶ OFF-SPINE, SHIPPED 2026-09-01 (Bob lane, not this lane):** a second
+read-only suiteapi endpoint, `GET /api/v1/suite/clients/by-phone/`
+(`apps/suiteapi/caller.py`, `tests/test_suiteapi_caller.py`, 8 tests).
+Bob answers Ken's phone and needs to know whether a caller is a client;
+it sends the caller ID and gets back a client name + client_number +
+which field matched. Same BOB_SERVICE_TOKEN, same PII boundary as
+returns.py. Touches NO form, engine, or entry code. Note for anyone
+working clients: `Client` has no phone column — business numbers are
+`Entity.phone`, individuals' are the 1040 `Taxpayer.daytime_phone`, and
+the endpoint searches both. Contract lives in the bob repo at
+`docs/CALLER_MATCH_CONTRACT.md`.
+
 **▶ NEXT:** ① finish/verify the Gail commit batch (boot action) ·
 ①b re-extract the books on tonight's legs, THEN commit the queue
 above · ② **the Schedule E + Schedule F extractor legs** (the activity-depth
@@ -163,9 +251,9 @@ is contaminated** (a "no need to fil" note is IN the client record —
 data cleanup; #4514 carries the same shape) · **three clients have no
 2025 1040 shell** (two report
 as 1120-S filers — if so their 1040 packets should leave the queue;
-entry lane flagged directly) · **the LACERTE BOOK (635)** — a whole
-vendor layout the importer has never read: worth a go/no-go rather
-than an assumption · ⓪ TWO scope questions (s324): does
+entry lane flagged directly) · ~~**the LACERTE BOOK (635)**~~ —
+**ANSWERED, REMOVE FROM KEN'S LIST (s325): already worked in another CC
+account**, verified against the live DB (above) · ⓪ TWO scope questions (s324): does
 the standing tie-at-landing commit authorization extend to ENTRY-LANE
 HAND-KEYED commits? (their client 3250 LIC return is staged, dry-run
 TIE, held for your word — the lane rightly declined my extension of
