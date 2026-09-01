@@ -17,7 +17,22 @@ PRODUCT_MAP = scope. All three live here canonically.*
 
 ---
 
-> **⚡ SCOPE CHANGE — Ken, 2026-07-09 (explicit direction, recorded per the rule above):**
+> **🛑 SCOPE CONTRACTION — Ken, 2026-09-01 (explicit direction; SUPERSEDES the
+> 2026-07-09 banner immediately below, and locked decision #3). Firm log: D-117.**
+> Ken, verbatim: *"I'm starting to worry about finishing 1040, 1120S & 1065 so
+> I'm hesitant to start another module. Let's put off 1120, 709, and 1041
+> indefinitely."*
+> **THE BUILD SCOPE IS 1040, 1120-S, 1065. Do not start 1120, 709 or 1041.**
+> The 2026-07-09 expansion below is HISTORY — read it for the 709-is-MeF-
+> e-fileable finding (still valid, still on record) and for the no-piecemeal-
+> ATS ruling (still in force), NOT for scope.
+> ⚠ Consequences to plan, not to re-argue: ~70 **1041** returns move to the PPR
+> parachute (locked decision #8) — the Apr 15 deadline gives slack but the
+> parachute must exist before January; **September is now free** (it was the
+> 1041 authoring/build month); and the "finished for season one" definition
+> below is edited to match.
+
+> **⚡ SCOPE CHANGE — Ken, 2026-07-09 (SUPERSEDED 2026-09-01 by the banner above; kept for the record):**
 > **Mission = finish 1040, 1120-S, 1120, 1065, 1041, AND 709 by the end of 2026.** This
 > ADDS the 1120 C-corp (superseding locked decision #2 below, which deferred it to summer
 > 2027) and ADDS Form 709 gift tax (never previously in scope; **verified 2026-07-09: 709
@@ -32,10 +47,12 @@ PRODUCT_MAP = scope. All three live here canonically.*
 
 ## Definition of "finished" for season one
 Sherpa prepares and e-files the returns The Tax Shelter actually produces, at TaxWise/Lacerte
-quality, for the Jan 2027 season: **1040, 1120-S, 1065, 1041 — federal + GA, SC, AL, NC** —
+quality, for the Jan 2027 season: **1040, 1120-S, 1065 — federal + GA, SC, AL, NC** —
 prepared, transmitted via A2A, and **accepted**, with bank fee-collect products attached where
-clients want them. *(2026-07-09: the mission above extends the build target to 1120 + 709 by
-year-end; season-one filing scope vs build scope to be reconciled in the re-cut.)*
+clients want them. *(2026-09-01, D-117: **1041 REMOVED from this definition**, and 1120/709
+removed from the build target — Ken deferred all three indefinitely to protect the three that
+must land. The 2026-07-09 note about reconciling filing scope vs build scope is resolved by
+that contraction: they are now the same three modules.)*
 
 **Prime directive: tax law accuracy.** Correctness over speed, always. Spec-first (Rule Studio)
 for all tax law. Four-leg verification (Input → Compute → Render → Flow-assertion) before merge.
@@ -46,7 +63,10 @@ No silent defaults. The regression bed (real TY2025 returns tied to the dollar) 
    (~50 returns) go to pay-per-return software — state software-developer approvals cannot be
    obtained mid-season, so no mid-February state builds.
 2. **C-corps (1120): not built for season one.** ~5 returns → PPR. Build summer 2027.
-3. **1041: built** (Sept–Oct). ~70 returns, Ken's specialty, April 15 deadline gives slack.
+3. ~~**1041: built** (Sept–Oct). ~70 returns, Ken's specialty, April 15 deadline gives slack.~~
+   **SUPERSEDED 2026-09-01 (D-117): 1041 is DEFERRED INDEFINITELY** and moves to the PPR
+   parachute (#8). The April 15 deadline is the reason this is survivable; it is not a
+   reason to leave the parachute unarranged.
 4. **Brokerage statements: summary-level extraction only** (8949 Exception 2 — category totals
    + broker PDF attached to the e-file). Lot-level import is season two.
 5. **Document import scope:** W-2, 1099-R, SSA-1099, 1099-INT/DIV, 1099-B summary → extracted
@@ -91,14 +111,19 @@ start A2A strong-auth certificate paperwork.
 **Ken:** assemble regression bed — 40–50 real TY2025 returns by archetype (EIC families,
 TRS/OPM retirees, SS+dividends, investors, Sch C); state authoring reviews.
 
-### September 2026
-**CC:** 1041 build; bank integration (whichever bank signed); diagnostics/review layer +
-workflow states (prep → diagnostics-clear → transmit).
-**Ken:** 1041 Rule Studio authoring (DNI, IDD, Sch B, beneficiary K-1s, GA 501).
+### September 2026  ⚠ RE-CUT 2026-09-01 (D-117)
+**CC:** ~~1041 build~~ **DEFERRED** → the month redirects to **1040 / 1120-S / 1065**:
+extractor coverage (the 1040 constraint has moved from data to coverage — ~4,560 PDFs in
+hand), business ATS, and the state builds. Unchanged this month: bank integration
+(whichever bank signed); diagnostics/review layer + workflow states
+(prep → diagnostics-clear → transmit).
+**Ken:** ~~1041 Rule Studio authoring (DNI, IDD, Sch B, beneficiary K-1s, GA 501)~~
+**DEFERRED** — his September capacity is freed. ⚠ He was the bottleneck resource for
+Sept–Oct on the old plan; that constraint is materially relaxed by this decision.
 **⛔ GATE Sept 15:** bank agreement signed, or the desk-collect fallback is locked in.
 
 ### October 2026
-**CC:** 1041 finish + its 4 ATS scenarios; TaxWise→Sherpa migration (~2,600 clients); printing
+**CC:** ~~1041 finish + its 4 ATS scenarios~~ **DEFERRED (D-117)**; TaxWise→Sherpa migration (~2,600 clients); printing
 at volume; 9-preparer concurrency testing.
 **Ken:** regression adjudication — every Sherpa-vs-as-filed mismatch ruled on by Ken.
 **⛔ GATE Oct 1:** GA DOR approval path confirmed with dates (single point of failure), and
@@ -130,7 +155,8 @@ real TY2025 returns in Sherpa vs. as-filed.
 | LLC e-file application stalls | Not approved by Oct 1 | Season runs on TTS credentials; migrate spring 2027 |
 
 ## Consciously deferred to season two
-1120-C build · lot-level brokerage import · e-signatures · multi-state beyond GA/SC/AL/NC ·
+**1041 (D-117, 2026-09-01)** · **709 (D-117)** · 1120-C build · lot-level brokerage import ·
+e-signatures · multi-state beyond GA/SC/AL/NC ·
 sherpa-1099 expansion · AI-prepared returns as a production feature · React form viewer ·
 990/706/709 (out of scope entirely).
 
