@@ -303,9 +303,19 @@ is contaminated** (a "no need to fil" note is IN the client record —
 data cleanup; #4514 carries the same shape) · **three clients have no
 2025 1040 shell** (two report
 as 1120-S filers — if so their 1040 packets should leave the queue;
-entry lane flagged directly) · ~~**the LACERTE BOOK (635)**~~ —
-**ANSWERED, REMOVE FROM KEN'S LIST (s325): already worked in another CC
-account**, verified against the live DB (above) · ⓪ TWO scope questions (s324): does
+entry lane flagged directly) · **the LACERTE BOOK — REOPENED (s325
+late), and the day's THIRD state for this item:** STATUS said
+never-seen → Ken said "already worked in another account" (verified on
+3 clients) → the entry lane then reconciled the WHOLE book against
+prod: **260 packets · ~45 filed · ~168 sitting as EMPTY draft shells**
+(12 sampled at random, all 12 bare client numbers with no documents),
+stated with its measured error bar (their matcher re-found only 42 of
+48 known-filed — ~12.5% false negatives, so every figure is a range).
+"Already worked" likely meant extracted/prepped, NOT imported — the
+two readings differ by ~200 returns. ⛔ The lane has put the
+clarification to Ken. **If import is wanted, the leverage is a LACERTE-
+LAYOUT extractor pass** (a different vendor print = its own reading
+leg), not hand-keying ~170 packets · ⓪ TWO scope questions (s324): does
 the standing tie-at-landing commit authorization extend to ENTRY-LANE
 HAND-KEYED commits? (their client 3250 LIC return is staged, dry-run
 TIE, held for your word — the lane rightly declined my extension of
