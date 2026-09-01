@@ -2,23 +2,54 @@
 
 ## ▶▶ RESUME POINTER — s324 (mid-flight if the Gail batch is draining), 2026-08-31 late night
 
-**⚠⚠ FIRST ACTION AT BOOT: check the GAIL commit batch**
-(`tmp\commit_s324_gail131.txt` under tax-test-data\1040): 132 gail-g4
-emits committing LIVE (batch key `s324-gail-commit-001`, **62/132 with
-4 holds** at this writing; per-return transactions — a kill is safe).
-If no SUMMARY line: count `COMMITTED`, rebuild the remainder from the
-gail-g4 emit list minus landed (fresh batch key `-002`; the 409 fence
-reports HELD for already-landed — skip in the tally). Then post the
-tally to the entry lane + a BATCH-296 annex. Landed Gail packets do
-NOT move (Gail's originals stay in `Inbox\Gail`; the merged copies in
-`tmp\merged-gail-v5\Gail` are the pipeline artifacts).
+**▶ SCHEDULE E + F READERS SHIPPED — FORM 8582 IS NOW THE TOP UNLOCK
+(22 packets).** Ken's build ask, done and deployed (`8bf9d5e5`,
+`deacb63a`). Both were READER-ONLY: RENTAL_FIELDS/RentalProperty and
+SCHF_FIELDS/ScheduleF already carried every field.
+- `sch_e_p1.py`: 3 property columns by x-window; ⚠ the A/B/C letters
+  sit on the "Income:" row ~12pt BELOW the "Properties:" caption (all
+  54 witnesses failed until the band scan); MULTI-PAGE (>3 properties
+  starts a second page 1 — 6 witnesses) — **the form's own FORM-WIDE
+  23a/23d/23e totals are what caught it**; line 26 parsed so Schedule 1
+  line 5 decomposes. 51/54 pages parse, **75 properties**; the 3 that
+  don't REFUSE rather than mis-assign.
+- `sch_f.py`: two-column form, each line identified by its ANCHOR X
+  (Part I 1a-2 @x391 · 3-6 a-side @x260 · b-side+7/8/9 @x489 · Part II
+  10-22 @x206 · 23-32f @x486); 32a-f other expenses with descriptions;
+  line 33 and line 34 (= 9 − 33) as self-checks; Schedule 1 line 6
+  decomposes. **27/27 pages parse, ZERO failures, both self-checks
+  green on every one.**
+- ⚠ EMIT YIELD IS LAYERED: both classes are GONE from the refusal
+  census but emits over the 78 gated packets moved 0 → 3. Next walls,
+  measured: **Form 8582 = 22** · Form 6251 (AMT) = 13 · Sch C/E/F
+  line-detail worksheet = 4 · assorted unknowns. **8582 is the single
+  biggest remaining unlock** (a rental return almost always carries
+  one) and is the next build.
 
-**⚠ THE WHOLE COMMIT QUEUE IS SERIALIZED BEHIND THAT BATCH** (one DB
-writer). Waiting on it, in order: ① the TWO LIC holds (…2276, …8505 —
-re-emitted clean with the gate keyed, `PipelineOut\tom-lic2`, expected
-to TIE) · ② the four georgianna-g4 joint-valve emits
-(`tmp\commit_s324_g4_4.py`, written and ready) · ③ the new books'
-**135 emits** (jenny-p2 112 + jacob-p2 23; whit-p1 4; david 0).
+**⚠⚠ FIRST ACTION AT BOOT: check the GAIL commit batch**
+**GAIL IS DONE: 121 of 132 committed** (86 + 35 across
+`s324-gail-commit-001` / `-003-remaining`), every landing a verified
+tie. ⚠ 38 mid-batch "holds" were ONE DNS DROP, not data — read the
+error text before counting holds. Landed Gail packets do NOT move
+(originals stay in `Inbox\Gail`; `tmp\merged-gail-v5\Gail` holds the
+pipeline artifacts).
+
+**THE 11 GAIL HOLDS — the triage list** (suffixes only; surnames in the
+BATCH-296 annex): five no_tie (…0500 · …5816 · …7970 · **…0680 — the
+FIRST live test of the asset-detail import against a filed return,
+decompose it first** · …7193) · three staging errors (…8546 · …4344 ·
+…2981) · …9164 (below) · plus one
+reading `ga500:23 expected 10 actual 18` — a bare Δ8, the LIC-gate
+signature, which a re-extract on `6ed55795` should convert.
+
+**▶ THE COMMIT QUEUE, all extracted and waiting:** ① the TWO LIC holds
+(…2276, …8505 — `PipelineOut\tom-lic2`, expected to TIE) · ② the four
+georgianna-g4 joint-valve emits (`tmp\commit_s324_g4_4.py`, ready) ·
+③ the new books' **135+ emits** (jenny-p2 112 + jacob-p2 23 + whit 4)
+· ④ the 9 shell-refusal conversions (`PipelineOut\shellfix-rerun`).
+⚠ RE-EXTRACT THE BOOKS FIRST — every run dir predates some of
+tonight's legs (LIC gate, matcher, §179 allowlist, empty-GA gate,
+Sch E/F).
 
 **⚠ RE-EXTRACT THE BOOKS BEFORE COMMITTING THEM** — gail-g4, tom-t1
 and jenny/jacob-p2 all predate tonight's later legs (the LIC gate
@@ -217,6 +248,18 @@ collide in Tom's book); surnames only inside the working tree.**
 - 🌐 ⚠⚠ FLAT TEXT ORDER LIES ABOUT COLUMN OWNERSHIP; grep the row you
   THINK you're grepping (s324: two probe censuses keyed the wrong
   header row and returned vacuous zeros).
+- 🌐 ⚠⚠⚠ **NOTHING-TO-CHECK READS AS EVERYTHING-CHECKED** — s324's
+  unifying lesson, FIVE instances across two lanes in one night: all-zero
+  expectations "tie" (3 vacuous ties landed); a guard whose input is
+  always falsy "passes" (`getattr(c,"tax_identity")` — the relation is
+  `tax_identities`); a loop over an emptied plan file "audits" 13
+  clients; a check that sees ONE route "proves" a return was never
+  committed (23 files moved wrongly); no diagnostic complaint means the
+  GA return "attached". **Verify by the PRESENCE of what should be
+  there, never the absence of a complaint** — assert the population you
+  meant to check is non-empty before reporting a pass, and feed every
+  guard a case that MUST trip it. ⭐ Corollary: the error handler nobody
+  exercises is where the crash hides.
 - 🌐 ⚠⚠ a feature can pass tests+typecheck and ship as TREE-SHAKEN DEAD
   CODE — the routed-page mount test + the deployed-bundle grep are the
   gates (s324, the dba build).
