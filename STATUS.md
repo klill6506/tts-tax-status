@@ -142,6 +142,30 @@ holds 255 (207 to import). None of this is "one by one": each cleared
 class lands its packets as a batch; the data-entry sessions hand-key only
 the residue.
 
+**▶ ENTITY LANE RECONCILED TO KEN'S LACERTE "ACCEPTED" LISTS (2026-09-02,
+s327 sitting; lists parsed to `D:\tax-test-data\tmp_lacerte_accepted_lists_
+2026-09-02.json`, matched by EIN):**
+- **1120-S: 186 accepted → 175 filed in the app (173 tie-verified + 2
+  hand-filed), 11 not:** 3 packets on Hold for non-GA states/K-2 (packet
+  codes ABE = SC, 187 = CA, 101 = NC); **packet 219 had been moved to Done
+  with a DRAFT shell, no import row, no GA-600S — re-queued to the Inbox
+  with a HOLD note**; 6 have NO packet on disk (the six "shell draft" rows
+  with an empty packet list in the audit — names in the JSON) → Ken prints
+  them from Lacerte; one is a DUPLICATE client pair (#4775 carries the EIN
+  and no 2025 return; #3855 carries the 2025 draft shell and no EIN) →
+  Ken's merge call, then a packet.
+- **1065: 69 accepted → 2 filed, 67 draft — and 66 of the 67 have their
+  Lacerte packet sitting in `1065\Inbox` (96 packets there).** The
+  partnership import IS the whole book; nothing is missing from disk.
+- **The 7-file TaxWise drop in `1120S\Inbox` (Ken, 2026-09-02):** 4 are
+  S-corps with 2025 shells (files …9341, …0198, …9913, and the "2025
+  Source Docs" scan — ⚠ that one is source documents, not a return print);
+  3 have NO client/entity in the app at all (files …2637, …8078, …1075 —
+  the last is a 1065). TaxWise entity prints are NOT readable by the
+  Lacerte-based entity lane; **hand entry through the import channel (so
+  they tie and mark filed) is the route — Ken offered the data-entry
+  account; seed the 3 clients first.**
+
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
 +4). **s325 carried:** 138 landed from the four re-extracted books; the
@@ -157,7 +181,7 @@ take it at the first dry-run tie.
 **▶ BUILD QUEUE after the Lacerte legs:** ② the 3-char `distribution_codes`
 model gap (migration; 4 packets since s324) · ③ the TaxWise extractor
 walls by measured count (f6251 = 13 · sched_line_detail = 6+ · f5329 · the
-classifier patch, GA PART-YEAR DETECTOR FIRST) · ④ the three re-raised
+classifier patch, GA part-year detector first) · ④ the three re-raised
 Lacerte engine holds (clients 1922, 2386, 3517: per-property nonpassive
 lever · GA nonresident NR-46 + itemizer credit · §172 absorption) · ⑤ the
 GA 7b military-exclusion engine leg (7 witnesses; waits on the states-lane
