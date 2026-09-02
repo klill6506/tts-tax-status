@@ -115,10 +115,32 @@ GA-500s under hand-filed federals were never tie-verified and stay Draft**
 1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
 mark, or record why no GA return applies.
 
-**The practice's true 2025 import count (DB, 2026-09-02):** 1,209 distinct
-returns tie-verified (federal 1040 + entity); federal 1040s Filed 1,085;
-1120-S Filed 175 (+170 GA-600S); 1065 Filed 5. The remaining 1040 work is
-the Lacerte book (~170 returns) + the TaxWise extractor's refusal classes.
+**Second pass, same sitting (the s325 lesson applied — audit by the DATA,
+never the staged row):** 133 more returns had been committed IN-PROCESS
+with no staged bookkeeping, sat in Draft with documents, and re-reconciled
+LIVE against their payload answer keys 133/133 TIE → marked filed
+(`tmp\s327_mark_filed_plan2/done2.json`). **Federal 1040 Filed is now
+1,218 of 2,978; GA-500 under filed federals 1,147 filed / 37 draft (the
+entry-lane list above).** Also found: **58 emitted payloads never
+committed** (`PipelineOut\r51` 31 · gail-s325 10 · georgianna-g2/g4 10 ·
+shellfix-rerun 4 · 3 singles) — the standing commit authorization covers
+them: DRY-RUN then commit at the next boot. 8 returns are filed with zero
+document rows (clients 1400 1106 1200 1974 4036 3878 1598 3264) — probably
+SSA-only/hand-keyed; verify one before assuming.
+
+**The practice's true 2025 import count (DB, 2026-09-02 end of sitting):**
+federal 1040s Filed 1,218 (all tie-verified); 1120-S Filed 175 (+170
+GA-600S); 1065 Filed 5. **The remaining ~1,760 individual shells:** ~190
+have no packet in hand at all; the TaxWise Inbox holds 1,609 packets — 656
+refused by the extractor (381 of them on ONE class; walls by count:
+unknown pages 142 · asset_detail 71 · sch_e 43 · f5329 42 · f6251 38 ·
+f4562 32 · state_nonconformity_wks 28 · f8582 27 · sched_line_detail 27 ·
+26 not-a-packet · ctc_ext_carryover_wks 23 · pension/interest/IRA
+decomposition 22/17/14 …), 506 never run through the pipeline (the newest
+subfolders + 224 HOLD-marked), 58 emitted awaiting commit; the Lacerte Inbox
+holds 255 (207 to import). None of this is "one by one": each cleared
+class lands its packets as a batch; the data-entry sessions hand-key only
+the residue.
 
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
