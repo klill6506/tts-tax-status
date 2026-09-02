@@ -214,6 +214,14 @@ palette and the clients-page search read a nine-digit or dashed term as an
 EIN and find the client carrying it on any entity (`_ein_search_q`); a
 short digits-only term still means client number. A plain Schedule C with
 an EIN and no LLC uses the same `disregarded_c` type (Ken: fine).
+**Cross-app fold with delvio-crm (in flight):** three of the CRM's
+standalone business clients now have disregarded entities under their
+owners (#4806→#3638, #4801→#2120, #4803→#1267;
+`tax-test-data\tmp_disregarded_fold_s327.json`); the CRM re-points its
+engagement rows (owner `client_id` + `entity_id`), then THIS lane sets the
+three standalone clients inactive. **⛔ KEN / CRM:** #4786 (typed scorp in
+the hub — S election or Schedule C?) and #4808 (no EIN; which client owns
+it?) are held.
 
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
