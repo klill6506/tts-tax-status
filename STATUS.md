@@ -209,7 +209,11 @@ types), label maps in the palette / Start Return / folders / returns
 pages, non-filing notes. Not built: a "reports on" link from the entity to
 the 1040 schedule row — the EIN on `ScheduleC.ein` / `ScheduleF.ein` is the
 join today; a display of the owner's schedule from the entity page is a
-small follow-up if Ken wants it.
+small follow-up if Ken wants it. **Searchable by EIN (Ken's ask):** the
+palette and the clients-page search read a nine-digit or dashed term as an
+EIN and find the client carrying it on any entity (`_ein_search_q`); a
+short digits-only term still means client number. A plain Schedule C with
+an EIN and no LLC uses the same `disregarded_c` type (Ken: fine).
 
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
