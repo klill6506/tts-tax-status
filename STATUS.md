@@ -97,6 +97,29 @@ Sch D+8949 / Sch C faces through the existing TaxWise parsers with Lacerte
 bands (measure each band first — the 1040 pattern), then the first DRY-RUN
 tie on HITTC/BITTLE-class packets, then the shadow-2210 reader.
 
+**▶ KEN'S RULING, 2026-09-02 (s327 sitting) — A TIE IS A FILED RETURN, and
+the Filed count is the practice's true count.** The DB audit that prompted
+it: 920 federal 1040s showed Filed; the extractor's 165 dollar-verified
+returns (and 160 of their GA-500s) sat in DRAFT because the in-process
+commit never marked them; 38 more GA-500s under hand-filed federals were
+never marked; the Individual tab counted SC/NC/AL state rows as returns
+(932 vs 920). **Done:** backfill applied with the real →filed side effects
+(federal 165 + GA-500 161; rollback ids in
+`1040\tmp\s327_mark_filed_done.json`) — **federal 1040 Filed is now 1,085
+of 2,978; GA-500 under filed federals 1,015 filed**; `commit_staged_return`
+now marks filed on a tie (federal + attached states) so the sweep is a
+no-op; the list and its tab counts are FEDERAL-only. **⛔ ENTRY LANE: 37
+GA-500s under hand-filed federals were never tie-verified and stay Draft**
+— clients 1019 1033 1034 1035 1056 1075 1076 1081 1089 1090 1094 1136 1164
+1165 1215 1216 1218 1254 1259 1262 1273 1274 1281 1307 1315 1367 1372 1411
+1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
+mark, or record why no GA return applies.
+
+**The practice's true 2025 import count (DB, 2026-09-02):** 1,209 distinct
+returns tie-verified (federal 1040 + entity); federal 1040s Filed 1,085;
+1120-S Filed 175 (+170 GA-600S); 1065 Filed 5. The remaining 1040 work is
+the Lacerte book (~170 returns) + the TaxWise extractor's refusal classes.
+
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
 +4). **s325 carried:** 138 landed from the four re-extracted books; the
