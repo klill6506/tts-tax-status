@@ -122,6 +122,27 @@ an int). Two read-only suite endpoints OFFERED, built only when it asks:
 `suite/clients/` search (active, no identifiers) and a `suite/documents/`
 list with signed URLs, each behind its own `RESEARCH_SERVICE_TOKEN`.
 
+**▶ ENTITY CLOSEOUT — two more gate defects fixed (`6f32bb56`, live):** the
+gate compared the fresh verdict to the bare `tie`, so a return committed
+`tie_with_exception` (source defects acknowledged, Ken's "file as is and
+note the divergence") could NEVER close out — now `FILEABLE_VERDICTS`,
+only unacknowledged misses named; and the closeout's reconcile omitted
+`state_key`, so a 1065 closeout silently skipped its `expected.ga700`
+lines (a tie that proves nothing) — now the entity's own key, as at
+commit. ⚠ Two 1065s HAD closed out on the vacuous state-side re-check
+(#4834, #4836, 2026-09-02 morning) — their GA-700 lines were verified at
+COMMIT time (the lane's dry runs surfaced ga700 misses before the pins
+were fixed), so the filed data stands; re-closeout on the fixed gate CONFIRMED
+(26 ga700 rows each, all tie). Test added. **Landed by the entity
+lane 2026-09-02:** #2927 and #4758 FILED through `accepted_errors`; the
+seven Lacerte S-corps — #4775 (the EIN-bearing Rugged record), #1091, #1128, #3461,
+#1202 TIE + FILED (the Feb/Jul hand entries had stale L14a, a
+sign-flipped L25a, a TB-only A5/line-17 split — replaced, diffs in the
+lane's reports); #3462 and #3790 `tie_with_exception` (Lacerte charges
+distributions against a negative AAA, IRC 1368(e)(1)(A)) COMMITTED, re-
+closeout DONE on `6f32bb56` → 7/7 FILED. Five engine findings → DEFERRAL_AUDIT
+(9)–(13), incl. the GA-600S Sch 4 refund-line gap.
+
 **▶ ENTITY CLOSEOUT — the error-acceptance path (s327, late):** Ken ruled
 (relayed by the entity lane, verbatim-quoted): #2927 accepted by the IRS —
 note the GA addback diagnostic and mark it filed; #4758 not required to
