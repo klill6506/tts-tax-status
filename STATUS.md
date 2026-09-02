@@ -183,6 +183,21 @@ consumes it** (BUILD_ORDER queue). ③ **the duplicate S-corp client**: the
 2025 shell moved to #4775 (the EIN record), #3855 set inactive
 (`1120S\tmp_rugged_merge_s327.json`); Ken is printing its packet.
 
+**▶ ENTITY LANE (other account) IN FLIGHT on the six TaxWise entity packets
+(Ken's assignment, 2026-09-02):** it asked for a one-writer check + engine
+answers (given: F14 is engine-written from `sched_f` rows; AMT overrides
+are honored, K17a = Σ(regular − §179) − (AMT − §179)); it could not create
+clients, so **this lane seeded the three partnership shells through
+`build_federal_return`: #4834 (…2637), #4835 (…8078), #4836 (…1075)**
+(`1065\tmp_seed_taxwise_partnerships_s327.json`); the three S-corp shells'
+"41 entity rows" are the `OTHER_DEDUCTION_PRESETS` skeleton (safe to
+`replace_documents`; #3137 also carries a Feb-2026 partial hand entry).
+**Its landings are NOT counted until audited by the data.** Lane findings
+for the build queue: `source.vendor` is absent from `backentry-entity.v1`
+(staging refuses what the local validator passes — the validator reads the
+1040 schema); the 1065 `expected` set lacks `K14b`; 1120-S line 12 / K16c /
+L10c-d are engine-computed.
+
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
 +4). **s325 carried:** 138 landed from the four re-extracted books; the
