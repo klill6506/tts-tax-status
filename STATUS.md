@@ -115,6 +115,16 @@ GA-500s under hand-filed federals were never tie-verified and stay Draft**
 1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
 mark, or record why no GA return applies.
 
+**▶ KEN'S CLIENT-BASE RULINGS, 2026-09-02 night (relayed to the CRM
+verbatim; tax-app writes done):** #1751 dba "Construction Outsource";
+#4725 Mighty Muffler Shop = June FYE (6/30 set), final return filed for
+FYE 6/2025 → INACTIVE; MASH DYNAMO "not a client" (never existed in the
+hub — nothing to retire); the three SOS suffixes yes; Peggy's 15
+confirmed; the bonding-list individual still a client (record to be created — Ken to name the entity); fees Lucrative Leads $220 / Max
+Merchandising $150 / Ground Effects $220, "McCoys is done". STILL OPEN:
+Nashville Skyline (left blank), one bookkeeping client's monthly-vs-quarterly. Staffing =
+D-041 (three slots; CRM migration staged for Ken).
+
 **▶ NEW SUITE MODULE — delvio-research (Ken, 2026-09-02, planning only):**
 its session asked for the linking keys and got them from the code (client_id
 + firm_id + client_number stable; entity_id re-pointable on a merge; year as
