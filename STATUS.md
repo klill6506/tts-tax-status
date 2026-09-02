@@ -108,13 +108,6 @@ clock skew across machines). The entry lane (tax-test-data-7d) is idle and
 released; it asked the four Lacerte questions this session and got its
 answers from the planner (all four items ARE in BUILD_ORDER/STATUS).
 
-**THE LACERTE BOOK — REOPENED (s325 late), Ken's answer pending:** 260
-packets · ~45 filed · ~168 EMPTY draft shells (entry lane's reconciliation,
-error bar ~12.5%). "Already worked" likely meant extracted/prepped, not
-imported. If "import them": a LACERTE-LAYOUT extractor pass carrying the
-coverage gate + page-count reconciliation + a negative-control fixture from
-day one (BUILD_ORDER ⑥ has the requirements verbatim).
-
 **s325 carried (all verified by the data):** 138 landed from the four re-
 extracted books; Gail 122 verified TIE; the corpus is complete (~4,560
 PDFs); the SSN-coverage finding (imports add ~zero — 1,704 individuals need
@@ -139,7 +132,7 @@ product gaps; ⚠ its item 5's premise is refuted — Schedule C has no
 business_address on the MODEL, a migration not a sync) · carried: the 8615
 parent-first guard · out_of_scope_states · the zero-activity GA-attach gap.
 
-**⛔ WAITING ON KEN:** the Lacerte clarification (above) · the §6654 family
+**⛔ WAITING ON KEN:** the §6654 family
 (…0500/…0534/…7701/…7044 — engine statutory vs TaxWise; …0500 has no
 printed 2210) · seed ONE client (the …4641 taxpayer in Jenny's book; ⚠ do NOT
 edit #4054) · client #3572's contaminated name (#4514 same shape) · three
