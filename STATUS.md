@@ -118,9 +118,14 @@ mark, or record why no GA return applies.
 **▶ NEW SUITE MODULE — delvio-research (Ken, 2026-09-02, planning only):**
 its session asked for the linking keys and got them from the code (client_id
 + firm_id + client_number stable; entity_id re-pointable on a merge; year as
-an int). Two read-only suite endpoints OFFERED, built only when it asks:
-`suite/clients/` search (active, no identifiers) and a `suite/documents/`
-list with signed URLs, each behind its own `RESEARCH_SERVICE_TOKEN`.
+an int). Ken approved its plan and said "build those 2 doors" (2026-09-02
+night) → BUILT: `GET /api/v1/suite/clients/?q=` (active, non-temporary,
+name/number/entity-name/email match, `ein_present` booleans, no
+identifiers), `GET /api/v1/suite/documents/?client_id=[&tax_year=]` and
+`GET /api/v1/suite/documents/<id>/url/` (a link minted by this app's
+storage; bucket keys stay here); `apps/suiteapi/research.py`, 9 tests.
+**⛔ KEN: set `RESEARCH_SERVICE_TOKEN` on BOTH Render services** (tax app +
+research) — no fallback, both doors are inert (503) until it exists.
 
 **▶ ENTITY CLOSEOUT — two more gate defects fixed (`6f32bb56`, live):** the
 gate compared the fresh verdict to the bare `tie`, so a return committed
