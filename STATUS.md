@@ -219,9 +219,14 @@ standalone business clients now have disregarded entities under their
 owners (#4806→#3638, #4801→#2120, #4803→#1267;
 `tax-test-data\tmp_disregarded_fold_s327.json`); the CRM re-points its
 engagement rows (owner `client_id` + `entity_id`), then THIS lane sets the
-three standalone clients inactive. **⛔ KEN / CRM:** #4786 (typed scorp in
-the hub — S election or Schedule C?) and #4808 (no EIN; which client owns
-it?) are held.
+standalone clients inactive. Ken (via the CRM lane, verbatim-quoted):
+Blazers is a Schedule C under #4060, the business is the SPOUSE's → folded
+(#4786 → entity under #4060, disregarded_c); Eve's Garden belongs to
+#2963's household but has NO EIN → waits. **The CRM's re-point migration
+(client_profile UNIQUE(client_id) → partial indexes) is HELD FOR KEN by the
+CRM lane; no standalone client retires until it lands.** Follow-up queued:
+an `owner` (taxpayer/spouse) field on disregarded entities to pre-fill the
+Schedule C proprietor.
 
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
