@@ -120,9 +120,10 @@ verbatim; tax-app writes done):** #1751 dba "Construction Outsource";
 #4725 Mighty Muffler Shop = June FYE (6/30 set), final return filed for
 FYE 6/2025 → INACTIVE; MASH DYNAMO "not a client" (never existed in the
 hub — nothing to retire); the three SOS suffixes yes; Peggy's 15
-confirmed; the bonding-list individual still a client (record to be created — Ken to name the entity); fees Lucrative Leads $220 / Max
+confirmed; the bonding-list individual: Ken reversed — neither he nor his business is a client (nothing created); fees Lucrative Leads $220 / Max
 Merchandising $150 / Ground Effects $220, "McCoys is done". STILL OPEN:
-Nashville Skyline (left blank), one bookkeeping client's monthly-vs-quarterly. Staffing =
+one bookkeeping client's monthly-vs-quarterly (Nashville Skyline closed by Ken
+to the CRM: never existed, nothing to delete). Staffing =
 D-041 (three slots; CRM migration staged for Ken).
 
 **▶ NEW SUITE MODULE — delvio-research (Ken, 2026-09-02, planning only):**
