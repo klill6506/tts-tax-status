@@ -115,6 +115,22 @@ GA-500s under hand-filed federals were never tie-verified and stay Draft**
 1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
 mark, or record why no GA return applies.
 
+**▶ ENTITY CLOSEOUT — the error-acceptance path (s327, late):** Ken ruled
+(relayed by the entity lane, verbatim-quoted): #2927 accepted by the IRS —
+note the GA addback diagnostic and mark it filed; #4758 not required to
+do a balance sheet and chose not to — accepted, mark filed and note it;
+#3137/#4835 not yet filed, holds stand. The gate had NO path past an
+error finding, so `run_entity_closeout` now takes `accepted_errors`
+({rule_id: Ken's ruling}, requires `source_verified`); the error becomes a
+DiagnosticAcknowledgment noted "ACCEPTED ERROR (Ken's ruling): …", a
+rule id absent from the fresh run is reported `stale_accepted_errors`
+and releases nothing. 4 tests. The lane runs the two closeouts once the
+deploy is live (INT_GA_BONUS_ADDBACK on #2927, MATH_BALANCE_SHEET on
+#4758 — the rule ids on their latest runs). The seven new Lacerte entity
+packets in `1120S\Inbox` all resolve onto EXISTING drafts (none filed,
+none imported): three Schedule-B-only shells, four hand-keyed never-tied
+drafts — the lane was told to skip none and match on EIN.
+
 **Second pass, same sitting (the s325 lesson applied — audit by the DATA,
 never the staged row):** 133 more returns had been committed IN-PROCESS
 with no staged bookkeeping, sat in Draft with documents, and re-reconciled
@@ -224,8 +240,10 @@ Blazers is a Schedule C under #4060, the business is the SPOUSE's → folded
 (#4786 → entity under #4060, disregarded_c); Eve's Garden got its EIN
 from Ken (via the CRM lane) → folded (#4808 → entity under #2963,
 disregarded_c; taxpayer/spouse owner UNCONFIRMED — Ken named the spouse,
-default spouse when the owner field ships). Retirement pass is FIVE:
-#4806 #4801 #4803 #4786 #4808. **The CRM's re-point migration
+default spouse when the owner field ships). Retirement pass DONE 2026-09-02
+(Ken's go via the CRM lane; its migration landed, five engagements
+re-pointed first): #4806 #4801 #4803 #4786 #4808 → status inactive, EINs
+left on the retired rows as history. **The CRM's re-point migration
 (client_profile UNIQUE(client_id) → partial indexes) is HELD FOR KEN by the
 CRM lane; no standalone client retires until it lands.** Follow-up queued:
 an `owner` (taxpayer/spouse) field on disregarded entities to pre-fill the
