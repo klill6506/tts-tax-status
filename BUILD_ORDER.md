@@ -2553,6 +2553,14 @@ vs the form lanes; none waits past beta onboarding.*
 
 ---
 
+## KEN-DIRECTED, 2026-09-02 (s327 sitting — off-Spine, never silent)
+- [x] **A tie IS a filed return** — `7b062029`: `commit_staged_return` marks filed on a tie (federal + attached states); list/tab counts FEDERAL-only; DB backfill 165 + 133 federal / 161 GA-500 (STATUS).
+- [x] **SSN or EIN required to create a client** — this sitting: serializer gate (desk temporary-capture exempt), New Client form labels + refusal, 91 client tests re-keyed, `test_client_rules_s327.py`.
+- [x] **Fiscal year-end on the entity** — this sitting: `clients.0015` (`fiscal_year_end_month/_day`), `fiscal_year_end_for(year)`, serializers, Slate entity-info row, editor save.
+- [ ] **The due-date calendar** — consume `Entity.fiscal_year_end_for()` + form code → federal/state due dates (1120: 15th of the 4th month after year-end, June-30 years the 3rd; 1065/1120-S: 3rd month; 1041: 4th; 1040 Apr 15; extensions) surfaced on the return list / dashboard. Verify each rule against the current-year IRS instructions before coding (Authoritative-Source Rule). Ken: "the tax app has to know what returns are due when."
+- [ ] **The 1065 import leg** — 66 of 69 accepted partnership packets sit in `1065\Inbox`; redo the defective pilot through the data-verified path (the 1120-S recipe), then land as batches.
+- [ ] **Business-family IRS acceptance tests + the A2A channel** — 1120-S scenarios 7/8 wait on Ken's declared-forms call; 1065 + 7004 mappers on the Shelf; no scenario submitted yet; the Aug-31 comm test did not happen.
+
 ## THE SHELF (blocked on external — each with its unblock action)
 *These are the "holes." Work the unblock action; the item then drops onto the Spine.*
 

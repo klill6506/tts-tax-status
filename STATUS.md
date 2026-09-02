@@ -166,6 +166,23 @@ s327 sitting; lists parsed to `D:\tax-test-data\tmp_lacerte_accepted_lists_
   they tie and mark filed) is the route — Ken offered the data-entry
   account; seed the 3 clients first.**
 
+**▶ THREE CLIENT-RECORD RULINGS, BUILT THE SAME SITTING (Ken, 2026-09-02;
+DECISIONS "Three client-record rulings"):** ① **an SSN or EIN is required
+to create a client** — `ClientSerializer.validate` refuses a creation with
+neither (the desk's temporary-capture path is the one exemption, via
+serializer context); the New Client form labels the required key by entity
+type and refuses before posting; 91 client tests re-keyed with synthetic
+identities + `tests/test_client_rules_s327.py`. ② **fiscal year-ends on
+the entity** — `Entity.fiscal_year_end_month/_day` (migration
+`clients.0015`, NULL = calendar year), `is_fiscal_year`,
+`fiscal_year_end_for(year)` (a fiscal year is labelled by the calendar
+year it BEGINS in — Form 1120 instructions "Period Covered"), both entity
+serializers, the Slate entity-info screen ("Fiscal year-end (MM/DD)") and
+the editor's save payload. **Not yet built: the due-date calendar that
+consumes it** (BUILD_ORDER queue). ③ **the duplicate S-corp client**: the
+2025 shell moved to #4775 (the EIN record), #3855 set inactive
+(`1120S\tmp_rugged_merge_s327.json`); Ken is printing its packet.
+
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
 +4). **s325 carried:** 138 landed from the four re-extracted books; the
