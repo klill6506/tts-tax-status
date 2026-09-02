@@ -115,6 +115,13 @@ GA-500s under hand-filed federals were never tie-verified and stay Draft**
 1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
 mark, or record why no GA return applies.
 
+**▶ NEW SUITE MODULE — delvio-research (Ken, 2026-09-02, planning only):**
+its session asked for the linking keys and got them from the code (client_id
++ firm_id + client_number stable; entity_id re-pointable on a merge; year as
+an int). Two read-only suite endpoints OFFERED, built only when it asks:
+`suite/clients/` search (active, no identifiers) and a `suite/documents/`
+list with signed URLs, each behind its own `RESEARCH_SERVICE_TOKEN`.
+
 **▶ ENTITY CLOSEOUT — the error-acceptance path (s327, late):** Ken ruled
 (relayed by the entity lane, verbatim-quoted): #2927 accepted by the IRS —
 note the GA addback diagnostic and mark it filed; #4758 not required to
