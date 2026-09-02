@@ -198,6 +198,19 @@ for the build queue: `source.vendor` is absent from `backentry-entity.v1`
 1040 schema); the 1065 `expected` set lacks `K14b`; 1120-S line 12 / K16c /
 L10c-d are engine-computed.
 
+**▶ DISREGARDED ENTITY TYPES BUILT (Ken's go, 2026-09-02, s327):**
+`disregarded_c` / `_f` / `_e` on `EntityType` (migration `clients.0016`);
+non-filing by name (`NON_FILING_ENTITY_TYPES` names the schedule); EIN
+required at creation and the owner must be an individual
+(`EntityCreateSerializer.validate`); never a new client's primary type
+(`ClientSerializer.validate`); UI: the add-entity pickers on Client Detail
+and Entity Detail (Client Detail's form gains a required EIN box for these
+types), label maps in the palette / Start Return / folders / returns
+pages, non-filing notes. Not built: a "reports on" link from the entity to
+the 1040 schedule row — the EIN on `ScheduleC.ein` / `ScheduleF.ein` is the
+join today; a display of the owner's schedule from the entity page is a
+small follow-up if Ken wants it.
+
 **s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
 the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
 +4). **s325 carried:** 138 landed from the four re-extracted books; the
