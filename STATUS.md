@@ -192,7 +192,7 @@ clients, so **this lane seeded the three partnership shells through
 (`1065\tmp_seed_taxwise_partnerships_s327.json`); the three S-corp shells'
 "41 entity rows" are the `OTHER_DEDUCTION_PRESETS` skeleton (safe to
 `replace_documents`; #3137 also carries a Feb-2026 partial hand entry).
-**Its landings are NOT counted until audited by the data.** Lane findings
+**Landings AUDITED by the data (2026-09-02 evening):** #4834 and #4836 (1065) FILED + GA-700 filed, tie; #2927 and #4758 (1120-S) committed with verdict TIE but DRAFT — the entity closeout gate refused them on error-severity diagnostics (#2927 INT_GA_BONUS_ADDBACK: the filed 600S carries no GA add-back for 1,250 of federal bonus; #4758 MATH_BALANCE_SHEET BOY: assets 0 vs L+E −767, BOY paid-in unknown) — **⛔ KEN: source defect or rule over-fire? left Draft on purpose, the tie rule does not override a red diagnostic**; #3137 (1120-S) and #4835 (1065) held NO_TIE (§1245 recapture the filed 4797 reported as §1231 + a Schedule L that does not roll; K14a $1 rounding + a Schedule L with no liabilities) — **⛔ KEN**. Record: `1120S\ENTITY-PROGRESS-2026-09-02.md`. Two more lane findings queued: M1_1 / M2_3 are INPUTS (pinning them without keying reads 0); the entity payload has no address keys while closeout treats MISSING_ADDRESS as error-severity (fix = address keys in `backentry-entity.v1`, read off the packet face). Lane findings
 for the build queue: `source.vendor` is absent from `backentry-entity.v1`
 (staging refuses what the local validator passes — the validator reads the
 1040 schema); the 1065 `expected` set lacks `K14b`; 1120-S line 12 / K16c /
