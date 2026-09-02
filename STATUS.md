@@ -221,8 +221,11 @@ owners (#4806→#3638, #4801→#2120, #4803→#1267;
 engagement rows (owner `client_id` + `entity_id`), then THIS lane sets the
 standalone clients inactive. Ken (via the CRM lane, verbatim-quoted):
 Blazers is a Schedule C under #4060, the business is the SPOUSE's → folded
-(#4786 → entity under #4060, disregarded_c); Eve's Garden belongs to
-#2963's household but has NO EIN → waits. **The CRM's re-point migration
+(#4786 → entity under #4060, disregarded_c); Eve's Garden got its EIN
+from Ken (via the CRM lane) → folded (#4808 → entity under #2963,
+disregarded_c; taxpayer/spouse owner UNCONFIRMED — Ken named the spouse,
+default spouse when the owner field ships). Retirement pass is FIVE:
+#4806 #4801 #4803 #4786 #4808. **The CRM's re-point migration
 (client_profile UNIQUE(client_id) → partial indexes) is HELD FOR KEN by the
 CRM lane; no standalone client retires until it lands.** Follow-up queued:
 an `owner` (taxpayer/spouse) field on disregarded entities to pre-fill the
