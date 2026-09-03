@@ -239,6 +239,11 @@ verify one before assuming SSA-only/hand-keyed.
 #2920, #3103, #3773, #4460); 1065: 2 of 69 filed, 66 packets in
 `1065\Inbox` — the partnership import is the next entity job (BUILD_ORDER
 Ken-directed block). Carried entity findings: DEFERRAL_AUDIT (9)–(18).
+**Relayed 2026-09-03 night (DECISIONS "Three entity-lane rulings"):** client
+219 WAS accepted by the IRS — a straight back-entry, the entry lane's, blocked
+on a fresh production session that only Ken mints · #3137 DROPPED → Inactive
+(the §1245 and balance-sheet questions are moot) · #4835 stays held (not
+final; the $1 K-14a rounding is accepted as `tie_with_exception`).
 
 **▶ NEW SUITE MODULE — delvio-research:** doors built
 (`apps/suiteapi/research.py`); **⛔ KEN: set `RESEARCH_SERVICE_TOKEN` on
