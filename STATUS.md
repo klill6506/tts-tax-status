@@ -95,8 +95,22 @@ app's document door → `tax-documents`. Source docs live in THIS app's store
 for January; unify the two stores after season (REVIEW_QUEUE). The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
-**▶ UI HOUSEKEEPING (Ken, 2026-09-03 — "the more I use the apps the more this
-stuff bothers me"):** the Return Manager client-search frame is darker —
+**▶ SLATE v2.3 PASS 1 — LIVE (Ken, 2026-09-03: "hammer the tax app today and
+get it exactly where I want it", Lacerte as the reference: dark labels, dark
+boxes, a little more color; then every other app follows the tax app with
+its own base color; Clients takes check-in's ORANGE and the C icon).**
+Tokens (vendored `slate-tokens.css`, all proposed upstream as v2.3):
+`--text-label` = gray-1000 (new; `.slate-inputrow-text` now medium weight on
+it) · `--value-entered-border` gray-400 → **gray-700** (every worksheet
+field box) · `--border-emphasis` → gray-700 (the client-search frame) ·
+`--surface-section` = accent 10% on white and `--surface-toolbar` = accent 5%
+(section bands, table heads, toolbars carry the app's base color — navy
+here, orange in Clients — automatically via `--accent`) · `--surface-row-alt`
+→ gray-100 · `.slate-secheader` and `.slate-rm-th` text in `--accent`.
+⚠ Rule-change protocol, stated to Ken: he amends a rule by saying so in
+chat; it is recorded dated and the old one is superseded; "do not
+re-litigate" binds this lane, not him. Next: Ken's reaction → pass 2.
+**▶ UI HOUSEKEEPING, earlier the same morning:** the Return Manager client-search frame is darker —
 new vendored Slate token `--border-emphasis: var(--gray-600)` on
 `.slate-rm-search` (was `--border-strong`, gray-400; gray-500 is one shade
 off on this scale). Proposed upstream to delvio-design as v2.3 with
