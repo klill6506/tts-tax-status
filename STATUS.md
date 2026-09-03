@@ -75,12 +75,12 @@ into repo / planning / memory files is now a client NUMBER (map:
 `server/tests/test_lacerte1040.py` carried a REAL couple's names + both
 SSNs as "synthetic" words (now synthetic), and three s328 commit
 messages carry surname codes (`26e70113`, `c2a3276b`, `62c76c9b`) — the
-tree is clean, the HISTORY is not → Ken's call on a supervised rewrite
-(the s297 precedent; question 4 in the note). s327's layout.py comments
+tree is clean, the HISTORY is not → the supervised rewrite is SCHEDULED
+(Ken's go 2026-09-03; NEXT ⓪; REVIEW_QUEUE "REWRITE #2"). s327's layout.py comments
 still carry codes (HITTC/CALVO… → now numbers too). **Rule going
 forward: never write a Lacerte packet code outside tax-test-data.**
 
-**▶ NEXT:** ① at boot: read `tmp\commit_s328_uncommitted.txt`'s GRAND
+**▶ NEXT:** ⓪ **THE SECOND PII HISTORY REWRITE — Ken's go 2026-09-03 ("Sure you can schedule the rewrite"; DECISIONS). Run it FIRST, in a dedicated sitting with Ken present and every peer lane off the tree, per the s297 recipe in REVIEW_QUEUE (fresh mirror clone → `git filter-repo` → force-push → commit map under docs/history → repair hash citations); scope = `server/tests/test_lacerte1040.py`'s pre-`7dc2d044` versions (real names + SSNs) and the messages of `26e70113` / `c2a3276b` / `62c76c9b` (surname packet codes).** ① at boot: read `tmp\commit_s328_uncommitted.txt`'s GRAND
 SUMMARY (the overnight job); re-extract any GA-RIE hold from its TaxWise
 packet. ② The face
 readers by wall count through the TaxWise parsers with measured Lacerte
