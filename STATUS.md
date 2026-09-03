@@ -2,50 +2,40 @@
 
 ## ▶▶ RESUME POINTER — s329, 2026-09-02 night (the s328 close was mislabeled 09-03; the clock says 09-02)
 
-**▶ THE SECOND PII HISTORY REWRITE IS PREPARED AND GATED ON A MIRROR CLONE —
-⛔ THE FORCE-PUSH WAITS ON KEN'S "GO" IN CHAT (plus his word that every
-peer lane is off the tree).** Ken's 2026-09-03 ruling authorized it in a
-dedicated sitting with him present; nothing has been pushed by force.
-What is ready, all under `D:\tax-test-data\repo-backups\`:
-- `delvio-tax-pre-rewrite-2026-09-02.git` = the pre-rewrite backup mirror
-  (origin main `10d6f28f`, 2,718 commits — KEEP, as the s297d one is kept).
-- `rewrite-work\delvio-tax-rewrite-2026-09-02.git` = the filtered clone
-  (`git filter-repo --replace-text` + `--replace-message`; files in the
-  session scratchpad, never displayed). Gates: V1 tip TREE hash identical ·
-  V2 commit count 2,718 unchanged · V3 zero residual hits over every
-  reachable text blob and every message — **with a POSITIVE CONTROL: the
-  same sweep on the untouched backup HITS** · V4 `filter-repo/commit-map`.
-- **The audit WIDENED the scope (s297 lesson, third time):** Ken's ruled
-  scope (the s327 fixture's real names + SSNs; three s328 messages with
-  surname packet codes) → the mechanical blocklist (every Lacerte packet
-  code from the `Lacerte Inbox` filenames + every TaxWise packet surname,
-  caps and Capitalized) found **103 surname tokens in history that are
-  ABSENT at tip** (mostly old STATUS blobs — every mirror-guard catch fixed
-  the tip and left history; plus the s327/s328 layout.py / worksheets.py /
-  coverage-tracker blobs) and **one code still AT TIP in four files**
-  (scrubbed first as a normal commit `10d6f28f`, deploy
-  dep-dacd6ipt0dsc73dd7k8g live). The 359 tokens PRESENT at tip are the
-  s297 tier-3 deferred class (mostly false positives — ordinary words and
-  form constants) — untouched, Ken's separate cleanup call.
-- **Ken's choice (one decision):** (A) push the WIDENED rewrite —
-  recommended, one force-push removes every history-only surname; (B) push
-  only the ruled scope + Lacerte codes — a second rewrite later for the
-  rest; (C) hold. After the push: re-point this checkout (`git fetch` +
-  `reset --hard origin/main`, reflog expire, gc), write the old→new map to
-  `docs/history/rewrite-2026-09-02-commit-map.txt`, repair the SHA
-  citations in STATUS / BUILD_ORDER / DECISIONS / REVIEW_QUEUE / memory
-  from the map, tell the peer lanes to re-clone, verify the Render deploy.
-  ⚠ The tts-tax-status mirror never carried these values — no rewrite there.
-- **The filtered clone is built from the CURRENT origin tip** (all of
-  tonight's work committed and pushed first, so a force-push drops
-  nothing). If anything else is committed to main before Ken's go, the
-  filter must be re-run from the new tip — otherwise the push would
-  discard it. After the push: `git fetch` + `reset --hard origin/main`
-  here, `reflog expire --expire=now --all`, `gc --prune=now`.
-- ⚠⚠ LESSON (memory s329): the first filter-repo pass replaced NOTHING — a
-  bash heredoc turned every regex `\b` into a backspace byte — and every
-  gate passed vacuously; only the positive control exposed it. Never trust
-  a residual sweep that reads the replacement file's own patterns.
+**🏁 THE SECOND PII HISTORY REWRITE IS EXECUTED (Ken's go, narrow scope,
+2026-09-02 night).** `main` was force-pushed once from a filtered mirror
+clone: `8f87ed1b` → **`75de3a2d`**, 2,720 commits, 902 SHAs changed, first
+changed commit dated 2026-03-22. All four gates passed BEFORE the push:
+V1 tip TREE hash identical (`15a2a45c…`) · V2 commit count unchanged ·
+V3 zero residual hits across all 11,593 reachable text blobs and every
+commit message **with a positive control — the same 41 patterns hit the
+untouched backup 41/41 in blobs and 11/11 in messages** · V4 commit map.
+
+- **Scope (Ken: "push the narrow scope only for now"):** the s327 test
+  fixture's real identifiers (2 SSNs + 5 name/street words) and **17
+  Lacerte packet codes** that lived in history and were absent at tip —
+  each now the client number, or `[client]` where no number is known.
+- **⏳ DEFERRED to a later rewrite (Ken's "for now"):** ~86 TaxWise packet
+  surnames that survive only in old `STATUS.md` / `STATUS_ARCHIVE.md`
+  blobs (every one was fixed at tip when the mirror guard caught it; only
+  history still carries them), plus the s297 tier-3 tokens present at tip.
+  Tracked in REVIEW_QUEUE as **REWRITE #3**.
+- **Two live tip catches were scrubbed by ordinary commits first** (a
+  mapped token must be absent at tip or the filter rewrites current code):
+  a packet code in four files (`67d5ac25`) and a client surname in the Form
+  8962 BATCH-296 item-9 test docstring (`21ea4025`) — the tenth PII catch.
+- **Backup mirror (KEEP):** `D:\tax-test-data\repo-backups\delvio-tax-pre-rewrite-2026-09-02.git`
+  holds the full pre-rewrite history at `8f87ed1b`. Destroying it is a
+  separate Ken call, as with the s297d backup.
+- **Old→new SHA map:** `docs/history/rewrite-2026-09-02-commit-map.txt`
+  (2,721 rows). 180 hash citations across STATUS / archives / DECISIONS /
+  REVIEW_QUEUE / BUILD_ORDER / the auto-memory were repaired from it, none
+  ambiguous. **⚠⚠ EVERY delvio-tax SHA quoted before 2026-09-02 night is
+  STALE — resolve it through the map, never from memory.**
+- **⛔ PEER LANES MUST RE-CLONE** (the other account, the entity/entry
+  lanes, Codex). A lane that pulls onto old history will re-introduce it.
+- The public `tts-tax-status` mirror never carried these values and was
+  NOT rewritten; its SHAs stand.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
 (`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
@@ -55,17 +45,24 @@ stale-payload rule) — `tmp\s328-rie-refix-src` → `PipelineOut\s328-rie-refix
 → `tmp\commit_s328_rie_refix.py` (batch `s328-rie-refix-commit-001`): **11
 GA holds → 9 emitted → 8 TIE and LANDED** (clients 3815 · 3825 — the
 11,038-vs-8,596 RIE case — · 4419 · 2019 · 1794 · 2228 · 4751 · 1810;
-verified by the data: federal filed + GA-500 filed, document rows present
-on 6, two with none — SSA-only shape, add to the "filed with zero rows"
-check list), **1 real hold: client 4081** (GA S1-7 / RIE-TP-17 43,756 vs
+verified by the data: federal filed + GA-500 filed; six carry document
+rows and **clients 2228 and 4419 correctly carry none — both are sole
+proprietors whose only income is Schedule C** (AGI 3,833 / 15,517, SE tax
+582 / 2,447), so zero document rows is the right shape, not a coverage
+gap), **1 real hold: client 4081** (GA S1-7 / RIE-TP-17 43,756 vs
 43,925 — the carried "$169" item, still Ken's), **2 refused by name:
 clients 4429 and 3871** (GA 7b unborn-dependent exemption — the s323
 class, an ENGINE leg nobody has built; witnesses now 8). Still held from
 the overnight job, by class: **§6654 federal 37/38 penalty deltas —
 clients 1938 · 3680 · 1219 · 3514 · 2774 · 4093** (Ken's family, six more
 witnesses) · **`r_1099s.distribution_codes` 3-char — clients 2793 · 3010 ·
-3160 · 4589** (build queue ②, now 8 packets). Filed count: +8 tonight on
-top of the 31 (a fresh DB census at the next boot — counts are timestamps).
+3160 · 4589** (build queue ②, now 8 packets).
+
+**▶ FRESH DB CENSUS AT THE s329 CLOSE (a count is a timestamp — re-run it,
+never quote this one later):** 2025 federal 1040 shells **2,978 — filed
+1,258** (was 1,218 at the s327 close: +40 tonight), draft 1,716, in
+progress 4. GA-500 under a filed federal: 1,224 — **1,187 filed, 37 draft**
+(the same 37 the entry lane owes a face check, listed below).
 
 **▶ BATCH-296 items 54–59 triaged by the DATA (annex appended to the
 file):** 54 / 56 / 58 / 59 are FILED (58 + 59 = the s326 owner-witness
@@ -83,8 +80,8 @@ reader (face line 38) · ⑤ the GA 7b unborn-dependent engine leg (8
 witnesses; spec with the states lane).
 
 **▶ THE LACERTE-LAYOUT EXTRACTOR PASS (BUILD_ORDER ⑥, OPEN) — state at
-the s328 close, unchanged tonight:** leg 2 shipped (`26e70113` +
-`c2a3276b`; 276 green across the four extractor suites): the Federal
+the s328 close, unchanged tonight:** leg 2 shipped (`5173e51f` +
+`c5101c8c`; 276 green across the four extractor suites): the Federal
 Worksheets document readers (`lacerte1040/worksheets.py`), the GA 500
 income-statement block (`ga500_stmts.py`), the shared Schedule 1-A emitter
 (`taxwise1040/sch_1a_emit.py`). Lacerte prints no W-2 / 1099 facsimiles —

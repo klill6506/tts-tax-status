@@ -172,7 +172,7 @@
 > shell-carries-documents -Merge route (agent lane).
 
 > **2026-08-29 session 310 — the extractor Form 8889 (HSA) leg + the
-> GA-500 lines 31-44 decomposition (`972cf50e`, scripts + tests only, no
+> GA-500 lines 31-44 decomposition (`7843a6fc`, scripts + tests only, no
 > form legs changed).** No new RENDERED form — extractor coverage: the
 > filed Form 8889 face parses into the existing `hsa_accounts` vocabulary
 > (the s224 import route; FORM_8889 input/compute/render chains unchanged
@@ -188,7 +188,7 @@
 > printed (the s297 omission class, caught three independent ways).
 
 > **2026-08-28 session 309 — the extractor student-loan/educator worksheet
-> leg (`11415881`, scripts + tests only, no form legs changed).** No new
+> leg (`84a18ad6`, scripts + tests only, no form legs changed).** No new
 > RENDERED form — extractor coverage: the USW10402 worksheet (student loan
 > interest §221 / educator expenses §62(a)(2)(D) / ESA-QTP rows) parses as
 > a cross-check against the FILED face Schedule 1 lines 11/21, which stay
@@ -197,7 +197,7 @@
 > 14/14 rolled back, two carry decomposed GA-RIE no_ties staged for Ken
 > (REVIEW_QUEUE — engine/vendor questions, not extraction defects).
 
-> **2026-08-28 session 308 — the extractor Schedule C leg (`504a484f`,
+> **2026-08-28 session 308 — the extractor Schedule C leg (`b25885f7`,
 > scripts + tests only, no form legs changed).** No new RENDERED form —
 > extractor coverage: both Schedule C faces parse into the existing
 > `schedule_cs` vocabulary (input/compute/render/assertion chains for
@@ -210,8 +210,8 @@
 > whose Schedule C page was never printed — both refuse by name.
 
 > **2026-08-26 session 302 — the §469(g) PTP release + the Form 8990 1040
-> ledger surface (`9999f2c6`, deploy LIVE, mig 0367); then the line-26
-> estimated-payments source (`a9f97025`) and D_EFILE_004 (`f882e494`),
+> ledger surface (`3c5e20c1`, deploy LIVE, mig 0367); then the line-26
+> estimated-payments source (`e7d5a933`) and D_EFILE_004 (`0de7336d`),
 > both LIVE.** No new RENDERED form: all three are input/compute/
 > diagnostic amendments to existing units.
 > **FORM_8582 / §469(k) — the disposition-year branch closes.** ScheduleK1
@@ -249,7 +249,7 @@
 > **E-file readiness** gains D_EFILE_004: a missing MeF schema tree is an
 > environment limitation (warning, "unmeasured here"), not a D_EFILE_002
 > internal fault.
-> **SCHEDULE_SE — line 8a gains its source (s302d, `ffedba4d`).** The
+> **SCHEDULE_SE — line 8a gains its source (s302d, `f874dfd5`).** The
 > social security wage base was never consumed: line 8a could only be
 > preparer-keyed, so a W-2 at the base did not stop the full 15.3% from
 > applying to self-employment income ($5,717 overstated on the reporting
@@ -263,7 +263,7 @@
 > SUPPORTED-SECTIONS.md regenerated (the new 8990 section).
 
 > **2026-08-26 session 300 — the Rev Proc 2014-41 §5.03 limit inside the
-> Form 8962 SEHI↔PTC iterative (`5f890ef5`, one deploy, no migration).**
+> Form 8962 SEHI↔PTC iterative (`c9633222`, one deploy, no migration).**
 > No new form — a compute amendment to the existing FORM_8962 unit
 > (BATCH-296 QBI-item leg 2, build queue item ④). The §162(l) deduction
 > for specified premiums is now ceilinged at the LESSER of earned income
@@ -278,14 +278,14 @@
 > (Ken decision 2), both Rev-Proc-sanctioned; pinned both ways in test.
 > 11 new tests (3 injection-proven red); seed-leg EXPECTED_LINES fixed in
 > passing (stale since s277). Gates: flow + 8962 suites 583 · seed 13 ·
-> MeF/backentry/W-2 272. **s300b addendum (`87f4f329`, second deploy):
+> MeF/backentry/W-2 272. **s300b addendum (`8dd8ee48`, second deploy):
 > D_8962_NOCONVERGE (error)** — the iterative reports convergence and a
 > Step-6 non-converging return errors by name instead of silently keeping
 > the 25th iterate (fallback stays with the S-14 method ruling); proven
 > on a constructed 300%-FPL-boundary two-cycle; 683 green.
 >
 > **2026-08-26 session 299 — the Form 8332 released-dependent flag
-> (`5d1d683e`, one deploy, mig 0366).** No new form — Form 8332 itself is
+> (`b86f5024`, one deploy, mig 0366).** No new form — Form 8332 itself is
 > never rendered (it is the custodial parent's signed release, an
 > attachment). The unit closes the §152(e) split on the 1040 SPINE:
 > `Dependent.released_by_form_8332`, side keyed by `claimed_as_dependent`
