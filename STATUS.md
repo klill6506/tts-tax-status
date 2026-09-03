@@ -1,341 +1,183 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s327, 2026-09-02
+## ▶▶ RESUME POINTER — s328, 2026-09-03
 
-**▶ THE LACERTE-LAYOUT EXTRACTOR PASS, LEG 1, SHIPPED (`6f1a7858` +
-`a1ce1047`, `scripts/lacerte1040/`; 42 new tests, 262 green across the
-three extractor suites).** BUILD_ORDER ⑥ is OPEN and IN PROGRESS — a
-multi-session unit; this session measured the layout and built the
-classifier + the answer-key emitter + the census; the next session builds
-the document readers. Measurement record (codes only):
-`D:\tax-test-data\1040\tmp\s327_lacerte_measurement.md`.
+**▶ THE LACERTE-LAYOUT EXTRACTOR PASS, LEG 2, SHIPPED (`26e70113` +
+`c2a3276b`; 276 green across the four extractor suites).** BUILD_ORDER ⑥
+stays OPEN. Leg 2 = the Federal Worksheets document readers
+(`lacerte1040/worksheets.py`), the GA 500 income-statement block
+(`ga500_stmts.py`), the emit assembly with the TaxWise face identities
+mirrored, and the Schedule 1-A logic factored into
+`taxwise1040/sch_1a_emit.py` so both vendors share it.
 
-- **The font is the data.** Every value Lacerte prints is in
-  `QuickTypeIICourierA` (depreciation schedules `QuickTypeIICondensed`).
-  `lacerte1040/pagewords.py` flags data words by font, strips the
-  vendor's trailing period on DATA words only, aligns rows by BASELINE.
-  With that word model the TaxWise 1040 p1/p2, GA-500, GA Schedule 1 and
-  RIE-worksheet parsers read four Lacerte packets to the entry lane's
-  answer keys changing only label bands (`lacerte1040/layout.py`; the
-  taxwise1040 parsers took the geometry as parameters, defaults unchanged).
-- **The library is NOT blank.** Unfiled forms print pre-computed shadow
-  values (1040-SR copy, 6251, 8960, 8962, 500X, 2210 + Sch AI …), so the
-  packet's own "Forms needed for this return" page is the ONLY authority on
-  what was filed. `classify.py` claims faces per JURISDICTION (Georgia's
-  "Sch 3" ≠ federal), classifies Lacerte's supplements by their bold-14
-  header title, counts shadows, and REFUSES on an unmapped token, a listed
-  form with no page (the negative control, tested), or a non-Georgia state
-  on the manifest. Manifest ∪ amount-bearing pages = 100% of the 1,578
-  pages the entry lane read (57 payloads' `source.pdf_pages`); the manifest
-  alone 99.3% — the misses are input-bearing SHADOWS (2210 = the prior-
-  year-tax witness, Sch B below $1,500, Sch EIC, 4852), now named.
-- **`emit.py` (leg 1):** coverage gate → 1040 faces (answer key, boxes,
-  preparer, digital assets) → identity (p1 header rows, filing-status X,
-  GA 500 p1 name boxes + DOB, surname split resolved by the GA box or a
-  unique shell) → the 12b aged tripwire → dependents grid (Lacerte
-  geometry, column 4 pinned on two witnesses) + Form 8867 → the GA answer
-  key (face, Sch 1, RIE) → the INCOME GATE: any face income line refuses
-  by name until the Federal Worksheets readers exist. So leg 1 emits
-  nothing importable by design; its product is the wall list.
-- **CLI:** `python -m lacerte1040 census <dir> --out <json>` and
-  `python -m lacerte1040 extract <dir> --out-dir <dir> [--dob-index …]`
-  (run from `scripts\`). Runs this session: the classify census
-  (`1040\tmp\lacerte_classify_census_s327.{txt,json}`) and the leg-1
-  extract over the whole Inbox (`1040\tmp\lacerte_extract_s327.txt`,
-  `1040\PipelineOut\lacerte-s327\*.refused.json`). **255 packets: 0
-  emitted (by design), 255 refused; 1 is not a Lacerte packet (code 10071,
-  no manifest page).** Classify census: 254 list a 1040, 234 a GA 500,
-  181 Sch 1, 172 Form 8995, 131 Sch D, 126 Sch B, 119 Sch 2, 113 Sch 3,
-  110 Sch E p2, 109 8949, 95 1116, 84 4562, 79 8867, 76 Sch A, 75 Sch 1-A,
-  75 Sch C, 65 8582, 62 7203 …; 45 packets carry a NON-GEORGIA state
-  (NC 7, SC 7, NY 5, IL 4, CA 3, MA/CO/AR/OH/KY 2 …) and refuse on it.
-  ⚠ Four over-counts in that run were fixed AFTER it started (the blank
-  GA 4562's `$`-constants, 8879-TA listed-but-absent, the Underpayment
-  Penalty Worksheet and e-file Payment Record titles) — a clean re-run
-  was launched at close into `PipelineOut\lacerte-s327b` (log
-  `tmp\lacerte_extract_s327b.txt`); read THAT one at the next boot.
-- **The wall list (255 packets, packets carrying, `lacerte-s327`):**
-  Federal Worksheets 254 · Schedule 1 181 · 8995 172 · Sch D 131 ·
-  Federal Statements 129 · Sch B 126 · Sch 2 119 · Sch 3 113 · 8949 109 ·
-  1116 95 · Georgia Statements 88 · 4562 84 · Sch A 76 · Schedule of Loss
-  Limitations 75 · Sch 1-A 75 · Sch C 75 · Sch E 63 (+p2 75) · 8582 65 ·
-  Federal Basis Limitation Worksheets 63 · 7203 62 · 1116 Sch B 56 · 8889
-  44 · 7206 25 · 8962 24 · Vehicle/Unreimbursed Expenses 22 · 2441 21 ·
-  4797 20 · 8829 20 · IND-CR 17 · listed 2210 16 · Sch F 14 · 8995-A 14 ·
-  NOL Worksheets 13 · 8582 Worksheets 12 · 8863 10 · GA Sch 3 10 · 8283 9
-  · 8880 9 · 5329 8 · GA Sch 2 5 · 8606 5 · 8990 5 · 4952 6. Median
-  packet carries ~9 refusal classes — the Lacerte book is DEEP: after the
-  worksheets, the faces the TaxWise parsers already read (Sch 1/2/3, B,
-  A, D+8949, C, E) unlock most of it through band measurement, not new
-  parsers.
-- **DOB source built:** `1040\tools\lacerte_dob_index.py` → `Lacerte
-  Inbox\lacerte-dob-index.json` (SSN-keyed; Ken's client list joined to
-  the packet identity list: 258 of 258 SSN-bearing packets, 152 with a
-  spouse DOB; the organizer scan (`tmp\organizer_scan_s327.json`, 379
-  organizers, code-keyed, US dates) merged via `--organizer`: 206 packet
-  records, DEPENDENT DOBs by SSN → 384 index rows). The 12b aged
-  cross-check remains the guard on a wrong match.
-- Tools: `1040\tools\lacerte_dump.py <CODE> <pages> [--data|--tmpl|--grep
-  RX|--y A:B]` — the positional dump for these pages.
+- **Lacerte prints no W-2 / 1099 facsimiles.** The documents live in the
+  Federal Worksheets tables: Wage Schedule → `w2s` (no EIN / box 3 / 5 /
+  12 printed); Pension + IRA schedules → `r_1099s` (no code; a blank
+  Taxable is 0 — the Grand Total proves it; `***` = 8606-computed →
+  refuse by name); Interest / Dividend lists → `int_1099s` / `div_1099s`
+  (printed ONLY when no Schedule B is filed — 126 Sch-B packets ∩ 0
+  lists); Pub 915 line 1 → `ssa_box5_net_benefits` (joint total on the
+  taxpayer — no per-owner box 5 exists, no lever); SSA withholding = 25b
+  − Σ 1099-R W/H. Payer FEIN + GA withholding come ONLY from the GA 500
+  INCOME STATEMENT DETAILS block (statements A–F, type by the X row),
+  matched to documents by GA withholding (+ income on a tie).
+- **Owners on MFJ lists:** the MFJ-vs-MFS comparison page (per-spouse
+  income columns; joint = half each) → the s326 RIE rule → joint if no
+  spouse is RIE-age → refuse by name.
+- **Three leg-1 defects found by driving #1313 through by hand:** Lacerte
+  prints every X ~10pt LEFT of its label — p2 aged/blind `born` anchor,
+  the 12a claimed boxes, the digital-asset Yes/No (#1313's "No" had read
+  as "Yes"). Parametrized in `taxwise1040/f1040.py`, pinned in
+  `lacerte1040/layout.py` on a corpus census (Yes-X 491 ×9, No-X 528
+  ×245, aged 167 ×118, You-claimed 216 ×2; blind / spouse-claimed
+  windows extrapolated — no witness yet). Sch 1-A: only the subline
+  gutter differs (`SCH1A_SUB_X`).
+- **Verified against the entry lane's answer keys:** #1313, #1522,
+  #1570 match section for section (w2s / r_1099s / int / div /
+  dependents / 8867 / car loans / taxpayer fields / expected). Only
+  differences: Lacerte rows carry MORE (payer_ein, state_id_number,
+  state_distribution); the entry lane hand-keyed `ga500_fields["5"]`
+  (GA filing-status letter — neither pipeline emits it) and expected
+  zeros on 36/37/38 (the TaxWise pipeline omits them too).
+- **Runs:** `lacerte-s328` (before the Sch 1-A / X fixes): 255 refused,
+  0 emitted, refusal census = leg 1's (the coverage gate refuses
+  upstream — a corpus run measures nothing about a reader it never
+  reaches). `lacerte-s328b` (fixed code, log
+  `tmp\lacerte_extract_s328b.txt`, batch `lc328b-001.batch.json`): **255
+  packets → 3 EMITTED (#1522, #1570, #3251), 252 refused.**
+  Single-wall packets (the cheapest unlocks): Sch B 2 · Sch 2 1 · 8606 1
+  · Federal Statements 1 · Maryland 1 · one non-Lacerte packet · one
+  shell already filled (1313) · **the packet named in tmp/s328_ken_questions.md: the GA 500 page 1 lists a
+  DIFFERENT primary SSN (…7699) with the 1040's filer (…5844) as the
+  spouse — a swapped-spouse or mismatched GA return; ⛔ KEN.** Walls per
+  packet: 9 single · 10 double · 8 triple · the median ~9. ⚠⚠ **s328b
+  ran on the STALE s327 shells index; the index was regenerated from the
+  DB at the end of the session (2,978 shells; 1522 / 1570 are FILED with
+  documents by the entry lane, so #1522 / #1570 are duplicates of
+  hand-keyed landings).** `tmp\commit_s328_lacerte.py` re-fences every
+  emit against the fresh index (skips filled / non-draft shells by name)
+  and runs the standing-authorization contract; `--dry-run` rolls back
+  everything. **🏁 THE FIRST LACERTE-PIPELINE LANDING: #3251 (client
+  3251) — dry-run TIE, then COMMITTED under the standing authorization
+  (batch `s328-lacerte-commit-001`, `tmp\commit_s328_lacerte.txt`);
+  verified by the DATA: 2025 1040 FILED with its W-2 row, GA-500 FILED.**
+  #1522 / #1570 correctly FENCED (filed shells).
+- **The wall list is unchanged by design** (faces gate first): Sch 1 181
+  · 8995 172 · Sch D 131 · Sch B 126 · Sch 2 119 · Sch 3 113 · 8949 109
+  · 1116 95 · 4562 84 · Sch A 76 · Sch 1-A 75 (now READ) · Sch C 75 ·
+  Sch E p2 75 · GA 4562 72 · 8582 65 · Sch E 63 · 7203 62 ….
 
-**▶ NEXT (leg 2 — the Federal Worksheets readers, the top wall in every
-packet):** the section tables are all data-font with header rows, geometry
-in the measurement record: **Wage Schedule** (Taxpayer/Spouse − Employer ·
-Wages x1 296 · Fed W/H 365 · FICA 413 · Medicare 461 · State W/H 515 ·
-Local 569; no EINs, no box 3/5/12 — D_EFILE_001 stays; the entry lane
-keyed `social_security_wages`/`medicare_wages` from FICA÷6.2% and the
-W-2 box-1 shape) → `w2s`; **Pension and Annuities Schedule** + **IRA
-Distribution Schedule** (Payer · Total 363 · Taxable 432 · Fed W/H 500 ·
-State W/H 564) → `r_1099s` (IRA flag from the schedule it sits in);
-**Interest Income / Dividend Income** (payer x0 56 · amount x1 564; owner
-on MFJ from the RIE worksheet columns, the s326 rule) → `int_1099s` /
-`div_1099s`; **Social Security Benefits Worksheet (Pub 915)** line 1 →
-`ssa_box5_net_benefits`, SSA withholding = face 25b − 1099-R withholding
-(the entry lane's own derivation; tie 25d); the **State and Local Refund**
-worksheet → `sr_filed_taxable_refund`. Then Schedule 1 / Sch B / Sch A /
-Sch D+8949 / Sch C faces through the existing TaxWise parsers with Lacerte
-bands (measure each band first — the 1040 pattern), then the first DRY-RUN
-tie on HITTC/BITTLE-class packets, then the shadow-2210 reader.
+⚠⚠ **PII CATCH (ninth, s328 close — the mirror guard tripped on a packet
+CODE):** Lacerte packet codes ARE surnames. Every code this session wrote
+into repo / planning / memory files is now a client NUMBER (map:
+`1040\tmp\s328_code_to_client.json`; Ken-facing codes only in
+`1040\tmp\s328_ken_questions.md`). Found on the way: the s327 fixture in
+`server/tests/test_lacerte1040.py` carried a REAL couple's names + both
+SSNs as "synthetic" words (now synthetic), and three s328 commit
+messages carry surname codes (`26e70113`, `c2a3276b`, `62c76c9b`) — the
+tree is clean, the HISTORY is not → Ken's call on a supervised rewrite
+(the s297 precedent; question 4 in the note). s327's layout.py comments
+still carry codes (HITTC/CALVO… → now numbers too). **Rule going
+forward: never write a Lacerte packet code outside tax-test-data.**
+
+**▶ NEXT:** ① at boot: read `tmp\commit_s328_uncommitted.txt`'s GRAND
+SUMMARY (the overnight job); re-extract any GA-RIE hold from its TaxWise
+packet. ② The face
+readers by wall count through the TaxWise parsers with measured Lacerte
+bands (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch C; 8995 via
+`taxwise1040/f8995.py`) — for each, find ONE packet whose only wall is
+that face and drive it through by hand before trusting the census (the
+s328 lesson). ③ the shadow-2210 reader (face line 38).
+
+**▶ BOOT TASK RUN THIS SESSION — the "58 never committed" payloads:**
+audited by the DATA (`tmp\s328_uncommitted_audit.json`: 242 payloads in
+r51 / gail-s325 / georgianna-g2 / g4 / shellfix-rerun; **59 sit on a
+2025 shell with ZERO document rows**), then the tie-gated commit
+(`tmp\commit_s328_uncommitted.py` → `.txt`, batch
+`s328-uncommitted-commit-001`, keys suffixed `-s328`; one transaction
+per return, tie commits + bookkeeping, else rollback) was LAUNCHED and
+runs ~4 min/return (~4 h) — **read its GRAND SUMMARY at boot**. At close:
+13 processed, 8 tie/landed, 4 no_tie held — clients 1938 and 3680 are
+the §6654 penalty shape (federal 37/38 deltas, Ken's class); client
+3815 is the s325 GA RIE family (S1-7 / RIE-TP-17 expected 11,038 vs
+8,596) — ⚠ these r51 / early-book payloads PREDATE the s326 owner-witness
+fix, so a GA RIE hold here means RE-EXTRACT the TaxWise packet with
+current code, never commit the stale payload.
+
+**▶ KEN'S 6252 RULING (relayed by the entity lane as an OPTION SELECTION,
+2026-09-02 night; DECISIONS "Form 6252 line 19"):** round the gross
+profit percentage to four decimals as Lacerte prints. Verified: the 2025
+instructions say "rounded to at least 4 digits" — a FLOOR, both methods
+comply, a permitted vendor accommodation Ken chose for dollar
+reconciliation (not an engine error). DEFERRAL_AUDIT (17) ruled; build
+stays in the auto-dealer unit (rounding MODE = a convention to pin on a
+witness). #3773 was closed out FILED by the entity lane on Ken's
+"file as is and note the credit"; the shareholder 1040 (batch ee7d11b9,
+key i-skoglund-4000-d) still waits on the auto-dealer unit (items 2–4).
 
 **▶ KEN'S RULING, 2026-09-02 (s327 sitting) — A TIE IS A FILED RETURN, and
-the Filed count is the practice's true count.** The DB audit that prompted
-it: 920 federal 1040s showed Filed; the extractor's 165 dollar-verified
-returns (and 160 of their GA-500s) sat in DRAFT because the in-process
-commit never marked them; 38 more GA-500s under hand-filed federals were
-never marked; the Individual tab counted SC/NC/AL state rows as returns
-(932 vs 920). **Done:** backfill applied with the real →filed side effects
-(federal 165 + GA-500 161; rollback ids in
-`1040\tmp\s327_mark_filed_done.json`) — **federal 1040 Filed is now 1,085
-of 2,978; GA-500 under filed federals 1,015 filed**; `commit_staged_return`
-now marks filed on a tie (federal + attached states) so the sweep is a
-no-op; the list and its tab counts are FEDERAL-only. **⛔ ENTRY LANE: 37
-GA-500s under hand-filed federals were never tie-verified and stay Draft**
-— clients 1019 1033 1034 1035 1056 1075 1076 1081 1089 1090 1094 1136 1164
-1165 1215 1216 1218 1254 1259 1262 1273 1274 1281 1307 1315 1367 1372 1411
+the Filed count is the practice's true count.** `commit_staged_return`
+marks filed on a tie (federal + attached states). **Federal 1040 Filed
+1,218 of 2,978 at the s327 close (all tie-verified); GA-500 under filed
+federals 1,147 filed / 37 draft.** ⛔ ENTRY LANE: 37 GA-500s under
+hand-filed federals were never tie-verified and stay Draft — clients
+1019 1033 1034 1035 1056 1075 1076 1081 1089 1090 1094 1136 1164 1165
+1215 1216 1218 1254 1259 1262 1273 1274 1281 1307 1315 1367 1372 1411
 1587 1588 1600 1601 1609 1842 1857 1858 1891 — verify the GA face and
-mark, or record why no GA return applies.
+mark, or record why no GA return applies. 8 returns are filed with zero
+document rows (clients 1400 1106 1200 1974 4036 3878 1598 3264) —
+verify one before assuming SSA-only/hand-keyed.
 
-**▶ KEN'S CLIENT-BASE RULINGS, 2026-09-02 night (relayed to the CRM
-verbatim; tax-app writes done):** #1751 dba "Construction Outsource";
-#4725 Mighty Muffler Shop = June FYE (6/30 set), final return filed for
-FYE 6/2025 → INACTIVE; MASH DYNAMO "not a client" (never existed in the
-hub — nothing to retire); the three SOS suffixes yes; Peggy's 15
-confirmed; the bonding-list individual: Ken reversed — neither he nor his business is a client (nothing created); fees Lucrative Leads $220 / Max
-Merchandising $150 / Ground Effects $220, "McCoys is done". STILL OPEN:
-one bookkeeping client's monthly-vs-quarterly (Nashville Skyline closed by Ken
-to the CRM: never existed, nothing to delete). Staffing =
-D-041 (three slots; CRM migration staged for Ken).
+**▶ ENTITY LANE (other account):** five Skoglund S-corps FILED (#1153,
+#2920, #3103, #3773, #4460); 1065: 2 of 69 filed, 66 packets in
+`1065\Inbox` — the partnership import is the next entity job (BUILD_ORDER
+Ken-directed block). Carried entity findings: DEFERRAL_AUDIT (9)–(18).
 
-**▶ NEW SUITE MODULE — delvio-research (Ken, 2026-09-02, planning only):**
-its session asked for the linking keys and got them from the code (client_id
-+ firm_id + client_number stable; entity_id re-pointable on a merge; year as
-an int). Ken approved its plan and said "build those 2 doors" (2026-09-02
-night) → BUILT: `GET /api/v1/suite/clients/?q=` (active, non-temporary,
-name/number/entity-name/email match, `ein_present` booleans, no
-identifiers), `GET /api/v1/suite/documents/?client_id=[&tax_year=]` and
-`GET /api/v1/suite/documents/<id>/url/` (a link minted by this app's
-storage; bucket keys stay here); `apps/suiteapi/research.py`, 9 tests.
-**⛔ KEN: set `RESEARCH_SERVICE_TOKEN` on BOTH Render services** (tax app +
-research) — no fallback, both doors are inert (503) until it exists.
+**▶ NEW SUITE MODULE — delvio-research:** doors built
+(`apps/suiteapi/research.py`); **⛔ KEN: set `RESEARCH_SERVICE_TOKEN` on
+BOTH Render services** — both doors are inert (503) until it exists.
 
-**▶ ENTITY CLOSEOUT — two more gate defects fixed (`6f32bb56`, live):** the
-gate compared the fresh verdict to the bare `tie`, so a return committed
-`tie_with_exception` (source defects acknowledged, Ken's "file as is and
-note the divergence") could NEVER close out — now `FILEABLE_VERDICTS`,
-only unacknowledged misses named; and the closeout's reconcile omitted
-`state_key`, so a 1065 closeout silently skipped its `expected.ga700`
-lines (a tie that proves nothing) — now the entity's own key, as at
-commit. ⚠ Two 1065s HAD closed out on the vacuous state-side re-check
-(#4834, #4836, 2026-09-02 morning) — their GA-700 lines were verified at
-COMMIT time (the lane's dry runs surfaced ga700 misses before the pins
-were fixed), so the filed data stands; re-closeout on the fixed gate CONFIRMED
-(26 ga700 rows each, all tie). Test added. **Landed by the entity
-lane 2026-09-02:** #2927 and #4758 FILED through `accepted_errors`; the
-seven Lacerte S-corps — #4775 (the EIN-bearing Rugged record), #1091, #1128, #3461,
-#1202 TIE + FILED (the Feb/Jul hand entries had stale L14a, a
-sign-flipped L25a, a TB-only A5/line-17 split — replaced, diffs in the
-lane's reports); #3462 and #3790 `tie_with_exception` (Lacerte charges
-distributions against a negative AAA, IRC 1368(e)(1)(A)) COMMITTED, re-
-closeout DONE on `6f32bb56` → 7/7 FILED. Five engine findings → DEFERRAL_AUDIT
-(9)–(13), incl. the GA-600S Sch 4 refund-line gap.
+**▶ DISREGARDED ENTITY TYPES + THREE CLIENT-RECORD RULINGS (s327):** built
+and live (`clients.0015`/`0016`); follow-ups queued in BUILD_ORDER
+(owner field on disregarded entities; the due-date calendar).
 
-**▶ ENTITY CLOSEOUT — the error-acceptance path (s327, late):** Ken ruled
-(relayed by the entity lane, verbatim-quoted): #2927 accepted by the IRS —
-note the GA addback diagnostic and mark it filed; #4758 not required to
-do a balance sheet and chose not to — accepted, mark filed and note it;
-#3137/#4835 not yet filed, holds stand. The gate had NO path past an
-error finding, so `run_entity_closeout` now takes `accepted_errors`
-({rule_id: Ken's ruling}, requires `source_verified`); the error becomes a
-DiagnosticAcknowledgment noted "ACCEPTED ERROR (Ken's ruling): …", a
-rule id absent from the fresh run is reported `stale_accepted_errors`
-and releases nothing. 4 tests. The lane runs the two closeouts once the
-deploy is live (INT_GA_BONUS_ADDBACK on #2927, MATH_BALANCE_SHEET on
-#4758 — the rule ids on their latest runs). The seven new Lacerte entity
-packets in `1120S\Inbox` all resolve onto EXISTING drafts (none filed,
-none imported): three Schedule-B-only shells, four hand-keyed never-tied
-drafts — the lane was told to skip none and match on EIN.
-
-**Second pass, same sitting (the s325 lesson applied — audit by the DATA,
-never the staged row):** 133 more returns had been committed IN-PROCESS
-with no staged bookkeeping, sat in Draft with documents, and re-reconciled
-LIVE against their payload answer keys 133/133 TIE → marked filed
-(`tmp\s327_mark_filed_plan2/done2.json`). **Federal 1040 Filed is now
-1,218 of 2,978; GA-500 under filed federals 1,147 filed / 37 draft (the
-entry-lane list above).** Also found: **58 emitted payloads never
-committed** (`PipelineOut\r51` 31 · gail-s325 10 · georgianna-g2/g4 10 ·
-shellfix-rerun 4 · 3 singles) — the standing commit authorization covers
-them: DRY-RUN then commit at the next boot. 8 returns are filed with zero
-document rows (clients 1400 1106 1200 1974 4036 3878 1598 3264) — probably
-SSA-only/hand-keyed; verify one before assuming.
-
-**The practice's true 2025 import count (DB, 2026-09-02 end of sitting):**
-federal 1040s Filed 1,218 (all tie-verified); 1120-S Filed 175 (+170
-GA-600S); 1065 Filed 5. **The remaining ~1,760 individual shells:** ~190
-have no packet in hand at all; the TaxWise Inbox holds 1,609 packets — 656
-refused by the extractor (381 of them on ONE class; walls by count:
-unknown pages 142 · asset_detail 71 · sch_e 43 · f5329 42 · f6251 38 ·
-f4562 32 · state_nonconformity_wks 28 · f8582 27 · sched_line_detail 27 ·
-26 not-a-packet · ctc_ext_carryover_wks 23 · pension/interest/IRA
-decomposition 22/17/14 …), 506 never run through the pipeline (the newest
-subfolders + 224 HOLD-marked), 58 emitted awaiting commit; the Lacerte Inbox
-holds 255 (207 to import). None of this is "one by one": each cleared
-class lands its packets as a batch; the data-entry sessions hand-key only
-the residue.
-
-**▶ ENTITY LANE RECONCILED TO KEN'S LACERTE "ACCEPTED" LISTS (2026-09-02,
-s327 sitting; lists parsed to `D:\tax-test-data\tmp_lacerte_accepted_lists_
-2026-09-02.json`, matched by EIN):**
-- **1120-S: 186 accepted → 175 filed in the app (173 tie-verified + 2
-  hand-filed), 11 not:** 3 packets on Hold for non-GA states/K-2 (packet
-  codes ABE = SC, 187 = CA, 101 = NC); **packet 219 had been moved to Done
-  with a DRAFT shell, no import row, no GA-600S — re-queued to the Inbox
-  with a HOLD note**; 6 have NO packet on disk (the six "shell draft" rows
-  with an empty packet list in the audit — names in the JSON) → Ken prints
-  them from Lacerte; one is a DUPLICATE client pair (#4775 carries the EIN
-  and no 2025 return; #3855 carries the 2025 draft shell and no EIN) →
-  Ken's merge call, then a packet.
-- **1065: 69 accepted → 2 filed, 67 draft — and 66 of the 67 have their
-  Lacerte packet sitting in `1065\Inbox` (96 packets there).** The
-  partnership import IS the whole book; nothing is missing from disk.
-- **The 7-file TaxWise drop in `1120S\Inbox` (Ken, 2026-09-02):** 4 are
-  S-corps with 2025 shells (files …9341, …0198, …9913, and the "2025
-  Source Docs" scan — ⚠ that one is source documents, not a return print);
-  3 have NO client/entity in the app at all (files …2637, …8078, …1075 —
-  the last is a 1065). TaxWise entity prints are NOT readable by the
-  Lacerte-based entity lane; **hand entry through the import channel (so
-  they tie and mark filed) is the route — Ken offered the data-entry
-  account; seed the 3 clients first.**
-
-**▶ THREE CLIENT-RECORD RULINGS, BUILT THE SAME SITTING (Ken, 2026-09-02;
-DECISIONS "Three client-record rulings"):** ① **an SSN or EIN is required
-to create a client** — `ClientSerializer.validate` refuses a creation with
-neither (the desk's temporary-capture path is the one exemption, via
-serializer context); the New Client form labels the required key by entity
-type and refuses before posting; 91 client tests re-keyed with synthetic
-identities + `tests/test_client_rules_s327.py`. ② **fiscal year-ends on
-the entity** — `Entity.fiscal_year_end_month/_day` (migration
-`clients.0015`, NULL = calendar year), `is_fiscal_year`,
-`fiscal_year_end_for(year)` (a fiscal year is labelled by the calendar
-year it BEGINS in — Form 1120 instructions "Period Covered"), both entity
-serializers, the Slate entity-info screen ("Fiscal year-end (MM/DD)") and
-the editor's save payload. **Not yet built: the due-date calendar that
-consumes it** (BUILD_ORDER queue). ③ **the duplicate S-corp client**: the
-2025 shell moved to #4775 (the EIN record), #3855 set inactive
-(`1120S\tmp_rugged_merge_s327.json`); Ken is printing its packet.
-
-**▶ ENTITY LANE (other account) IN FLIGHT on the six TaxWise entity packets
-(Ken's assignment, 2026-09-02):** it asked for a one-writer check + engine
-answers (given: F14 is engine-written from `sched_f` rows; AMT overrides
-are honored, K17a = Σ(regular − §179) − (AMT − §179)); it could not create
-clients, so **this lane seeded the three partnership shells through
-`build_federal_return`: #4834 (…2637), #4835 (…8078), #4836 (…1075)**
-(`1065\tmp_seed_taxwise_partnerships_s327.json`); the three S-corp shells'
-"41 entity rows" are the `OTHER_DEDUCTION_PRESETS` skeleton (safe to
-`replace_documents`; #3137 also carries a Feb-2026 partial hand entry).
-**Landings AUDITED by the data (2026-09-02 evening):** #4834 and #4836 (1065) FILED + GA-700 filed, tie; #2927 and #4758 (1120-S) committed with verdict TIE but DRAFT — the entity closeout gate refused them on error-severity diagnostics (#2927 INT_GA_BONUS_ADDBACK: the filed 600S carries no GA add-back for 1,250 of federal bonus; #4758 MATH_BALANCE_SHEET BOY: assets 0 vs L+E −767, BOY paid-in unknown) — **⛔ KEN: source defect or rule over-fire? left Draft on purpose, the tie rule does not override a red diagnostic**; #3137 (1120-S) and #4835 (1065) held NO_TIE (§1245 recapture the filed 4797 reported as §1231 + a Schedule L that does not roll; K14a $1 rounding + a Schedule L with no liabilities) — **⛔ KEN**. Record: `1120S\ENTITY-PROGRESS-2026-09-02.md`. Two more lane findings queued: M1_1 / M2_3 are INPUTS (pinning them without keying reads 0); the entity payload has no address keys while closeout treats MISSING_ADDRESS as error-severity (fix = address keys in `backentry-entity.v1`, read off the packet face). Lane findings
-for the build queue: `source.vendor` is absent from `backentry-entity.v1`
-(staging refuses what the local validator passes — the validator reads the
-1040 schema); the 1065 `expected` set lacks `K14b`; 1120-S line 12 / K16c /
-L10c-d are engine-computed.
-
-**▶ DISREGARDED ENTITY TYPES BUILT (Ken's go, 2026-09-02, s327):**
-`disregarded_c` / `_f` / `_e` on `EntityType` (migration `clients.0016`);
-non-filing by name (`NON_FILING_ENTITY_TYPES` names the schedule); EIN
-required at creation and the owner must be an individual
-(`EntityCreateSerializer.validate`); never a new client's primary type
-(`ClientSerializer.validate`); UI: the add-entity pickers on Client Detail
-and Entity Detail (Client Detail's form gains a required EIN box for these
-types), label maps in the palette / Start Return / folders / returns
-pages, non-filing notes. Not built: a "reports on" link from the entity to
-the 1040 schedule row — the EIN on `ScheduleC.ein` / `ScheduleF.ein` is the
-join today; a display of the owner's schedule from the entity page is a
-small follow-up if Ken wants it. **Searchable by EIN (Ken's ask):** the
-palette and the clients-page search read a nine-digit or dashed term as an
-EIN and find the client carrying it on any entity (`_ein_search_q`); a
-short digits-only term still means client number. A plain Schedule C with
-an EIN and no LLC uses the same `disregarded_c` type (Ken: fine).
-**Cross-app fold with delvio-crm (in flight):** three of the CRM's
-standalone business clients now have disregarded entities under their
-owners (#4806→#3638, #4801→#2120, #4803→#1267;
-`tax-test-data\tmp_disregarded_fold_s327.json`); the CRM re-points its
-engagement rows (owner `client_id` + `entity_id`), then THIS lane sets the
-standalone clients inactive. Ken (via the CRM lane, verbatim-quoted):
-Blazers is a Schedule C under #4060, the business is the SPOUSE's → folded
-(#4786 → entity under #4060, disregarded_c); Eve's Garden got its EIN
-from Ken (via the CRM lane) → folded (#4808 → entity under #2963,
-disregarded_c; taxpayer/spouse owner UNCONFIRMED — Ken named the spouse,
-default spouse when the owner field ships). Retirement pass DONE 2026-09-02
-(Ken's go via the CRM lane; its migration landed, five engagements
-re-pointed first): #4806 #4801 #4803 #4786 #4808 → status inactive, EINs
-left on the retired rows as history. **The CRM's re-point migration
-(client_profile UNIQUE(client_id) → partial indexes) is HELD FOR KEN by the
-CRM lane; no standalone client retires until it lands.** Follow-up queued:
-an `owner` (taxpayer/spouse) field on disregarded entities to pre-fill the
-Schedule C proprietor.
-
-**s326 carried (all verified):** the 19-hold triage landed 16 (`9e4cbc0d`);
-the §6654 family is Ken's; the 1040 landed corpus is +16 (Gail +12, Jenny
-+4). **s325 carried:** 138 landed from the four re-extracted books; the
-3-char `r_1099s.distribution_codes` model gap holds 4 packets + …4450
-(`link_key` naming) — 5 staging errors.
+**▶ CLIENT-BASE RULINGS relayed to the CRM (s327 night):** done; still
+open: one bookkeeping client's monthly-vs-quarterly.
 
 ⚠⚠ **ANOTHER CC ACCOUNT WRITES THIS LANE — THE SHARED FILES ARE THE ONLY
-PLACE ITS WORK IS VISIBLE.** Do not order events by `updated_at` (real
-clock skew across machines). The entry lane (tax-test-data-7d) is idle and
-released; it offered to witness-read the first emitted Lacerte packets —
-take it at the first dry-run tie.
+PLACE ITS WORK IS VISIBLE.** Do not order events by `updated_at`.
 
-**▶ BUILD QUEUE after the Lacerte legs:** ② the 3-char `distribution_codes`
-model gap (migration; 4 packets since s324) · ③ the TaxWise extractor
-walls by measured count (f6251 = 13 · sched_line_detail = 6+ · f5329 · the
-classifier patch, GA part-year detector first) · ④ the three re-raised
-Lacerte engine holds (clients 1922, 2386, 3517: per-property nonpassive
-lever · GA nonresident NR-46 + itemizer credit · §172 absorption) · ⑤ the
-GA 7b military-exclusion engine leg (7 witnesses; waits on the states-lane
-spec export) and the 7c/7f DIS transcription · ⑦ the §6654 family decision
-(Ken) · ⑧ BATCH-013 (posted, UNWORKED, 10 Tom-lane product gaps; ⚠ its item
-5's premise is refuted — Schedule C has no business_address on the MODEL, a
-migration not a sync) · carried: the 8615 parent-first guard ·
-out_of_scope_states · the zero-activity GA-attach gap.
+**▶ BUILD QUEUE after the Lacerte legs:** ② the 3-char
+`distribution_codes` model gap (migration; 4 packets since s324) · ③ the
+TaxWise extractor walls by measured count (f6251 = 13 ·
+sched_line_detail = 6+ · f5329 · the classifier patch, GA part-year
+detector first) · ④ the three re-raised Lacerte engine holds (clients
+1922, 2386, 3517) · ⑤ the GA 7b military-exclusion engine leg (7
+witnesses; waits on the states-lane spec export) + the 7c/7f DIS
+transcription · ⑦ the §6654 family decision (Ken) · ⑧ BATCH-013 (posted,
+UNWORKED, 10 Tom-lane product gaps; ⚠ item 5's premise is refuted —
+Schedule C has no business_address on the MODEL, a migration not a sync)
+· carried: the 8615 parent-first guard · out_of_scope_states · the
+zero-activity GA-attach gap.
 
-**⛔ WAITING ON KEN:** may the Lacerte pipeline file a packet whose manifest
-carries a non-Georgia state return (Colorado, Arkansas, Massachusetts …)
-federal + GA only, as the entry lane did with `out_of_scope_states`? (leg 1
-refuses them — states on hold) · the §6654 family (…0500/…0534/…7701/…7044)
-· seed ONE client (the …4641 taxpayer in Jenny's book; ⚠ do NOT edit
-#4054) · client #3572's contaminated name (#4514 same shape) · three
-clients with no 2025 1040 shell (two report as 1120-S filers) · does the
-standing commit authorization extend to ENTRY-LANE HAND-KEYED commits?
-(client 3250 staged, dry-run TIE) · client-2149's filed GA 17a = 2
-exemptions on a single/zero-dependent return (IT-511) · the 61 Gail
-federal reprints (`tmp\GAIL-TRIAGE-2026-08-31.md`) · the …4203 W-code
-question · one Georgianna reprint + five named reprints · the asset
-METHOD-DERIVATION TABLE review (annex) · vendor-name allowlist for the
-mirror guard? · carried: 1071 · 1141 · R-GA500-RIE · 4059 W-2G address ·
-Sch D carryover · GA RIE L10 · 4081's $169 · standing 1–8 · 2a scope flag ·
-AL 40 · the 4 Tom-book holds (…8505 · …2276 · …2827 · …8791).
+**⛔ WAITING ON KEN:** may the Lacerte pipeline file a packet whose
+manifest carries a non-Georgia state return federal + GA only (47
+packets refuse on it — states on hold)? · the packet named in tmp/s328_ken_questions.md (Lacerte): the GA 500
+page 1 names a different primary filer (SSN …7699) with the 1040's
+filer (…5844) as the spouse — swapped spouses on the GA return, or the
+wrong GA return in the packet? · the §6654 family (…0500/…0534/…7701/
+…7044 + clients 1938 and 3680 tonight — line 37/38 penalty deltas) · seed ONE client (the
+…4641 taxpayer in Jenny's book; ⚠ do NOT edit #4054) · client #3572's
+contaminated name (#4514 same shape) · three clients with no 2025 1040
+shell · does the standing commit authorization extend to ENTRY-LANE
+HAND-KEYED commits? (client 3250 staged, dry-run TIE) · client-2149's
+filed GA 17a = 2 exemptions on a single/zero-dependent return · the 61
+Gail federal reprints (`tmp\GAIL-TRIAGE-2026-08-31.md`) · the …4203
+W-code question · one Georgianna reprint + five named reprints · the
+asset METHOD-DERIVATION TABLE review (annex) · vendor-name allowlist for
+the mirror guard? · carried: 1071 · 1141 · R-GA500-RIE · 4059 W-2G
+address · Sch D carryover · GA RIE L10 · 4081's $169 · standing 1–8 · 2a
+scope flag · AL 40 · the 4 Tom-book holds (…8505 · …2276 · …2827 · …8791).
 
 **▶ OFF-SPINE, SHIPPED 2026-09-01 (Bob lane):** `GET
-/api/v1/suite/clients/by-phone/` (`apps/suiteapi/caller.py`, 8 tests) —
-caller-ID lookup; `Client` has no phone column (business = `Entity.phone`,
-individuals = `Taxpayer.daytime_phone`); contract in the bob repo.
+/api/v1/suite/clients/by-phone/` (`apps/suiteapi/caller.py`, 8 tests).

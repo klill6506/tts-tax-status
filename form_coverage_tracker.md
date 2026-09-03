@@ -1,6 +1,21 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-09-03 session 328 — Lacerte extractor leg 2: the Federal
+> Worksheets document readers (Wage Schedule → w2s; Pension + IRA
+> schedules → r_1099s; Interest / Dividend lists → int/div rows; Pub
+> 915 line 1 → SSA), the GA 500 income-statement block (payer FEIN +
+> GA withholding — Lacerte's only print of either), the MFJ-vs-MFS
+> comparison page as the owner witness, and the Schedule 1-A input
+> logic factored into `taxwise1040/sch_1a_emit.py` for BOTH vendors.**
+> No new rendered form, no runtime surface: extractor coverage only —
+> every emitted section already exists in `backentry.v1`. Three leg-1
+> geometry defects fixed on the way (Lacerte prints every checkbox X
+> left of its label: p2 aged/blind, 12a claimed, digital assets).
+> #1313 / #1522 / #1570 match the entry lane's answer keys
+> section for section. Suites: 276 green across the four extractor
+> test files.
+
 > **2026-08-31 session 321 — TWO extractor legs: the IRA pair (f8606 +
 > ira_wks) with the `roth_ira_bases` lane surface, and the
 > other_income_wks pair-of-shapes leg with the line-36 applied-forward
