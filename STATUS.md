@@ -95,6 +95,19 @@ app's document door → `tax-documents`. Source docs live in THIS app's store
 for January; unify the two stores after season (REVIEW_QUEUE). The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
+**▶ UI HOUSEKEEPING (Ken, 2026-09-03 — "the more I use the apps the more this
+stuff bothers me"):** the Return Manager client-search frame is darker —
+new vendored Slate token `--border-emphasis: var(--gray-600)` on
+`.slate-rm-search` (was `--border-strong`, gray-400; gray-500 is one shade
+off on this scale). Proposed upstream to delvio-design as v2.3 with
+`--surface-row-alt` → gray-100. The CRM roster (no row shading, a search box
+still on retired Ledger tokens) is the CRM lane's — handed over per D-037:
+`delvio-crm/docs/WORK_ORDER_roster_ui_2026-09-03.md` (exact CSS, same
+tokens, so the two rosters match). Ken's forwarded Claude-Chat shell/forms
+redesign was NOT adopted (replaces Slate v2.x wholesale, D-018; stale app
+names); its one sound rule — a field border never lighter than gray-400 —
+is already Slate's.
+
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
 (`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
 31 landed · 7 fenced (already carried rows — correct) · 17 no_tie · 4
