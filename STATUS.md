@@ -6,8 +6,12 @@
 (Ken's D-042 / D-043 / D-044; BUILD_ORDER ⑥b closed).** The tax app stays the
 sole WRITER of the central client record; Clients (delvio-crm) becomes the
 place a client is born and the receptionist's desk, and executes both through
-these doors. **⛔ KEN, RENDER CONSOLE: set `CRM_SERVICE_TOKEN` on BOTH
-services** — all four doors answer 503 until it exists (the deliberate
+these doors. **⛔ KEN: set `CRM_SERVICE_TOKEN` in TWO PLACES — the two ENDS of the
+call, not two tax services (the earlier "both Render services" note was
+wrong): (1) Render → `delvio-tax` → Environment, and (2) the CRM's SUPABASE
+EDGE FUNCTION secrets (`delvio-crm` is a Render STATIC SITE — no server, no
+env there; its server side is Supabase Edge Functions, exactly where
+`SUITE_SERVICE_TOKEN` lives today for `update-client-contact`)** — all four doors answer 503 until it exists (the deliberate
 env-gated pattern; there is no fallback to any other suite token).
 
 - **One creation path.** `apps/clients/service.py::create_client(firm, payload,
@@ -64,6 +68,15 @@ env-gated pattern; there is no fallback to any other suite token).
   D_EFILE_001 + four warning rules. Nothing in this unit touches diagnostics.
   The lesson: `--reuse-db` on a whole-suite run is not a clean gate for the
   closeout tests.
+
+**▶ RELAYED BY THE tax-test-data LANE, 2026-09-03 night (recorded here, NOT this
+lane's work):** ① **Nilkanth Diamonds #3413 is FILED**, verdict `tie_with_exception`,
+with Ken's M-2 ruling on the return as a SOURCE defect: the transmitted return carries
+AAA at **-253,783**; the correct figure is **-233,602**. ⚠⚠ **THE 2026 RETURN MUST OPEN
+AT -233,602, NOT AT THE PAPER** — a proforma that matches the filed original would carry
+the error forward; whoever rolls 2026 needs this. ② **RAPTAP HOLDINGS LLC #3728** (1065,
+`in_progress`) was entered by Codex under the same review process — on the radar only,
+unreviewed by either lane, and it is a 1065, where the entity lane's own leg has history.
 
 **▶ NEXT:** **⑥c `manage.py merge_client`** — D-044's duplicate merge + hard
 delete. Already ruled and half-specified in DECISIONS: survivor = the EIN/SSN
@@ -299,8 +312,13 @@ verify one before assuming SSA-only/hand-keyed.
 `1065\Inbox` — the partnership import is the next entity job (BUILD_ORDER
 Ken-directed block). Carried entity findings: DEFERRAL_AUDIT (9)–(18).
 **Relayed 2026-09-03 night (DECISIONS "Three entity-lane rulings"):** client
-219 WAS accepted by the IRS — a straight back-entry, the entry lane's, blocked
-on a fresh production session that only Ken mints · #3137 DROPPED → Inactive
+219 — **CLOSED 2026-09-03 night, NOT pending: Ken "Innova is no longer a client
+please mark it as inactive"** (relayed by the tax-test-data lane; verified here by the
+DATA — client **#2632** INNOVA ELECTRICAL SERVICES INC is `inactive` as of 20:52 UTC,
+its 2025 1120-S shell still draft, nothing ever committed). Do not enter the packet.
+⚠⚠ **The packet's printed "Client 219" is the LACERTE ID, not the Delvio client
+number (2632); NO client_number=219 exists — searching by it finds the wrong record
+or none.** The return's acceptance was never in doubt; the client has gone · #3137 DROPPED → Inactive
 (the §1245 and balance-sheet questions are moot) · #4835 stays held (not
 final; the $1 K-14a rounding is accepted as `tie_with_exception`).
 **Entry-lane flag answered by the DATA (2026-09-03 night):** #4000 has NO SSN
