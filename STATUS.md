@@ -64,8 +64,9 @@ factor `ClientViewSet.create/perform_create` into one service function first
 so the door and the in-app form cannot drift) · `GET
 /api/v1/suite/clients/<uuid>/returns/latest/` (latest federal + GA per
 entity with AGI / tax / refund-or-due — dollars permitted, staff-only
-caller) · retire "+ New Client" to a link into Clients (`desk-create` and
-bulk imports stay). CRM lane's work order:
+caller) · `PATCH /api/v1/suite/clients/<uuid>/status/` (reactivate / mark
+former — Ken: clients leave for a year or two and come back) · retire "+ New
+Client" to a link into Clients (bulk imports stay). CRM lane's work order:
 `delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md`. **✅ Ken, same morning:
 "Retire the tax app check-in screen. It always felt awkward there." — DONE:**
 `/check-in`, the FRONT_DESK standalone mount, `desk-search` / `desk-create` /
@@ -75,8 +76,11 @@ lockout middleware stays with a trimmed allowlist; a front_desk login is told
 to use checkin.delviotax.com. The SSN-or-EIN rule now has NO exemption.
 639 server tests green, typecheck clean, bundle builds. **⛔ KEN, console:**
 set `CRM_SERVICE_TOKEN` on both Render services when the door ships.
-**⛔ KEN (check-in fold):** keep Google Sheets sync? keep the O365 preparer
-email? (work orders in delvio-crm and delvio-checkin docs). The CRM's
+Ken's check-in clarifications (in the CRM work order): mail log by date ·
+the day's check-ins · both on the client record · the preparer is NOTIFIED
+on every check-in (requirement; channel = the lane's call) · Reactivate on
+the record and on check-in of a Former client. **⛔ KEN:** keep the Google
+Sheets sync? The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
