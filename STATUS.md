@@ -1,108 +1,111 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s328, 2026-09-03
+## ▶▶ RESUME POINTER — s329, 2026-09-02 night (the s328 close was mislabeled 09-03; the clock says 09-02)
 
-**▶ THE LACERTE-LAYOUT EXTRACTOR PASS, LEG 2, SHIPPED (`26e70113` +
-`c2a3276b`; 276 green across the four extractor suites).** BUILD_ORDER ⑥
-stays OPEN. Leg 2 = the Federal Worksheets document readers
-(`lacerte1040/worksheets.py`), the GA 500 income-statement block
-(`ga500_stmts.py`), the emit assembly with the TaxWise face identities
-mirrored, and the Schedule 1-A logic factored into
-`taxwise1040/sch_1a_emit.py` so both vendors share it.
+**▶ THE SECOND PII HISTORY REWRITE IS PREPARED AND GATED ON A MIRROR CLONE —
+⛔ THE FORCE-PUSH WAITS ON KEN'S "GO" IN CHAT (plus his word that every
+peer lane is off the tree).** Ken's 2026-09-03 ruling authorized it in a
+dedicated sitting with him present; nothing has been pushed by force.
+What is ready, all under `D:\tax-test-data\repo-backups\`:
+- `delvio-tax-pre-rewrite-2026-09-02.git` = the pre-rewrite backup mirror
+  (origin main `10d6f28f`, 2,718 commits — KEEP, as the s297d one is kept).
+- `rewrite-work\delvio-tax-rewrite-2026-09-02.git` = the filtered clone
+  (`git filter-repo --replace-text` + `--replace-message`; files in the
+  session scratchpad, never displayed). Gates: V1 tip TREE hash identical ·
+  V2 commit count 2,718 unchanged · V3 zero residual hits over every
+  reachable text blob and every message — **with a POSITIVE CONTROL: the
+  same sweep on the untouched backup HITS** · V4 `filter-repo/commit-map`.
+- **The audit WIDENED the scope (s297 lesson, third time):** Ken's ruled
+  scope (the s327 fixture's real names + SSNs; three s328 messages with
+  surname packet codes) → the mechanical blocklist (every Lacerte packet
+  code from the `Lacerte Inbox` filenames + every TaxWise packet surname,
+  caps and Capitalized) found **103 surname tokens in history that are
+  ABSENT at tip** (mostly old STATUS blobs — every mirror-guard catch fixed
+  the tip and left history; plus the s327/s328 layout.py / worksheets.py /
+  coverage-tracker blobs) and **one code still AT TIP in four files**
+  (scrubbed first as a normal commit `10d6f28f`, deploy
+  dep-dacd6ipt0dsc73dd7k8g live). The 359 tokens PRESENT at tip are the
+  s297 tier-3 deferred class (mostly false positives — ordinary words and
+  form constants) — untouched, Ken's separate cleanup call.
+- **Ken's choice (one decision):** (A) push the WIDENED rewrite —
+  recommended, one force-push removes every history-only surname; (B) push
+  only the ruled scope + Lacerte codes — a second rewrite later for the
+  rest; (C) hold. After the push: re-point this checkout (`git fetch` +
+  `reset --hard origin/main`, reflog expire, gc), write the old→new map to
+  `docs/history/rewrite-2026-09-02-commit-map.txt`, repair the SHA
+  citations in STATUS / BUILD_ORDER / DECISIONS / REVIEW_QUEUE / memory
+  from the map, tell the peer lanes to re-clone, verify the Render deploy.
+  ⚠ The tts-tax-status mirror never carried these values — no rewrite there.
+- **The filtered clone is built from the CURRENT origin tip** (all of
+  tonight's work committed and pushed first, so a force-push drops
+  nothing). If anything else is committed to main before Ken's go, the
+  filter must be re-run from the new tip — otherwise the push would
+  discard it. After the push: `git fetch` + `reset --hard origin/main`
+  here, `reflog expire --expire=now --all`, `gc --prune=now`.
+- ⚠⚠ LESSON (memory s329): the first filter-repo pass replaced NOTHING — a
+  bash heredoc turned every regex `\b` into a backspace byte — and every
+  gate passed vacuously; only the positive control exposed it. Never trust
+  a residual sweep that reads the replacement file's own patterns.
 
-- **Lacerte prints no W-2 / 1099 facsimiles.** The documents live in the
-  Federal Worksheets tables: Wage Schedule → `w2s` (no EIN / box 3 / 5 /
-  12 printed); Pension + IRA schedules → `r_1099s` (no code; a blank
-  Taxable is 0 — the Grand Total proves it; `***` = 8606-computed →
-  refuse by name); Interest / Dividend lists → `int_1099s` / `div_1099s`
-  (printed ONLY when no Schedule B is filed — 126 Sch-B packets ∩ 0
-  lists); Pub 915 line 1 → `ssa_box5_net_benefits` (joint total on the
-  taxpayer — no per-owner box 5 exists, no lever); SSA withholding = 25b
-  − Σ 1099-R W/H. Payer FEIN + GA withholding come ONLY from the GA 500
-  INCOME STATEMENT DETAILS block (statements A–F, type by the X row),
-  matched to documents by GA withholding (+ income on a tie).
-- **Owners on MFJ lists:** the MFJ-vs-MFS comparison page (per-spouse
-  income columns; joint = half each) → the s326 RIE rule → joint if no
-  spouse is RIE-age → refuse by name.
-- **Three leg-1 defects found by driving #1313 through by hand:** Lacerte
-  prints every X ~10pt LEFT of its label — p2 aged/blind `born` anchor,
-  the 12a claimed boxes, the digital-asset Yes/No (#1313's "No" had read
-  as "Yes"). Parametrized in `taxwise1040/f1040.py`, pinned in
-  `lacerte1040/layout.py` on a corpus census (Yes-X 491 ×9, No-X 528
-  ×245, aged 167 ×118, You-claimed 216 ×2; blind / spouse-claimed
-  windows extrapolated — no witness yet). Sch 1-A: only the subline
-  gutter differs (`SCH1A_SUB_X`).
-- **Verified against the entry lane's answer keys:** #1313, #1522,
-  #1570 match section for section (w2s / r_1099s / int / div /
-  dependents / 8867 / car loans / taxpayer fields / expected). Only
-  differences: Lacerte rows carry MORE (payer_ein, state_id_number,
-  state_distribution); the entry lane hand-keyed `ga500_fields["5"]`
-  (GA filing-status letter — neither pipeline emits it) and expected
-  zeros on 36/37/38 (the TaxWise pipeline omits them too).
-- **Runs:** `lacerte-s328` (before the Sch 1-A / X fixes): 255 refused,
-  0 emitted, refusal census = leg 1's (the coverage gate refuses
-  upstream — a corpus run measures nothing about a reader it never
-  reaches). `lacerte-s328b` (fixed code, log
-  `tmp\lacerte_extract_s328b.txt`, batch `lc328b-001.batch.json`): **255
-  packets → 3 EMITTED (#1522, #1570, #3251), 252 refused.**
-  Single-wall packets (the cheapest unlocks): Sch B 2 · Sch 2 1 · 8606 1
-  · Federal Statements 1 · Maryland 1 · one non-Lacerte packet · one
-  shell already filled (1313) · **the packet named in tmp/s328_ken_questions.md: the GA 500 page 1 lists a
-  DIFFERENT primary SSN (…7699) with the 1040's filer (…5844) as the
-  spouse — a swapped-spouse or mismatched GA return; ⛔ KEN.** Walls per
-  packet: 9 single · 10 double · 8 triple · the median ~9. ⚠⚠ **s328b
-  ran on the STALE s327 shells index; the index was regenerated from the
-  DB at the end of the session (2,978 shells; 1522 / 1570 are FILED with
-  documents by the entry lane, so #1522 / #1570 are duplicates of
-  hand-keyed landings).** `tmp\commit_s328_lacerte.py` re-fences every
-  emit against the fresh index (skips filled / non-draft shells by name)
-  and runs the standing-authorization contract; `--dry-run` rolls back
-  everything. **🏁 THE FIRST LACERTE-PIPELINE LANDING: #3251 (client
-  3251) — dry-run TIE, then COMMITTED under the standing authorization
-  (batch `s328-lacerte-commit-001`, `tmp\commit_s328_lacerte.txt`);
-  verified by the DATA: 2025 1040 FILED with its W-2 row, GA-500 FILED.**
-  #1522 / #1570 correctly FENCED (filed shells).
-- **The wall list is unchanged by design** (faces gate first): Sch 1 181
-  · 8995 172 · Sch D 131 · Sch B 126 · Sch 2 119 · Sch 3 113 · 8949 109
-  · 1116 95 · 4562 84 · Sch A 76 · Sch 1-A 75 (now READ) · Sch C 75 ·
-  Sch E p2 75 · GA 4562 72 · 8582 65 · Sch E 63 · 7203 62 ….
+**▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
+(`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
+31 landed · 7 fenced (already carried rows — correct) · 17 no_tie · 4
+staging errors.** Then the holds were RE-EXTRACTED with current code (the
+stale-payload rule) — `tmp\s328-rie-refix-src` → `PipelineOut\s328-rie-refix`
+→ `tmp\commit_s328_rie_refix.py` (batch `s328-rie-refix-commit-001`): **11
+GA holds → 9 emitted → 8 TIE and LANDED** (clients 3815 · 3825 — the
+11,038-vs-8,596 RIE case — · 4419 · 2019 · 1794 · 2228 · 4751 · 1810;
+verified by the data: federal filed + GA-500 filed, document rows present
+on 6, two with none — SSA-only shape, add to the "filed with zero rows"
+check list), **1 real hold: client 4081** (GA S1-7 / RIE-TP-17 43,756 vs
+43,925 — the carried "$169" item, still Ken's), **2 refused by name:
+clients 4429 and 3871** (GA 7b unborn-dependent exemption — the s323
+class, an ENGINE leg nobody has built; witnesses now 8). Still held from
+the overnight job, by class: **§6654 federal 37/38 penalty deltas —
+clients 1938 · 3680 · 1219 · 3514 · 2774 · 4093** (Ken's family, six more
+witnesses) · **`r_1099s.distribution_codes` 3-char — clients 2793 · 3010 ·
+3160 · 4589** (build queue ②, now 8 packets). Filed count: +8 tonight on
+top of the 31 (a fresh DB census at the next boot — counts are timestamps).
 
-⚠⚠ **PII CATCH (ninth, s328 close — the mirror guard tripped on a packet
-CODE):** Lacerte packet codes ARE surnames. Every code this session wrote
-into repo / planning / memory files is now a client NUMBER (map:
-`1040\tmp\s328_code_to_client.json`; Ken-facing codes only in
-`1040\tmp\s328_ken_questions.md`). Found on the way: the s327 fixture in
-`server/tests/test_lacerte1040.py` carried a REAL couple's names + both
-SSNs as "synthetic" words (now synthetic), and three s328 commit
-messages carry surname codes (`26e70113`, `c2a3276b`, `62c76c9b`) — the
-tree is clean, the HISTORY is not → the supervised rewrite is SCHEDULED
-(Ken's go 2026-09-03; NEXT ⓪; REVIEW_QUEUE "REWRITE #2"). s327's layout.py comments
-still carry codes (HITTC/CALVO… → now numbers too). **Rule going
-forward: never write a Lacerte packet code outside tax-test-data.**
+**▶ BATCH-296 items 54–59 triaged by the DATA (annex appended to the
+file):** 54 / 56 / 58 / 59 are FILED (58 + 59 = the s326 owner-witness
+family); **55 (client 4502) and 57 (client 4547) stay DRAFT — re-extracted
+tonight, both now REFUSE BY NAME ("joint return with ownerless
+documents")** — the s326 rule refusing to guess an owner; they need an
+owner witness or hand-keying. No build in 54–59. `/bugs`: no open reports.
 
-**▶ NEXT:** ⓪ **THE SECOND PII HISTORY REWRITE — Ken's go 2026-09-03 ("Sure you can schedule the rewrite"; DECISIONS). Run it FIRST, in a dedicated sitting with Ken present and every peer lane off the tree, per the s297 recipe in REVIEW_QUEUE (fresh mirror clone → `git filter-repo` → force-push → commit map under docs/history → repair hash citations); scope = `server/tests/test_lacerte1040.py`'s pre-`7dc2d044` versions (real names + SSNs) and the messages of `26e70113` / `c2a3276b` / `62c76c9b` (surname packet codes).** ① at boot: read `tmp\commit_s328_uncommitted.txt`'s GRAND
-SUMMARY (the overnight job); re-extract any GA-RIE hold from its TaxWise
-packet. ② The face
-readers by wall count through the TaxWise parsers with measured Lacerte
-bands (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch C; 8995 via
-`taxwise1040/f8995.py`) — for each, find ONE packet whose only wall is
-that face and drive it through by hand before trusting the census (the
-s328 lesson). ③ the shadow-2210 reader (face line 38).
+**▶ NEXT (after Ken's rewrite decision):** ② the 3-char
+`distribution_codes` model gap (migration; 8 packets) · ③ the Lacerte face
+readers by wall count (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch
+C; 8995 via `taxwise1040/f8995.py`) — for each, drive ONE packet whose
+only wall is that face before trusting the census · ④ the shadow-2210
+reader (face line 38) · ⑤ the GA 7b unborn-dependent engine leg (8
+witnesses; spec with the states lane).
 
-**▶ BOOT TASK RUN THIS SESSION — the "58 never committed" payloads:**
-audited by the DATA (`tmp\s328_uncommitted_audit.json`: 242 payloads in
-r51 / gail-s325 / georgianna-g2 / g4 / shellfix-rerun; **59 sit on a
-2025 shell with ZERO document rows**), then the tie-gated commit
-(`tmp\commit_s328_uncommitted.py` → `.txt`, batch
-`s328-uncommitted-commit-001`, keys suffixed `-s328`; one transaction
-per return, tie commits + bookkeeping, else rollback) was LAUNCHED and
-runs ~4 min/return (~4 h) — **read its GRAND SUMMARY at boot**. At close:
-13 processed, 8 tie/landed, 4 no_tie held — clients 1938 and 3680 are
-the §6654 penalty shape (federal 37/38 deltas, Ken's class); client
-3815 is the s325 GA RIE family (S1-7 / RIE-TP-17 expected 11,038 vs
-8,596) — ⚠ these r51 / early-book payloads PREDATE the s326 owner-witness
-fix, so a GA RIE hold here means RE-EXTRACT the TaxWise packet with
-current code, never commit the stale payload.
+**▶ THE LACERTE-LAYOUT EXTRACTOR PASS (BUILD_ORDER ⑥, OPEN) — state at
+the s328 close, unchanged tonight:** leg 2 shipped (`26e70113` +
+`c2a3276b`; 276 green across the four extractor suites): the Federal
+Worksheets document readers (`lacerte1040/worksheets.py`), the GA 500
+income-statement block (`ga500_stmts.py`), the shared Schedule 1-A emitter
+(`taxwise1040/sch_1a_emit.py`). Lacerte prints no W-2 / 1099 facsimiles —
+Wage Schedule → `w2s`; Pension + IRA schedules → `r_1099s` (blank Taxable
+= 0; `***` = 8606-computed → refuse); Interest / Dividend lists →
+`int_1099s` / `div_1099s` (printed ONLY when no Sch B is filed); Pub 915
+line 1 → `ssa_box5_net_benefits`; payer FEIN + GA withholding ONLY from
+the GA 500 INCOME STATEMENT DETAILS block. Owners on MFJ: the MFJ-vs-MFS
+comparison page → the s326 RIE rule → refuse. Lacerte prints every X
+~10pt LEFT of its label (pinned on a corpus census in
+`lacerte1040/layout.py`). The s328b corpus run: 255 packets → 3 emitted,
+252 refused; **🏁 client 3251 = the first Lacerte-pipeline landing** (tie,
+committed, data-verified); #1522 / #1570 fenced (filed by the entry lane).
+Wall list (faces gate first): Sch 1 181 · 8995 172 · Sch D 131 · Sch B
+126 · Sch 2 119 · Sch 3 113 · 8949 109 · 1116 95 · 4562 84 · Sch A 76 ·
+Sch 1-A 75 (READ) · Sch C 75 · Sch E p2 75 · GA 4562 72 · 8582 65 · Sch E
+63 · 7203 62 …. Single-wall packets: Sch B 2 · Sch 2 1 · 8606 1 · Federal
+Statements 1 · Maryland 1 · one non-Lacerte · one filled shell · the
+packet in `tmp/s328_ken_questions.md` (GA 500 p1 names a different primary
+SSN — ⛔ KEN). **Rule: never write a Lacerte packet code outside
+tax-test-data** (codes ARE surnames; map `1040\tmp\s328_code_to_client.json`).
 
 **▶ KEN'S 6252 RULING (relayed by the entity lane as an OPTION SELECTION,
 2026-09-02 night; DECISIONS "Form 6252 line 19"):** round the gross
