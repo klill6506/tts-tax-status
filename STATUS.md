@@ -42,10 +42,22 @@ THE PLACE A CLIENT IS BORN (firm D-042; DECISIONS; SUITE_CONTRACT §1/§3
 amended).** Most of the hub was already ruled and live (D-033 client record,
 D-041 staffing, C-7 balance); the one clause that changed is "Tax is the
 only place a client is born." The tax app stays the sole WRITER — creation
-becomes a suite door. Ken's three answers: **SSN pass-through** (never held
-outside Tax; the CRM's forwarder must prove last-4-only logs) · **check-in
-linked both ways, not migrated** · **CRM lane starts now, this lane's doors
-are the NEXT UNIT after the current Lacerte leg** (BUILD_ORDER ⑥b). Notices
+becomes a suite door. Ken's answers: **SSN pass-through** (never held
+outside Tax; the CRM's forwarder must prove last-4-only logs) · **CHECK-IN
+FOLDS INTO CLIENTS ENTIRELY (D-043, superseding the morning's "link" answer):
+the kiosk is gone, Carissa checks everyone in, she CREATES walk-in clients at
+the desk through the same door with the SSN/EIN in hand (D-036's "cannot
+create" superseded), mail log + drop-offs become searchable CRM records, the
+check-in app's UI retires once Clients holds the data** · **CRM lane starts
+now, this lane's doors are the NEXT UNIT after the current Lacerte leg**
+(BUILD_ORDER ⑥b). **STATUSES (D-044):** Inactive = former client only;
+duplicates are MERGED into the EIN/SSN survivor and then HARD-DELETED (Ken's
+pick over a tombstone state, the Ledger/audit cost named) — every reference
+in every schema re-pointed first, a zero-reference sweep before the delete,
+a reviewable plan Ken approves, a name never a key → **⑥c `manage.py
+merge_client`** in this lane; first input = the CRM's 37 SSN-found pairs.
+Census today: 3,757 active · 73 inactive (50 never had a return — the
+duplicate/junk class; 23 carry a 2025 shell — genuine former clients). Notices
 are Delvio Research's Matters (D-040) — the CRM reads them, builds nothing.
 This lane's unit: `POST /api/v1/suite/clients/` (create; `CRM_SERVICE_TOKEN`;
 factor `ClientViewSet.create/perform_create` into one service function first
@@ -63,6 +75,9 @@ lockout middleware stays with a trimmed allowlist; a front_desk login is told
 to use checkin.delviotax.com. The SSN-or-EIN rule now has NO exemption.
 639 server tests green, typecheck clean, bundle builds. **⛔ KEN, console:**
 set `CRM_SERVICE_TOKEN` on both Render services when the door ships.
+**⛔ KEN (check-in fold):** keep Google Sheets sync? keep the O365 preparer
+email? (work orders in delvio-crm and delvio-checkin docs). The CRM's
+`/desk` (receptionist check-in + create) waits on the ⑥b door.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
 (`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
@@ -98,7 +113,7 @@ tonight, both now REFUSE BY NAME ("joint return with ownerless
 documents")** — the s326 rule refusing to guess an owner; they need an
 owner witness or hand-keying. No build in 54–59. `/bugs`: no open reports.
 
-**▶ NEXT:** ⑥b the two Clients-as-hub suite doors (above; after the current Lacerte leg) · ② the 3-char
+**▶ NEXT:** ⑥b the two Clients-as-hub suite doors (above; after the current Lacerte leg) · ⑥c `merge_client` (duplicate merge + hard delete, dry by default, zero-reference sweep, Ken-approved plan; D-044) · ② the 3-char
 `distribution_codes` model gap (migration; 8 packets) · ③ the Lacerte face
 readers by wall count (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch
 C; 8995 via `taxwise1040/f8995.py`) — for each, drive ONE packet whose
