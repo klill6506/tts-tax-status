@@ -104,6 +104,19 @@ base color — Clients in check-in's orange with the C tile; delvio-1099 on a
 branch for Ken's go (D-027); delvio-checkin skipped (retiring, D-043). Ken:
 "I won't promise that I won't make some more changes next week" — the
 rule-change protocol is in §2.2.
+**ROLLOUT RESULT (all seven sessions reported, 2026-09-03 evening):** LIVE —
+Clients `418625a` (orange; 276 tests; also purged 50 dead Ledger-era token
+refs), Ledger `d02accd`+`e235897` (green; 477 tests; the color-mix fix),
+Portal `edb5178` (sky; staff surface full v2.3, client pages labels/boxes/
+accent only; 100 tests), Scheduler `7ccca49` (violet; 436 pass + 1 PRE-
+EXISTING red in test_stripe_checkout; public booking pages keep The Tax
+Shelter gold per Ken's 2026-08-01 rule — his call to change), Research
+`90b6d2b` (olive; 156 tests), Launcher `ee0701e` (Clients tile orange + C;
+Check-In tile kept → TWO orange C tiles until check-in retires — Ken may
+want it greyed). **⛔ KEN: delvio-1099 is on branch `slate-v2.3` @ `bc6184a`
+(43 tests, contrast gate 956 pairs) — review, `git merge --no-ff
+slate-v2.3` into main, push = deploy.** Two ports hit the color-mix trap
+(accent set on a wrapper → navy bands); documented in §2.2 (`abccbf4`).
 **▶ SLATE v2.3 PASS 1 — LIVE (Ken, 2026-09-03: "hammer the tax app today and
 get it exactly where I want it", Lacerte as the reference: dark labels, dark
 boxes, a little more color; then every other app follows the tax app with
