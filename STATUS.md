@@ -61,13 +61,26 @@ env-gated pattern; there is no fallback to any other suite token).
   had three client-creation tests posting a bare name — red since the
   2026-09-02 SSN-or-EIN rule, invisible because nobody had run that file since.
   They now key a synthetic 900-series SSN.
-- ⚠ **A full-suite `-x` run reported `test_backentry_cleanup.py::
-  test_all_gates_pass_is_eligible` failing; it is a DIRTY-DATABASE artifact,
-  not a regression.** On a fresh scratch DB it passes both at HEAD `070f0c87`
-  and in this tree; under `--reuse-db` after 1,459 other tests it holds on
-  D_EFILE_001 + four warning rules. Nothing in this unit touches diagnostics.
-  The lesson: `--reuse-db` on a whole-suite run is not a clean gate for the
-  closeout tests.
+- ⚠⚠ **THE CLOSEOUT/CLEANUP ELIGIBILITY TESTS ARE DIRTY-DATABASE SENSITIVE —
+  witnessed THREE times now, and every one is a `--reuse-db` artifact, not a
+  regression** (`test_backentry_cleanup.py::test_all_gates_pass_is_eligible`;
+  `test_backentry_oos_states_s258.py::TestCleanupDisposition` ×2). They accumulate
+  diagnostics state, then hold on D_EFILE_001 + warning rules and report
+  `eligible: False`. On a FRESH scratch DB (`TEST_DB_TEST_NAME=… --create-db`)
+  every one passes, in this tree and at `070f0c87`. **A whole-suite `--reuse-db`
+  run is not a clean gate for these files** — and `-x` compounds it, because every
+  file alphabetically after the stop never runs at all.
+- 🏁 **FOUR GENUINELY STALE TESTS FOUND AND FIXED (`c27e0197`) — a real red nobody
+  had seen.** `test_batch296_item19_addendum_s270.py` (4 PYNR payloads) and
+  `test_batch296_tail_s294.py` (2 AL `ret-exempt` payloads) staged their booleans as
+  the STRING `"true"`. The s306f rule refuses exactly that, and for a named reason:
+  a string in NC's `PYNR` staged clean, Schedule PN never engaged, and a nonresident
+  return was overstated by **$4,780**. The tests predate the rule and encode the very
+  bug it prevents. Proven pre-existing: the same four fail identically at `070f0c87`
+  on a fresh DB. ⚠ The RAW `compute_al40nr` dicts keep their strings — that is the
+  real vendor shape; only STAGED payloads are type-checked. One assertion pinned the
+  persisted spelling `"true"`; a bool persists via `str()` as `"True"` and every
+  state engine lowercases before testing truthiness, so it now pins the fact.
 
 **▶ RELAYED BY THE tax-test-data LANE, 2026-09-03 night (recorded here, NOT this
 lane's work):** ① **Nilkanth Diamonds #3413 is FILED**, verdict `tie_with_exception`,
