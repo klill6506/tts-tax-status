@@ -244,6 +244,18 @@ Ken-directed block). Carried entity findings: DEFERRAL_AUDIT (9)–(18).
 on a fresh production session that only Ken mints · #3137 DROPPED → Inactive
 (the §1245 and balance-sheet questions are moot) · #4835 stays held (not
 final; the $1 K-14a rounding is accepted as `tie_with_exception`).
+**Entry-lane flag answered by the DATA (2026-09-03 night):** #4000 has NO SSN
+twin — #4001 / #4002 exist but are different individuals (surname family,
+no identity row, no return, created 02-25); #4000 holds the only identity
+and the only 1040, with FOUR uncommitted staged rows pointing at it
+(`i-skoglund-4000-b/-c/-probe1/-d` — the entry lane owns the three stale
+ones and will EXCLUDE them via `POST …/returns/<key>/exclude/` once Ken mints
+its session; ⚠ `-probe1` is a diagnostic that asserts a FALSE year-of-sale
+and must never commit — the reason nothing here ever selects a staged row
+by client: commit scripts consume payload FILES by explicit key). The ⑥c merge command gains the survivor rule + a staged-work guard
+(DECISIONS): it refuses to delete any client an uncommitted StagedReturn
+or a PipelineOut payload resolves to, and #4000–#4002 are report-to-Ken,
+never merged by the tool.
 
 **▶ NEW SUITE MODULE — delvio-research:** doors built
 (`apps/suiteapi/research.py`); **⛔ KEN: set `RESEARCH_SERVICE_TOKEN` on
