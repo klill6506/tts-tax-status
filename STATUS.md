@@ -79,8 +79,8 @@ set `CRM_SERVICE_TOKEN` on both Render services when the door ships.
 Ken's check-in clarifications (in the CRM work order): mail log by date ·
 the day's check-ins · both on the client record · the preparer is NOTIFIED
 on every check-in (requirement; channel = the lane's call) · Reactivate on
-the record and on check-in of a Former client. **⛔ KEN:** keep the Google
-Sheets sync? The CRM's
+the record and on check-in of a Former client. Google Sheets sync KEPT for check-ins, mail log and drop-offs (Ken) — moves
+with the data to Clients. The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
