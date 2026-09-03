@@ -1,41 +1,100 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s329, 2026-09-02 night (the s328 close was mislabeled 09-03; the clock says 09-02)
+## ▶▶ RESUME POINTER — s330, 2026-09-03 evening
 
-**🏁 THE SECOND PII HISTORY REWRITE IS EXECUTED (Ken's go, narrow scope,
-2026-09-02 night).** `main` was force-pushed once from a filtered mirror
-clone: `8f87ed1b` → **`75de3a2d`**, 2,720 commits, 902 SHAs changed, first
-changed commit dated 2026-03-22. All four gates passed BEFORE the push:
-V1 tip TREE hash identical (`15a2a45c…`) · V2 commit count unchanged ·
-V3 zero residual hits across all 11,593 reachable text blobs and every
-commit message **with a positive control — the same 41 patterns hit the
+**🏁 ⑥b THE CLIENTS-AS-HUB SUITE DOORS ARE BUILT AND PUSHED — `a3cedfd4`
+(Ken's D-042 / D-043 / D-044; BUILD_ORDER ⑥b closed).** The tax app stays the
+sole WRITER of the central client record; Clients (delvio-crm) becomes the
+place a client is born and the receptionist's desk, and executes both through
+these doors. **⛔ KEN, RENDER CONSOLE: set `CRM_SERVICE_TOKEN` on BOTH
+services** — all four doors answer 503 until it exists (the deliberate
+env-gated pattern; there is no fallback to any other suite token).
+
+- **One creation path.** `apps/clients/service.py::create_client(firm, payload,
+  force, request|actor)` now holds the duplicate gate + `ClientSerializer`
+  validation + the transactional write (client number, primary entity, owner
+  link, EIN, `identity.upsert_identity`) + audit. `ClientViewSet.create` calls
+  it and its `perform_create` is GONE — the door and the in-app form cannot
+  drift (the D-97 shape Ken's ruling asked for). 409 rows carry `basis`
+  (`ssn` | `ein` | `name`) alongside the legacy `matched` label.
+- **The four doors** (`apps/suiteapi/create.py`, `summary.py`, `documents.py`):
+  `POST /api/v1/suite/clients/` create · `PATCH …/<uuid>/status/` Former ↔
+  Active · `GET …/<uuid>/returns/latest/` · `POST …/<uuid>/documents/`
+  (multipart). `suite/clients/` is shared BY METHOD with Research's GET search
+  — `create.clients_root` dispatches and each door keeps its own token.
+- **Firm resolution** (a service call carries no `request.firm`, and the DB
+  holds three Firm rows): the door pins the ONE firm that owns numbered
+  clients, honours an explicit `firm_id`, and refuses with 400 when ambiguous.
+  Never a guess.
+- **`force`, a status change and an attach all require `X-Suite-Actor`** — the
+  audit row names who did it.
+- **Face-line vocabulary on the summary door**, pinned from this app's own
+  field maps: 1040 = 11 / 24 / 35a / 37 · 1120-S = 22 / 23c / 26 / 27 · 1065 =
+  23 / 28 / 31 / 32 · GA-500 = 10 / 23 / 45 / 46. Unmapped forms (1120, 1041,
+  GA-600S, other states) report status with `amounts: null` — an unverified
+  line map would be a wrong number on a client record. Dollars are STRINGS.
+- **Documents:** categories `source_docs` (default) / `financial_statements` /
+  `trial_balance` added (documents mig **0002**); default entity = the PRIMARY
+  link, else the oldest; another client's entity → 404, never re-parented.
+- **"+ New Client" retired** in the tax app → a link to `crm.delviotax.com/new`
+  (`client/src/renderer/lib/suiteLinks.ts`): Clients page, Return Manager
+  (legacy + Slate), Dashboard (its inline name-only form had been DEAD since
+  the 2026-09-02 SSN-or-EIN rule — it could only ever 400) and the app menu.
+  `NewClientForm.tsx` + its 14-test file stay in the tree unmounted (deleting
+  files is Ken's call). ⚠ The CRM's `/new` shell should exist before the token
+  is set, or preparers land on a 404.
+- **Gates:** `tests/test_suiteapi_crm.py` **25 new tests** (token isolation
+  across all five suite tokens, the SSN never in the response or the log, every
+  409 basis, firm ambiguity, the in-app form sharing the path, face amounts,
+  document refusals) · every suite-API + client-creation + audit + documents
+  file green · client `npm run typecheck` clean · bundle builds · 27 affected
+  vitest cases pass.
+- **Handed over:** the as-built contract for all four doors is the annex on
+  `delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md` (request/response shapes,
+  status codes, the `amounts` contract). The CRM lane builds `/new`, `/desk`
+  and the panels against it.
+- ⚠ **One pre-existing red found and fixed en route:** `tests/test_audit.py`
+  had three client-creation tests posting a bare name — red since the
+  2026-09-02 SSN-or-EIN rule, invisible because nobody had run that file since.
+  They now key a synthetic 900-series SSN.
+- ⚠ **A full-suite `-x` run reported `test_backentry_cleanup.py::
+  test_all_gates_pass_is_eligible` failing; it is a DIRTY-DATABASE artifact,
+  not a regression.** On a fresh scratch DB it passes both at HEAD `070f0c87`
+  and in this tree; under `--reuse-db` after 1,459 other tests it holds on
+  D_EFILE_001 + four warning rules. Nothing in this unit touches diagnostics.
+  The lesson: `--reuse-db` on a whole-suite run is not a clean gate for the
+  closeout tests.
+
+**▶ NEXT:** **⑥c `manage.py merge_client`** — D-044's duplicate merge + hard
+delete. Already ruled and half-specified in DECISIONS: survivor = the EIN/SSN
+holder; the command REFUSES to delete any client an uncommitted StagedReturn or
+a PipelineOut payload resolves to; #4000–#4002 are report-to-Ken, never merged
+by the tool; every FK in every suite schema re-pointed first, a zero-reference
+sweep, dry by default, a reviewable plan Ken approves before any delete. First
+input = the CRM's 37 SSN-found pairs. Then the Lacerte leg resumes: ③ the face
+readers by wall count (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch C;
+8995 via `taxwise1040/f8995.py`) — drive ONE single-wall packet per face before
+trusting the census · ② the 3-char `distribution_codes` model gap (8 packets) ·
+④ the shadow-2210 reader (face line 38) · ⑤ the GA 7b unborn-dependent engine
+leg (8 witnesses).
+
+**▶ CARRIED FROM s329 (2026-09-02 night) — THE SECOND PII HISTORY REWRITE IS
+EXECUTED at narrow scope.** `main` was force-pushed once from a filtered mirror
+clone: `8f87ed1b` → **`75de3a2d`**, 2,720 commits, 902 SHAs changed. All four
+gates passed BEFORE the push: V1 tip TREE hash identical · V2 commit count
+unchanged · V3 zero residual hits across all 11,593 reachable text blobs and
+every commit message **with a positive control — the same 41 patterns hit the
 untouched backup 41/41 in blobs and 11/11 in messages** · V4 commit map.
-
-- **Scope (Ken: "push the narrow scope only for now"):** the s327 test
-  fixture's real identifiers (2 SSNs + 5 name/street words) and **17
-  Lacerte packet codes** that lived in history and were absent at tip —
-  each now the client number, or `[client]` where no number is known.
-- **⏳ DEFERRED to a later rewrite (Ken's "for now"):** ~86 TaxWise packet
-  surnames that survive only in old `STATUS.md` / `STATUS_ARCHIVE.md`
-  blobs (every one was fixed at tip when the mirror guard caught it; only
-  history still carries them), plus the s297 tier-3 tokens present at tip.
-  Tracked in REVIEW_QUEUE as **REWRITE #3**.
-- **Two live tip catches were scrubbed by ordinary commits first** (a
-  mapped token must be absent at tip or the filter rewrites current code):
-  a packet code in four files (`67d5ac25`) and a client surname in the Form
-  8962 BATCH-296 item-9 test docstring (`21ea4025`) — the tenth PII catch.
-- **Backup mirror (KEEP):** `D:\tax-test-data\repo-backups\delvio-tax-pre-rewrite-2026-09-02.git`
-  holds the full pre-rewrite history at `8f87ed1b`. Destroying it is a
-  separate Ken call, as with the s297d backup.
-- **Old→new SHA map:** `docs/history/rewrite-2026-09-02-commit-map.txt`
-  (2,721 rows). 180 hash citations across STATUS / archives / DECISIONS /
-  REVIEW_QUEUE / BUILD_ORDER / the auto-memory were repaired from it, none
-  ambiguous. **⚠⚠ EVERY delvio-tax SHA quoted before 2026-09-02 night is
-  STALE — resolve it through the map, never from memory.**
-- **⛔ PEER LANES MUST RE-CLONE** (the other account, the entity/entry
-  lanes, Codex). A lane that pulls onto old history will re-introduce it.
-- The public `tts-tax-status` mirror never carried these values and was
-  NOT rewritten; its SHAs stand.
+Scrubbed: the s327 fixture's real identifiers (2 SSNs + 5 name/street words)
+and 17 Lacerte packet codes absent at tip. **⏳ DEFERRED (Ken's "for now"):**
+~86 TaxWise packet surnames living only in old `STATUS.md` /
+`STATUS_ARCHIVE.md` blobs, plus the s297 tier-3 tip-present tokens —
+REVIEW_QUEUE's **REWRITE #3**, Ken's call whenever he wants it. Backup mirror
+(KEEP): `D:\tax-test-data\repo-backups\delvio-tax-pre-rewrite-2026-09-02.git`.
+Old→new SHA map: `docs/history/rewrite-2026-09-02-commit-map.txt` (2,721 rows).
+**⚠⚠ EVERY delvio-tax SHA quoted before 2026-09-02 night is STALE — resolve it
+through the map, never from memory. ⛔ PEER LANES MUST RE-CLONE.** The public
+`tts-tax-status` mirror never carried these values and was NOT rewritten.
 
 **▶ KEN'S RULING, 2026-09-03 morning — CLIENTS (delvio-crm) IS THE SUITE HUB AND
 THE PLACE A CLIENT IS BORN (firm D-042; DECISIONS; SUITE_CONTRACT §1/§3
@@ -178,7 +237,7 @@ tonight, both now REFUSE BY NAME ("joint return with ownerless
 documents")** — the s326 rule refusing to guess an owner; they need an
 owner witness or hand-keying. No build in 54–59. `/bugs`: no open reports.
 
-**▶ NEXT:** ⑥b the two Clients-as-hub suite doors (above; after the current Lacerte leg) · ⑥c `merge_client` (duplicate merge + hard delete, dry by default, zero-reference sweep, Ken-approved plan; D-044) · ② the 3-char
+**▶ NEXT (s329's list, superseded by the s330 NEXT above — ⑥b is SHIPPED a3cedfd4):** ⑥b the two Clients-as-hub suite doors — DONE, four doors not two · ⑥c `merge_client` (duplicate merge + hard delete, dry by default, zero-reference sweep, Ken-approved plan; D-044) · ② the 3-char
 `distribution_codes` model gap (migration; 8 packets) · ③ the Lacerte face
 readers by wall count (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch
 C; 8995 via `taxwise1040/f8995.py`) — for each, drive ONE packet whose
