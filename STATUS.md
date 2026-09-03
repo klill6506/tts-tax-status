@@ -80,7 +80,14 @@ Ken's check-in clarifications (in the CRM work order): mail log by date ·
 the day's check-ins · both on the client record · the preparer is NOTIFIED
 on every check-in (requirement; channel = the lane's call) · Reactivate on
 the record and on check-in of a Former client. Google Sheets sync KEPT for check-ins, mail log and drop-offs (Ken) — moves
-with the data to Clients. The CRM's
+with the data to Clients.
+**⛔ KEN (documents, found 09-03):** the suite has TWO document stores with
+no link — the tax app's `tax-documents` (what return prep + Research read)
+and the portal's `portal-documents` (client uploads, /staff/ manager, the
+CRM's count). Recommendation in REVIEW_QUEUE: source docs → the tax app's
+store for January (new categories), unify after season. Intake advice given:
+scan → firm Google Drive intake folder, `<client_number>_<year>_<what>_<date>.pdf`,
+filed into the suite as each return is prepared. The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
