@@ -54,11 +54,15 @@ so the door and the in-app form cannot drift) · `GET
 entity with AGI / tax / refund-or-due — dollars permitted, staff-only
 caller) · retire "+ New Client" to a link into Clients (`desk-create` and
 bulk imports stay). CRM lane's work order:
-`delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md`. **⛔ KEN, new:** retire the
-tax app's own front-desk `/check-in` screen (s290 FRONT_DESK temporaries)?
-It now duplicates delvio-checkin's receptionist screen (D-036). **⛔ KEN,
-console:** set `CRM_SERVICE_TOKEN` on both Render services when the door
-ships.
+`delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md`. **✅ Ken, same morning:
+"Retire the tax app check-in screen. It always felt awkward there." — DONE:**
+`/check-in`, the FRONT_DESK standalone mount, `desk-search` / `desk-create` /
+`temporary` and the `allow_no_identity` serializer escape are removed (zero
+temporary clients, zero front_desk members in the live DB first); the
+lockout middleware stays with a trimmed allowlist; a front_desk login is told
+to use checkin.delviotax.com. The SSN-or-EIN rule now has NO exemption.
+639 server tests green, typecheck clean, bundle builds. **⛔ KEN, console:**
+set `CRM_SERVICE_TOKEN` on both Render services when the door ships.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
 (`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
