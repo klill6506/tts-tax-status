@@ -95,6 +95,15 @@ app's document door → `tax-documents`. Source docs live in THIS app's store
 for January; unify the two stores after season (REVIEW_QUEUE). The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
+**🏁 SLATE v2.3 RATIFIED (Ken, 2026-09-03 late afternoon: "I'm pretty comfortable
+with where we are now… duplicate this overall system with every app"; firm
+D-045).** Canonical in delvio-design (tokens + §2.2 spec + CHANGELOG, tag
+`v2.3`). The tax app IS the reference (live through `09a0447d`); every other
+app is being synced to v2.3 by one session each, in parallel, with its own
+base color — Clients in check-in's orange with the C tile; delvio-1099 on a
+branch for Ken's go (D-027); delvio-checkin skipped (retiring, D-043). Ken:
+"I won't promise that I won't make some more changes next week" — the
+rule-change protocol is in §2.2.
 **▶ SLATE v2.3 PASS 1 — LIVE (Ken, 2026-09-03: "hammer the tax app today and
 get it exactly where I want it", Lacerte as the reference: dark labels, dark
 boxes, a little more color; then every other app follows the tax app with
