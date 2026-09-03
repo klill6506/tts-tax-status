@@ -65,8 +65,11 @@ so the door and the in-app form cannot drift) · `GET
 /api/v1/suite/clients/<uuid>/returns/latest/` (latest federal + GA per
 entity with AGI / tax / refund-or-due — dollars permitted, staff-only
 caller) · `PATCH /api/v1/suite/clients/<uuid>/status/` (reactivate / mark
-former — Ken: clients leave for a year or two and come back) · retire "+ New
-Client" to a link into Clients (bulk imports stay). CRM lane's work order:
+former — Ken: clients leave for a year or two and come back) · `POST
+/api/v1/suite/clients/<uuid>/documents/` (the receptionist's Attach on the
+drop-off record → this app's `tax-documents` store; + categories
+`financial_statements` / `trial_balance` / `source_docs`, one migration) ·
+retire "+ New Client" to a link into Clients (bulk imports stay). CRM lane's work order:
 `delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md`. **✅ Ken, same morning:
 "Retire the tax app check-in screen. It always felt awkward there." — DONE:**
 `/check-in`, the FRONT_DESK standalone mount, `desk-search` / `desk-create` /
@@ -84,10 +87,12 @@ with the data to Clients.
 **⛔ KEN (documents, found 09-03):** the suite has TWO document stores with
 no link — the tax app's `tax-documents` (what return prep + Research read)
 and the portal's `portal-documents` (client uploads, /staff/ manager, the
-CRM's count). Recommendation in REVIEW_QUEUE: source docs → the tax app's
-store for January (new categories), unify after season. Intake advice given:
-scan → firm Google Drive intake folder, `<client_number>_<year>_<what>_<date>.pdf`,
-filed into the suite as each return is prepared. The CRM's
+CRM's count). Ken walked the desk flow and chose **Attach on the drop-off
+record** (no file naming, no client numbers): the scanner saves to its
+folder (scan-to-Google-Drive at Conyers), the receptionist attaches the
+newest file from the drop-off she has open, the CRM forwards it to this
+app's document door → `tax-documents`. Source docs live in THIS app's store
+for January; unify the two stores after season (REVIEW_QUEUE). The CRM's
 `/desk` (receptionist check-in + create) waits on the ⑥b door.
 
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
