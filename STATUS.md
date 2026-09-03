@@ -37,6 +37,29 @@ untouched backup 41/41 in blobs and 11/11 in messages** · V4 commit map.
 - The public `tts-tax-status` mirror never carried these values and was
   NOT rewritten; its SHAs stand.
 
+**▶ KEN'S RULING, 2026-09-03 morning — CLIENTS (delvio-crm) IS THE SUITE HUB AND
+THE PLACE A CLIENT IS BORN (firm D-042; DECISIONS; SUITE_CONTRACT §1/§3
+amended).** Most of the hub was already ruled and live (D-033 client record,
+D-041 staffing, C-7 balance); the one clause that changed is "Tax is the
+only place a client is born." The tax app stays the sole WRITER — creation
+becomes a suite door. Ken's three answers: **SSN pass-through** (never held
+outside Tax; the CRM's forwarder must prove last-4-only logs) · **check-in
+linked both ways, not migrated** · **CRM lane starts now, this lane's doors
+are the NEXT UNIT after the current Lacerte leg** (BUILD_ORDER ⑥b). Notices
+are Delvio Research's Matters (D-040) — the CRM reads them, builds nothing.
+This lane's unit: `POST /api/v1/suite/clients/` (create; `CRM_SERVICE_TOKEN`;
+factor `ClientViewSet.create/perform_create` into one service function first
+so the door and the in-app form cannot drift) · `GET
+/api/v1/suite/clients/<uuid>/returns/latest/` (latest federal + GA per
+entity with AGI / tax / refund-or-due — dollars permitted, staff-only
+caller) · retire "+ New Client" to a link into Clients (`desk-create` and
+bulk imports stay). CRM lane's work order:
+`delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md`. **⛔ KEN, new:** retire the
+tax app's own front-desk `/check-in` screen (s290 FRONT_DESK temporaries)?
+It now duplicates delvio-checkin's receptionist screen (D-036). **⛔ KEN,
+console:** set `CRM_SERVICE_TOKEN` on both Render services when the door
+ships.
+
 **▶ BOOT TASK ① DONE — the "59 never committed" overnight job finished
 (`tmp\commit_s328_uncommitted.txt`, batch `s328-uncommitted-commit-001`):
 31 landed · 7 fenced (already carried rows — correct) · 17 no_tie · 4
@@ -71,7 +94,7 @@ tonight, both now REFUSE BY NAME ("joint return with ownerless
 documents")** — the s326 rule refusing to guess an owner; they need an
 owner witness or hand-keying. No build in 54–59. `/bugs`: no open reports.
 
-**▶ NEXT (after Ken's rewrite decision):** ② the 3-char
+**▶ NEXT:** ⑥b the two Clients-as-hub suite doors (above; after the current Lacerte leg) · ② the 3-char
 `distribution_codes` model gap (migration; 8 packets) · ③ the Lacerte face
 readers by wall count (Sch 1 → Sch B → Sch 2/3 → Sch D+8949 → Sch A → Sch
 C; 8995 via `taxwise1040/f8995.py`) — for each, drive ONE packet whose
