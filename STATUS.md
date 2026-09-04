@@ -10,6 +10,39 @@ committed, EVERY ONE A TIE, zero no-ties** (one held, below). The next unit
 is the Form 6251 reader (6 sole walls, 17 packets in total) — but read the
 census warning before sizing it.** Nothing below needs re-asking.
 
+**⛔⛔ THE CC CHANGES QUEUES ARE NOT EMPTY — SWEPT 2026-09-04 AT THE CLOSE,
+NOTHING WORKED YET (Ken flagged them as he left). Work these FIRST next
+session, before the Form 6251 reader.**
+
+| Lane / file | Items | Posted | State |
+|---|---|---|---|
+| 1040 · `CC_CODE_CHANGES_1040_BATCH-014.md` | **10** | 2026-09-04 | ▶ **UNWORKED — the next batch in sequence** (013 closed this morning) |
+| 1040 · `CC_CODE_CHANGES_1040_BATCH-015.md` | **20** | 2026-09-04 | ⚠ NOT a work batch — it is the *pending list* published alongside 014 ("current count 20/20"). Triage into batches of ten; do not treat as one unit |
+| 1040 · `CC_CODE_CHANGES_BATCH-296.md` | 14 | 2026-09-02 | ⚠ UNWORKED and older than 013/014. Also carries the **item-writing convention** (symptoms + evidence; a cause theory must be LABELLED a theory) — read that header before writing any annex |
+| legacy root · `CC_CODE_CHANGES_NZ_2026-08-03.md` | — | 2026-08-03 | still undrained (the legacy root is not swept clean) |
+| 1120-S · `CC Changes\` | — | — | EMPTY (README only) |
+
+BATCH-014's ten, one line each (Tom lane, every one with a named fixture and
+a tie gate): filed Schedule C **line-30 home office** with no method
+worksheet · **paired taxpayer/spouse capital-loss carryover** for Georgia RIE
+(the schema holds only one) · **Schedule B Part III** foreign-account/trust
+answers (no field exists) · the **MFS final-six-months lived-apart**
+exception, separate from the Social Security lived-together fact · Georgia
+**IND-CR 212** preceptor credit · a **source-backed aggregate IRA
+distribution** with withholding and thin payer metadata · Schedule A **1098
+mortgage-interest detail rows** (only the 8a aggregate survives) · Schedule A
+**medical detail rows** · Form 1040 **line 12a dependency ELIGIBILITY vs
+CLAIM** for Form 8863 · **Schedule C gross-receipts detail rows** without
+inventing 1099s.
+
+⚠ Two of BATCH-015's twenty overlap work from tonight and must be re-verified
+before building: **#3 "Schedule 2 line 8 reported directly without Form
+5329"** (the box the face itself offers — the new f5329 reader now decomposes
+line 8 only when a 5329 face is present, so this is the missing sibling
+route) and **#6 "Form 8606 taxable Roth earnings into Form 5329 Part I"**.
+**#4 asks for Form 3800 support** — this session typed 3800 as a NAMED WALL,
+so that item would open the class.
+
 **▶ WHERE THE MACHINE WAS LEFT (Ken went out of town — clean stop).** Nothing
 is in flight: both extract runs and both commit batches finished, the working
 tree is committed and pushed, and both deploys are Render-API verified LIVE.
