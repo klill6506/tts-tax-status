@@ -44,7 +44,18 @@ building, the s295/6/7 rule).** Lacerte, 252 of 255 packets refuse: Sch 1 **181*
 unclassifiable page **148** · asset detail **72** · no federal face **66** · the
 doubled Sch 1-A **62** (ruling 4) · Sch E **46** · 5329 **42** · 6251 **41**.
 
-**▶ NEXT — in the order that lands the most returns:**
+**▶ NEXT — Ken's sequencing at the close (2026-09-03 night): "Can you work on batch 013 immediately after the refresh?"**
+**0. ⛔ FIRST: `D:	ax-test-dataD0\CC Changes\CC_CODE_CHANGES_1040_BATCH-013.md`** — Codex's ten
+   Tom-lane product gaps, posted 2026-08-31, UNWORKED. The CC Changes loop applies verbatim
+   (CLAUDE.md): verify-first triage of every item against the code and the fixture, ONE deploy
+   for the batch, a result annex appended to the file, then move it to `CC Changes Done\`.
+   ⚠ Item 5's premise is REFUTED (the published schema and the production allowlist agree;
+   Schedule C has no `business_address` on the MODEL — a migration, not a sync). Item 1 is
+   the positive-net Schedule D RIE spouse allocation (BATCH-296 item 57 fixed only the
+   negative case). Item 2 needs a source-backed 1040 line 1h row. Item 3 a printed Form 5329
+   line 48 route. BATCH-296 (the running file, items 54–59 already triaged by the data) stays
+   open beside it; do not merge 013's items into 296.
+**Then, in the order that lands the most returns:**
 1. **Ruling 4's duplicate-page tolerance** (78 packets, an afternoon).
 2. **Ruling 1's out-of-state release** (47 packets, a refusal to drop).
 3. **Ruling 2's penalty acceptance** (~10 packets) + **ruling 3** (client 3250).
