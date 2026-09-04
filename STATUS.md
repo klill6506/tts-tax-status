@@ -1,86 +1,87 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s330, 2026-09-03 evening
+## ▶▶ RESUME POINTER — s330 close, 2026-09-03 night
 
-**🏁 ⑥b THE CLIENTS-AS-HUB SUITE DOORS ARE BUILT AND PUSHED — `a3cedfd4`
-(Ken's D-042 / D-043 / D-044; BUILD_ORDER ⑥b closed).** The tax app stays the
-sole WRITER of the central client record; Clients (delvio-crm) becomes the
-place a client is born and the receptionist's desk, and executes both through
-these doors. **⛔ KEN: set `CRM_SERVICE_TOKEN` in TWO PLACES — the two ENDS of the
-call, not two tax services (the earlier "both Render services" note was
-wrong): (1) Render → `delvio-tax` → Environment, and (2) the CRM's SUPABASE
-EDGE FUNCTION secrets (`delvio-crm` is a Render STATIC SITE — no server, no
-env there; its server side is Supabase Edge Functions, exactly where
-`SUITE_SERVICE_TOKEN` lives today for `update-client-contact`)** — all four doors answer 503 until it exists (the deliberate
-env-gated pattern; there is no fallback to any other suite token).
+**▶▶ START HERE: KEN CLEARED THE BACK DOOR. Five rulings landed at the close and
+the next session's job is to SPEND them — build the unblocks, then run the books.**
+All five are in DECISIONS under *"Five entry-lane rulings clearing the back door"*.
+Nothing below needs re-asking.
 
-- **One creation path.** `apps/clients/service.py::create_client(firm, payload,
-  force, request|actor)` now holds the duplicate gate + `ClientSerializer`
-  validation + the transactional write (client number, primary entity, owner
-  link, EIN, `identity.upsert_identity`) + audit. `ClientViewSet.create` calls
-  it and its `perform_create` is GONE — the door and the in-app form cannot
-  drift (the D-97 shape Ken's ruling asked for). 409 rows carry `basis`
-  (`ssn` | `ein` | `name`) alongside the legacy `matched` label.
-- **The four doors** (`apps/suiteapi/create.py`, `summary.py`, `documents.py`):
-  `POST /api/v1/suite/clients/` create · `PATCH …/<uuid>/status/` Former ↔
-  Active · `GET …/<uuid>/returns/latest/` · `POST …/<uuid>/documents/`
-  (multipart). `suite/clients/` is shared BY METHOD with Research's GET search
-  — `create.clients_root` dispatches and each door keeps its own token.
-- **Firm resolution** (a service call carries no `request.firm`, and the DB
-  holds three Firm rows): the door pins the ONE firm that owns numbered
-  clients, honours an explicit `firm_id`, and refuses with 400 when ambiguous.
-  Never a guess.
-- **`force`, a status change and an attach all require `X-Suite-Actor`** — the
-  audit row names who did it.
-- **Face-line vocabulary on the summary door**, pinned from this app's own
-  field maps: 1040 = 11 / 24 / 35a / 37 · 1120-S = 22 / 23c / 26 / 27 · 1065 =
-  23 / 28 / 31 / 32 · GA-500 = 10 / 23 / 45 / 46. Unmapped forms (1120, 1041,
-  GA-600S, other states) report status with `amounts: null` — an unverified
-  line map would be a wrong number on a client record. Dollars are STRINGS.
-- **Documents:** categories `source_docs` (default) / `financial_statements` /
-  `trial_balance` added (documents mig **0002**); default entity = the PRIMARY
-  link, else the oldest; another client's entity → 404, never re-parented.
-- **"+ New Client" retired** in the tax app → a link to `crm.delviotax.com/new`
-  (`client/src/renderer/lib/suiteLinks.ts`): Clients page, Return Manager
-  (legacy + Slate), Dashboard (its inline name-only form had been DEAD since
-  the 2026-09-02 SSN-or-EIN rule — it could only ever 400) and the app menu.
-  `NewClientForm.tsx` + its 14-test file stay in the tree unmounted (deleting
-  files is Ken's call). ⚠ The CRM's `/new` shell should exist before the token
-  is set, or preparers land on a 404.
-- **Gates:** `tests/test_suiteapi_crm.py` **25 new tests** (token isolation
-  across all five suite tokens, the SSN never in the response or the log, every
-  409 basis, firm ambiguity, the in-app form sharing the path, face amounts,
-  document refusals) · every suite-API + client-creation + audit + documents
-  file green · client `npm run typecheck` clean · bundle builds · 27 affected
-  vitest cases pass.
-- **Handed over:** the as-built contract for all four doors is the annex on
-  `delvio-crm/docs/WORK_ORDER_hub_2026-09-03.md` (request/response shapes,
-  status codes, the `amounts` contract). The CRM lane builds `/new`, `/desk`
-  and the panels against it.
-- ⚠ **One pre-existing red found and fixed en route:** `tests/test_audit.py`
-  had three client-creation tests posting a bare name — red since the
-  2026-09-02 SSN-or-EIN rule, invisible because nobody had run that file since.
-  They now key a synthetic 900-series SSN.
-- ⚠⚠ **THE CLOSEOUT/CLEANUP ELIGIBILITY TESTS ARE DIRTY-DATABASE SENSITIVE —
-  witnessed THREE times now, and every one is a `--reuse-db` artifact, not a
-  regression** (`test_backentry_cleanup.py::test_all_gates_pass_is_eligible`;
-  `test_backentry_oos_states_s258.py::TestCleanupDisposition` ×2). They accumulate
-  diagnostics state, then hold on D_EFILE_001 + warning rules and report
-  `eligible: False`. On a FRESH scratch DB (`TEST_DB_TEST_NAME=… --create-db`)
-  every one passes, in this tree and at `070f0c87`. **A whole-suite `--reuse-db`
-  run is not a clean gate for these files** — and `-x` compounds it, because every
-  file alphabetically after the stop never runs at all.
-- 🏁 **FOUR GENUINELY STALE TESTS FOUND AND FIXED (`c27e0197`) — a real red nobody
-  had seen.** `test_batch296_item19_addendum_s270.py` (4 PYNR payloads) and
-  `test_batch296_tail_s294.py` (2 AL `ret-exempt` payloads) staged their booleans as
-  the STRING `"true"`. The s306f rule refuses exactly that, and for a named reason:
-  a string in NC's `PYNR` staged clean, Schedule PN never engaged, and a nonresident
-  return was overstated by **$4,780**. The tests predate the rule and encode the very
-  bug it prevents. Proven pre-existing: the same four fail identically at `070f0c87`
-  on a fresh DB. ⚠ The RAW `compute_al40nr` dicts keep their strings — that is the
-  real vendor shape; only STAGED payloads are type-checked. One assertion pinned the
-  persisted spelling `"true"`; a bool persists via `str()` as `"True"` and every
-  state engine lowercases before testing truthiness, so it now pins the fact.
+| # | Ken's ruling | What it releases | Work |
+|---|---|---|---|
+| 1 | A Lacerte packet with a NON-GEORGIA state files **federal + GA only** | **47 packets** | drop the refusal; set the other state aside |
+| 2 | §6654 penalty deltas: **record and file** | ~10 packets | accept the delta as a vendor divergence, note it |
+| 3 | A **hand-keyed** return that ties **IS filed** | client 3250 + the entry lane | extends the standing commit authorization |
+| 4 | **Ignore** the doubled Sch 1-A / Sch 3 pages in code | **78 packets** (62 + 16) | reader tolerates 4 pages where it wants 2, and 2 where it wants 1 |
+| 5 | Gail needs **NO reprint** | — | the old "print 61 federals" ask is RETRACTED |
+
+**⚠ Ruling 1 carries a ROADMAP ask that is NOT a licence:** Ken wants state
+software built soon (*"someone needs to work on the app itself at some point"*).
+That is a scope conversation — which state, what "the app" means — tracked in
+BUILD_ORDER. Do NOT start entering other states' returns on the back of ruling 1.
+
+**▶ FRESH CENSUS AT THE CLOSE (a count is a timestamp — re-run it, never quote
+this one later):** 2025 federal 1040 shells **2,978 — filed 1,258**, draft 1,716,
+in progress 4. GA-500 under a filed federal: 1,224 — 1,187 filed, 37 draft.
+**1120-S 327 shells / 193 filed. 1065 104 shells / 9 filed.**
+
+**⚠⚠ THE PARTNERSHIP SIDE IS THE THIN ONE, NOT THE S-CORPS.** Ken believed both
+were solid; the data says 9 of 104. The 1065 import has never been built and 66
+packets sit in `1065\Inbox`. That is a BUILD item, not a Ken blocker.
+
+**▶ WHERE THE 1,716 UNENTERED 1040s ACTUALLY SIT.** The back door has ever
+*reached* only **75** of them (a StagedReturn resolves to the shell; 126 valid /
+33 invalid / 4 excluded / 1 committed rows). The other **1,641 have never had a
+staged row at all** — either their packet refused before staging, or no packet
+exists in any inbox. **1,218 packets sit refused as of their latest run**, so the
+ceiling is PACKETS AND READERS, not the commit path.
+
+**▶ THE REFUSAL CENSUS (one count per packet, latest run only — re-measure before
+building, the s295/6/7 rule).** Lacerte, 252 of 255 packets refuse: Sch 1 **181** ·
+8995 **172** · Sch D **131** · Sch B **126** · Sch 2 **119** · Sch 3 **113** ·
+8949 **109** · 1116 **95** · 4562 **84** · Sch A **76** · Sch C **75** · Sch E p2
+**75** · GA 4562 **72** · 8582 **65** · 7203 **62**. TaxWise books, 963 packets:
+unclassifiable page **148** · asset detail **72** · no federal face **66** · the
+doubled Sch 1-A **62** (ruling 4) · Sch E **46** · 5329 **42** · 6251 **41**.
+
+**▶ NEXT — in the order that lands the most returns:**
+1. **Ruling 4's duplicate-page tolerance** (78 packets, an afternoon).
+2. **Ruling 1's out-of-state release** (47 packets, a refusal to drop).
+3. **Ruling 2's penalty acceptance** (~10 packets) + **ruling 3** (client 3250).
+4. **The Lacerte face readers by wall count** — Sch 1 → 8995 → Sch D → Sch B →
+   Sch 2/3 → 8949 → Sch A → Sch C. Drive ONE single-wall packet by hand through
+   each before trusting the census (s328's lesson: a corpus run never reaches a
+   new reader).
+5. **⑥c `manage.py merge_client`** (D-044; the CRM's 34 duplicate pairs are the input).
+6. **The 1065 import** — 95 partnership returns behind it.
+
+**▶ CODEX / the entry lane may resume one-by-one entry immediately.** Nothing in
+this lane blocks it, and ruling 3 is what it was waiting on. ⚠ If it reports being
+blocked, the known cause is a **fresh production session that only Ken can mint**.
+
+**🏁 SHIPPED THIS SESSION (all deployed, Render-API verified live):**
+- **⑥b the four Clients-as-hub doors** (`a3cedfd4`) — create · status · latest
+  returns · attach document. One shared creation path (`apps/clients/service.py`)
+  that the in-app form runs too, so they cannot drift. `CRM_SERVICE_TOKEN` is SET
+  by Ken at both ends and verified from outside.
+- **A live 500 on all four doors, found and fixed** (`50ba3b20`): `hmac.compare_digest`
+  RAISES on a non-ASCII string, so one odd character in a pasted token crashed every
+  door. Compare BYTES. Regression tests both directions.
+- **The v2.3.1 app-header tokens adopted** (`de7b1eb1`) — the bar no longer hardcodes
+  white-alpha. Verified in the SERVED stylesheet, not just deployed.
+- **delvio-1099's Slate v2.3 merged on Ken's explicit go** (`fb536dd`, D-027).
+- **Six pre-existing stale tests fixed** (`c27e0197`, `7a1766c4`, `d6d2c30b`), every
+  one proven red at `070f0c87` BEFORE being touched.
+- **GLOBAL_STATUS full review** — first since 2026-07-21.
+
+**⚠⚠ THE EVENING'S OWN LESSON, SIX TIMES: reasoning from a MODEL of the thing
+instead of OPENING the thing** — a gate with hexes typed into it · a hand-typed
+accent list that dropped two apps · float maths where the browser rounds to 8-bit ·
+a per-app deploy status read off a per-colour table · an app judged by a FOLDER NAME ·
+a clone 37 commits stale reported as current · and the Gail triage reading FILENAMES
+instead of the PDFs. **One of these reached Ken as a false alarm on the IRS filing
+app.** Before stating what something contains: `git fetch`, then open the artefact
+the running system actually consumes.
 
 **▶ RELAYED BY THE tax-test-data LANE, 2026-09-03 night (recorded here, NOT this
 lane's work):** ① **Nilkanth Diamonds #3413 is FILED**, verdict `tie_with_exception`,
