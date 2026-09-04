@@ -2,11 +2,61 @@
 
 ## ▶▶ RESUME POINTER — s331 close, 2026-09-04
 
-**▶▶ START HERE: THE UNKNOWN-PAGE PASS IS SHIPPED, ACCEPTED AND LANDED
-(`c43ea59b`; deploy `dep-dadeepp7lnhs73d4nejg` LIVE). 24 returns committed,
-every one a tie, zero no-ties. The next unit is the NAMED extractor walls in
-measured order — 6251 (15) → 5329 (13) → 1116 (5) → 4562 (3) →
-sched_line_detail (4) → 1310 (2).** Nothing below needs re-asking.
+**▶▶ START HERE: TWO READER UNITS SHIPPED AND LANDED TONIGHT — the
+unknown-page pass (`c43ea59b`, deploy `dep-dadeepp7lnhs73d4nejg`) and the
+Form 5329 reader (`5ed62a3d`, deploy `dep-dadfq1h7lnhs73d6hlig`), both LIVE.
+The merged Gail book went from 10 emitted → 34 → 43, and **24 + 8 returns
+committed, EVERY ONE A TIE, zero no-ties** (one held, below). The next unit
+is the Form 6251 reader (6 sole walls, 17 packets in total) — but read the
+census warning before sizing it.** Nothing below needs re-asking.
+
+**▶ WHERE THE MACHINE WAS LEFT (Ken went out of town — clean stop).** Nothing
+is in flight: both extract runs and both commit batches finished, the working
+tree is committed and pushed, and both deploys are Render-API verified LIVE.
+- Batch `s331-unknown-commit-001` — 24 landed, 4 fenced (they already tie).
+- Batch `s331-5329-commit-001` — **8 landed, 1 HELD**: packet …2404 stages
+  with `depreciation_assets[0..3].link_key: must be the linked activity's
+  name` — a PRE-EXISTING extractor gap in the depreciation reader, unrelated
+  to the 5329 work. It is the first item to pick up, and it is small.
+- Both commit scripts are RE-RUNNABLE: each fences a return that already
+  committed in its batch, so re-running lands only what is missing.
+  `1040	mp\commit_s331_5329.py` · `commit_s331_unknown.py`.
+
+**🏁 THE FORM 5329 READER (`5ed62a3d`).** `scripts/taxwise1040/f5329.py`,
+calibrated against every f5329 page in the book (13 packets, 24 pages) —
+never modelled. Parts I and VII import (identity gates re-run the engine's
+own math over the printed values); every other part refuses BY NAME with
+the whole marker map transcribed, so a value anywhere on the face is
+DETECTED rather than dropped. Schedule 2 line 8 — where both the Part I 10%
+and the Part VII 6% land — now decomposes instead of refusing.
+- **Part IV refuses on a REAL LANE GAP, not caution.** It has a live corpus
+  witness, but the face never prints the 12/31 account value and the lane
+  has `roth_value` with no `roth_value_at_least_excess` — the assertion
+  BATCH-013 #3 built for the HSA alone. **The sibling witness that note
+  asked for now exists; the field is a build item.**
+- Geometry worth keeping: the columns were measured off the page's own
+  ruled drawings (inner marker box x 371-395, outer 474-496), a LEFT-GAP
+  rule separates a boxed value from a word inside a sentence (two template
+  tokens land in a value window and false-refused all 24 pages without it),
+  and **the header fence is PER PAGE** — a continuation page's first marker
+  sits above page 1's fence.
+
+**⚠⚠ THE WALL BEHIND THE WALL — Form 8889.** Opening the 5329 class showed
+the 8889 reader REQUIRED lines 6 and 8, and **this vendor does not print a
+pure carry-forward line**: every one of the ten packets printed line 5 but
+neither 6 (= 5, no married split) nor 8 (= 6 + 7), and most omitted 12 and
+13. An omitted line now asserts nothing and the engine derives it; a
+PRINTED line that disagrees still refuses. Safe because the import row
+never carried those lines — they are checks, not inputs. This released two
+further packets that had nothing to do with the 5329.
+
+**⚠⚠⚠ AND THE CENSUS LESSON: A SOLE-WALL CENSUS OVER A *BLOCKING* CLASS
+MEASURES ONE WALL, NOT ONE UNIT OF WORK.** A `ROLE_BLOCK` page
+short-circuits the packet before any downstream parser runs, so its refusal
+list carries exactly one entry BY CONSTRUCTION. All ten "sole wall = f5329"
+packets had Form 8889 sitting behind it, invisible until the class opened.
+**Only a PARSER_BACKED class's sole-wall count predicts releases; for a
+blocked class it is a lower bound of one.** Size the 6251 unit accordingly.
 
 **🏁 WHAT THE PASS DID.** 37 not-yet-filed Gail packets were held by ONE wall:
 "uncovered value-bearing page: unknown". Typing those pages was one unit:
@@ -53,11 +103,31 @@ they never passed through a commit (the s327 flip lives inside the commit).
 **Clients 2777 · 3630 · 4159 · 4160 need the filed flag and nothing else** —
 a status-only sweep, not a re-entry. Probe: `1040\tmp\probe_s331_four_tie.py`.
 
-**▶ THE REMAINING GAIL WALLS (sole-wall, not-filed, after the pass):**
-6251 ×15 · 5329 ×13 · **the GA-only reprint pile 16 (Ken's print, parked)** ·
-1116 ×5 · sched_line_detail ×4 · 4562 ×3 · ctc_ext_carryover_wks ×3 ·
-detail_sheet ×3 · 1310 ×2 · engine items ~15. Census:
-`1040\tmp\probe_s331_unfiled_walls4.py`. Every one is a NAMED reader now.
+**▶ THE REMAINING GAIL WALLS — RE-MEASURED, AND THE FIRST NUMBERS WERE WRONG.**
+⚠⚠ **A CENSUS BUCKET THAT STRIPS DIGITS CANNOT NAME A FORM.** My first pass
+replaced every digit with `N`, so `f6251` and `f5329` collapsed into one class
+(`uncovered page: fN`, 29) — and I then read a *whole-book* histogram (filed
+and multi-wall packets included) as if it were the sole-wall count, publishing
+"6251 ×15 · 5329 ×13". Corrected census keeping the form number
+(`1040\tmp\probe_s331_walls_by_form.py`; refused 312 → filed 140 · draft 159 ·
+unresolved 13; **sole-wall 94, multi-wall 65**):
+
+| Sole wall (fixing it releases the packet) | n |
+|---|---|
+| not a TaxWise 1040 packet (**the GA-only reprint pile — Ken's print, parked**) | 16 |
+| **Form 5329** | **10** |
+| Form 6251 | 6 |
+| Form 1116 | 5 |
+| Schedule 2 "additional tax on early distributions" (**the 5329's own number**) | 5 |
+| lump-sum Social Security on the income worksheet | 4 |
+| sched_line_detail | 4 |
+| detail_sheet · ctc_ext_carryover_wks | 3 each |
+| Form 1310 · Sch 3 foreign tax credit > face · Sch 1-A W-2 tips · 8995 Part I | 2 each |
+| ownerless documents · 1099-R exclusion marker · 4562 · 8615 · ga500x · misc | 1 each |
+
+Form 6251 also sits behind another wall in **11** more packets, so its reader
+releases 6 now and helps 17 in total. `state_nonconformity_wks` appears in 10
+multi-wall packets and nothing else.
 
 **⛔⛔ KEN — THE PRINT ASK STANDS (ruling 5's retraction is REVERSED).** You do
 need to print the full federal + GA for the **59** Gail 1040-lane clients. The
@@ -84,9 +154,13 @@ software built soon. That is a scope conversation, tracked in BUILD_ORDER. Do
 NOT start entering other states' returns on the back of ruling 1.
 
 **▶ NEXT, in the order that lands the most returns:**
-1. **The named TaxWise walls by measured count** — 6251 (15) → 5329 (13) →
-   1116 (5) → sched_line_detail (4) → 4562 (3) → 1310 (2). Drive ONE
-   single-wall packet by hand through each before trusting the census (s328).
+1. **The named TaxWise walls by MEASURED sole-wall count** — **5329 (10 + the
+   5 Schedule 2 siblings)** → 6251 (6 sole, 17 total) → 1116 (5) →
+   sched_line_detail (4) → detail_sheet / ctc_ext_carryover_wks (3 each).
+   The lane and the engine already exist for both 5329 (`form_5329s`) and
+   6251 (the `amt_*` taxpayer facts + `compute_6251`), so these are
+   READER-ONLY units. Drive ONE single-wall packet by hand through each
+   before trusting the census (s328).
 2. **Ruling 2's penalty acceptance** (~10) + **ruling 3** (client 3250).
 3. **The four fenced clients' filed flag** (2777 · 3630 · 4159 · 4160).
 4. **The Lacerte face readers by wall count** — Sch 3 (107) → A (37) → B (32)
