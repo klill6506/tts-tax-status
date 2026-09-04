@@ -55,6 +55,31 @@ doubled Sch 1-A **62** (ruling 4) · Sch E **46** · 5329 **42** · 6251 **41**.
    negative case). Item 2 needs a source-backed 1040 line 1h row. Item 3 a printed Form 5329
    line 48 route. BATCH-296 (the running file, items 54–59 already triaged by the data) stays
    open beside it; do not merge 013's items into 296.
+**0b. ⛔ ALSO FIRST — two PRODUCT DEFECTS the entry lane surfaced from Gail's 10 holds (2026-09-03
+   night, tax-test-data lane; verify-first, same loop as 013):**
+   - **`schedule_cs[].depreciation_filed` SUPPRESSES the Schedule C depreciation deduction.** On
+     #2454, four dry-run arms: with the key present the net profit carries NO depreciation at all
+     (neither the filed 808 nor the register's — an absurd-basis arm left line 11 UNMOVED at
+     65,052); removing the key TIES at 64,301. `D_4562_RECON` still REPORTS the 808, so the face
+     reads right while profit is overstated. **CENSUS ASK 1: how many already-FILED 1040s keyed
+     `depreciation_filed`?** If the extractor keys it routinely this is overstating AGI across
+     the book. Find the WRITER of Schedule C line 13 and the branch the key takes.
+   - **The GA low-income-credit gate (`LIC-NODEP`) is missing on already-FILED returns.** #2127,
+     #3158, #3569 needed nothing but `LIC-NODEP` (+`LIC-65=1` for the 70-year-old); each filed
+     GA-500 prints the credit on line 17 ($8 / $5 / 2×$5) and the filed record lacks it. **CENSUS
+     ASK 2: filed 1040s with federal AGI < $20,000, GA tax > 0, and no `LIC-NODEP`** — outside
+     Gail there is no second print to catch them.
+   - **Reader fix:** the extractor emits 1099-R box 7 as `"4 D"` / `"7 D"` — three chars against a
+     `max_length=2` field; the PDF prints `4D`/`7D` as ONE token, the space is the reader's. Strip
+     it at the source (it recurs on every two-letter box 7). This IS build-queue item ② (the
+     3-char `distribution_codes` gap) seen from the other side — one fix, not two.
+   - ⚠ Scope fact: six of Gail's ten "held" targets were ALREADY entered and filed — on that book
+     "held" ≠ "not entered"; the document count answers it. Five of the seven need `-Merge
+     replace_documents` against FILED returns — on Ken's list in the entry lane, not this one.
+   - Waiting on Ken via the entry lane (not re-asked here): #2019 GA military exclusion ($17,500
+     vs filed $35,000; Sch 1 p3 line 4 prints GA taxable income where wages belong) · #1219's
+     §6654 delta (ruling 2 covers it; the lane wants Ken's word directly before writing "filed
+     return is wrong" on a client record — its one carve-out).
 **Then, in the order that lands the most returns:**
 1. **Ruling 4's duplicate-page tolerance** (78 packets, an afternoon).
 2. **Ruling 1's out-of-state release** (47 packets, a refusal to drop).
