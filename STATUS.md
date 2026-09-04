@@ -76,10 +76,25 @@ doubled Sch 1-A **62** (ruling 4) · Sch E **46** · 5329 **42** · 6251 **41**.
    - ⚠ Scope fact: six of Gail's ten "held" targets were ALREADY entered and filed — on that book
      "held" ≠ "not entered"; the document count answers it. Five of the seven need `-Merge
      replace_documents` against FILED returns — on Ken's list in the entry lane, not this one.
-   - Waiting on Ken via the entry lane (not re-asked here): #2019 GA military exclusion ($17,500
-     vs filed $35,000; Sch 1 p3 line 4 prints GA taxable income where wages belong) · #1219's
-     §6654 delta (ruling 2 covers it; the lane wants Ken's word directly before writing "filed
-     return is wrong" on a client record — its one carve-out).
+   - **CLOSED by the entry lane the same night (verified here against the DB before recording):**
+     Ken answered it directly. Nine of Gail's ten holds are LANDED (`status=filed`, a committed
+     staged row each): #2793 #3010 #3160 (box-7 fix), #2127 #3158 #3569 (LIC gate, merged with
+     `replace_documents` on Ken's word), #4133 (MFS lived-with-spouse 85% SS), #2454
+     (`depreciation_filed` REMOVED so the register drives line 13 — the defect above is real and
+     this is its workaround, not its fix), #1219 (committed `tie_with_exception`, source defects on
+     federal 37/38 citing 6654(d)(1)(B)(ii) and (d)(1)(C)(i) — **ruling 2 confirmed to that lane
+     by Ken directly**). **Only #2019 is open**, and on the GEORGIA gate, not the lane: Ken said
+     "enter $17,500 and hold"; it is staged (`valid`, uncommitted) with `MIL-TP-U62`/`MIL-TP-1`/
+     `MIL-TP-6=13620`, no_tie by exactly $908 of GA tax, federal untouched; hold note beside the
+     packet in `1040\Inbox\Gail`. Do NOT re-ask any of this.
+   - **Reader item from #2019:** the extractor put the filed $35,000 on the answer key as
+     `RIE-TP-17` (the ordinary retirement exclusion) when it was claimed on Schedule 1 line **7b**
+     (military). The answer-key line is MIS-MAPPED for every under-62 military retiree regardless
+     of the gate question — queue with the reader items, not to be rediscovered.
+   - **⚠ For the two censuses:** `mark-filed` on the entry lane's batches returns `filed 0 /
+     skipped N, reason "already filed"` — a NO-OP, not a failure; the commit lands the status
+     itself on that lane. Any census that reads `mark-filed` output as evidence of what was
+     written reads wrong. Count from the DATA (the s325 rule).
 **Then, in the order that lands the most returns:**
 1. **Ruling 4's duplicate-page tolerance** (78 packets, an afternoon).
 2. **Ruling 1's out-of-state release** (47 packets, a refusal to drop).
