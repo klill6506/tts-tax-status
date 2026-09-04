@@ -45,7 +45,7 @@ unclassifiable page **148** · asset detail **72** · no federal face **66** · 
 doubled Sch 1-A **62** (ruling 4) · Sch E **46** · 5329 **42** · 6251 **41**.
 
 **▶ NEXT — Ken's sequencing at the close (2026-09-03 night): "Can you work on batch 013 immediately after the refresh?"**
-**0. ⛔ FIRST: `D:	ax-test-dataD0\CC Changes\CC_CODE_CHANGES_1040_BATCH-013.md`** — Codex's ten
+**0. ⛔ FIRST: `D:\tax-test-data\1040\CC Changes\CC_CODE_CHANGES_1040_BATCH-013.md`** — Codex's ten
    Tom-lane product gaps, posted 2026-08-31, UNWORKED. The CC Changes loop applies verbatim
    (CLAUDE.md): verify-first triage of every item against the code and the fixture, ONE deploy
    for the batch, a result annex appended to the file, then move it to `CC Changes Done\`.
