@@ -55,6 +55,33 @@ DECISIONS ruling 5 is amended with the method and both figures.
 software built soon. That is a scope conversation, tracked in BUILD_ORDER. Do
 NOT start entering other states' returns on the back of ruling 1.
 
+**▶ s331 LATE SITTING — TWO MORE SHIPPED, ONE CORRECTED, ONE MEASURED:**
+- **Lacerte Schedule 1 + Schedule 2 readers WIRED (`9214f74b`)** — the shared TaxWise
+  parsers read Lacerte as-is (Sch 1 60/60 both pages; Sch 2 21/21). Walls 172 → 0 and
+  112 → 0; **emitted STILL 0** — Sch 3 (107) / A (37) / B (32) / C (18) sit behind.
+  ⚠⚠ **A WALL CENSUS COUNTS FIRST BLOCKERS, NOT RELEASABLE PACKETS** — 234 of 255
+  Lacerte packets are blocked by MORE THAN ONE class; the book needs the whole face
+  chain before anything emits. Sch 3's exact cause is known: **Lacerte splits the
+  sub-letter into its own word (`5` at x=46, `a` at x=51) where TaxWise prints `5a`**;
+  its gutter positions already match. Sch A / B fail on their own bands (control test
+  refuses to mark them covered unmeasured).
+- **The cover letter's SECOND layout typed `ignore` (`57d13e12`)** — 7 unknown pages
+  across three books, anchored on the letter's own boilerplate, never the name.
+- **⚠ RETRACTED THE SAME NIGHT — "139 Gail packets held only by a merge decision":**
+  checked against the LIVE DB, **138 of the 139 are already FILED** (= tie-verified,
+  Ken's s327 rule). They are second copies of returns already landed; the pipeline
+  refusing to overwrite them is CORRECT and Ken's proposed rule (keep what ties,
+  replace only with a payload that ties) is already the behaviour. One draft: client
+  1017. No decision needed.
+- **THE HONEST GAIL POOL (live status, pipeline resolver):** 336 refused → 140 filed
+  (done) · 13 unresolved · **183 draft**, of which 118 have exactly ONE wall:
+  **unknown page 37** (Form 1116 · the SSN-headed 1099-NEC detail report · OR-40 /
+  NC D-400 state pages → ruling 1's set-aside extended to TaxWise) · the GA-only
+  prints 18 (Ken's reprint pile, parked) · one uncovered form 8 (6251 ×3, 1310 ×2,
+  5329, 4562, 4952) · engine items ~15. **NEXT UNIT = the unknown-page pass (37).**
+  Scripts: `1040\tmp\probe_s331_unfiled_walls3.py` (the census), the peer's inventory
+  `1040\tmp\gail-held-20260903\UNKNOWN-PAGES-BY-FORM.md`.
+
 **▶ NEXT, in the order that lands the most returns:**
 1. **Ruling 4's duplicate-page tolerance** (78 packets, an afternoon).
 2. **Ruling 1's out-of-state release** (47 packets, a refusal to drop).
