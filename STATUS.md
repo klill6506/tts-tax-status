@@ -14,7 +14,42 @@ re-asking.
 | 2 | §6654 penalty deltas: **record and file** | ~10 packets | accept the delta as a vendor divergence, note it |
 | 3 | A **hand-keyed** return that ties **IS filed** | client 3250 + the entry lane | extends the standing commit authorization |
 | 4 | **Ignore** the doubled Sch 1-A / Sch 3 pages in code | **78 packets** (62 + 16) | reader tolerates 4 pages where it wants 2, and 2 where it wants 1 |
-| 5 | Gail needs **NO reprint** | — | the old "print 61 federals" ask is RETRACTED |
+| 5 | ~~Gail needs **NO reprint**~~ | ⛔ **REVERSED s331** | **KEN MUST PRINT FEDERALS** — see below |
+
+**🏁 RULING 4 IS SHIPPED AND MEASURED (`34553e7a`; deploy `dep-dad4fidckfvc7393gf7g`
+LIVE).** ⚠⚠ **THE CAUSE WAS THE MERGE, NOT A PRINT SETTING.** The Inbox
+originals carry **ZERO** duplicates (1,606 files censused). Every duplicate is
+in the **merged** packets, because the Georgia print binds a verbatim COPY of
+the federal return, so whole forms repeat — Schedule 1-A at `[3,4,22,23]`,
+Schedule 3 at `[4,32]`. Cleared for **five** classes, not the two the census
+named: Schedule 1-A, Schedule 3, Schedule 1 (the wall behind the wall),
+Schedule 2 and Schedule A. First printing wins (this lane's own rule); a later
+copy that **DIFFERS still refuses** (an amended page bound behind an original
+is a real difference), and a count that is not a whole number of printings
+refuses by name. Verified duplicates: 120/120 · 183/183 · 21/21 byte-identical.
+**Acceptance on the 346-packet merged book: all five walls report ZERO and
+emitted returns went 4 → 10.** 14 new tests, 370 green, teeth proven by
+injecting both defects. Remaining walls there: `not a TaxWise 1040 packet` (18)
+and the unknown-page runs (the peer lane has now typed all 73 — 13 forms, and
+**the 1099-NEC detail report is 40 of them**, which lands on the `nec_1099s`
+section built earlier tonight; that is the next reader).
+
+**⛔⛔ KEN — RULING 5'S RETRACTION IS REVERSED. YOU DO NEED TO PRINT FEDERALS.**
+The s330 finding ("59 of 63 already carry both returns, ZERO lack a federal")
+counted any page containing the string **"(Form 1040)"** — which appears on
+Schedule C, SE and A footers, and on the **orphan Schedule 1 / 1-A page a
+Georgia-only print drops at the end**. Measured three independent ways, all
+agreeing: **18 of the 61 held clients carry a real Form 1040 page 1; 43 do
+not** (this lane used the classifier's `f1040_p1` masthead type, which cannot
+match a schedule footer; of the 43, **15 carry an orphan Schedule 1-A** — the
+very pages the loose test counted). The peer lane adds that the **18 are not
+enterable either** — none of the 61 held packets carries any source-detail
+page (`main_info` / `w2_detail` / `r1099_detail` / `income_wks`), verified
+against a 5-of-5 positive control on packets that committed. **So the practical
+answer is the 2026-08-31 ask: print the full federal + GA for the 59 1040-lane
+clients** (61 less the fiduciary 501 …4685 and the partnership 700 …8078). The
+peer lane has sent you the 59. Census: `1040\tmp\s331_gail_masthead.json`.
+DECISIONS ruling 5 is amended with the method and both figures.
 
 **⚠ Ruling 1 carries a ROADMAP ask that is NOT a licence:** Ken wants state
 software built soon. That is a scope conversation, tracked in BUILD_ORDER. Do
