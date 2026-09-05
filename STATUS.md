@@ -8,10 +8,36 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. A1 and A3 are BUILT; A2 is half built and half Ken's (blocks below); NEXT: A4 — 015 #7 (land assets without a convention). Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. A1, A3, A4 are BUILT and A5 was ALREADY BUILT by 014 #2 (verified by replay, pinned); A2 is half built and half Ken's (blocks below); NEXT: A6 — 015 #19 + 296 #60 (Schedule 2 line-13 source trio). Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**✅ BATCH A5 — 015 #18 ALREADY BUILT (verify-first; pin only).** The
+triage row read the pre-ruling code; 014 #2's item-level allocation
+(`543ba99d`) already splits each JOINT capital row on its own through the
+conserving split (odd dollar to the spouse = the vendor's 205/206). **The
+item's own staged payload replays to a full TIE on the current engine**
+(RIE-TP-17 65,000 / SP-17 29,861 / S1-7 94,861, zero diagnostic errors) —
+not landed by this lane (a Codex entry-lane packet; client 3627 stays draft
+for Codex's batch). Pinned in `test_b014_item2_rie_item_level.py`.
+
+**🏁 BATCH A4 — 015 #7 BUILT (`fabbcb5a`, deploy `dep-dadpul15efls739cmg0g` LIVE; migration
+0391, no-op SQL).** Nondepreciable land needs no averaging convention.
+⚠ Verify-first shrank it: the engine already zeroes Land/NONE before reading
+a convention, the UI's Land preset already seeds a blank, the RS 4562 export
+has convention NOT required — the walls were the model column and the lane's
+required loop. Model blank-able; lane requires the convention for every
+method except NONE (keyed on the METHOD — a land improvement under the Land
+heading still averages); extractor emits land AS PRINTED. ⚠⚠ **The witness
+run found two facts the item could not see:** these farm books print the
+literal token `LAND` in the Method column (the s324 shape fired only on a
+blank), and head the pickup-truck rows "Class: Autos" (unmapped). Both fixed →
+**client 1766's register parses 91/91, client 1772's 42/42, zero refusals,
+four land rows blank.** The item's filed-total gates are NOT reachable yet:
+both packets still refuse on other walls (f4562 face ×2 each,
+sched_line_detail, ctc_ext_carryover_wks, state_nonconformity_wks,
+detail_sheet, f6251) — DEFERRAL_AUDIT (9). 7 new tests; gates 491 passed.
 
 **🏁 BATCH A3 — 015 #1 BUILT (`ef62bf5e`, deploy `dep-dadpkh17lnhs73e8cr70` LIVE).** (a) The
 diagnostic: `D_1040_014` is silent when the election is checked AND an
