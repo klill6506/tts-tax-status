@@ -2,19 +2,33 @@
 
 ## ▶▶ RESUME POINTER — s332 close, 2026-09-05
 
-**▶▶ START HERE (s332 close, 2026-09-05): Ken's three rulings are EXECUTED
-(block below) — BATCH-014 #2 built and deployed, #5's spec authored, Codex
-building-on-a-branch recorded as precedent. BATCH-014 is closed (annex +
-addendum in Done). 🏁 TRIAGE DONE — the forty are ranked by MEASURED yield at the
+**▶▶ START HERE (s332 close, 2026-09-05): Ken's three rulings are EXECUTED,
+BATCH-014 is closed, and BATCH A1 (015 #3) is BUILT and landed (blocks below). 🏁 TRIAGE DONE — the forty are ranked by MEASURED yield at the
 foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST caught
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. NEXT: build A1 (Schedule 2 line 8
-reported directly without a Form 5329 — 5 packets). Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. A1 is BUILT (block below); NEXT: A2 — 015 #17. Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**🏁 BATCH A1 — 015 #3 BUILT (`9bcb61a3`, deploy `dep-dadp3a6q1p3s73cftu0g`
+LIVE; RS `2873cbb`; migration 0390 applied).** Schedule 2 line 8 reported
+directly ("Form 5329 not required"): the documented-source trio
+`taxpayer.sch2_l8_source_amount/_label/_note` (the line-14 shape) ADDS to the
+engine's Form 5329 total; refused beside a `form_5329s` row; `D_5329_SRC`
+warns/errors. ⚠ **The census could not see the 1099-R codes: all five
+sole-wall packets are CODE 1, a shape the engine derives itself** — keying a
+source would have DOUBLED line 8. The emitter now has two routes: cross-check
+the filed line 8 against 10% × taxable over the code-1/S rows (decompose), or
+key the documented source only for shapes the engine does not derive (L/J/T).
+**4 of the 5 landed, every one a TIE** (batch `s332-sch2-l8-commit-001`; standing commit authorization). **1 HELD, rolled back — …0394:** the FEDERAL face ties (line 8 decomposed by the engine's own rule) but the Georgia RIE does not — RIE-TP-17 filed 6,810 vs engine 5,000, i.e. an UNEARNED 1,810 the engine does not attribute to the taxpayer (the earned cap alone). A separate RIE-attribution gap, not this item; decompose before re-running. ⚠ Open spec question recorded, not decided (RS session_log):
+should code L (§72(p) deemed distribution) join `EARLY_CODES` {1, S}? The
+vendor computed the 10% on it. client 2766 (the item's fixture)
+refuses earlier in David's book (a THIRD cover-letter layout; a generic detail
+sheet) and also needs A6 + A10. **NEXT: A2 — 015 #17, the ownerless
+tax-exempt-interest aggregate (~11 packets).**
 
 **🏁 KEN'S THREE RULINGS EXECUTED (s332, 2026-09-05 — the same sitting they
 were given).**
