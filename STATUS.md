@@ -5,8 +5,12 @@
 **▶▶ START HERE (s332 close, 2026-09-05): Ken's three rulings are EXECUTED
 (block below) — BATCH-014 #2 built and deployed, #5's spec authored, Codex
 building-on-a-branch recorded as precedent. BATCH-014 is closed (annex +
-addendum in Done). NEXT: triage the ~20 open 296 items + BATCH-015's twenty
-into batches of ten by yield, then build; the Form 6251 reader after. Ken is
+addendum in Done). 🏁 TRIAGE DONE — the forty are ranked by MEASURED yield at the
+foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). **BATCH A, in
+order: 296 #32 → 015 #3 → 015 #17 → 015 #1 → 015 #7 → 015 #18 → 015 #19+296 #60
+→ 015 #8 → 296 #47 → 296 #66.** 015 #20 is CLOSED by ruling 2 (record and
+file); 296 #85 needs Ken. NEXT: build A1 (81 FILED returns blocked from
+e-file cleanup by ISO-dated 8949 rows). Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
@@ -345,6 +349,10 @@ REWRITE #3 (~86 TaxWise surnames in old STATUS blobs) is Ken's call
 suite doors are live (`a3cedfd4`); ⑥c `merge_client` is the next hub unit.
 Slate v2.3.1 is canonical; delvio-1099 merged on Ken's go. `RESEARCH_SERVICE_TOKEN`
 still unset on both Render services (both research doors 503).
+
+**⛔ WAITING ON KEN — WEDNESDAY AGENDA (s332):** the two season-2026 design
+questions Ken raised (what replaces the answer key; how scanned documents get
+in) — recommendations in REVIEW_QUEUE, shelf units in BUILD_ORDER.
 
 **⛔ WAITING ON KEN (carried):** the BATCH-013 item-2 RIE placement flag above ·
 the packet in tmp/s328_ken_questions.md (GA 500 p1 names a different primary
