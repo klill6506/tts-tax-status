@@ -8,10 +8,27 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. A1 is BUILT; A2 is half built and half Ken's (blocks below); NEXT: A3 — 015 #1 (lump-sum Social Security). Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. A1 and A3 are BUILT; A2 is half built and half Ken's (blocks below); NEXT: A4 — 015 #7 (land assets without a convention). Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**🏁 BATCH A3 — 015 #1 BUILT (`ef62bf5e`, deploy `dep-dadpkh17lnhs73e8cr70` LIVE).** (a) The
+diagnostic: `D_1040_014` is silent when the election is checked AND an
+`ss_lump_sums` row exists (the engine computes the Pub 915 election;
+`D_RET_008` carries the comparison) and errors only for an election with no
+row. (b) ⚠ **The reader half decomposed to a CHECKBOX, not a worksheet
+reader:** the eight lump-sum packets print NO Pub 915 worksheet — only the
+SSA-1099 box-3 breakdown totals — so no reader could key the election; but
+the face prints its X's as words (5–6 per page, the positive control) and the
+**line-6c election box is unmarked on all eight** = regular method, the
+amounts informational. New `parse_p1_lump_election`; the emitter refuses only
+when 6c is MARKED (no per-year facts to key) or unreadable. **4 of 8 landed,
+all ties, zero diagnostic errors** (batch `s332-lump-commit-001`). The other
+four show their next wall: a Sch C at-risk box misparse (…6407, no item —
+DEFERRAL_AUDIT), ownerless joint Schedule B (…1678 — A2(b), Ken), an
+ambiguous shell (…7479 — 015 #14), OPM 1099-R cost columns unmapped (…3873 —
+DEFERRAL_AUDIT). Gates 338 passed. Annex on the 015 file.
 
 **▶ BATCH A2 — 015 #17, HALF BUILT, HALF FOR KEN (s332).** (a) **Built:** a
 joint return's face-2a tax-exempt interest with no payer page now imports as
