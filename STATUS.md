@@ -1,48 +1,43 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s332 close, 2026-09-05
+## ▶▶ RESUME POINTER — s333 close, 2026-09-05
 
-**▶▶ START HERE (s332 close, 2026-09-05 late): BATCHES A AND B OF THE RANKED
-FORTY ARE WORKED — 20 items: 12 built, 3 half-built (the other half Ken's or a
-sized unit), 2 already built, 2 for Ken, 1 waiting on a Rule Studio spec.**
-Every build was verify-first, replayed on its own fixture (ties recorded in
-each item's annex on `CC_CODE_CHANGES_1040_BATCH-015.md` / `…BATCH-296.md`),
-movement-gated where compute changed (rolled-back re-runs; the one $1 mover
-was control-proven pre-existing), deployed and Render-verified. Per-item
-blocks are in `STATUS_ARCHIVE.md` (s332 evening); the ledger below is the
-census. **Ken is running Codex on the ENTRY of the returns BATCH-014 freed.**
-⚠⚠ Two things every future build must know: (1) **the deploy runs `migrate`
-ONLY — a new diagnostic code is INERT until `manage.py seed_rules` runs** (do
-it by hand, note it in the annex; Wednesday asks about build.sh); (2) **the
-public mirror's PII guard trips on client SURNAMES — client numbers only in
-STATUS / BUILD_ORDER / REVIEW_QUEUE** (it tripped twice this sitting).
+**▶▶ START HERE (s333 close, 2026-09-05): BATCH C OF THE RANKED FORTY IS WORKED —
+10 of 10 dispositioned: 4 built and deployed, 1 half built (its other half is
+Ken's), 2 already built/fixed, 3 spec or Ken questions.** Batches A and B were
+worked in s332 (their ledger is in `STATUS_ARCHIVE.md`, s333 entry). Every
+build was verify-first, replayed on the item's own staged payload rolled back,
+movement-gated where compute changed, deployed and Render-verified; per-item
+annexes are on `CC_CODE_CHANGES_1040_BATCH-015.md` / `…BATCH-296.md`. **Ken is
+running Codex on the ENTRY of the returns the batches freed.**
+⚠⚠ Standing facts every build must know: (1) **the deploy runs `migrate` ONLY —
+a new diagnostic code is INERT until `manage.py seed_rules` runs** (none added
+this session); (2) **the public mirror's PII guard trips on client SURNAMES —
+client numbers only in STATUS / BUILD_ORDER / REVIEW_QUEUE**, and **no real
+personal names in checked-in test fixtures** (two s333 fixtures were pushed
+with real names for ~20 minutes and corrected in the next commit — the SHAs
+`91187646` and `d899e3ae` still carry them; a rewrite is Ken's call, s329
+policy); (3) **never start a foreground pytest while a background pytest
+runs** — the conftest's connection kill reads as failures in both.
 
-**▶ THE s332 BATCH A / B LEDGER (item → result → commit):**
+**▶ THE s333 BATCH C LEDGER (item → result → commit):**
 | # | item | result | delvio |
 |---|---|---|---|
-| A1 | 015 #3 Sch 2 line 8 without 5329 | 🏁 built; 4 of 5 landed | `9bcb61a3` |
-| A2 | 015 #17 joint 2a aggregate / Sch B ownership | half built; ownership → Ken (REVIEW_QUEUE) | `acf6efe9` |
-| A3 | 015 #1 lump-sum SS: D_1040_014 + the 6c box | 🏁 built; 4 of 8 landed | `ef62bf5e` |
-| A4 | 015 #7 land without a convention (+ `LAND` token, `Autos`) | 🏁 built; 91/91 + 42/42 rows | `fabbcb5a` |
-| A5 | 015 #18 per-row joint rounding | ✅ already built by 014 #2; pinned | `2099b6d0` |
-| A6 | 015 #19 + 296 #60 Sch 2 line-13 source trio | 🏁 built; client 2662 corrected | `58c6e4fe` |
-| A7 | 015 #8 GA 1099-G ownerless row | 🏁 built (owner from the federal row) | `cb10f530` |
-| A8 | 296 #84 Form 8582 MAGI sign error | 🏁 built (taxable SS SUBTRACTED); 49 re-run, 0 movers | `60f07144` |
-| A9 | 015 #13 8829 mortgage under the standard deduction | 🏁 built — on line 16 per i8829, not 10 | `7a58642d` |
-| A10 | 015 #2 COD → GA RIE line 10 | ⛔ Ken — one line-10 question with 296 #85 | — |
-| B1 | 296 #48 Form 4136 | ⛔ no RS spec (404) — the RS lane first | — |
-| B4 | 015 #6 8606 line 25c → 5329 line 1 | 🏁 built; 6 filed re-run, 0 movers | `f90f2a05` |
-| B5 | 015 #16 Form 8959 face reader | 🏁 built; 1 landed (client 4655) | `04de3540` |
-| B6 | 015 #14 duplicate shells | 🏁 masked identity on the lookup; 13 all-blank groups → D-044 merge | `fd6b779a` |
-| B7 | 296 #43 prior passive loss on a gain K-1 | half built; former-passive → Ken (REVIEW_QUEUE) | `7461da55` |
-| B8 | 296 #20 Form 7206 >2% shareholder | ✅ already built in s272; fixture ties | — |
-| B9 | 015 #12 Form 4952 face reader | half built; portfolio K-1 → DEFERRAL (13) | `3ffaa38d` |
-| B10 | 015 #15 §168(k)(7) class election in the lane | 🏁 built; fixture ties | `cd3fb39a` |
+| C1 | 015 #5 §469(g) release, passive non-PTP K-1 | 🏁 built; released losses IN the 8582 MAGI (rentals too); #43's release reaches the per-row face | `a16d18fd` |
+| C2 | 015 #9 Form 8615 | half built: lane singleton + face reader + parent name/SSN (mig 0394); client 1969 stages; ⛔ two Ken questions | `d899e3ae` |
+| C3 | 015 #11 GA QEE credit rows + line 21 | 🏁 built: the GA-500 Schedule 2 reader; client 2168's page reads whole | `91187646` |
+| C4 | 296 #21 partial PTP loss | ⛔ Ken — the vendor allowed a PTP loss against no PTP income; i8582 suspends it | — |
+| C5 | 296 #45 filed-split K-1 → 8582 / 8960 | 🏁 built both halves; the s234 8960 4b clamp measured the NET of 4a; client 1410 replays within the payload's own $10 | `a16d18fd` |
+| C6 | 296 #46 2441 Part III | ✅ already built s272 | — |
+| C7 | 296 #40 AMT passive losses | ⛔ spec-scoped (6251 L2m + 8582 spec RED-defer); RS lane | — |
+| C8 | 296 #69 NC Sch S line 17 | ⛔ spec: a federal pull is an RS amendment | — |
+| C9 | 296 #70 Form 4361 → Schedule C | 🏁 built (`is_ministerial`, mig 0393; RS R-MIN-4361 amended `e5a7e31`); client 2821 replays to a full TIE | `efc215b2` |
+| C10 | 296 #63 commit HTTP 500 | ✅ already fixed `da12fc3` (a JSON-null payer_name in the payload) | — |
 
-Landed this sitting under the standing commit authorization: 4 (A1) + 4 (A3)
-+ 1 (B5) returns, every one a TIE; one filed return corrected in place
-(client 2662, A6). Deploys all Render-verified LIVE (the last:
-`dep-dadrp5favr4c73alv6h0`).
+Deploys all Render-verified LIVE (the last: `dep-dae2ghf9r02s73eaaigg` for
+`01fa75b0`, the fixture scrub; `d899e3ae` went live as `dep-dae2g1gu01pc73cr13qg`). Movement
+gate: the 2 filed released-rental returns re-ran rolled back, zero moved.
+Migrations 0393 + 0394 were applied on the shared DB by hand before the deploys.
 
 **⛔⛔ KEN — THE PRINT ASK STANDS (ruling 5's retraction is REVERSED).** You do
 need to print the full federal + GA for the **59** Gail 1040-lane clients. The
@@ -55,38 +50,39 @@ page in any of the 61). Census: `1040\tmp\s331_gail_masthead.json`. DECISIONS
 ruling 5 carries the method and both figures.
 
 **▶ NEXT, in the order that lands the most returns:**
-1. **Batch C of the ranked forty** (the triage foot of the 015 file) —
-   verify-first EACH: three of A/B's twenty were already built, two were
-   the vendor's treatment, two were mis-read pages.
+1. **Ken's answers** (Wednesday below) — they unblock more packets than any
+   build: the RIE line-10 definition (A10 + 296 #85), the Schedule B ownership
+   tag (A2(b), ~26 packets), the former-passive row (B7), the two 8615
+   questions (C2), the PTP allowance (C4).
 2. **The named TaxWise reader walls by measured count** — 6251 (6 sole, 17
    total; `amt_*` + `compute_6251` exist → reader-only) → the Form 4562 face
-   (3; blocks the two farm registers of A4) → 1116 (5) → sched_line_detail
-   (4) → the qualified-tips per-W-2 box-7 split (296 #60's sibling) → the
-   portfolio K-1 consolidation (DEFERRAL (13)). Drive ONE single-wall packet
-   by hand through each before trusting the census (s328).
-3. **Ken's answers** (Wednesday below): the RIE line-10 definition unblocks
-   A10 + 296 #85; the Schedule B ownership answer unblocks ~26 packets
-   (A2(b)) and two of A3's residuals; the former-passive answer closes B7.
+   (3; frees A4's two farm registers) → 1116 (5) → sched_line_detail (4) → the
+   qualified-tips per-W-2 box-7 split (296 #60's sibling) → the portfolio K-1
+   consolidation (DEFERRAL (13)). Drive ONE single-wall packet by hand through
+   each before trusting the census (s328).
+3. **The OWN UNITS of the triage foot** — 015 #4 Form 3800 (the s331 named
+   wall) · 015 #10 Georgia Form 500X lifecycle · 296 #52 Alabama 40NR app
+   build · 296 #10 Form 4835 · 296 #56 Form 6252 contingent-payment · the
+   IND-CR 212 app build (spec authored s332).
 4. **The four fenced clients' filed flag** (2777 · 3630 · 4159 · 4160) and
    ruling 2's penalty acceptance (~10) + ruling 3 (client 3250).
 5. **The Lacerte face readers by wall count** — Sch 3 (107) → A (37) → B (32)
    → C (18) (Sch 3's cause is known: Lacerte splits `5a` into `5` + `a`).
-6. **⑥c `manage.py merge_client`** (D-044) — now with a first worklist: the
-   13 all-blank duplicate-name groups (DEFERRAL (12)).
+6. **⑥c `manage.py merge_client`** (D-044) — first worklist: the 13 all-blank
+   duplicate-name groups (DEFERRAL (12)).
 7. **The 1065 import** — 95 partnership returns behind it.
 
-**⛔ WAITING ON KEN — WEDNESDAY AGENDA (s332):** the two season-2026 design
-questions Ken raised (what replaces the answer key; how scanned documents get
-in) — recommendations in REVIEW_QUEUE, shelf units in BUILD_ORDER.
-**Also for Wednesday (s332, later):** a Form 4136 spec in Rule Studio (296 #48 is
-STOPPED on its absence — the RS lane; the fixture's one fuel / one use bounds leg 1);
-the RIE line-10 definition (015 #2 + 296 #85, one question, REVIEW_QUEUE); add
-`manage.py seed_rules` after `migrate` in
-`build.sh`? — the deploy migrates only, so every NEW diagnostic code is inert
-until someone seeds it by hand (DEFERRAL_AUDIT (10)); the Schedule B ownership
-question (A2(b), REVIEW_QUEUE); code L in `EARLY_CODES`; 296 #85 (the §108(f)(5)
-other-income placement on the GA RIE worksheet — the four Georgia misses still
-open on client 2490 after 296 #84's federal fix).
+**⛔ WAITING ON KEN — WEDNESDAY AGENDA (s332 + s333):** the two season-2026
+design questions (what replaces the answer key; how scanned documents get in)
+— recommendations in REVIEW_QUEUE, shelf units in BUILD_ORDER · a Form 4136
+spec in Rule Studio (296 #48) · the RIE line-10 definition (015 #2 + 296 #85,
+one question) · add `manage.py seed_rules` after `migrate` in `build.sh`?
+(DEFERRAL_AUDIT (10)) · the Schedule B ownership question (A2(b)) · code L in
+`EARLY_CODES` · the former-passive row (B7) · **s333:** the vendor's PTP
+allowance (296 #21) · the 8615 pair — parent zero-vs-missing (D_8615_005) and
+the QDCGT branch / the vendor's line 9 (015 #9) · the NC line-17 federal pull
+(296 #69, an RS amendment) · an AMT-8582 rule set (296 #40, RS authoring) ·
+whether to rewrite the two s333 SHAs that briefly carried fixture names.
 
 **⛔ WAITING ON KEN (carried):** the BATCH-013 item-2 RIE placement flag above ·
 the packet in tmp/s328_ken_questions.md (GA 500 p1 names a different primary
@@ -106,7 +102,8 @@ holds (clients 1922, 2386, 3517) · ⑤ the GA 7b military-exclusion engine leg
 transcription · ④ the shadow-2210 reader · carried: the 8615 parent-first
 guard · the zero-activity GA-attach gap · the Schedule C address (DEFERRAL
 19a) · the IRS1099NEC document question (19b) · the AMT-1116 twin head, still
-unwitnessed in this corpus.
+unwitnessed in this corpus · the client-1410 Georgia residual (the GA itemized-
+deductions adjustment worksheet class, no import surface).
 
 ⚠⚠ **ANOTHER CC ACCOUNT WRITES THIS LANE — THE SHARED FILES ARE THE ONLY
 PLACE ITS WORK IS VISIBLE.** Do not order events by `updated_at`.
