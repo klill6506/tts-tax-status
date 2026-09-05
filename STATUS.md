@@ -8,10 +8,45 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. **BATCH A IS WORKED: A1, A3, A4, A6, A7, A8, A9 BUILT; A5 ALREADY BUILT by 014 #2 (replay-verified, pinned); A2 half built + half Ken's; A10 STOPPED for Ken (one question with 296 #85, REVIEW_QUEUE).** NEXT: **Batch B — B1 296 #48 (Form 4136 fuel credit) → B4 015 #6 → B5 015 #16 → B6 015 #14 → B7 296 #43 → B8 296 #20 → B9 015 #12 → B10 015 #15**. Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. **BATCH A IS WORKED: A1, A3, A4, A6, A7, A8, A9 BUILT; A5 ALREADY BUILT by 014 #2 (replay-verified, pinned); A2 half built + half Ken's; A10 STOPPED for Ken (one question with 296 #85, REVIEW_QUEUE).** Batch B: B1 296 #48 STOPPED (no RS spec for Form 4136 — Ken/RS lane); B4 015 #6, B5 015 #16, B6 015 #14 BUILT; NEXT: **B7 296 #43 (prior passive K-1 losses beside positive current income) → B8 296 #20 → B9 015 #12 → B10 015 #15**. Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**🏁 BATCH B6 — 015 #14 BUILT with its limit named (`fd6b779a`, deploy PENDING_B6).**
+The shell lookup carries masked identity (SSN last 4 / DOB year-month /
+spouse first name / city), `is_blank` and `name_duplicates`; the lane's
+`locator.client_number` was already the attach path and ambiguity already
+refused. ⚠ **The fixture pair is ALL-blank, and so are 13 duplicate-name
+groups on the 2025 shells** — nothing distinguishes them; that is the hub's
+merge (D-044 ⑥c), DEFERRAL_AUDIT (12) holds the worklist.
+
+**🏁 BATCH B5 — 015 #16 BUILT (`04de3540`, deploy `dep-dadr487avr4c73algn50` LIVE).** The Form 8959 face
+reader (`f8959.py`, seven identity gates off the face's own arithmetic):
+the lane already carried the aggregate and the filed flag — the page was
+simply never read. One W-2 → line 1 is its box 5; several → the aggregate;
+line 24 joins the 25c roster; line 18 cross-checks Schedule 2 line 11. **One
+Gail packet landed as a tie (client 4655)**; the other passed this wall and
+waits on the ownerless-joint question. 276 extractor tests.
+
+**🏁 BATCH B4 — 015 #6 BUILT (`f90f2a05`, deploy `dep-dadr28vavr4c73alf9k0` LIVE).** A covered code-J
+Roth distribution's Form 8606 line 25c feeds Form 5329 line 1 (2025 i5329
+verbatim: "You will find this amount on line 25c"), once per owner, never
+box 2a or the gross; the 10% rides Schedule 2 line 8 → 1040 line 23 once;
+the form generates for the J owner. `D_RET_011` is silent once computed and
+warns only on the unmodelled 5-year conversion recapture. The emitter treats
+a covered J owner as engine-derived (no doubled source). **Fixture replays to
+a TIE (26,300 / 2,630 / 5,394 / 2,085); six filed code-J returns re-run
+rolled back — zero moved (all within basis).** 7 tests; retirement / 5329 / 8606 / 8915-F / extractor / flow-assertion files = 923 passed, 1 skipped (the s239 code-J gap test re-pinned to the computed result).
+
+**⛔ BATCH B1 — 296 #48 STOPPED: NO RULE STUDIO SPEC FOR FORM 4136 (s332).**
+404 under every code; the app holds an unmapped field-map stub (four pages,
+485 fields) and the Sch 3 attachment warning only; `SCH3_DIRECT_LINES` is
+`{"6b"}`, so the filed $43 cannot even be keyed to its line as an interim.
+CLAUDE.md: 404 = STOP, tell Ken. The triage's "small form unit" was sized
+from the dollars, not the form. **Ken / RS lane: author the 4136 spec (the
+fixture's one fuel, one use bounds leg 1); then one unit here.** Client
+1813 stays draft at the $43.
 
 **⛔ BATCH A10 — 015 #2 STOPPED FOR KEN (s332).** A taxable 1099-C on
 Schedule 1 line 8c to the Georgia RIE worksheet line 10: R-GA500-RIE defines
@@ -487,7 +522,10 @@ still unset on both Render services (both research doors 503).
 **⛔ WAITING ON KEN — WEDNESDAY AGENDA (s332):** the two season-2026 design
 questions Ken raised (what replaces the answer key; how scanned documents get
 in) — recommendations in REVIEW_QUEUE, shelf units in BUILD_ORDER.
-**Also for Wednesday (s332, later):** add `manage.py seed_rules` after `migrate` in
+**Also for Wednesday (s332, later):** a Form 4136 spec in Rule Studio (296 #48 is
+STOPPED on its absence — the RS lane; the fixture's one fuel / one use bounds leg 1);
+the RIE line-10 definition (015 #2 + 296 #85, one question, REVIEW_QUEUE); add
+`manage.py seed_rules` after `migrate` in
 `build.sh`? — the deploy migrates only, so every NEW diagnostic code is inert
 until someone seeds it by hand (DEFERRAL_AUDIT (10)); the Schedule B ownership
 question (A2(b), REVIEW_QUEUE); code L in `EARLY_CODES`; 296 #85 (the §108(f)(5)
