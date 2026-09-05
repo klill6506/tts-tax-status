@@ -1,24 +1,42 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s333 close, 2026-09-05
+## ▶▶ RESUME POINTER — s333 close, 2026-09-05 (later)
 
-**▶▶ START HERE (s333 close, 2026-09-05): BATCH C OF THE RANKED FORTY IS WORKED —
-10 of 10 dispositioned: 4 built and deployed, 1 half built (its other half is
-Ken's), 2 already built/fixed, 3 spec or Ken questions.** Batches A and B were
-worked in s332 (their ledger is in `STATUS_ARCHIVE.md`, s333 entry). Every
-build was verify-first, replayed on the item's own staged payload rolled back,
-movement-gated where compute changed, deployed and Render-verified; per-item
+**▶▶ START HERE (s333 close, 2026-09-05, later): BATCH C OF THE RANKED FORTY IS
+WORKED (10 of 10) AND KEN'S FOUR RULINGS ON ITS QUESTIONS ARE EXECUTED.**
+Ken, one message: "do your recommendations on all four" (DECISIONS s333 rulings):
+1. **296 #21 — no override input.** The vendor's PTP allowance against no PTP
+   income is an accepted-error exception on that return (ledger entry); the engine
+   keeps the i8582 answer.
+2. **015 #9 — Form 8615 parent lines 6/10 NULLABLE** (a keyed 0 is the parent's
+   figure; D_8615_005 fires on blank only; migration 0395; RS D_8615_005 amended)
+   **+ the child's net capital gain sources from Schedule D's smaller of lines
+   15/16** (the witness carried 36 of short-term gain in line 7 and read 0 on
+   line 9). The QDCGT branch itself was built in June — the diagnostics docstring
+   was stale. Witness dry run: line 16 = **4** vs the filed **1,048** (the
+   worksheet's line 24, a vendor error on the ledger). 0 other applying 8615 rows.
+3. **296 #69 — NC Schedule S line 17 pulls the federal §111 refund** (`st-refund`,
+   computed, never keyed; R-NC-DEDUCTIONS amended FIRST; `seed_nc_d400` re-run by
+   hand on the shared DB); client 4153's keyed 905 migrated off `ded-other` with
+   line 9 / tax / refund unchanged; the other four NC returns pull 0.
+4. **296 #40 — the FORM_8582 AMT passive-loss refigure AUTHORED** from i6251 line
+   2m (7 facts / 5 rules / 3 diagnostics / 4 scenarios / FA-09; harness extended;
+   seeded; cached) — **the APP build is its own unit** (DEFERRAL_AUDIT s333 (1)).
+Delvio `1ed72549` + `551d7b4b`; Rule Studio `7a49ec2`. Deploy `dep-dae354navr4c73as4d1g` LIVE.
+Every build was verify-first, replayed on the item's own staged payload rolled
+back, movement-gated where compute changed, deployed and Render-verified; per-item
 annexes are on `CC_CODE_CHANGES_1040_BATCH-015.md` / `…BATCH-296.md`. **Ken is
 running Codex on the ENTRY of the returns the batches freed.**
 ⚠⚠ Standing facts every build must know: (1) **the deploy runs `migrate` ONLY —
 a new diagnostic code is INERT until `manage.py seed_rules` runs** (none added
-this session); (2) **the public mirror's PII guard trips on client SURNAMES —
-client numbers only in STATUS / BUILD_ORDER / REVIEW_QUEUE**, and **no real
-personal names in checked-in test fixtures** (two s333 fixtures were pushed
-with real names for ~20 minutes and corrected in the next commit — the SHAs
-`91187646` and `d899e3ae` still carry them; a rewrite is Ken's call, s329
-policy); (3) **never start a foreground pytest while a background pytest
-runs** — the conftest's connection kill reads as failures in both.
+this session) **and a new seeded LINE needs its seed command run by hand** (done
+for NC `st-refund`); (2) **client numbers only in STATUS / BUILD_ORDER /
+REVIEW_QUEUE**, and **no real personal names in checked-in test fixtures** (two
+s333 fixtures were pushed with real names for ~20 minutes and corrected — the
+SHAs `91187646` and `d899e3ae` still carry them; a rewrite is Ken's call, s329
+policy); (3) **never start a foreground pytest while a background pytest runs**;
+(4) **an RS harness can be red before you touch it — count its lines stashed vs
+not** (check_schedule_e_8582_integrity: 7 pre-existing unmapped lines).
 
 **▶ THE s333 BATCH C LEDGER (item → result → commit):**
 | # | item | result | delvio |
@@ -50,10 +68,10 @@ page in any of the 61). Census: `1040\tmp\s331_gail_masthead.json`. DECISIONS
 ruling 5 carries the method and both figures.
 
 **▶ NEXT, in the order that lands the most returns:**
-1. **Ken's answers** (Wednesday below) — they unblock more packets than any
-   build: the RIE line-10 definition (A10 + 296 #85), the Schedule B ownership
-   tag (A2(b), ~26 packets), the former-passive row (B7), the two 8615
-   questions (C2), the PTP allowance (C4).
+1. **Ken's remaining answers** (Wednesday below) — the RIE line-10 definition
+   (A10 + 296 #85), the Schedule B ownership tag (A2(b), ~26 packets), the
+   former-passive row (B7), the 8615 witness's filed line 9 (file 4 or accept
+   1,048), and the seed_rules-in-build.sh ask.
 2. **The named TaxWise reader walls by measured count** — 6251 (6 sole, 17
    total; `amt_*` + `compute_6251` exist → reader-only) → the Form 4562 face
    (3; frees A4's two farm registers) → 1116 (5) → sched_line_detail (4) → the
@@ -78,11 +96,10 @@ design questions (what replaces the answer key; how scanned documents get in)
 spec in Rule Studio (296 #48) · the RIE line-10 definition (015 #2 + 296 #85,
 one question) · add `manage.py seed_rules` after `migrate` in `build.sh`?
 (DEFERRAL_AUDIT (10)) · the Schedule B ownership question (A2(b)) · code L in
-`EARLY_CODES` · the former-passive row (B7) · **s333:** the vendor's PTP
-allowance (296 #21) · the 8615 pair — parent zero-vs-missing (D_8615_005) and
-the QDCGT branch / the vendor's line 9 (015 #9) · the NC line-17 federal pull
-(296 #69, an RS amendment) · an AMT-8582 rule set (296 #40, RS authoring) ·
-whether to rewrite the two s333 SHAs that briefly carried fixture names.
+`EARLY_CODES` · the former-passive row (B7) · **s333 (ruled, executed):** #21 / #9 / #69 / #40 — done; still open from them: the
+8615 witness's filed line 9 (file the engine's 4 or accept the vendor's 1,048) ·
+whether to rewrite the two s333 SHAs that briefly carried fixture names · the AMT
+passive-loss APP build's place in the queue (DEFERRAL_AUDIT s333 (1)).
 
 **⛔ WAITING ON KEN (carried):** the BATCH-013 item-2 RIE placement flag above ·
 the packet in tmp/s328_ken_questions.md (GA 500 p1 names a different primary
