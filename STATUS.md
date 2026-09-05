@@ -8,10 +8,28 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. A1 is BUILT (block below); NEXT: A2 — 015 #17. Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. A1 is BUILT; A2 is half built and half Ken's (blocks below); NEXT: A3 — 015 #1 (lump-sum Social Security). Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**▶ BATCH A2 — 015 #17, HALF BUILT, HALF FOR KEN (s332).** (a) **Built:** a
+joint return's face-2a tax-exempt interest with no payer page now imports as
+one labeled consolidated row, owner `joint` — tax-exempt interest has NO
+per-owner consumer in the return (IT-511 p.24 excludes exempt interest from
+the RIE; `compute_intdiv` sums it return-level), so the old MFJ refusal
+guarded a distinction nothing consumes. Both emitter arms; lane test. The
+three 2a-class packets all carry a second wall (the ownership class ×2, GA
+Schedule 1 additions ×1) — zero released by this alone. (b) **For Ken
+(REVIEW_QUEUE):** Schedule B payer rows with NO ownership on a joint return —
+~26 packets, 26 of 28 print a RIE worksheet so attribution matters; the
+worksheet gives only per-spouse category TOTALS; the s293 corpus proved a
+subset-sum guess can hide a joint payer. *Recommendation:* tag the rows
+`joint` and key the worksheet's per-spouse line 6/7 totals as the RIE inputs
+(what the filed return asserts; RIE-17 still gates the tie; the owner tag has
+no other consumer). (c) **Deferred:** the Form 8995-A facts reader (the item's
+second half — `qbi_loss_carryforward_prior` / `qbi_reit_ptp_income` already in
+the lane; the page is ROLE_REVIEW) — a reader unit of its own.
 
 **🏁 BATCH A1 — 015 #3 BUILT (`9bcb61a3`, deploy `dep-dadp3a6q1p3s73cftu0g`
 LIVE; RS `2873cbb`; migration 0390 applied).** Schedule 2 line 8 reported
