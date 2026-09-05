@@ -8,12 +8,31 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. **BATCH A IS WORKED: A1, A3, A4, A6, A7, A8, A9 BUILT; A5 ALREADY BUILT by 014 #2 (replay-verified, pinned); A2 half built + half Ken's; A10 STOPPED for Ken (one question with 296 #85, REVIEW_QUEUE).** Batch B: B1 296 #48 STOPPED (no RS spec for Form 4136 — Ken/RS lane); B4 015 #6, B5 015 #16, B6 015 #14 BUILT; NEXT: **B7 296 #43 (prior passive K-1 losses beside positive current income) → B8 296 #20 → B9 015 #12 → B10 015 #15**. Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. **BATCH A IS WORKED: A1, A3, A4, A6, A7, A8, A9 BUILT; A5 ALREADY BUILT by 014 #2 (replay-verified, pinned); A2 half built + half Ken's; A10 STOPPED for Ken (one question with 296 #85, REVIEW_QUEUE).** Batch B: B1 296 #48 STOPPED (no RS spec for Form 4136 — Ken/RS lane); B4 015 #6, B5 015 #16, B6 015 #14 BUILT; B7 296 #43 HALF BUILT + half Ken's (former passive, REVIEW_QUEUE); B8 296 #20 was ALREADY BUILT (s272, replay ties); NEXT: **B9 015 #12 (Form 4952 + portfolio K-1 facts — extract instead of suppress) → B10 015 #15**. Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
 
-**🏁 BATCH B6 — 015 #14 BUILT with its limit named (`fd6b779a`, deploy PENDING_B6).**
+**✅ BATCH B8 — 296 #20 ALREADY BUILT (s272; verify-first, no code).**
+`compute_7206.scorp_k1_sehi_pairs` (EIN-matched W-2 box 5 as the >2%
+shareholder's line-11 limit; two test files) is the item; the 296 file never
+recorded the close. The client-3982 fixture replays to a TIE (Schedule 1 line 17
+10,207; AGI 177,861); the client-4006 return was landed since (fenced). Annex on
+the 296 file.
+
+**🏁 BATCH B7 — 296 #43 HALF BUILT (`7461da55`, deploy `dep-dadrepp5efls739dldhg` LIVE), HALF FOR KEN.**
+(a) A passive GAIN K-1's released prior loss now reaches Schedule E col (g)
+— the 8582 engine already allowed it, only the loss branch consumed the
+column; **the client 1779 fixture ties**, client 1279's taxpayer K-1 is fixed and its
+AGI sits $1 from filed (the item's own rounding note). (b) **The
+former-passive spouse row is Ken's:** the 2025 i8582 "Former Passive
+Activities" rule allows the whole 6,569 against the activity's own income
+and carries nothing; the vendor released 705 and carried 5,864. AGI is the
+same either way; carryforwards and QBI differ. REVIEW_QUEUE, with the
+recommendation to build the instructions' treatment. Movement gate: one
+filed return with the shape, unmoved. 8582 / Schedule E / 8995 / backentry-commit / AMT-carryover / REP / flow-assertion files = 676 passed, 4 skipped.
+
+**🏁 BATCH B6 — 015 #14 BUILT with its limit named (`fd6b779a`, deploy `dep-dadr7j15efls739dgu40` LIVE).**
 The shell lookup carries masked identity (SSN last 4 / DOB year-month /
 spouse first name / city), `is_blank` and `name_duplicates`; the lane's
 `locator.client_number` was already the attach path and ambiguity already
