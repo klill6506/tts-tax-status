@@ -2,13 +2,66 @@
 
 ## ▶▶ RESUME POINTER — s332 close, 2026-09-05
 
-**▶▶ START HERE (s332): BATCH-014 is CLOSED and the lock is LIFTED (block below). Earlier the same session, TWO READER UNITS SHIPPED AND LANDED — the
-unknown-page pass (`c43ea59b`, deploy `dep-dadeepp7lnhs73d4nejg`) and the
-Form 5329 reader (`5ed62a3d`, deploy `dep-dadfq1h7lnhs73d6hlig`), both LIVE.
-The merged Gail book went from 10 emitted → 34 → 43, and **24 + 8 returns
-committed, EVERY ONE A TIE, zero no-ties** (one held, below). The next unit
-is the Form 6251 reader (6 sole walls, 17 packets in total) — but read the
-census warning before sizing it.** Nothing below needs re-asking.
+**▶▶ START HERE (s332 close, 2026-09-05): Ken's three rulings are EXECUTED
+(block below) — BATCH-014 #2 built and deployed, #5's spec authored, Codex
+building-on-a-branch recorded as precedent. BATCH-014 is closed (annex +
+addendum in Done). NEXT: triage the ~20 open 296 items + BATCH-015's twenty
+into batches of ten by yield, then build; the Form 6251 reader after. Ken is
+running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
+session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
+(`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**🏁 KEN'S THREE RULINGS EXECUTED (s332, 2026-09-05 — the same sitting they
+were given).**
+- **BATCH-014 #2 — BUILT `543ba99d`, deploy `dep-dadog2c9v7es73aifod0` LIVE.** Spec first:
+  R-GA500-RIE amended in Rule Studio and seeded (RS `ba9c70f`), the export
+  cached. Source: 2025 IT-511 p.24 VERBATIM — *"Income or losses should be
+  allocated to the person who owns the item. If any item is held jointly, the
+  income or loss should be allocated to each taxpayer at 50%."* Engine: each
+  owner's OWN capital rows + OWN cap-gain distributions + OWN carryover
+  component (joint 50/50), used as the RIE line-9 columns ONLY when the two
+  nets re-add to 1040 line 7 exactly (no cap binding); otherwise unchanged.
+  Model: `schd_st/lt_carryover_tp_share` (migration 0389, NULLABLE — the pool
+  amount is untouched, so Schedule D / proforma / e-file never see it); the
+  lane validates it. **Movement gate: a rolled-back dry run over every filed
+  MFJ return with owner-tagged capital items — 88 returns, ZERO moved.** One
+  pre-existing test expectation (the #57 joint-loss case) superseded and
+  re-pinned with the citation. ⚠ 0389 was applied to the shared DB ahead of
+  the deploy (two nullable columns; old code ignores them) so the dry run
+  could read it. ⚠ Open edge, recorded in the rule as UNSPECIFIED: how a
+  CAPPED loss splits — the booklet is silent; the engine keeps the old
+  allocation there. **Codex re-pass:** the fixture stages with
+  `schd_st_carryover_prior: 3084` (owner omitted) + `schd_st_carryover_tp_share: 939`.
+- **BATCH-014 #5 — SPEC AUTHORED (RS `ba9c70f`).** `R-GA500-PRECEPTOR` in the
+  Form 500 spec from IT-511 p.64 (Form IND-CR 212, Rev. 07/09/25): § 48-7-29.22;
+  $500/$1,000 physician, $375/$750 APRN-PA; 3 + 7 rotation caps; no carry;
+  AHEC certification; window TY2019–2026. 5 facts, lines 212-A1…C1,
+  `D_GA500_018`, T21/T22, FA-GA500-15; line 20 = CC-3 + 212-C1 + residual.
+  Harness ALL PASS (23 scenarios). ⚠ The statute text was not fetched (the
+  form is the primary transcription). **The APP BUILD is a separate unit**
+  (DEFERRAL (3)); the fixture imports through the aggregate meanwhile.
+- **Ruling 3 (Codex may build on a branch under the contract)** — recorded in
+  DECISIONS; Ken is now running Codex on the ENTRY of the returns BATCH-014
+  freed; a fresh production import session was minted on his go.
+
+**⚠⚠ CORRECTION — "BATCH-296 (14 items, unworked)" WAS WRONG.** `CC_CODE_CHANGES_BATCH-296.md`
+is the 1040 lane's RUNNING CORRESPONDENCE FILE (85 numbered items, 82 annex /
+triage sections, worked s267 → s329), not a batch. A closure census (each
+item's own status line + any later verdict mention) finds **~20 items with no
+recorded closure**: 43 (prior passive K-1 losses beside positive current
+income) · 45 (filed-split K-1 → 8582 / 8960) · 46 (2441 Part II vs Part III —
+"half built") · 47 (return-level unrecaptured §1250 aggregate; an $82
+understatement on the fixture) · 48 (Form 4136 fuel credit, OPEN) · 52 (AL
+Form 40NR — spec live, APP BUILD queued) · 10 (Form 4835) · 20 (7206 for a
+>2% S-corp shareholder) · 21 (partial PTP loss) · 32 (8949 dates → MeF) · 40
+(AMT passive losses) · 56 (6252 contingent-payment) · 60 (Sch 2 line 13
+aggregate — also BATCH-015 #19) · 63 (a commit 500) · 66 (8839 never feeds
+Sch 3) · 68 (SEP/saver's optimizer — a feature ask) · 69 (NC D-400 S line
+17) · 70 (Form 4361 → Sch C) · 84 (§469(i) $25,000 allowance, OPEN, blocks
+client 2490) · 85 (KEN RULING: 1099-MISC box 3 backed out of AGI — worksheet
+presentation, $0 face impact). **These plus BATCH-015's twenty are the
+queue; triage into batches of ten by yield before building.** Ken's
+assignment: this lane builds them; Codex enters returns.
 
 **🏁 1040 BATCH-014 IS CLOSED (s332, 2026-09-05) — THE FIRST BATCH CODEX BUILT,
 REVIEWED AND LANDED BY THIS LANE. The one-writer lock is LIFTED; `main` is the
@@ -40,7 +93,7 @@ the batch file in `CC Changes Done`, Codex's own draft beside it.
   synthetic `SECRET_KEY`; pytest invocations must be SERIAL (the conftest
   kills test-DB connections on exit).
 
-**⛔ KEN — TWO RULINGS FROM BATCH-014, NEITHER BLOCKS ANYTHING ELSE:**
+**(ruled 2026-09-05 — kept for the record; see the block above)** Two rulings from BATCH-014 as they were put to Ken:
 1. **Item 2 — how a jointly filed capital loss splits between spouses on the
    Georgia RIE worksheet.** The filed worksheet's columns equal each spouse's
    SIGNED NET (own current result minus own carryover: −508 / −1,670 → RIE-17
@@ -60,7 +113,7 @@ Codex or this lane builds them — the contract and the review recipe now exist
 |---|---|---|---|
 | 1040 · `CC_CODE_CHANGES_1040_BATCH-014.md` | 10 | 2026-09-04 | 🏁 **CLOSED s332** (Codex-built, reviewed, landed) — in Done |
 | 1040 · `CC_CODE_CHANGES_1040_BATCH-015.md` | **20** | 2026-09-04 | ⚠ NOT a work batch — it is the *pending list* published alongside 014 ("current count 20/20"). Triage into batches of ten; do not treat as one unit |
-| 1040 · `CC_CODE_CHANGES_BATCH-296.md` | 14 | 2026-09-02 | ⚠ UNWORKED and older than 013/014. Also carries the **item-writing convention** (symptoms + evidence; a cause theory must be LABELLED a theory) — read that header before writing any annex |
+| 1040 · `CC_CODE_CHANGES_BATCH-296.md` | ~20 open of 85 | running file | ⚠ the lane's CORRESPONDENCE FILE, not a batch (see the correction above); carries the **item-writing convention** — read its header before any annex |
 | legacy root · `CC_CODE_CHANGES_NZ_2026-08-03.md` | — | 2026-08-03 | still undrained (the legacy root is not swept clean) |
 | 1120-S · `CC Changes\` | — | — | EMPTY (README only) |
 
