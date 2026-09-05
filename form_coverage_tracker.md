@@ -1,6 +1,16 @@
 
 # Form Coverage Tracker — tts-tax-app
 
+> **2026-09-05 session 334 — the Form 6251 (AMT) TaxWise reader
+> (`scripts/taxwise1040/f6251.py`): extractor coverage only, no new
+> rendered form — the `amt_*` taxpayer inputs it feeds have been
+> lane-supported since s212 and engine-owned since s146. Riding with it, an
+> ENGINE correction: `compute_6251`'s senior add-back now reads Schedule 1-A
+> line 37 (the spec's `a_senior_deduction`) instead of 1040 line 13b (line
+> 38, all four OBBBA deductions); the render face's 1a = 12 + 13 + 13b − 37.
+> Form 6251 legs: input ✅ · compute ✅ (corrected) · render ✅ · flow ✅
+> (548) · import (TaxWise) ✅ NEW · import (Lacerte) ⛔ still ROLE_REVIEW.**
+
 > **2026-09-03 session 328 — Lacerte extractor leg 2: the Federal
 > Worksheets document readers (Wage Schedule → w2s; Pension + IRA
 > schedules → r_1099s; Interest / Dividend lists → int/div rows; Pub
