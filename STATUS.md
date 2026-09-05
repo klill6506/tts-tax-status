@@ -10,6 +10,22 @@ committed, EVERY ONE A TIE, zero no-ties** (one held, below). The next unit
 is the Form 6251 reader (6 sole walls, 17 packets in total) — but read the
 census warning before sizing it.** Nothing below needs re-asking.
 
+**⛔⛔⛔ ONE-WRITER LOCK — CODEX HOLDS THE REPO (Ken, 2026-09-04 afternoon).**
+Ken handed **1040 BATCH-014** to Codex to BUILD on a branch, `codex/batch-014`
+(Ken's one-time exception to main-only). Until Ken says Codex is done:
+**do not edit anything under `D:\dev\delvio-tax`**, do not pull the branch,
+do not work BATCH-014. Codex's contract (the prompt Ken posted verbatim):
+verify-first per item · never push to main · never `migrate` against the
+shared DB (migration files only) · gates reported as counts · no PII · Rule
+Studio spec before any compute/render change · does NOT touch STATUS /
+BUILD_ORDER / GLOBAL_STATUS / memory · does NOT move the batch file. It hands
+back `1040\CC Changes\BATCH-014_CODEX_RESULT_DRAFT.md`. **When Ken says
+"done": review the branch item by item (the entry side wrote these — the
+build side's job is to VERIFY, 013 #5 was refuted at exactly this step),
+run every gate, apply the migrations at the merge, deploy, Render-verify,
+write the annex, move the file to Done, then close the status files.**
+Everything else in this pointer still stands.
+
 **⛔⛔ THE CC CHANGES QUEUES ARE NOT EMPTY — SWEPT 2026-09-04 AT THE CLOSE,
 NOTHING WORKED YET (Ken flagged them as he left). Work these FIRST next
 session, before the Form 6251 reader.**
