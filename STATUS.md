@@ -1,8 +1,8 @@
 # TTS Tax App — STATUS (current state only)
 
-## ▶▶ RESUME POINTER — s331 close, 2026-09-04
+## ▶▶ RESUME POINTER — s332 close, 2026-09-05
 
-**▶▶ START HERE: TWO READER UNITS SHIPPED AND LANDED TONIGHT — the
+**▶▶ START HERE (s332): BATCH-014 is CLOSED and the lock is LIFTED (block below). Earlier the same session, TWO READER UNITS SHIPPED AND LANDED — the
 unknown-page pass (`c43ea59b`, deploy `dep-dadeepp7lnhs73d4nejg`) and the
 Form 5329 reader (`5ed62a3d`, deploy `dep-dadfq1h7lnhs73d6hlig`), both LIVE.
 The merged Gail book went from 10 emitted → 34 → 43, and **24 + 8 returns
@@ -10,29 +10,55 @@ committed, EVERY ONE A TIE, zero no-ties** (one held, below). The next unit
 is the Form 6251 reader (6 sole walls, 17 packets in total) — but read the
 census warning before sizing it.** Nothing below needs re-asking.
 
-**⛔⛔⛔ ONE-WRITER LOCK — CODEX HOLDS THE REPO (Ken, 2026-09-04 afternoon).**
-Ken handed **1040 BATCH-014** to Codex to BUILD on a branch, `codex/batch-014`
-(Ken's one-time exception to main-only). Until Ken says Codex is done:
-**do not edit anything under `D:\dev\delvio-tax`**, do not pull the branch,
-do not work BATCH-014. Codex's contract (the prompt Ken posted verbatim):
-verify-first per item · never push to main · never `migrate` against the
-shared DB (migration files only) · gates reported as counts · no PII · Rule
-Studio spec before any compute/render change · does NOT touch STATUS /
-BUILD_ORDER / GLOBAL_STATUS / memory · does NOT move the batch file. It hands
-back `1040\CC Changes\BATCH-014_CODEX_RESULT_DRAFT.md`. **When Ken says
-"done": review the branch item by item (the entry side wrote these — the
-build side's job is to VERIFY, 013 #5 was refuted at exactly this step),
-run every gate, apply the migrations at the merge, deploy, Render-verify,
-write the annex, move the file to Done, then close the status files.**
-Everything else in this pointer still stands.
+**🏁 1040 BATCH-014 IS CLOSED (s332, 2026-09-05) — THE FIRST BATCH CODEX BUILT,
+REVIEWED AND LANDED BY THIS LANE. The one-writer lock is LIFTED; `main` is the
+working branch again.** Merge `57e00201` (`--no-ff`, review record in the
+message); deploy `dep-dadnsl142hec73boj0kg` LIVE (Render-API verified);
+migrations 0379–0388 applied on the shared DB (`showmigrations` ✓). Annex on
+the batch file in `CC Changes Done`, Codex's own draft beside it.
+- **7 BUILT** — `schb_fields` (Sch B Part III answers, nullable, explicit No) ·
+  the MFS six-month residence checkbox made NULLABLE + `mfs_eic_special_rule`
+  in the lane · `ira_distribution_summaries` (one filed IRA pool per owner, NO
+  fabricated 1099-R, MeF refuses by name until the real document) ·
+  `mortgage_interest_details` + `medical_expense_details` (ordered filed rows
+  deriving the Schedule A aggregates ONCE; statements, not fake 1098s) ·
+  `education_claimed_on_another_return` (the ACTUAL claim; verified against
+  the 2025 i8863) · `schedule_cs[].gross_receipt_details` (non-document rows
+  reconciling line 1 once with the NEC/MISC roster).
+- **1 REFUTED** (item 1 — Codex found the worksheet inputs on page 8; the
+  existing route ties). **1 STOPPED FOR KEN** (item 2, below). **1 DEFERRED**
+  (item 5 — no IND-CR 212 spec; the fixture ties through
+  `g_indcr_other_credits` today; RS-lane authoring item).
+- Review: every migration read (db_default where required, none on the new
+  tables' FK per 0375/0377, RLS default-deny); PII scan with a POSITIVE
+  CONTROL (0 hits); every diagnostics diff read (none weakened); broad gate
+  on a fresh LOCAL test DB **1,562 passed / 2 failed — and the identical run
+  on unmodified main fails the same two** (test-order dependence on seeded
+  diagnostics; DEFERRAL_AUDIT (1)). Published schema regenerated.
+- ⭐ **`config.settings.test` runs the gates on LOCAL PostgreSQL** (never the
+  shared Supabase): `DJANGO_SETTINGS_MODULE=config.settings.test` + a
+  synthetic `SECRET_KEY`; pytest invocations must be SERIAL (the conftest
+  kills test-DB connections on exit).
 
-**⛔⛔ THE CC CHANGES QUEUES ARE NOT EMPTY — SWEPT 2026-09-04 AT THE CLOSE,
-NOTHING WORKED YET (Ken flagged them as he left). Work these FIRST next
-session, before the Form 6251 reader.**
+**⛔ KEN — TWO RULINGS FROM BATCH-014, NEITHER BLOCKS ANYTHING ELSE:**
+1. **Item 2 — how a jointly filed capital loss splits between spouses on the
+   Georgia RIE worksheet.** The filed worksheet's columns equal each spouse's
+   SIGNED NET (own current result minus own carryover: −508 / −1,670 → RIE-17
+   12,639 / 6,031). The engine prorates the return-level loss by WEIGHT
+   (R-GA500-RIE) → 12,253 / 6,417. Same total either way. **Say which is the
+   rule**; if the worksheet's, it is a Rule Studio amendment first, then the
+   paired-carryover build. Nothing is coded around it; the packet holds.
+2. **Item 5 — IND-CR 212 (community-based faculty preceptor credit)** needs a
+   Rule Studio spec before a per-credit form exists. The return imports today
+   through the aggregate line-20 fact.
+
+**⛔⛔ THE CC CHANGES QUEUES STILL HOLD WORK (re-swept s332). Ken decides whether
+Codex or this lane builds them — the contract and the review recipe now exist
+(s332 memory). Work these before the Form 6251 reader.**
 
 | Lane / file | Items | Posted | State |
 |---|---|---|---|
-| 1040 · `CC_CODE_CHANGES_1040_BATCH-014.md` | **10** | 2026-09-04 | ▶ **UNWORKED — the next batch in sequence** (013 closed this morning) |
+| 1040 · `CC_CODE_CHANGES_1040_BATCH-014.md` | 10 | 2026-09-04 | 🏁 **CLOSED s332** (Codex-built, reviewed, landed) — in Done |
 | 1040 · `CC_CODE_CHANGES_1040_BATCH-015.md` | **20** | 2026-09-04 | ⚠ NOT a work batch — it is the *pending list* published alongside 014 ("current count 20/20"). Triage into batches of ten; do not treat as one unit |
 | 1040 · `CC_CODE_CHANGES_BATCH-296.md` | 14 | 2026-09-02 | ⚠ UNWORKED and older than 013/014. Also carries the **item-writing convention** (symptoms + evidence; a cause theory must be LABELLED a theory) — read that header before writing any annex |
 | legacy root · `CC_CODE_CHANGES_NZ_2026-08-03.md` | — | 2026-08-03 | still undrained (the legacy root is not swept clean) |
@@ -59,7 +85,7 @@ route) and **#6 "Form 8606 taxable Roth earnings into Form 5329 Part I"**.
 **#4 asks for Form 3800 support** — this session typed 3800 as a NAMED WALL,
 so that item would open the class.
 
-**▶ WHERE THE MACHINE WAS LEFT (Ken went out of town — clean stop).** Nothing
+**▶ THE s331 LANDINGS (recorded at that close; still accurate).** Nothing
 is in flight: both extract runs and both commit batches finished, the working
 tree is committed and pushed, and both deploys are Render-API verified LIVE.
 - Batch `s331-unknown-commit-001` — 24 landed, 4 fenced (they already tie).
