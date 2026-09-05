@@ -8,10 +8,68 @@ foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST c
 three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
 the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
 → 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
-CLOSED by ruling 2; 296 #85 needs Ken. A1, A3, A4 are BUILT and A5 was ALREADY BUILT by 014 #2 (verified by replay, pinned); A2 is half built and half Ken's (blocks below); NEXT: A6 — 015 #19 + 296 #60 (Schedule 2 line-13 source trio). Ken is
+CLOSED by ruling 2; 296 #85 needs Ken. **BATCH A IS WORKED: A1, A3, A4, A6, A7, A8, A9 BUILT; A5 ALREADY BUILT by 014 #2 (replay-verified, pinned); A2 half built + half Ken's; A10 STOPPED for Ken (one question with 296 #85, REVIEW_QUEUE).** NEXT: **Batch B — B1 296 #48 (Form 4136 fuel credit) → B4 015 #6 → B5 015 #16 → B6 015 #14 → B7 296 #43 → B8 296 #20 → B9 015 #12 → B10 015 #15**. Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
+
+**⛔ BATCH A10 — 015 #2 STOPPED FOR KEN (s332).** A taxable 1099-C on
+Schedule 1 line 8c to the Georgia RIE worksheet line 10: R-GA500-RIE defines
+line 10 as the §111 refund + unemployment ONLY — Ken's 2026-08-30 Gate-1
+ruling — so a third component is an amendment of his ruling, and the same
+question decides 296 #85 (the §108(f)(5) student loan the vendor also put on
+line 10 though it is not in Georgia taxable income). **One question in
+REVIEW_QUEUE with a recommendation** (line 10 = every Schedule 1 other-income
+item INCLUDED in Georgia taxable income, r. 560-7-4-.02): adopting it ties
+015 #2's fixture (16,782 / 323 / 996) and keeps the excluded loan off. No
+engine change; spec first on Ken's word.
+
+**🏁 BATCH A9 — 015 #13 BUILT, differently from the ask (`7a58642d`, deploy
+`dep-dadqn3k9v7es73ajseqg` LIVE).** The item wanted a non-itemizer's business mortgage interest KEPT on
+Form 8829 line 10(b); the 2025 i8829 ("Taxpayers claiming the standard
+deduction … using lines 16 and 17") and the RS spec put it on line 16. The
+engine zeroed 10(b) correctly but DROPPED the printed amount — line 16(b)
+now carries it (the RE-tax line's two-representation routing, mirrored).
+Replay: the 676 miss closed to 2, and the 2 is the payload's RE tax (2,718
+keyed; the page prints 2,738) — keyed as printed, **every federal and
+Georgia line ties**. 22 tests in the two 8829 files.
+
+**🏁 BATCH A8 — 296 #84 BUILT (`60f07144`, deploy `dep-dadqn3k9v7es73ajseqg` LIVE) — A TAX-LAW SIGN
+ERROR IN THE FORM 8582 MAGI.** The item's payload replayed to its exact
+misses; the engine's 8582 line 6 printed 150,719 = AGI + taxable Social
+Security, so the $25,000 allowance was 0 and the whole active rental loss
+was suspended. §469(i)(3)(E)(i) and the 2025 i8582 line-6 example (92,000 −
+5,500 = 86,500) REMOVE taxable SS; `form_8582_magi` ADDED it — it treated
+the list's one income item like the deductions beside it. One sign, cited.
+**Replayed: every federal line ties** (11 = 101,617 … refund 1,432; 8582
+6/9 = 62,711 / 2,756); the Georgia misses left are 296 #85 (Ken). **Movement
+gate (rolled back): 49 returns recomputed rolled back (41 with an 8582 line 6 in play, 46 with rentals carrying passive amounts): 33 unchanged; 16 moved ONLY on the printed 8582 line 6 itself (the MAGI, lower on every one — no 1040 line 11/24, Schedule 1 line 5, or rental allowed/suspended amount changed); ONE of them (client 4797, filed) also moved 1040 line 24 by $1 — and the CONTROL (the identical recompute with the OLD formula monkeypatched back) moves it identically (Schedule 3 line 1 foreign tax credit 21 → 20, a pre-existing recompute drift on that return), so ZERO tax-line movers are attributable to the fix. ⚠ The commit message's 'only line 6 moved' overstated it by that one control-proven artifact.** Tests: the instructions' example + the item's
+shape. ⚠ Client 2490 stays draft for the entry lane.
+
+**🏁 BATCH A7 — 015 #8 BUILT (`cb10f530`, deploy `dep-dadqbs4s728c73ff5e80` LIVE).** The GA 1099-G
+report row on the fixture prints NO ownership X at all (the item thought it
+printed one in a combined column); the federal report's row does. The GA
+parser no longer aborts; the reconciliation (`_merge_g1099`, extracted and
+unit-tested) gives an ownerless GA row the owner of the ONE federal row whose
+amounts fit and refuses on 0 or 2+ fits. The fixture emits its taxpayer row
+(4,380 / 444 / GA / 264 / TIN). Zero Gail packets carried this wall — a
+Georgianna-book print shape. 272 extractor tests pass.
+
+**🏁 BATCH A6 — 015 #19 + 296 #60 BUILT (`58c6e4fe`, deploy `dep-dadq9fss728c73ff3sqg` LIVE;
+migration 0392 applied ahead).** Schedule 2 line 13 as a documented-source
+total when the packet prints no per-W-2 box-12 rows (no TaxWise reader emits
+box 12 at all). The line-14/line-8 trio shape across model, lane (trio +
+two-writers refusal), serializer, `compute_sch_2` (rows PREFERRED — the source
+stands in only with no A/B/M/N row), `D_SCH2_L13_SRC` (warning; error when
+rows shadow it) and the emitter. **The item's payload replays to a TIE
+(line 13 = 5, 1040 line 24 = 279, refund 421)**; client 3776 stays draft for
+Codex's batch. **296 #60's filed fixture (client 2662) CORRECTED in the app**
+— the $11 moved from the line-14 trio to line 13 under a guarded transaction
+(1040 23/24/34/37 unchanged, `D_6252_009` silent); its unbatched sibling
+(…3840) now refuses on the qualified-tips per-W-2 box-7 split instead. ⚠⚠
+**THE DEPLOY RUNS `migrate` ONLY — a new diagnostic code is INERT until
+`seed_rules` runs** (seeded by hand this sitting; DEFERRAL_AUDIT (10)). 17
+new tests; gates 522 passed.
 
 **✅ BATCH A5 — 015 #18 ALREADY BUILT (verify-first; pin only).** The
 triage row read the pre-ruling code; 014 #2's item-level allocation
@@ -429,6 +487,12 @@ still unset on both Render services (both research doors 503).
 **⛔ WAITING ON KEN — WEDNESDAY AGENDA (s332):** the two season-2026 design
 questions Ken raised (what replaces the answer key; how scanned documents get
 in) — recommendations in REVIEW_QUEUE, shelf units in BUILD_ORDER.
+**Also for Wednesday (s332, later):** add `manage.py seed_rules` after `migrate` in
+`build.sh`? — the deploy migrates only, so every NEW diagnostic code is inert
+until someone seeds it by hand (DEFERRAL_AUDIT (10)); the Schedule B ownership
+question (A2(b), REVIEW_QUEUE); code L in `EARLY_CODES`; 296 #85 (the §108(f)(5)
+other-income placement on the GA RIE worksheet — the four Georgia misses still
+open on client 2490 after 296 #84's federal fix).
 
 **⛔ WAITING ON KEN (carried):** the BATCH-013 item-2 RIE placement flag above ·
 the packet in tmp/s328_ken_questions.md (GA 500 p1 names a different primary
