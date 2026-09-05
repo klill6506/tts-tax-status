@@ -6,11 +6,12 @@
 (block below) — BATCH-014 #2 built and deployed, #5's spec authored, Codex
 building-on-a-branch recorded as precedent. BATCH-014 is closed (annex +
 addendum in Done). 🏁 TRIAGE DONE — the forty are ranked by MEASURED yield at the
-foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). **BATCH A, in
-order: 296 #32 → 015 #3 → 015 #17 → 015 #1 → 015 #7 → 015 #18 → 015 #19+296 #60
-→ 015 #8 → 296 #47 → 296 #66.** 015 #20 is CLOSED by ruling 2 (record and
-file); 296 #85 needs Ken. NEXT: build A1 (81 FILED returns blocked from
-e-file cleanup by ISO-dated 8949 rows). Ken is
+foot of `CC_CODE_CHANGES_1040_BATCH-015.md` (pointer in 296). ⚠ VERIFY-FIRST caught
+three 'open' items ALREADY BUILT (296 #32 s267 · #47 · #66 s272 — the code is
+the census). **BATCH A, each verified open: 015 #3 → 015 #17 → 015 #1 → 015 #7
+→ 015 #18 → 015 #19+296 #60 → 015 #8 → 296 #84 → 015 #13 → 015 #2.** 015 #20 is
+CLOSED by ruling 2; 296 #85 needs Ken. NEXT: build A1 (Schedule 2 line 8
+reported directly without a Form 5329 — 5 packets). Ken is
 running Codex on the ENTRY of the returns BATCH-014 freed.** Earlier this
 session: the unknown-page pass (`c43ea59b`) and the Form 5329 reader
 (`5ed62a3d`), 24 + 8 returns landed, every one a tie.
